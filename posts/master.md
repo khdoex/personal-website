@@ -1,0 +1,21 @@
+---
+title: "Master"
+date: "2024-03-21"
+---
+
+
+Geçen sene bugünlerde gitmek için çok çabalayıp, daha sonrasında vizeden red alıp tekrar başvurduğum, ailemin kredi çekmesini gerektiren ve tüm bunların üstüne gittiğimde pek de sosyalleşemediğim yüksek lisansı bırakma kararı aldım.
+
+Bu sene ilk yurtdışına çıkışımdı, ve bütün bu olaylardan sonra bunun son olmasından da korkmuyor değilim. Ama içimde bir şeyler eksikti, tatmin olamadım.
+
+İstediğim şeyin bu olmadığını fark ettiğimden beri bırakma düşüncesi içindeydim zaten ama denemekten vazgeçmedim. Kötü projelerle yüksek puan aldım, iyi çalışmalarla düşük not. Peşine düştüğüm tüm hayallerimi sorgulamak zorunda kaldım uzun bir süre: Gerçekten bunu mu istiyorum? Gerçekten yüksek lisans sadece bir diploma mı? Buradan çıkınca girdiğimden daha bilgili olacak mıyım? Burada geçirdiğim vakit bana iyi geliyor mu? gibi bir sürü soru kafamın içinde yankılandı durdu. Uzun bir süre bütün bunları düşünürken verebildiğim tek karar, istemediğim bir şeyi daha fazla yapmayacağımdı.
+
+Şimdi bırakıyorum. Neden bıraktığımı daha detaylı anlatmam gerekirse şöyle: Sosyal açıdan bence Avrupa’da yeni arkadaşlıklar ve ortamlar içinde olmak bir genç için çok değerli; ne yazık ki bu konudaki benim deneyimim kötü oldu. Fakat burada bir suçlu bulunacaksa, bu ben olurdum; bana sorarsanız da kötü şans derim. Bulunmak istediğim bir arkadaş ortamına veya insanlara denk gelmedim. Güzel insanlarla tanıştım fakat pek de ötesine gitmedik. Oysa daha fazla bağlantı kurmak, kendimi oraya ait hissetmek istiyordum ama bu gerçekleşmedi.
+
+Bırakmamdaki asıl nokta ise tatminsizlik oldu. Aldığım eğitimden, hocaların tavırlarından, sınavlardan, derslerden, projelerden ve yemeklerden. Derslerin bir slayt ve voice engine’den öteye gidemediği yerde ders dinlerken gerçekten dinlemek benim için zordu; bu da beni kitap açıp çalışmak zorunda bıraktı ki bu, aslında güzel bir şeydi. Fakat sınava girdiğimde gördüğüm slaytlara karşı hazırlanmış hafıza testleri beni darmadağın etti. Ezberlemekte iyi değilim; ezberlemeyi doğru da bulmuyorum. Computer Science adıyla girdiğim yüksek lisansta slayt ezberleyerek dersten geçebileceğimi, kitaplardan konulara çalışıp konuyu genel hatlarıyla anlamanın ise beni sınır notlarda gezdireceğini bilemedim. Bunu gördüm ve bu, yaşadığım ilk hayal kırıklığı oldu. Ben fizik mezunuyum ve fizik sınavlarından çıkarken tüm derslerde (bildiğim, bilmediğim, iyi olduğum, kötü olduğum) beynimi kullandığımı hissederdim. Yani o soruyu düşünmeden, uğraşmadan çözemezdik biz fizikte. Ha, ezber de olabilirdi bazen ama bu, tüm sınavı kapsayacak türden olmazdı; küçük bir parçası olurdu. Bu, computer science alanını kötülemek değil; başka üniversitelerin sınavlarına bakma fırsatım da oldu ve hepsi benim bahsettiğim kötlükte değildi. Padova’da yaşadığım bu deneyim epey kötü oldu. Sınavda beyin kullanmadan ezberden yazmak size tam puan getirirdi; ezberde bir terim eksik olsun puanınız kırılırdı. Genel fikir ile ise pek de puan alamazdınız.
+
+Bırakıyorum çünkü tüm bu sebeplerin üstüne ben bu okula gitmek için ailemi, bursum olmasına rağmen, maddi zorlukların içerisine sokuyorum, soktum da. Bırakıyorum çünkü geliştiğimi hissetmediğim, içime sindiremediğim bir eğitimin yolunda yürümekten mutlu olamıyorum. Bırakıyorum çünkü zamanımı, kendimi bu şekilde harcamaya katlanamıyorum.
+
+Şimdi ne yapacağım hiç olmadığı kadar belirsiz. ALES’e girip Türkiye’de güzel bir okulda yüksek lisans, aynı zamanda iş ve daha sonra bedelli askerlik. Bu yol da kolay değil ve elbet Türkiye’de de benzer sınavlar, hocalar, durumlar yaşayabilirim; ama en azından bunların hepsini yaşarken odamın içinde yalnız olmak yerine sevdiğim insanlarla olabilir, güzel yemekler yiyebilir ve daha güvende hissedebilirim.
+
+Kimseyi suçlamıyorum, kendimden başka yaşadıklarımla ilgili. Ve hakkımda düşünebileceğiniz en kötü yorumları her gün kendime yapıp yüzleşmeye çalışıyorum. Umarım yolumu bulurum, umarım bir şeylere tekrar tutunabilirim. Vazgeçmiyorum; bugün düşer, yarın yine kalkarız. O yarın gelene kadar da inandığım yolda sıkı çalışmalara devam etmeyi ve umarım güzel projeler yapıp paylaşmayı planlıyorum.
