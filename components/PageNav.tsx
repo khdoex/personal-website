@@ -13,17 +13,32 @@ export default function PageNav({ title }: PageNavProps) {
   const pathname = usePathname()
 
   const handleBack = () => {
-    // If we're in a blog post, go back to blog listing
+    // Define main sections and their parent routes
+    const routes = {
+      '/blog': '/',
+      '/projects': '/',
+      '/resume': '/',
+      '/media': '/',
+    }
+
+    // Check if current path is a blog post
     if (pathname.startsWith('/blog/') && pathname !== '/blog') {
       router.push('/blog')
+      return
     }
-    // If we're in media, projects, or other main sections, go to home
-    else if (['/media', '/projects', '/resume', '/blog'].includes(pathname)) {
+
+    // For main sections, go to home
+    if (routes[pathname as keyof typeof routes]) {
       router.push('/')
+      return
     }
-    // For any other case, use browser back
-    else {
-      router.back()
+
+    // For any other case, try browser back
+    try {
+      window.history.back()
+    } catch {
+      // Fallback to home if history.back() fails
+      router.push('/')
     }
   }
 
@@ -32,16 +47,18 @@ export default function PageNav({ title }: PageNavProps) {
       <Link 
         href="/"
         className="p-2 text-white hover:text-blue-300 transition-colors rounded-full hover:bg-white/10"
+        aria-label="Home"
       >
         <Home size={24} />
       </Link>
       <button
         onClick={handleBack}
         className="p-2 text-white hover:text-blue-300 transition-colors rounded-full hover:bg-white/10"
+        aria-label="Go back"
       >
         <ArrowLeft size={24} />
       </button>
-      <h1 className="page-title mb-0">{title}</h1>
+      <h1 className="page-title mb-0 drop-shadow-lg">{title}</h1>
     </div>
   )
 } 
