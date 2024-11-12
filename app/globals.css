@@ -19,3 +19,107 @@ body {
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.dark {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+}
+
+/* Temporary debug style */
+main {
+  z-index: 1;
+  position: relative;
+}
+
+/* Add this to your existing globals.css */
+h1 {
+  @apply text-4xl font-bold text-white drop-shadow-lg;
+}
+
+.page-title {
+  @apply text-3xl font-bold text-white mb-6 drop-shadow-lg;
+}
+
+/* Add these to your existing globals.css */
+
+.prose {
+  @apply text-gray-200;
+  font-size: 1.125rem;
+  line-height: 1.8;
+}
+
+.prose p {
+  @apply mb-8 text-gray-200;
+}
+
+.prose p:first-of-type {
+  @apply text-xl leading-relaxed text-gray-100;
+}
+
+.prose h2 {
+  @apply text-2xl font-bold text-white mt-12 mb-6;
+}
+
+.prose h3 {
+  @apply text-xl font-semibold text-white mt-8 mb-4;
+}
+
+.prose ul, .prose ol {
+  @apply my-6 ml-6;
+}
+
+.prose li {
+  @apply mb-2;
+}
+
+.prose blockquote {
+  @apply border-l-4 border-blue-500 pl-6 py-1 my-8 italic bg-gray-800/30 rounded-r;
+}
+
+.prose blockquote p {
+  @apply mb-0;
+}
+
+.prose a {
+  @apply text-blue-400 hover:text-blue-300 transition-colors underline-offset-2;
+}
+
+.prose code {
+  @apply bg-gray-800 px-1.5 py-0.5 rounded text-sm text-gray-200;
+}
+
+.prose pre {
+  @apply bg-gray-800/50 p-4 rounded-lg my-6 overflow-x-auto border border-gray-700;
+}
+
+.prose img {
+  @apply rounded-lg shadow-lg my-8;
+}
+
+.prose strong {
+  @apply text-white font-semibold;
+}
+
+.prose em {
+  @apply text-gray-300;
+}
+
+/* Add smooth transitions */
+.prose * {
+  @apply transition-colors duration-200;
+}
+
+/* Add styles for paragraphs */
+.prose p + p {
+  @apply mt-6;
+}
+
+.prose {
+  @apply leading-relaxed tracking-wide;
+  font-size: 1.125rem;
+}
+
+/* Increase spacing between sections */
+.prose > * + * {
+  @apply mt-6;
+}

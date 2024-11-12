@@ -1,0 +1,4 @@
+[ZoneTransfer]
+ZoneId=3
+ReferrerUrl=http://127.0.0.1:8188/
+HostUrl=http://127.0.0.1:8188/api/view?filename=ComfyUI_temp_bexuy_00001_.png&subfolder=&type=temp&rand=0.6568848080619494
