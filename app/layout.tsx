@@ -1,28 +1,13 @@
 import type { Metadata } from "next";
-import localFont from "next/font/local";
+import { Inter } from "next/font/google";
 import "./globals.css";
-import ThemeSwitcher from '@/components/ThemeSwitcher'
-import { ThemeProvider } from '@/contexts/ThemeContext'
-import VerticalBackgrounds from '@/components/VerticalBackgrounds'
-import SocialLinks from '@/components/SocialLinks'
+import Navbar from "@/components/Navbar";
 
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-});
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
-});
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "kaanhho",
-  description: "Personal website and portfolio of Kaan Hacıhaliloğlu",
-  icons: {
-    icon: '/favicon.ico',
-  },
+  title: "Kaan Hacihaliloglu",
+  description: "Personal website of Kaan Hacihaliloglu",
 };
 
 export default function RootLayout({
@@ -32,17 +17,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <ThemeProvider>
-          <VerticalBackgrounds />
-          <header className="p-4 flex justify-end">
-            <ThemeSwitcher />
-          </header>
+      <body className={inter.className}>
+        <Navbar />
+        <div className="pl-20">
           {children}
-          <SocialLinks />
-        </ThemeProvider>
+        </div>
       </body>
     </html>
   )
