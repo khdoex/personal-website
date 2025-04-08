@@ -6,35 +6,32 @@ import { useEffect, useState } from 'react'
 
 const VerticalBackgrounds = () => {
   const { theme } = useTheme()
-  const [images, setImages] = useState<string[]>([])
+  const [backgroundImage, setBackgroundImage] = useState<string | null>(null)
 
   useEffect(() => {
     fetch('/api/getImages')
       .then(res => res.json())
       .then(data => {
-        setImages(data.images)
+        const images: string[] = data.images
+        if (images && images.length > 0) {
+          const randomIndex = Math.floor(Math.random() * images.length)
+          setBackgroundImage(images[randomIndex])
+        }
       })
+      .catch(error => console.error("Error fetching background images:", error));
   }, [])
 
-  if (theme === 'classic') return null
+  if (theme === 'classic' || !backgroundImage) return null
 
   return (
     <div className="fixed inset-0 -z-10">
-      <div className="flex h-screen">
-        {images.map((image, i) => (
-          <div key={image} className="flex-1">
-            <div className="relative w-full h-full">
-              <Image
-                src={`/backgrounds/${image}`}
-                alt=""
-                fill
-                className="object-cover opacity-100"
-                priority
-              />
-            </div>
-          </div>
-        ))}
-      </div>
+      <Image
+        src={`/backgrounds/${backgroundImage}`}
+        alt="Random background image"
+        fill
+        className="object-cover w-full h-full"
+        priority
+      />
     </div>
   )
 }

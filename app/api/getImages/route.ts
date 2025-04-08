@@ -6,9 +6,10 @@ export async function GET() {
   const backgroundsDir = path.join(process.cwd(), 'public/backgrounds')
   const files = fs.readdirSync(backgroundsDir)
   
-  // Filter only PNG files and remove Zone.Identifier files
+  // Filter only JPG files and remove Zone.Identifier files
   const images = files.filter(file => 
-    file.endsWith('.png') && !file.includes('Zone.Identifier')
+    (file.endsWith('.jpg') || file.endsWith('.jpeg')) && // Look for .jpg or .jpeg
+    !file.includes('Zone.Identifier')
   )
 
   return NextResponse.json({ images })
