@@ -26,6 +26,21 @@ const MEDIA_ITEMS: MediaItem[] = [
     title: 'Dancing Etheral Creature',
     thumbnail: '/backgrounds/2.png' // Optional thumbnail for local videos
   },
+  {
+    type: 'local',
+    url: '/videos/12-01_00001-audio-1.mov',
+    title: 'Generative Music Visual 1' 
+  },
+  {
+    type: 'local',
+    url: '/videos/11-30_00001-audio-1.mov',
+    title: 'Generative Music Visual 2'
+  },
+  {
+    type: 'local',
+    url: '/videos/Professional_Mode_A_heavenly_woman_found_her_self_.mp4',
+    title: 'Heavenly Woman Found Herself'
+  },
   // Add more items as needed
 ]
 
