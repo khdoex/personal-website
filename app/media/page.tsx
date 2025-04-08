@@ -16,6 +16,24 @@ interface MediaItem {
 
 const MEDIA_ITEMS: MediaItem[] = [
   {
+    type: 'local',
+    url: '/videos/11-30_00001-audio-1.mov',
+    title: 'Generative Music Visual 2',
+    thumbnail: '/thumbnails/11-30_thumbnail.png'
+  },
+  {
+    type: 'local',
+    url: '/videos/12-01_00001-audio-1.mov',
+    title: 'Generative Music Visual 1',
+    thumbnail: '/thumbnails/12-01_thumbnail.png'
+  },
+  {
+    type: 'local',
+    url: '/videos/11-27_00006-audio.mp4',
+    title: 'Generative Music Visual 3',
+    thumbnail: '/thumbnails/11-27_thumbnail.png'
+  },
+  {
     type: 'youtube',
     id: 'IvkSdmS7HA8',
     title: 'Rezz - Someone Else'
@@ -24,17 +42,7 @@ const MEDIA_ITEMS: MediaItem[] = [
     type: 'local',
     url: '/videos/Extended_Video.mp4',
     title: 'Dancing Etheral Creature',
-    thumbnail: '/backgrounds/2.png' // Optional thumbnail for local videos
-  },
-  {
-    type: 'local',
-    url: '/videos/12-01_00001-audio-1.mov',
-    title: 'Generative Music Visual 1' 
-  },
-  {
-    type: 'local',
-    url: '/videos/11-30_00001-audio-1.mov',
-    title: 'Generative Music Visual 2'
+    thumbnail: '/backgrounds/2.png'
   },
   {
     type: 'local',
