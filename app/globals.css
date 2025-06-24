@@ -25,13 +25,50 @@ body {
   --foreground: #ededed;
 }
 
+/* Professional scroll bars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+/* Better focus states */
+*:focus {
+  outline: 2px solid rgba(59, 130, 246, 0.5);
+  outline-offset: 2px;
+}
+
+button:focus,
+a:focus {
+  outline: 2px solid rgba(59, 130, 246, 0.8);
+  outline-offset: 2px;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
 /* Temporary debug style */
 main {
   z-index: 1;
   position: relative;
 }
 
-/* Add this to your existing globals.css */
+/* Professional typography */
 h1 {
   @apply text-4xl font-bold text-white drop-shadow-lg;
 }
@@ -40,12 +77,12 @@ h1 {
   @apply text-3xl font-bold text-white mb-6 drop-shadow-lg;
 }
 
-/* Add these to your existing globals.css */
-
+/* Enhanced prose styles for blog content */
 .prose {
   @apply text-gray-200;
   font-size: 1.125rem;
   line-height: 1.8;
+  max-width: none;
 }
 
 .prose p {
@@ -104,12 +141,11 @@ h1 {
   @apply text-gray-300;
 }
 
-/* Add smooth transitions */
+/* Enhanced transitions for professional feel */
 .prose * {
   @apply transition-colors duration-200;
 }
 
-/* Add styles for paragraphs */
 .prose p + p {
   @apply mt-6;
 }
@@ -119,7 +155,61 @@ h1 {
   font-size: 1.125rem;
 }
 
-/* Increase spacing between sections */
 .prose > * + * {
   @apply mt-6;
+}
+
+/* Professional animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.animate-pulse-gentle {
+  animation: pulse 2s infinite;
+}
+
+/* Professional glass morphism effects */
+.glass-effect {
+  backdrop-filter: blur(16px);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Enhanced selection styles */
+::selection {
+  background: rgba(59, 130, 246, 0.3);
+  color: white;
+}
+
+/* Better link hover effects */
+a {
+  transition: all 0.2s ease;
+}
+
+/* Professional gradient text effect */
+.gradient-text {
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
