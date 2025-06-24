@@ -4,7 +4,7 @@ import "./globals.css";
 import ThemeSwitcher from '@/components/ThemeSwitcher'
 import { ThemeProvider } from '@/contexts/ThemeContext'
 import VerticalBackgrounds from '@/components/VerticalBackgrounds'
-import SocialLinks from '@/components/SocialLinks'
+import Footer from '@/components/Footer'
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -18,8 +18,27 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "kaanhho",
-  description: "Personal website and portfolio of Kaan Hacıhaliloğlu",
+  title: "Kaan Hacıhaliloğlu | Data Scientist & AI Researcher",
+  description: "MSc Data Science student at Sabanci University specializing in machine learning, audio AI, and generative models. Explore my research, projects, and AI experiments.",
+  keywords: ["data science", "machine learning", "artificial intelligence", "audio AI", "generative models", "research", "Sabanci University"],
+  authors: [{ name: "Kaan Hacıhaliloğlu" }],
+  creator: "Kaan Hacıhaliloğlu",
+  openGraph: {
+    title: "Kaan Hacıhaliloğlu | Data Scientist & AI Researcher",
+    description: "MSc Data Science student specializing in machine learning, audio AI, and generative models",
+    type: "website",
+    locale: "en_US",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Kaan Hacıhaliloğlu | Data Scientist & AI Researcher",
+    description: "MSc Data Science student specializing in machine learning, audio AI, and generative models",
+    creator: "@kaanhho",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
   icons: {
     icon: '/favicon.ico',
   },
@@ -41,7 +60,7 @@ export default function RootLayout({
             <ThemeSwitcher />
           </header>
           {children}
-          <SocialLinks />
+          <Footer />
         </ThemeProvider>
       </body>
     </html>
