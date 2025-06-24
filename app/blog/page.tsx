@@ -1,7 +1,7 @@
 import { getAllPosts } from '@/lib/posts'
 import Link from 'next/link'
 import PageNav from '@/components/PageNav'
-import { Calendar, Clock, ArrowRight } from 'lucide-react'
+import { Calendar, ArrowRight } from 'lucide-react'
 
 export default async function Blog() {
   const posts = await getAllPosts()
@@ -38,23 +38,11 @@ export default async function Blog() {
                         {post.data.title}
                       </h2>
                       
-                      {post.data.excerpt && (
-                        <p className="text-white/80 text-lg leading-relaxed mb-4">
-                          {post.data.excerpt}
-                        </p>
-                      )}
-                      
                       <div className="flex items-center gap-6 text-white/60">
                         <div className="flex items-center gap-2">
                           <Calendar size={16} />
                           <span className="text-sm">{post.data.date}</span>
                         </div>
-                        {post.data.readTime && (
-                          <div className="flex items-center gap-2">
-                            <Clock size={16} />
-                            <span className="text-sm">{post.data.readTime} read</span>
-                          </div>
-                        )}
                       </div>
                     </div>
                     
@@ -66,21 +54,6 @@ export default async function Blog() {
                       </div>
                     </div>
                   </div>
-
-                  {/* Tags */}
-                  {post.data.tags && (
-                    <div className="flex flex-wrap gap-2 mt-4">
-                      {post.data.tags.map((tag: string) => (
-                        <span 
-                          key={tag}
-                          className="px-3 py-1 text-sm bg-white/10 text-white/90 rounded-full backdrop-blur-sm 
-                                   border border-white/20 group-hover:bg-white/20 transition-colors"
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  )}
                 </Link>
               </article>
             ))}
