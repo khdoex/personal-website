@@ -16,24 +16,24 @@ export default function Home() {
     },
     {
       id: 'featured-2', 
-      title: 'Generative Music Visualization',
-      description: 'ML-driven visual interpretation of musical elements',
-      videoUrl: '/videos/gallery/11-30_00001-audio-1.mov', 
-      category: 'Audio AI'
+      title: 'Experimental',
+      description: '',
+      videoUrl: '/videos/gallery/eb0d5524-f22b-4b10-a131-51088e7a99be-0.mp4', 
+      category: 'Experimental'
     },
     {
       id: 'featured-3',
       title: 'Ethereal Character Animation',
       description: 'AI-driven character movement and fluid dynamics',
       videoUrl: '/videos/gallery/Extended_Video.mp4',
-      category: 'Computer Vision'
+      category: 'Experimental'
     },
     {
       id: 'featured-4',
       title: 'AI Character Study',
       description: 'Advanced character generation using diffusion models',
       videoUrl: '/videos/gallery/Professional_Mode_A_heavenly_woman_found_her_self_.mp4',
-      category: 'Deep Learning'
+      category: 'Experimental'
     }
   ]
 
