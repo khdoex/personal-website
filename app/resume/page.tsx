@@ -9,7 +9,7 @@ export default function Resume() {
   const handleDownload = () => {
     setIsDownloading(true)
     const link = document.createElement('a')
-    link.href = '/resume/resume.pdf'
+    link.href = '/documents/resume.pdf'
     link.download = 'KaanHacihaliloglu_Resume.pdf'
     document.body.appendChild(link)
     link.click()
@@ -34,7 +34,7 @@ export default function Resume() {
         
         <div className="w-full aspect-[8.5/11] bg-white rounded-lg overflow-hidden shadow-xl">
           <iframe
-            src="/resume/resume.pdf#view=FitH"
+            src="/documents/resume.pdf#view=FitH"
             className="w-full h-full"
             style={{ border: 'none' }}
           />
