@@ -5,6 +5,7 @@ import path from 'path'
 export async function GET() {
   const backgroundsDir = path.join(process.cwd(), 'public/images/backgrounds')
   
+
   try {
     const files = fs.readdirSync(backgroundsDir)
     
@@ -12,6 +13,7 @@ export async function GET() {
     const images = files.filter(file => 
       file.endsWith('.png') && !file.includes('Zone.Identifier')
     )
+
 
     return NextResponse.json({ images })
   } catch (error) {
