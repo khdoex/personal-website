@@ -6,17 +6,22 @@ import { useEffect, useState } from 'react'
 
 const VerticalBackgrounds = () => {
   const { theme } = useTheme()
-  const [images, setImages] = useState<string[]>([])
+  const [backgroundImage, setBackgroundImage] = useState<string | null>(null)
 
   useEffect(() => {
     fetch('/api/getImages')
       .then(res => res.json())
       .then(data => {
-        setImages(data.images)
+        const images: string[] = data.images
+        if (images && images.length > 0) {
+          const randomIndex = Math.floor(Math.random() * images.length)
+          setBackgroundImage(images[randomIndex])
+        }
       })
+      .catch(error => console.error("Error fetching background images:", error));
   }, [])
 
-  if (theme === 'classic') return null
+  if (theme === 'classic' || !backgroundImage) return null
 
   // Option 1: Subtle single image (current)
   // const backgroundImage = images[0]
@@ -25,6 +30,7 @@ const VerticalBackgrounds = () => {
   // Professional gradient background with darker blue tones
   return (
     <div className="fixed inset-0 -z-10">
+
       <div className="relative w-full h-full bg-gradient-to-br from-slate-950 via-blue-950 to-indigo-950">
         {/* Primary dark gradient */}
         <div className="absolute inset-0 bg-gradient-to-tr from-slate-900/90 via-blue-900/70 to-indigo-900/80" />
@@ -40,6 +46,7 @@ const VerticalBackgrounds = () => {
         {/* Additional depth layer */}
         <div className="absolute inset-0 bg-gradient-to-t from-slate-950/50 via-transparent to-blue-950/30" />
       </div>
+
     </div>
   )
 
