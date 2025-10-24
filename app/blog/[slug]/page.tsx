@@ -19,18 +19,18 @@ export default async function BlogPost({ params }: Props) {
           {/* Back Link */}
           <Link
             href="/blog"
-            className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-8 transition-colors"
+            className="inline-flex items-center gap-2 text-zinc-400 hover:text-white mb-8 transition-colors"
           >
             <ArrowLeft size={18} />
             <span>Back to Blog</span>
           </Link>
 
           {/* Header */}
-          <header className="mb-12 pb-8 border-b border-gray-200">
-            <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
+          <header className="mb-12 pb-8 border-b border-zinc-800">
+            <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4 text-white">
               {post.data.title}
             </h1>
-            <p className="text-gray-600">{post.data.date}</p>
+            <p className="text-zinc-400">{post.data.date}</p>
           </header>
 
           {/* Content */}

@@ -23,7 +23,7 @@ export default function Resume() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
           <div>
-            <h1 className="text-4xl md:text-5xl font-bold tracking-tight">Resume</h1>
+            <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-white">Resume</h1>
           </div>
           <button
             onClick={handleDownload}
@@ -36,7 +36,7 @@ export default function Resume() {
         </div>
 
         {/* PDF Viewer */}
-        <div className="w-full aspect-[8.5/11] bg-white rounded-xl overflow-hidden shadow-lg border border-gray-200">
+        <div className="w-full aspect-[8.5/11] bg-white rounded-xl overflow-hidden shadow-lg border border-zinc-800">
           <iframe
             src="/documents/resume.pdf#view=FitH"
             className="w-full h-full"

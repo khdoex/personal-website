@@ -86,10 +86,10 @@ export default function Media() {
       <div className="max-w-6xl mx-auto px-6 md:px-8 py-16 md:py-24">
         {/* Header */}
         <div className="mb-12 space-y-4">
-          <h1 className="text-4xl md:text-5xl font-bold tracking-tight">
+          <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-white">
             AI Video Gallery
           </h1>
-          <p className="text-lg md:text-xl text-gray-600 max-w-3xl leading-relaxed">
+          <p className="text-lg md:text-xl text-zinc-400 max-w-3xl leading-relaxed">
             Experiments in computer vision, audio processing, generative models, and creative AI
             applications.
           </p>
@@ -104,7 +104,7 @@ export default function Media() {
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                 selectedCategory === category
                   ? 'bg-blue-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200'
+                  : 'bg-zinc-900 text-zinc-300 hover:bg-zinc-800 border border-zinc-800'
               }`}
             >
               {category === 'all' ? 'All Videos' : category}
@@ -118,10 +118,10 @@ export default function Media() {
             <article
               key={index}
               onClick={() => setSelectedVideo(item)}
-              className="group cursor-pointer border border-gray-200 rounded-xl overflow-hidden hover:border-gray-300 hover:shadow-lg transition-all"
+              className="group cursor-pointer border border-zinc-800 rounded-xl overflow-hidden hover:border-zinc-700 hover:bg-zinc-900/30 transition-all"
             >
               {/* Thumbnail */}
-              <div className="aspect-video relative overflow-hidden bg-gray-100">
+              <div className="aspect-video relative overflow-hidden bg-zinc-900">
                 {item.type === 'youtube' ? (
                   <img
                     src={`https://img.youtube.com/vi/${item.id}/maxresdefault.jpg`}
@@ -150,19 +150,19 @@ export default function Media() {
 
                 {/* Category Badge */}
                 {item.category && (
-                  <div className="absolute top-3 left-3 px-3 py-1 bg-white/90 backdrop-blur-sm rounded-full">
-                    <span className="text-gray-900 text-xs font-medium">{item.category}</span>
+                  <div className="absolute top-3 left-3 px-3 py-1 bg-zinc-900/90 backdrop-blur-sm rounded-full border border-zinc-700">
+                    <span className="text-zinc-200 text-xs font-medium">{item.category}</span>
                   </div>
                 )}
               </div>
 
               {/* Content */}
               <div className="p-5 space-y-2">
-                <h3 className="font-semibold text-lg group-hover:text-blue-600 transition-colors">
+                <h3 className="font-semibold text-lg text-white group-hover:text-blue-400 transition-colors">
                   {item.title}
                 </h3>
                 {item.description && (
-                  <p className="text-gray-600 text-sm leading-relaxed">
+                  <p className="text-zinc-400 text-sm leading-relaxed">
                     {item.description}
                   </p>
                 )}
@@ -222,9 +222,9 @@ export default function Media() {
         )}
 
         {/* Call to Action */}
-        <div className="max-w-2xl mx-auto text-center p-8 border border-gray-200 rounded-xl bg-gray-50">
-          <h3 className="text-2xl font-semibold mb-3">More AI Experiments Coming</h3>
-          <p className="text-gray-600 mb-6 leading-relaxed">
+        <div className="max-w-2xl mx-auto text-center p-8 border border-zinc-800 rounded-xl bg-zinc-900/30">
+          <h3 className="text-2xl font-semibold mb-3 text-white">More AI Experiments Coming</h3>
+          <p className="text-zinc-400 mb-6 leading-relaxed">
             I'm constantly experimenting with new AI techniques and models. Follow my research
             progress and technical implementations in my projects section.
           </p>
