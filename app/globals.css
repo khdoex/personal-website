@@ -3,57 +3,60 @@
 @tailwind utilities;
 
 :root {
+  /* Minimalistic Light Theme */
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #0a0a0a;
+  --accent: #2563eb;
+  --accent-light: #3b82f6;
+  --muted: #6b7280;
+  --border: #e5e7eb;
+  --card: #fafafa;
+  --hover: #f3f4f6;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+.dark {
+  /* Optional Dark Mode */
+  --background: #0a0a0a;
+  --foreground: #fafafa;
+  --accent: #3b82f6;
+  --accent-light: #60a5fa;
+  --muted: #9ca3af;
+  --border: #1f2937;
+  --card: #111111;
+  --hover: #1a1a1a;
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  font-feature-settings: 'rlig' 1, 'calt' 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-.dark {
-  --background: #0a0a0a;
-  --foreground: #ededed;
-}
-
-/* Professional scroll bars */
+/* Minimalistic scroll bars */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 4px;
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.3);
-  border-radius: 4px;
+  background: var(--border);
+  border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.5);
+  background: var(--muted);
 }
 
-/* Better focus states */
-*:focus {
-  outline: 2px solid rgba(59, 130, 246, 0.5);
-  outline-offset: 2px;
-}
-
-button:focus,
-a:focus {
-  outline: 2px solid rgba(59, 130, 246, 0.8);
+/* Clean focus states */
+*:focus-visible {
+  outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
 
@@ -62,47 +65,62 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Temporary debug style */
 main {
   z-index: 1;
   position: relative;
 }
 
-/* Professional typography */
+/* Minimalistic Typography System */
 h1 {
-  @apply text-4xl font-bold text-white drop-shadow-lg;
+  @apply text-4xl md:text-5xl font-bold tracking-tight;
+  color: var(--foreground);
+}
+
+h2 {
+  @apply text-3xl md:text-4xl font-bold tracking-tight;
+  color: var(--foreground);
+}
+
+h3 {
+  @apply text-xl md:text-2xl font-semibold tracking-tight;
+  color: var(--foreground);
 }
 
 .page-title {
-  @apply text-3xl font-bold text-white mb-6 drop-shadow-lg;
+  @apply text-4xl md:text-5xl font-bold tracking-tight mb-4;
+  color: var(--foreground);
 }
 
-/* Enhanced prose styles for blog content */
+/* Minimalistic prose styles for blog content */
 .prose {
-  @apply text-gray-200;
-  font-size: 1.125rem;
-  line-height: 1.8;
+  font-size: 1.0625rem;
+  line-height: 1.75;
   max-width: none;
+  color: var(--foreground);
 }
 
 .prose p {
-  @apply mb-8 text-gray-200;
+  @apply mb-6;
+  color: var(--foreground);
 }
 
 .prose p:first-of-type {
-  @apply text-xl leading-relaxed text-gray-100;
+  @apply text-lg leading-relaxed;
+  color: var(--foreground);
 }
 
 .prose h2 {
-  @apply text-2xl font-bold text-white mt-12 mb-6;
+  @apply text-2xl font-bold mt-12 mb-4 tracking-tight;
+  color: var(--foreground);
 }
 
 .prose h3 {
-  @apply text-xl font-semibold text-white mt-8 mb-4;
+  @apply text-xl font-semibold mt-8 mb-3 tracking-tight;
+  color: var(--foreground);
 }
 
 .prose ul, .prose ol {
-  @apply my-6 ml-6;
+  @apply my-4 ml-6;
 }
 
 .prose li {
@@ -110,7 +128,9 @@ h1 {
 }
 
 .prose blockquote {
-  @apply border-l-4 border-blue-500 pl-6 py-1 my-8 italic bg-gray-800/30 rounded-r;
+  @apply border-l-2 pl-6 py-1 my-6 italic;
+  border-color: var(--accent);
+  color: var(--muted);
 }
 
 .prose blockquote p {
@@ -118,52 +138,52 @@ h1 {
 }
 
 .prose a {
-  @apply text-blue-400 hover:text-blue-300 transition-colors underline-offset-2;
+  @apply underline-offset-2;
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  transition: color 0.2s;
+}
+
+.prose a:hover {
+  color: var(--accent-light);
 }
 
 .prose code {
-  @apply bg-gray-800 px-1.5 py-0.5 rounded text-sm text-gray-200;
+  @apply px-1.5 py-0.5 rounded text-sm;
+  background: var(--card);
+  color: var(--foreground);
+  border: 1px solid var(--border);
 }
 
 .prose pre {
-  @apply bg-gray-800/50 p-4 rounded-lg my-6 overflow-x-auto border border-gray-700;
+  @apply p-4 rounded-lg my-6 overflow-x-auto;
+  background: var(--card);
+  border: 1px solid var(--border);
 }
 
 .prose img {
-  @apply rounded-lg shadow-lg my-8;
+  @apply rounded-lg my-8;
 }
 
 .prose strong {
-  @apply text-white font-semibold;
+  @apply font-semibold;
+  color: var(--foreground);
 }
 
 .prose em {
-  @apply text-gray-300;
-}
-
-/* Enhanced transitions for professional feel */
-.prose * {
-  @apply transition-colors duration-200;
-}
-
-.prose p + p {
-  @apply mt-6;
-}
-
-.prose {
-  @apply leading-relaxed tracking-wide;
-  font-size: 1.125rem;
+  color: var(--muted);
 }
 
 .prose > * + * {
-  @apply mt-6;
+  @apply mt-4;
 }
 
-/* Professional animations */
-@keyframes fadeInUp {
+/* Minimalistic CSS Animations */
+@keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(10px);
   }
   to {
     opacity: 1;
@@ -171,45 +191,48 @@ h1 {
   }
 }
 
-@keyframes pulse {
-  0%, 100% {
-    transform: scale(1);
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
   }
-  50% {
-    transform: scale(1.05);
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
-.animate-fade-in-up {
-  animation: fadeInUp 0.6s ease-out;
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out;
 }
 
-.animate-pulse-gentle {
-  animation: pulse 2s infinite;
+.animate-slide-down {
+  animation: slideDown 0.3s ease-out;
 }
 
-/* Professional glass morphism effects */
-.glass-effect {
-  backdrop-filter: blur(16px);
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-/* Enhanced selection styles */
+/* Selection styles */
 ::selection {
-  background: rgba(59, 130, 246, 0.3);
+  background: var(--accent);
   color: white;
 }
 
-/* Better link hover effects */
+/* Clean link effects */
 a {
-  transition: all 0.2s ease;
+  transition: color 0.2s ease;
 }
 
-/* Professional gradient text effect */
-.gradient-text {
-  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
+/* Accent gradient for special elements */
+.accent-gradient {
+  background: linear-gradient(135deg, #2563eb, #3b82f6);
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import ThemeSwitcher from '@/components/ThemeSwitcher'
-import { ThemeProvider } from '@/contexts/ThemeContext'
-import VerticalBackgrounds from '@/components/VerticalBackgrounds'
+import Navigation from '@/components/Navigation'
 import Footer from '@/components/Footer'
 
 const geistSans = localFont({
@@ -54,14 +52,11 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ThemeProvider>
-          <VerticalBackgrounds />
-          <header className="p-4 flex justify-end">
-            <ThemeSwitcher />
-          </header>
+        <Navigation />
+        <main className="min-h-screen pt-16">
           {children}
-          <Footer />
-        </ThemeProvider>
+        </main>
+        <Footer />
       </body>
     </html>
   )

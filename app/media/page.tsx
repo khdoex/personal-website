@@ -1,20 +1,15 @@
-
 'use client'
 
-import { useState, useEffect } from 'react'
-import YouTube from 'react-youtube'
-import { Home, ArrowLeft, Maximize2, Minimize2, Play, X } from 'lucide-react'
+import { useState } from 'react'
+import { X, Play } from 'lucide-react'
 import Link from 'next/link'
-import PageNav from '@/components/PageNav'
-import type { YouTubeEvent } from 'react-youtube'
 
 interface MediaItem {
   type: 'youtube' | 'local'
-  id?: string // for YouTube videos
-  url?: string // for local videos
+  id?: string
+  url?: string
   title: string
   description?: string
-  thumbnail?: string
   category?: string
 }
 
@@ -79,248 +74,168 @@ const MEDIA_ITEMS: MediaItem[] = [
 
 export default function Media() {
   const [selectedVideo, setSelectedVideo] = useState<MediaItem | null>(null)
-  const [isFullscreen, setIsFullscreen] = useState(false)
+  const [selectedCategory, setSelectedCategory] = useState<string>('all')
 
-  const youtubeOpts = {
-    height: isFullscreen ? '100%' : '480',
-    width: isFullscreen ? '100%' : '854',
-    playerVars: {
-      autoplay: 1,
-      modestbranding: 1,
-      rel: 0,
-      showinfo: 1,
-      controls: 1,
-    },
-  }
-
-  const categories = [...new Set(MEDIA_ITEMS.map(item => item.category).filter(Boolean))]
+  const categories: string[] = ['all', ...new Set(MEDIA_ITEMS.map(item => item.category).filter((c): c is string => Boolean(c)))]
+  const filteredItems = selectedCategory === 'all'
+    ? MEDIA_ITEMS
+    : MEDIA_ITEMS.filter(item => item.category === selectedCategory)
 
   return (
-    <main className="min-h-screen relative">
-      
-      <div className="max-w-6xl mx-auto px-8 py-8">
-        <PageNav title="AI Video Gallery" />
-        
-        {/* Header Section */}
-        <div className="text-center mb-12">
-          <p className="text-xl text-white/80 max-w-3xl mx-auto leading-relaxed">
-            Complete collection of my AI experiments in computer vision, audio processing, generative models, 
-            and creative applications. Each video demonstrates different aspects of machine learning research.
+    <div className="animate-fade-in">
+      <div className="max-w-6xl mx-auto px-6 md:px-8 py-16 md:py-24">
+        {/* Header */}
+        <div className="mb-12 space-y-4">
+          <h1 className="text-4xl md:text-5xl font-bold tracking-tight">
+            AI Video Gallery
+          </h1>
+          <p className="text-lg md:text-xl text-gray-600 max-w-3xl leading-relaxed">
+            Experiments in computer vision, audio processing, generative models, and creative AI
+            applications.
           </p>
         </div>
 
-        {/* Categories Filter */}
-        <div className="flex flex-wrap justify-center gap-3 mb-12">
-          <button className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium">
-            All Videos
-          </button>
+        {/* Category Filter */}
+        <div className="flex flex-wrap gap-2 mb-12">
           {categories.map((category) => (
-            <button 
+            <button
               key={category}
-              className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white/80 hover:text-white rounded-lg font-medium transition-colors"
+              onClick={() => setSelectedCategory(category)}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                selectedCategory === category
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200'
+              }`}
             >
-              {category}
+              {category === 'all' ? 'All Videos' : category}
             </button>
           ))}
         </div>
 
-        {/* Video Player Modal */}
-        {selectedVideo && (
-          <div 
-            className={`fixed inset-0 bg-black/90 flex items-center justify-center z-50 ${
-              isFullscreen ? 'p-0' : 'p-8'
-            }`}
-          >
-            <div className={`relative ${
-              isFullscreen 
-                ? 'w-screen h-screen' 
-                : 'w-auto max-w-[854px] max-h-[80vh]'
-            }`}>
-              {/* Controls */}
-              <div className="absolute -top-12 right-0 flex gap-2 z-10">
-                <button
-                  onClick={() => setIsFullscreen(!isFullscreen)}
-                  className="p-2 text-white hover:text-blue-300 bg-black/50 rounded-lg transition-colors"
-                >
-                  {isFullscreen ? <Minimize2 size={24} /> : <Maximize2 size={24} />}
-                </button>
-                <button
-                  onClick={() => {
-                    setSelectedVideo(null)
-                    setIsFullscreen(false)
-                  }}
-                  className="p-2 text-white hover:text-red-300 bg-black/50 rounded-lg transition-colors"
-                >
-                  <X size={24} />
-                </button>
-              </div>
-              
-              {/* Video Content */}
-              {selectedVideo.type === 'youtube' ? (
-                <div className={`relative ${
-                  isFullscreen 
-                    ? 'w-screen h-screen' 
-                    : 'w-[854px] h-[480px] rounded-lg overflow-hidden'
-                }`}>
-                  <YouTube
-                    videoId={selectedVideo.id}
-                    opts={youtubeOpts}
-                    className={`${
-                      isFullscreen 
-                        ? 'absolute inset-0 w-full h-full' 
-                        : 'w-full h-full'
-                    }`}
-                    onReady={(event: YouTubeEvent) => {
-                      event.target.getIframe().focus()
-                    }}
-                  />
-                </div>
-              ) : (
-                <video
-                  src={selectedVideo.url}
-                  controls
-                  autoPlay
-                  className={`${
-                    isFullscreen 
-                      ? 'w-screen h-screen' 
-                      : 'w-auto max-h-[80vh] rounded-lg'
-                  }`}
-                />
-              )}
-              
-              {/* Video Info */}
-              {!isFullscreen && (
-                <div className="mt-4 bg-black/50 backdrop-blur-sm rounded-lg p-4">
-                  <h3 className="text-white font-semibold text-lg mb-2">{selectedVideo.title}</h3>
-                  {selectedVideo.description && (
-                    <p className="text-white/80">{selectedVideo.description}</p>
-                  )}
-                  {selectedVideo.category && (
-                    <span className="inline-block mt-2 px-3 py-1 bg-purple-600/20 text-purple-300 rounded-full text-sm">
-                      {selectedVideo.category}
-                    </span>
-                  )}
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* Media Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {MEDIA_ITEMS.map((item, index) => (
-            <div
+        {/* Video Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
+          {filteredItems.map((item, index) => (
+            <article
               key={index}
               onClick={() => setSelectedVideo(item)}
-              className="group cursor-pointer bg-white/5 backdrop-blur-sm rounded-2xl overflow-hidden border border-white/10 
-                       hover:bg-white/10 transition-all duration-500 hover:border-white/20 hover:transform hover:scale-[1.02]"
+              className="group cursor-pointer border border-gray-200 rounded-xl overflow-hidden hover:border-gray-300 hover:shadow-lg transition-all"
             >
               {/* Thumbnail */}
-              <div className="aspect-video relative overflow-hidden bg-gradient-to-br from-blue-500/20 to-purple-500/20">
+              <div className="aspect-video relative overflow-hidden bg-gray-100">
                 {item.type === 'youtube' ? (
                   <img
                     src={`https://img.youtube.com/vi/${item.id}/maxresdefault.jpg`}
                     alt={item.title}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    loading="lazy"
                   />
                 ) : (
-                  <div className="w-full h-full relative">
-                    {/* Video preview for local videos */}
-                    <video
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                      muted
-                      preload="metadata"
-                      onMouseEnter={(e) => {
-                        const video = e.target as HTMLVideoElement
-                        video.currentTime = 1
-                        video.play().catch(() => {
-                          // Ignore errors
-                        })
-                      }}
-                      onMouseLeave={(e) => {
-                        const video = e.target as HTMLVideoElement
-                        video.pause()
-                        video.currentTime = 0
-                      }}
-                    >
-                      <source src={item.url} type="video/mp4" />
-                      <source src={item.url} type="video/quicktime" />
-                    </video>
-                    
-                    {/* Fallback gradient for videos that don't load */}
-                    <div className="absolute inset-0 bg-gradient-to-br from-blue-600/30 to-purple-600/30 flex items-center justify-center -z-10">
-                      <div className="text-center">
-                        <Play className="w-12 h-12 text-white/80 mx-auto mb-2" fill="rgba(255,255,255,0.8)" />
-                        <p className="text-white/60 text-sm">{item.category}</p>
-                      </div>
-                    </div>
-                  </div>
+                  <video
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    muted
+                    preload="none"
+                    poster="/placeholder.jpg"
+                  >
+                    <source src={item.url} type="video/mp4" />
+                    <source src={item.url} type="video/quicktime" />
+                  </video>
                 )}
-                
+
                 {/* Play Overlay */}
-                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 
-                              flex items-center justify-center">
-                  <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm 
-                                border border-white/30">
-                    <Play className="w-8 h-8 text-white ml-1" fill="currentColor" />
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                  <div className="w-16 h-16 bg-white/90 rounded-full flex items-center justify-center">
+                    <Play className="w-7 h-7 text-gray-900 ml-1" fill="currentColor" />
                   </div>
                 </div>
 
                 {/* Category Badge */}
                 {item.category && (
-                  <div className="absolute top-3 left-3 px-3 py-1 bg-black/60 backdrop-blur-sm rounded-full">
-                    <span className="text-white/90 text-sm font-medium">{item.category}</span>
+                  <div className="absolute top-3 left-3 px-3 py-1 bg-white/90 backdrop-blur-sm rounded-full">
+                    <span className="text-gray-900 text-xs font-medium">{item.category}</span>
                   </div>
                 )}
-
-                {/* Duration Badge - Placeholder */}
-                <div className="absolute bottom-3 right-3 px-2 py-1 bg-black/80 backdrop-blur-sm rounded text-white text-sm">
-                  {item.type === 'youtube' ? '3:45' : '1:20'}
-                </div>
               </div>
 
               {/* Content */}
-              <div className="p-6">
-                <h3 className="text-white font-bold text-lg mb-2 group-hover:text-blue-300 transition-colors">
+              <div className="p-5 space-y-2">
+                <h3 className="font-semibold text-lg group-hover:text-blue-600 transition-colors">
                   {item.title}
                 </h3>
                 {item.description && (
-                  <p className="text-white/70 text-sm leading-relaxed mb-3">
+                  <p className="text-gray-600 text-sm leading-relaxed">
                     {item.description}
                   </p>
                 )}
-                <div className="flex items-center justify-between">
-                  <span className="text-white/50 text-xs">
-                    {item.type === 'youtube' ? 'YouTube' : 'Original'}
-                  </span>
-                  <span className="text-blue-300 text-xs font-medium">
-                    Click to play
-                  </span>
-                </div>
               </div>
-            </div>
+            </article>
           ))}
         </div>
 
-        {/* Call to Action */}
-        <div className="mt-16 text-center">
-          <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-8 border border-white/10 max-w-2xl mx-auto">
-            <h3 className="text-2xl font-bold text-white mb-4">More AI Experiments Coming</h3>
-            <p className="text-white/80 mb-6 leading-relaxed">
-              I'm constantly experimenting with new AI techniques and models. Follow my research progress 
-              and technical implementations in my projects section.
-            </p>
-            <Link 
-              href="/projects"
-              className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 
-                       rounded-lg font-semibold transition-all duration-300 hover:transform hover:scale-105"
+        {/* Video Player Modal */}
+        {selectedVideo && (
+          <div
+            className="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4 md:p-8"
+            onClick={() => setSelectedVideo(null)}
+          >
+            <div
+              className="relative w-full max-w-4xl"
+              onClick={(e) => e.stopPropagation()}
             >
-              View Technical Projects
-            </Link>
+              {/* Close Button */}
+              <button
+                onClick={() => setSelectedVideo(null)}
+                className="absolute -top-12 right-0 p-2 text-white hover:text-gray-300 transition-colors"
+              >
+                <X size={28} />
+              </button>
+
+              {/* Video */}
+              <div className="bg-black rounded-lg overflow-hidden">
+                {selectedVideo.type === 'youtube' ? (
+                  <div className="aspect-video">
+                    <iframe
+                      src={`https://www.youtube.com/embed/${selectedVideo.id}?autoplay=1`}
+                      className="w-full h-full"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    />
+                  </div>
+                ) : (
+                  <video
+                    src={selectedVideo.url}
+                    controls
+                    autoPlay
+                    className="w-full"
+                  />
+                )}
+              </div>
+
+              {/* Video Info */}
+              <div className="mt-4 text-white">
+                <h3 className="text-xl font-semibold mb-2">{selectedVideo.title}</h3>
+                {selectedVideo.description && (
+                  <p className="text-gray-300">{selectedVideo.description}</p>
+                )}
+              </div>
+            </div>
           </div>
+        )}
+
+        {/* Call to Action */}
+        <div className="max-w-2xl mx-auto text-center p-8 border border-gray-200 rounded-xl bg-gray-50">
+          <h3 className="text-2xl font-semibold mb-3">More AI Experiments Coming</h3>
+          <p className="text-gray-600 mb-6 leading-relaxed">
+            I'm constantly experimenting with new AI techniques and models. Follow my research
+            progress and technical implementations in my projects section.
+          </p>
+          <Link
+            href="/projects"
+            className="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+          >
+            View Technical Projects
+          </Link>
         </div>
       </div>
-    </main>
+    </div>
   )
-
-} 
+}
