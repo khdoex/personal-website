@@ -9,13 +9,13 @@ export default function Home() {
         <div className="space-y-8">
           <div className="space-y-4">
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-white">
-              Building Intelligence,
+              Data Scientist
               <br />
-              One Model at a Time
+              & AI Researcher
             </h1>
             <p className="text-lg md:text-xl text-zinc-400 max-w-2xl leading-relaxed">
-              MSc Data Science candidate at Sabanci University. Transforming complex data into
-              actionable insights through deep learning, NLP, and cutting-edge AI research.
+              MSc Data Science student at Sabanci University. Working with machine learning,
+              NLP, computer vision, and audio AI.
             </p>
           </div>
 
@@ -24,7 +24,7 @@ export default function Home() {
               href="/projects"
               className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
             >
-              Explore My Work
+              View Projects
               <ArrowRight size={18} />
             </Link>
             <Link
@@ -37,7 +37,7 @@ export default function Home() {
               href="mailto:kaanhacihaliloglu@gmail.com"
               className="inline-flex items-center gap-2 border border-zinc-700 hover:border-zinc-600 hover:bg-zinc-800 text-white px-6 py-3 rounded-lg font-medium transition-colors"
             >
-              Get in Touch
+              Contact
             </Link>
           </div>
         </div>
@@ -53,13 +53,13 @@ export default function Home() {
           >
             <div className="space-y-3">
               <h3 className="text-2xl font-semibold tracking-tight text-white group-hover:text-blue-400 transition-colors">
-                Research Insights
+                Research Blog
               </h3>
               <p className="text-zinc-400 leading-relaxed">
-                Deep dives into machine learning methodologies, research findings, and practical AI applications
+                Writing about machine learning, data science, and AI research
               </p>
               <div className="flex items-center gap-2 text-blue-400 font-medium text-sm">
-                Read articles
+                Read posts
                 <ArrowRight size={16} />
               </div>
             </div>
@@ -72,13 +72,13 @@ export default function Home() {
           >
             <div className="space-y-3">
               <h3 className="text-2xl font-semibold tracking-tight text-white group-hover:text-blue-400 transition-colors">
-                Project Showcase
+                Projects
               </h3>
               <p className="text-zinc-400 leading-relaxed">
-                From Kaggle competitions to production systems—end-to-end ML solutions that deliver results
+                Machine learning projects and Kaggle competition solutions
               </p>
               <div className="flex items-center gap-2 text-blue-400 font-medium text-sm">
-                View portfolio
+                View work
                 <ArrowRight size={16} />
               </div>
             </div>
@@ -91,13 +91,13 @@ export default function Home() {
           >
             <div className="space-y-3">
               <h3 className="text-2xl font-semibold tracking-tight text-white group-hover:text-blue-400 transition-colors">
-                AI Experiments
+                Media
               </h3>
               <p className="text-zinc-400 leading-relaxed">
-                Pushing boundaries with generative models—from audio-reactive visuals to diffusion-based creations
+                Experiments with generative AI, computer vision, and audio processing
               </p>
               <div className="flex items-center gap-2 text-blue-400 font-medium text-sm">
-                Watch demos
+                View gallery
                 <ArrowRight size={16} />
               </div>
             </div>
@@ -107,11 +107,11 @@ export default function Home() {
           <div className="p-8 bg-zinc-900/30 border border-zinc-800 rounded-xl">
             <div className="space-y-3">
               <h3 className="text-2xl font-semibold tracking-tight text-white">
-                About Me
+                About
               </h3>
               <p className="text-zinc-400 leading-relaxed">
-                Driven by curiosity and powered by data. Bridging the gap between theoretical research
-                and real-world impact through innovative AI solutions.
+                Interested in the intersection of machine learning and practical applications.
+                Based in Istanbul, Turkey.
               </p>
             </div>
           </div>
@@ -122,31 +122,28 @@ export default function Home() {
       <section className="max-w-4xl mx-auto px-6 md:px-8 pb-24">
         <div className="space-y-8">
           <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-white">
-            What I'm Working On
+            Current Work
           </h2>
 
           <div className="grid gap-6">
             <div className="p-6 border border-zinc-800 rounded-lg hover:border-zinc-700 hover:bg-zinc-900/30 transition-all">
-              <h3 className="text-lg font-semibold mb-2 text-white">Graduate Research @ Sabanci University</h3>
+              <h3 className="text-lg font-semibold mb-2 text-white">MSc Research at Sabanci University</h3>
               <p className="text-zinc-400">
-                Exploring novel approaches to predictive modeling and deep learning architectures.
-                Focus on scalable solutions for complex, high-dimensional datasets.
+                Working on machine learning research as part of my graduate program.
               </p>
             </div>
 
             <div className="p-6 border border-zinc-800 rounded-lg hover:border-zinc-700 hover:bg-zinc-900/30 transition-all">
-              <h3 className="text-lg font-semibold mb-2 text-white">SoundBoost.ai — Audio Enhancement Platform</h3>
+              <h3 className="text-lg font-semibold mb-2 text-white">SoundBoost.ai</h3>
               <p className="text-zinc-400">
-                Building intelligent audio processing pipelines with state-of-the-art ML models.
-                Transforming how creators enhance and visualize sound through AI.
+                Building an audio enhancement platform using machine learning.
               </p>
             </div>
 
             <div className="p-6 border border-zinc-800 rounded-lg hover:border-zinc-700 hover:bg-zinc-900/30 transition-all">
-              <h3 className="text-lg font-semibold mb-2 text-white">Competitive ML on Kaggle</h3>
+              <h3 className="text-lg font-semibold mb-2 text-white">Kaggle Competitions</h3>
               <p className="text-zinc-400">
-                Competing in data science challenges to sharpen skills in ensemble learning,
-                feature engineering, and model optimization under real-world constraints.
+                Participating in data science competitions to practice ensemble methods and feature engineering.
               </p>
             </div>
           </div>
