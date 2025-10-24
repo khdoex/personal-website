@@ -1,38 +1,47 @@
 import { getPostBySlug } from '@/lib/posts'
-import PageNav from '@/components/PageNav'
 import { notFound } from 'next/navigation'
+import Link from 'next/link'
+import { ArrowLeft } from 'lucide-react'
 
 interface Props {
   params: Promise<{ slug: string }>
 }
 
 export default async function BlogPost({ params }: Props) {
-  // Wait for params to resolve
   const resolvedParams = await params
-  
+
   try {
     const post = await getPostBySlug(resolvedParams.slug)
 
     return (
-      <main className="min-h-screen p-8 relative">
-        <div className="absolute inset-0 bg-black/40 -z-[5]" />
-        
-        <PageNav title={post.data.title} />
-        <article className="max-w-2xl mx-auto mt-12">
-          <header className="mb-12 bg-black/40 backdrop-blur-sm rounded-lg p-6 border border-white/10 shadow-xl">
-            <h1 className="text-4xl font-bold text-white mb-4 drop-shadow-lg">
+      <div className="animate-fade-in">
+        <article className="max-w-3xl mx-auto px-6 md:px-8 py-16 md:py-24">
+          {/* Back Link */}
+          <Link
+            href="/blog"
+            className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-8 transition-colors"
+          >
+            <ArrowLeft size={18} />
+            <span>Back to Blog</span>
+          </Link>
+
+          {/* Header */}
+          <header className="mb-12 pb-8 border-b border-gray-200">
+            <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
               {post.data.title}
             </h1>
-            <p className="text-white/70">{post.data.date}</p>
+            <p className="text-gray-600">{post.data.date}</p>
           </header>
-          <div 
-            className="prose prose-lg prose-invert max-w-none bg-black/40 backdrop-blur-sm rounded-lg p-6 border border-white/10 shadow-xl"
+
+          {/* Content */}
+          <div
+            className="prose prose-lg max-w-none"
             dangerouslySetInnerHTML={{ __html: post.data.content }}
           />
         </article>
-      </main>
+      </div>
     )
   } catch (error) {
     return notFound()
   }
-} 
+}
