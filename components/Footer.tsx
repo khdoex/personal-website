@@ -6,7 +6,7 @@ export default function Footer() {
       <div className="max-w-5xl mx-auto px-6 md:px-8 py-8">
         <div className="flex flex-col md:flex-row justify-between items-center gap-4">
           <span className="font-mono text-sm text-muted">
-            &copy; {new Date().getFullYear()} kaan_h
+            &copy; {new Date().getFullYear()} kaanhho
           </span>
 
           <div className="flex items-center gap-4">
