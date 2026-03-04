@@ -26,16 +26,4 @@ export const projects: Project[] = [
     githubUrl: "https://github.com/khdoex/Past_ML_codes",
     tags: ["XGBoost", "Ensemble Methods", "Feature Engineering", "Data Science", "Algorithm Implementation"],
   },
-  {
-    title: "Personal Portfolio & Research Platform",
-    description: "Modern, responsive personal website built with Next.js and TypeScript, featuring a dynamic blog system, project showcase, and interactive media gallery. Implements advanced UI/UX principles with theme switching, animated components, and optimized performance. Serves as a platform for sharing research insights and professional work.",
-    githubUrl: "https://github.com/khdoex/personal-website",
-    tags: ["Next.js", "TypeScript", "Tailwind CSS", "React", "UI/UX Design", "Performance Optimization"],
-  },
-  {
-    title: "SoundBoost.ai: AI-Powered Audio Enhancement Platform",
-    description: "Advanced audio processing platform leveraging machine learning for intelligent sound enhancement and music visualization. Integrates multiple AI models for real-time audio analysis, quality improvement, and generative visual content creation. Currently in development with focus on professional audio applications.",
-    githubUrl: "https://github.com/khdoex/soundboost-ai",
-    tags: ["Audio AI", "Machine Learning", "Signal Processing", "Generative AI", "Real-time Processing"],
-  }
 ]; 

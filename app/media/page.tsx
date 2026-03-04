@@ -2,14 +2,9 @@
 
 import { useState } from 'react'
 import { Play, X, Maximize2, Minimize2 } from 'lucide-react'
-import Link from 'next/link'
-import YouTube from 'react-youtube'
-import type { YouTubeEvent } from 'react-youtube'
 
 interface MediaItem {
-  type: 'youtube' | 'local'
-  id?: string
-  url?: string
+  url: string
   title: string
   description?: string
   category?: string
@@ -17,56 +12,42 @@ interface MediaItem {
 
 const MEDIA_ITEMS: MediaItem[] = [
   {
-    type: 'youtube',
-    id: 'IvkSdmS7HA8',
-    title: 'Rezz - Someone Else',
-    description: 'AI-enhanced music visualization and audio analysis',
-    category: 'Music Visualization'
-  },
-  {
-    type: 'local',
     url: '/videos/gallery/Extended_Video.mp4',
     title: 'Dancing Ethereal Creature',
     description: 'Generative AI character animation with fluid motion dynamics',
     category: 'Generative Art'
   },
   {
-    type: 'local',
     url: '/videos/gallery/12-01_00001-audio-1.mov',
     title: 'Audio-Reactive Visual Generation',
     description: 'Real-time visual synthesis responding to audio input',
     category: 'Audio AI'
   },
   {
-    type: 'local',
     url: '/videos/gallery/11-30_00001-audio-1.mov',
     title: 'Generative Music Visualization',
     description: 'ML-driven visual interpretation of musical elements',
     category: 'Audio AI'
   },
   {
-    type: 'local',
     url: '/videos/gallery/Professional_Mode_A_heavenly_woman_found_her_self_.mp4',
     title: 'Heavenly Woman - AI Character Study',
     description: 'Advanced character generation using diffusion models',
     category: 'Character AI'
   },
   {
-    type: 'local',
     url: '/videos/gallery/220ad93e-934b-408e-aaf4-19c5842b10c1-0.mp4',
     title: 'AI Visual Experiment #1',
     description: 'Experimental generative AI visual synthesis',
     category: 'Experimental'
   },
   {
-    type: 'local',
     url: '/videos/gallery/d0db6f7a-a7ad-4ff7-9fa4-6789b49d565a-0.mp4',
     title: 'AI Visual Experiment #2',
     description: 'Advanced neural network visual generation',
     category: 'Experimental'
   },
   {
-    type: 'local',
     url: '/videos/gallery/eb0d5524-f22b-4b10-a131-51088e7a99be-0.mp4',
     title: 'AI Visual Experiment #3',
     description: 'Creative AI-driven visual content generation',
@@ -77,17 +58,6 @@ const MEDIA_ITEMS: MediaItem[] = [
 export default function Media() {
   const [selectedVideo, setSelectedVideo] = useState<MediaItem | null>(null)
   const [isFullscreen, setIsFullscreen] = useState(false)
-
-  const youtubeOpts = {
-    height: isFullscreen ? '100%' : '480',
-    width: isFullscreen ? '100%' : '854',
-    playerVars: {
-      autoplay: 1,
-      modestbranding: 1,
-      rel: 0,
-      controls: 1,
-    },
-  }
 
   return (
     <div className="animate-fade-in">
@@ -127,27 +97,14 @@ export default function Media() {
                 </button>
               </div>
 
-              {selectedVideo.type === 'youtube' ? (
-                <div className={`relative ${
-                  isFullscreen ? 'w-screen h-screen' : 'w-[854px] h-[480px] rounded-lg overflow-hidden border border-border'
-                }`}>
-                  <YouTube
-                    videoId={selectedVideo.id}
-                    opts={youtubeOpts}
-                    className="w-full h-full"
-                    onReady={(event: YouTubeEvent) => { event.target.getIframe().focus() }}
-                  />
-                </div>
-              ) : (
-                <video
-                  src={selectedVideo.url}
-                  controls
-                  autoPlay
-                  className={`${
-                    isFullscreen ? 'w-screen h-screen' : 'w-auto max-h-[80vh] rounded-lg border border-border'
-                  }`}
-                />
-              )}
+              <video
+                src={selectedVideo.url}
+                controls
+                autoPlay
+                className={`${
+                  isFullscreen ? 'w-screen h-screen' : 'w-auto max-h-[80vh] rounded-lg border border-border'
+                }`}
+              />
 
               {!isFullscreen && (
                 <div className="mt-3 px-1">
@@ -170,39 +127,28 @@ export default function Media() {
               className="group cursor-pointer border border-border rounded-lg overflow-hidden hover:border-accent/40 transition-all"
             >
               <div className="aspect-video relative overflow-hidden bg-surface">
-                {item.type === 'youtube' ? (
-                  <img
-                    src={`https://img.youtube.com/vi/${item.id}/maxresdefault.jpg`}
-                    alt={item.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                ) : (
-                  <div className="w-full h-full relative">
-                    <video
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                      muted
-                      preload="metadata"
-                      onMouseEnter={(e) => {
-                        const v = e.target as HTMLVideoElement
-                        v.currentTime = 1
-                        v.play().catch(() => {})
-                      }}
-                      onMouseLeave={(e) => {
-                        const v = e.target as HTMLVideoElement
-                        v.pause()
-                        v.currentTime = 0
-                      }}
-                    >
-                      <source src={item.url} type="video/mp4" />
-                      <source src={item.url} type="video/quicktime" />
-                    </video>
-                    <div className="absolute inset-0 bg-surface flex items-center justify-center -z-10">
-                      <Play className="w-8 h-8 text-muted" />
-                    </div>
-                  </div>
-                )}
+                <video
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  muted
+                  preload="metadata"
+                  onMouseEnter={(e) => {
+                    const v = e.target as HTMLVideoElement
+                    v.currentTime = 1
+                    v.play().catch(() => {})
+                  }}
+                  onMouseLeave={(e) => {
+                    const v = e.target as HTMLVideoElement
+                    v.pause()
+                    v.currentTime = 0
+                  }}
+                >
+                  <source src={item.url} type="video/mp4" />
+                  <source src={item.url} type="video/quicktime" />
+                </video>
+                <div className="absolute inset-0 bg-surface flex items-center justify-center -z-10">
+                  <Play className="w-8 h-8 text-muted" />
+                </div>
 
-                {/* Play overlay */}
                 <div className="absolute inset-0 bg-background/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                   <div className="w-12 h-12 border border-accent/50 rounded-full flex items-center justify-center">
                     <Play className="w-5 h-5 text-accent ml-0.5" fill="currentColor" />
