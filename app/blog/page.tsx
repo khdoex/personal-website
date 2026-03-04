@@ -1,92 +1,57 @@
 import { getAllPosts } from '@/lib/posts'
 import Link from 'next/link'
-import PageNav from '@/components/PageNav'
-import { Calendar, ArrowRight } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 
 export default async function Blog() {
   const posts = await getAllPosts()
 
   return (
-    <main className="min-h-screen relative">
-      
-      <div className="max-w-4xl mx-auto px-8 py-8">
-        <PageNav title="Research Blog" />
-        
-        {/* Header Section */}
-        <div className="text-center mb-12">
-          <p className="text-xl text-white/80 max-w-3xl mx-auto leading-relaxed">
-            Insights, analysis, and findings from my research in data science, machine learning, 
-            and artificial intelligence. Sharing knowledge and discoveries from academic and practical work.
+    <div className="animate-fade-in">
+      <div className="max-w-3xl mx-auto px-6 md:px-8 py-16">
+        <div className="mb-12">
+          <p className="font-mono text-sm text-accent mb-2">~/blog</p>
+          <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-white font-mono">
+            Research Blog
+          </h1>
+          <p className="text-muted mt-3 max-w-xl">
+            Writing about machine learning, AI research, and data science.
           </p>
         </div>
 
         {posts.length > 0 ? (
-          <div className="space-y-8">
-            {posts.map((post, index) => (
-              <article 
-                key={post.data.slug} 
-                className="group bg-white/5 backdrop-blur-sm rounded-2xl p-8 border border-white/10 shadow-2xl 
-                         hover:bg-white/10 transition-all duration-500 hover:border-white/20 hover:transform hover:scale-[1.01]"
+          <div className="space-y-2">
+            {posts.map((post) => (
+              <Link
+                key={post.data.slug}
+                href={`/blog/${post.data.slug}`}
+                className="group flex items-center justify-between p-4 border border-border rounded-lg hover:border-accent/40 hover:bg-surface/50 transition-all"
               >
-                <Link 
-                  href={`/blog/${post.data.slug}`} 
-                  className="block"
-                >
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex-1">
-                      <h2 className="text-2xl font-bold text-white group-hover:text-blue-300 transition-colors duration-300 mb-3 leading-tight">
-                        {post.data.title}
-                      </h2>
-                      
-                      <div className="flex items-center gap-6 text-white/60">
-                        <div className="flex items-center gap-2">
-                          <Calendar size={16} />
-                          <span className="text-sm">{post.data.date}</span>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="ml-6 flex-shrink-0">
-                      <div className="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center 
-                                    group-hover:bg-blue-500/20 transition-colors">
-                        <ArrowRight size={16} className="text-white/60 group-hover:text-blue-300 
-                                                      group-hover:translate-x-0.5 transition-all" />
-                      </div>
-                    </div>
-                  </div>
-                </Link>
-              </article>
+                <div>
+                  <h2 className="font-mono text-base font-semibold text-white group-hover:text-accent transition-colors">
+                    {post.data.title}
+                  </h2>
+                  <span className="font-mono text-xs text-muted mt-1">{post.data.date}</span>
+                </div>
+                <ArrowRight size={16} className="text-muted group-hover:text-accent transition-colors" />
+              </Link>
             ))}
           </div>
         ) : (
-          <div className="text-center py-16">
-            <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-12 border border-white/10 max-w-2xl mx-auto">
-              <h3 className="text-2xl font-bold text-white mb-4">Coming Soon</h3>
-              <p className="text-white/80 text-lg leading-relaxed mb-8">
-                I'm currently working on my first blog posts covering my research in machine learning, 
-                data science methodologies, and insights from competitive data science.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Link 
-                  href="/projects"
-                  className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 
-                           rounded-lg font-semibold transition-all duration-300 hover:transform hover:scale-105"
-                >
-                  View My Projects
-                  <ArrowRight size={18} />
-                </Link>
-                <Link 
-                  href="mailto:kaanhacihaliloglu@gmail.com"
-                  className="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white px-8 py-3 
-                           rounded-lg font-semibold transition-all duration-300 border border-white/20 hover:border-white/40"
-                >
-                  Subscribe for Updates
-                </Link>
-              </div>
+          <div className="border border-border rounded-lg p-8">
+            <p className="font-mono text-sm text-muted">
+              <span className="text-terminal-green">&gt;</span> no posts yet — coming soon.
+            </p>
+            <div className="flex gap-3 mt-4">
+              <Link
+                href="/projects"
+                className="inline-flex items-center gap-2 bg-accent-deep hover:bg-accent-deep/80 text-white px-4 py-2 rounded font-mono text-sm transition-colors"
+              >
+                view_projects <ArrowRight size={14} />
+              </Link>
             </div>
           </div>
         )}
       </div>
-    </main>
+    </div>
   )
-} 
+}
