@@ -21,7 +21,7 @@ export default function Navigation() {
             href="/"
             className="font-mono text-sm font-semibold tracking-tight text-white hover:text-accent transition-colors"
           >
-            kaan_h
+            kaanhho
           </Link>
 
           <div className="flex items-center gap-1">

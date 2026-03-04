@@ -8,7 +8,7 @@ export default function Home() {
       <section className="max-w-3xl mx-auto px-6 md:px-8 py-20 md:py-28">
         <div className="space-y-6">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-white font-mono leading-[1.1]">
-            kaan hho<span className="text-terminal-cursor animate-blink">_</span>
+            kaan hacihaliloglu<span className="text-terminal-cursor animate-blink">_</span>
           </h1>
 
           <p className="text-lg text-foreground max-w-2xl leading-relaxed">
