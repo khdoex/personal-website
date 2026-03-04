@@ -3,106 +3,114 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Ayu Mirage palette */
+  --background: #212733;
+  --foreground: #d9d7ce;
+  --surface: #1a1f29;
+  --border: #343f4c;
+  --accent: #6dcbfa;
+  --accent-deep: #0b5bb3;
+  --accent-light: #73d0ff;
+  --muted: #686868;
+  --muted-dark: #464d5e;
+  --terminal-green: #bae67e;
+  --terminal-amber: #ffd580;
+  --terminal-cursor: #ffcc66;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  background: var(--background);
+  scroll-behavior: smooth;
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-.dark {
-  --background: #0a0a0a;
-  --foreground: #ededed;
-}
-
-/* Professional scroll bars */
+/* Scrollbar — thin, matches Ayu */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 4px;
+  background: var(--background);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.3);
-  border-radius: 4px;
+  background: var(--border);
+  border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.5);
+  background: var(--muted);
 }
 
-/* Better focus states */
-*:focus {
-  outline: 2px solid rgba(59, 130, 246, 0.5);
+/* Focus */
+*:focus-visible {
+  outline: 2px solid var(--terminal-cursor);
   outline-offset: 2px;
 }
 
-button:focus,
-a:focus {
-  outline: 2px solid rgba(59, 130, 246, 0.8);
-  outline-offset: 2px;
-}
-
-/* Smooth scrolling */
-html {
-  scroll-behavior: smooth;
-}
-
-/* Temporary debug style */
 main {
   z-index: 1;
   position: relative;
 }
 
-/* Professional typography */
+/* Typography */
 h1 {
-  @apply text-4xl font-bold text-white drop-shadow-lg;
+  @apply text-4xl md:text-5xl font-bold tracking-tight;
+  font-family: var(--font-geist-mono), monospace;
+  color: #ffffff;
 }
 
-.page-title {
-  @apply text-3xl font-bold text-white mb-6 drop-shadow-lg;
+h2 {
+  @apply text-2xl md:text-3xl font-bold tracking-tight;
+  font-family: var(--font-geist-mono), monospace;
+  color: #ffffff;
 }
 
-/* Enhanced prose styles for blog content */
+h3 {
+  @apply text-lg md:text-xl font-semibold tracking-tight;
+  font-family: var(--font-geist-mono), monospace;
+  color: #ffffff;
+}
+
+/* Prose — blog content */
 .prose {
-  @apply text-gray-200;
-  font-size: 1.125rem;
-  line-height: 1.8;
+  font-size: 1.0625rem;
+  line-height: 1.75;
   max-width: none;
+  color: var(--foreground);
 }
 
 .prose p {
-  @apply mb-8 text-gray-200;
+  @apply mb-6;
+  color: #d9d7ce;
 }
 
 .prose p:first-of-type {
-  @apply text-xl leading-relaxed text-gray-100;
+  @apply text-lg leading-relaxed;
+  color: #ffffff;
 }
 
 .prose h2 {
-  @apply text-2xl font-bold text-white mt-12 mb-6;
+  @apply text-2xl font-bold mt-12 mb-4 tracking-tight;
+  color: #ffffff;
 }
 
 .prose h3 {
-  @apply text-xl font-semibold text-white mt-8 mb-4;
+  @apply text-xl font-semibold mt-8 mb-3 tracking-tight;
+  color: #ffffff;
 }
 
 .prose ul, .prose ol {
-  @apply my-6 ml-6;
+  @apply my-4 ml-6;
+  color: #d9d7ce;
 }
 
 .prose li {
@@ -110,7 +118,10 @@ h1 {
 }
 
 .prose blockquote {
-  @apply border-l-4 border-blue-500 pl-6 py-1 my-8 italic bg-gray-800/30 rounded-r;
+  @apply border-l-2 pl-6 py-1 my-6 italic;
+  border-color: var(--accent);
+  color: var(--muted);
+  background: var(--surface);
 }
 
 .prose blockquote p {
@@ -118,52 +129,53 @@ h1 {
 }
 
 .prose a {
-  @apply text-blue-400 hover:text-blue-300 transition-colors underline-offset-2;
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  transition: color 0.2s;
+}
+
+.prose a:hover {
+  color: var(--accent-light);
 }
 
 .prose code {
-  @apply bg-gray-800 px-1.5 py-0.5 rounded text-sm text-gray-200;
+  @apply px-1.5 py-0.5 rounded text-sm;
+  background: var(--surface);
+  color: var(--terminal-amber);
+  border: 1px solid var(--border);
+  font-family: var(--font-geist-mono), monospace;
 }
 
 .prose pre {
-  @apply bg-gray-800/50 p-4 rounded-lg my-6 overflow-x-auto border border-gray-700;
+  @apply p-4 rounded-lg my-6 overflow-x-auto;
+  background: var(--surface);
+  border: 1px solid var(--border);
 }
 
 .prose img {
-  @apply rounded-lg shadow-lg my-8;
+  @apply rounded-lg my-8;
 }
 
 .prose strong {
-  @apply text-white font-semibold;
+  @apply font-semibold;
+  color: #ffffff;
 }
 
 .prose em {
-  @apply text-gray-300;
-}
-
-/* Enhanced transitions for professional feel */
-.prose * {
-  @apply transition-colors duration-200;
-}
-
-.prose p + p {
-  @apply mt-6;
-}
-
-.prose {
-  @apply leading-relaxed tracking-wide;
-  font-size: 1.125rem;
+  color: var(--muted);
 }
 
 .prose > * + * {
-  @apply mt-6;
+  @apply mt-4;
 }
 
-/* Professional animations */
-@keyframes fadeInUp {
+/* Animations — minimal */
+@keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(8px);
   }
   to {
     opacity: 1;
@@ -171,45 +183,37 @@ h1 {
   }
 }
 
-@keyframes pulse {
-  0%, 100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.05);
-  }
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
 }
 
-.animate-fade-in-up {
-  animation: fadeInUp 0.6s ease-out;
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-out;
 }
 
-.animate-pulse-gentle {
-  animation: pulse 2s infinite;
+.animate-blink {
+  animation: blink 1s step-end infinite;
 }
 
-/* Professional glass morphism effects */
-.glass-effect {
-  backdrop-filter: blur(16px);
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-/* Enhanced selection styles */
+/* Selection */
 ::selection {
-  background: rgba(59, 130, 246, 0.3);
+  background: var(--accent-deep);
   color: white;
 }
 
-/* Better link hover effects */
+/* Links */
 a {
-  transition: all 0.2s ease;
+  transition: color 0.2s ease;
 }
 
-/* Professional gradient text effect */
-.gradient-text {
-  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

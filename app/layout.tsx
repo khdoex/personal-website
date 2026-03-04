@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import ThemeSwitcher from '@/components/ThemeSwitcher'
-import { ThemeProvider } from '@/contexts/ThemeContext'
-import VerticalBackgrounds from '@/components/VerticalBackgrounds'
+import Navigation from '@/components/Navigation'
 import Footer from '@/components/Footer'
 
 const geistSans = localFont({
@@ -18,21 +16,21 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Kaan Hacıhaliloğlu | Data Scientist & AI Researcher",
-  description: "MSc Data Science student at Sabanci University specializing in machine learning, audio AI, and generative models. Explore my research, projects, and AI experiments.",
-  keywords: ["data science", "machine learning", "artificial intelligence", "audio AI", "generative models", "research", "Sabanci University"],
-  authors: [{ name: "Kaan Hacıhaliloğlu" }],
-  creator: "Kaan Hacıhaliloğlu",
+  title: "Kaan Hacihaliloglu | AI Engineer & Researcher",
+  description: "AI Engineer working on LLM interpretability & safety. MSc Data Science at Sabanci University. Building AI systems at SCL Synthetic Consumer Lab.",
+  keywords: ["AI engineer", "LLM interpretability", "AI safety", "machine learning", "data science", "Sabanci University"],
+  authors: [{ name: "Kaan Hacihaliloglu" }],
+  creator: "Kaan Hacihaliloglu",
   openGraph: {
-    title: "Kaan Hacıhaliloğlu | Data Scientist & AI Researcher",
-    description: "MSc Data Science student specializing in machine learning, audio AI, and generative models",
+    title: "Kaan Hacihaliloglu | AI Engineer & Researcher",
+    description: "AI Engineer working on LLM interpretability & safety. Building AI systems at SCL.",
     type: "website",
     locale: "en_US",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Kaan Hacıhaliloğlu | Data Scientist & AI Researcher",
-    description: "MSc Data Science student specializing in machine learning, audio AI, and generative models",
+    title: "Kaan Hacihaliloglu | AI Engineer & Researcher",
+    description: "AI Engineer working on LLM interpretability & safety",
     creator: "@kaanhho",
   },
   robots: {
@@ -54,14 +52,11 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ThemeProvider>
-          <VerticalBackgrounds />
-          <header className="p-4 flex justify-end">
-            <ThemeSwitcher />
-          </header>
+        <Navigation />
+        <main className="min-h-screen pt-14">
           {children}
-          <Footer />
-        </ThemeProvider>
+        </main>
+        <Footer />
       </body>
     </html>
   )

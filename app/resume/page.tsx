@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import PageNav from '@/components/PageNav'
+import { Download } from 'lucide-react'
 
 export default function Resume() {
   const [isDownloading, setIsDownloading] = useState(false)
@@ -18,21 +18,26 @@ export default function Resume() {
   }
 
   return (
-    <main className="min-h-screen p-8">
-      <PageNav title="Resume" />
-      <div className="max-w-6xl mx-auto">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="page-title">Resume</h1>
+    <div className="animate-fade-in">
+      <div className="max-w-4xl mx-auto px-6 md:px-8 py-16">
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <p className="font-mono text-sm text-accent mb-2">~/resume</p>
+            <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-white font-mono">
+              Resume
+            </h1>
+          </div>
           <button
             onClick={handleDownload}
-            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors drop-shadow-md"
+            className="inline-flex items-center gap-2 bg-accent-deep hover:bg-accent-deep/80 text-white px-4 py-2 rounded font-mono text-sm transition-colors"
             disabled={isDownloading}
           >
-            {isDownloading ? 'Downloading...' : 'Download PDF'}
+            <Download size={14} />
+            {isDownloading ? 'downloading...' : 'download_pdf'}
           </button>
         </div>
-        
-        <div className="w-full aspect-[8.5/11] bg-white rounded-lg overflow-hidden shadow-xl">
+
+        <div className="w-full aspect-[8.5/11] border border-border rounded-lg overflow-hidden bg-white">
           <iframe
             src="/documents/resume.pdf#view=FitH"
             className="w-full h-full"
@@ -40,6 +45,6 @@ export default function Resume() {
           />
         </div>
       </div>
-    </main>
+    </div>
   )
-} 
+}
