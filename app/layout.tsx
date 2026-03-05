@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import Navigation from '@/components/Navigation'
@@ -15,6 +15,12 @@ const geistMono = localFont({
   weight: "100 900",
 });
 
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  themeColor: '#212733',
+};
+
 export const metadata: Metadata = {
   title: "Kaan Hacihaliloglu | AI Engineer & Researcher",
   description: "Researching cross-lingual mechanistic interpretability in LLMs. Building synthetic consumer AI at SCL. MSc Data Science at Sabancı University.",
@@ -23,14 +29,14 @@ export const metadata: Metadata = {
   creator: "Kaan Hacihaliloglu",
   openGraph: {
     title: "Kaan Hacihaliloglu | AI Engineer & Researcher",
-    description: "AI Engineer working on LLM interpretability & safety. Building AI systems at SCL.",
+    description: "Researching cross-lingual mechanistic interpretability in LLMs. Building synthetic consumer AI at SCL.",
     type: "website",
     locale: "en_US",
   },
   twitter: {
-    card: "summary_large_image",
+    card: "summary",
     title: "Kaan Hacihaliloglu | AI Engineer & Researcher",
-    description: "AI Engineer working on LLM interpretability & safety",
+    description: "Researching cross-lingual mechanistic interpretability in LLMs.",
     creator: "@kaanhho",
   },
   robots: {
