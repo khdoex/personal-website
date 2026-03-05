@@ -616,20 +616,22 @@ function Hearts({ hearts }: { hearts: HeartData[] }) {
   return <g style={{pointerEvents:'none'}}>{hearts.map(h=>{
     const s = h.size
     return (
-    <g key={h.id}>
+    <g key={h.id} data-hid={h.id}>
       <animateTransform attributeName="transform" type="translate" values={`${h.x},${h.sy};${h.x+h.drift},${h.ey}`} dur={`${h.dur}s`} fill="freeze" />
       {/* Soft glow behind heart */}
-      <circle cx={s*0.05} cy={s*0.3} r={s*0.7} fill={h.color} opacity="0.15" filter="url(#glow)">
-        <animate attributeName="opacity" values="0.1;0.25;0.1" dur="2s" repeatCount="indefinite" />
+      <circle cx={s*0.05} cy={s*0.3} r={s*0.8} fill={h.color} opacity="0.2" filter="url(#glow)">
+        <animate attributeName="opacity" values="0.15;0.35;0.15" dur="2s" repeatCount="indefinite" />
       </circle>
-      {/* Heart shape — pixel art with opacity pulse for liveliness */}
+      {/* Heart shape — pixel art */}
       <g>
-        <animate attributeName="opacity" values="0.85;1;0.85" dur="3s" repeatCount="indefinite" />
+        <animate attributeName="opacity" values="0.9;1;0.9" dur="3s" repeatCount="indefinite" />
         <rect x={-s*0.5} y={0} width={s*0.45} height={s*0.45} fill={h.color} rx="0.8" />
         <rect x={s*0.05} y={0} width={s*0.45} height={s*0.45} fill={h.color} rx="0.8" />
         <rect x={-s*0.25} y={s*0.25} width={s*0.5} height={s*0.45} fill={h.color} rx="0.8" />
         {/* Highlight */}
-        <rect x={-s*0.35} y={s*0.08} width={s*0.2} height={s*0.2} fill="#fff" opacity="0.3" rx="0.5" />
+        <rect x={-s*0.35} y={s*0.08} width={s*0.2} height={s*0.2} fill="#fff" opacity="0.35" rx="0.5" />
+        {/* Outline for visibility */}
+        <rect x={-s*0.55} y={-s*0.05} width={s*1.1} height={s*0.8} fill="none" stroke="#fff" strokeWidth="0.5" opacity="0.15" rx="1" />
       </g>
     </g>
   )})}</g>
@@ -856,7 +858,7 @@ export default function FarePage() {
         const alive = prev.filter(h => (now - h.born) / 1000 < h.dur)
         return [...alive, {
           id: idRef.current.h++, x: 30 + r() * 340, sy: 780, ey: -40,
-          size: 8 + r() * 6, dur: 18 + r() * 12, drift: (r() - 0.5) * 50,
+          size: 12 + r() * 8, dur: 18 + r() * 12, drift: (r() - 0.5) * 50,
           color: r() > 0.5 ? C.heartPink : C.heartRed, born: now,
         }]
       })
@@ -892,12 +894,15 @@ export default function FarePage() {
     return () => clearTimeout(t)
   }, [melodyShown])
 
-  // --- Get heart position at current time ---
-  // born is set when state updates, but SVG animation starts ~30ms later on render commit
-  const getHeartPos = useCallback((h: HeartData) => {
-    const elapsed = Math.max(0, (Date.now() - h.born - 30) / 1000)
-    const t = Math.min(elapsed / h.dur, 1)
-    return { x: h.x + h.drift * t, y: h.sy + (h.ey - h.sy) * t }
+  // --- Get heart's actual screen position from the DOM (no timestamp guessing) ---
+  const getHeartScreenPos = useCallback((heartId: number): { x: number; y: number } | null => {
+    const svg = svgRef.current
+    if (!svg) return null
+    const el = svg.querySelector(`[data-hid="${heartId}"]`) as SVGGraphicsElement | null
+    if (!el) return null
+    const ctm = el.getScreenCTM()
+    if (!ctm) return null
+    return { x: ctm.e, y: ctm.f }
   }, [])
 
   // --- Unified game tap handler (called after gesture detection) ---
@@ -914,16 +919,14 @@ export default function FarePage() {
       return
     }
 
-    // 2. Hearts FIRST (check proximity to current animated position)
+    // 2. Hearts FIRST — use actual DOM position (getScreenCTM) for accuracy
     //    Hearts are checked before treasures because they're moving targets
-    //    and the main "fun" interaction — easier to catch = more satisfying
-    const now = Date.now()
     for (const heart of hearts) {
-      const elapsed = (now - heart.born) / 1000
-      if (elapsed >= heart.dur) continue  // skip expired
-      const hp = getHeartPos(heart)
-      const dx = pt.x - hp.x, dy = pt.y - hp.y
-      if (dx * dx + dy * dy < 50 * 50) {
+      const sp = getHeartScreenPos(heart.id)
+      if (!sp) continue
+      const sdx = clientX - sp.x, sdy = clientY - sp.y
+      // 45px screen radius — consistent regardless of zoom level
+      if (sdx * sdx + sdy * sdy < 45 * 45) {
         setHearts(prev => prev.filter(h => h.id !== heart.id))
         setHeartsCaught(prev => prev + 1)
         setBursts(prev => [...prev, { id: idRef.current.b++, x: pt.x, y: pt.y, color: heart.color }])
@@ -958,7 +961,7 @@ export default function FarePage() {
       snd().playSeaNote(pt.x)
       return
     }
-  }, [viewBox, lanternsReleased, foundTreasures, hearts, getHeartPos, zoom])
+  }, [viewBox, lanternsReleased, foundTreasures, hearts, getHeartScreenPos, zoom])
 
   // --- Pointer handlers for zoom/pan + tap detection ---
   const onPtrDown = useCallback((e: React.PointerEvent) => {
