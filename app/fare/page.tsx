@@ -435,6 +435,90 @@ function DetailedCity({ foundTreasures, zoom }: { foundTreasures: Set<string>; z
         </g>
       ))}
 
+      {/* === EXTRA CITY DETAILS === */}
+
+      {/* Chimneys with smoke */}
+      <rect x="94" y="274" width="6" height="8" fill={C.building1} />
+      {[0,1,2].map(i => (
+        <circle key={`smk1-${i}`} cx={97} cy={270 - i * 8} r={2 + i * 1.5} fill="#fff8f0" opacity="0">
+          <animate attributeName="opacity" values="0;0.15;0" dur={`${3 + i}s`} begin={`${i * 0.8}s`} repeatCount="indefinite" />
+          <animate attributeName="cy" values={`${270 - i * 8};${258 - i * 12}`} dur={`${3 + i}s`} begin={`${i * 0.8}s`} repeatCount="indefinite" />
+        </circle>
+      ))}
+      <rect x="275" y="260" width="5" height="6" fill={C.building1} />
+      {[0,1,2].map(i => (
+        <circle key={`smk2-${i}`} cx={277} cy={256 - i * 7} r={1.5 + i * 1.2} fill="#fff8f0" opacity="0">
+          <animate attributeName="opacity" values="0;0.12;0" dur={`${3.5 + i}s`} begin={`${i * 0.7 + 1}s`} repeatCount="indefinite" />
+          <animate attributeName="cy" values={`${256 - i * 7};${244 - i * 11}`} dur={`${3.5 + i}s`} begin={`${i * 0.7 + 1}s`} repeatCount="indefinite" />
+        </circle>
+      ))}
+
+      {/* Hanging shop signs */}
+      <rect x="70" y="372" width="1" height="5" fill={C.building1} />
+      <rect x="66" y="377" width="9" height="6" fill={C.buildingLight} rx="0.5" />
+      <rect x="68" y="378" width="5" height="4" fill={C.window} opacity="0.4" rx="0.3" />
+
+      <rect x="355" y="348" width="1" height="4" fill={C.building1} />
+      <rect x="351" y="352" width="9" height="5" fill={C.buildingLight} rx="0.5" />
+
+      {/* Window shutters on left building */}
+      <rect x="70" y="318" width="2" height="14" fill={C.green2} opacity="0.6" />
+      <rect x="84" y="318" width="2" height="14" fill={C.green2} opacity="0.6" />
+
+      {/* Balcony flower boxes */}
+      {[252, 272, 296].map(x => (
+        <g key={`fb${x}`}>
+          <rect x={x} y="320" width="10" height="2" fill={C.building3} />
+          <rect x={x + 1} y="318" width="3" height="3" fill={C.flowerPink} rx="1" />
+          <rect x={x + 5} y="317" width="3" height="4" fill={C.dressRed} rx="1" />
+        </g>
+      ))}
+
+      {/* Bicycle parked against wall */}
+      <circle cx="163" cy="393" r="3" fill="none" stroke={C.building1} strokeWidth="0.8" />
+      <circle cx="172" cy="393" r="3" fill="none" stroke={C.building1} strokeWidth="0.8" />
+      <line x1="163" y1="393" x2="167" y2="388" stroke={C.building1} strokeWidth="0.6" />
+      <line x1="172" y1="393" x2="167" y2="388" stroke={C.building1} strokeWidth="0.6" />
+      <line x1="167" y1="388" x2="165" y2="385" stroke={C.building1} strokeWidth="0.6" />
+
+      {/* Bench near waterfront */}
+      <rect x="300" y="393" width="14" height="1.5" fill={C.building2} />
+      <rect x="302" y="389" width="1.5" height="5" fill={C.building2} />
+      <rect x="311" y="389" width="1.5" height="5" fill={C.building2} />
+      <rect x="301" y="389" width="12" height="1.5" fill={C.building3} />
+
+      {/* Person sitting on bench reading */}
+      <rect x="305" y="385" width="3" height="3" fill={C.hairDark} rx="0.5" />
+      <rect x="304" y="388" width="5" height="3" fill={C.shirtBlue} rx="0.3" />
+      {/* Book */}
+      <rect x="309" y="387" width="3" height="2" fill="#fff8f0" opacity="0.7" />
+
+      {/* Seagulls near waterfront */}
+      {[{x:160,y:380,d:15},{x:230,y:375,d:18},{x:340,y:385,d:12}].map((sg,i) => (
+        <g key={`sg${i}`} opacity="0.4">
+          <polyline points="-2,0 0,-1.5 2,0" fill="none" stroke="#fff8f0" strokeWidth="1" strokeLinecap="round">
+            <animate attributeName="points" values="-2,0 0,-1.5 2,0;-2,-0.5 0,0 2,-0.5;-2,0 0,-1.5 2,0" dur="0.6s" repeatCount="indefinite" />
+          </polyline>
+          <animateTransform attributeName="transform" type="translate" values={`${sg.x},${sg.y};${sg.x+80},${sg.y-10}`} dur={`${sg.d}s`} repeatCount="indefinite" />
+        </g>
+      ))}
+
+      {/* Potted trees along street */}
+      {[90, 230].map(x => (
+        <g key={`tree${x}`}>
+          <rect x={x} y="389" width="4" height="5" fill={C.building2} />
+          <circle cx={x + 2} cy="386" r="5" fill={C.green1} opacity="0.7" />
+          <circle cx={x + 4} cy="384" r="3" fill={C.green2} opacity="0.5" />
+          <circle cx={x} cy="385" r="3.5" fill={C.green1} opacity="0.6" />
+        </g>
+      ))}
+
+      {/* Clothesline between right buildings */}
+      <line x1="320" y1="335" x2="358" y2="337" stroke="#fff8f0" strokeWidth="0.3" opacity="0.4" />
+      <rect x="330" y="334" width="3" height="4" fill={C.dressPink} opacity="0.35" />
+      <rect x="338" y="333" width="4" height="5" fill="#fff8f0" opacity="0.3" />
+      <rect x="346" y="334" width="3" height="4" fill={C.shirtBlue} opacity="0.35" />
+
       {/* Zoom-in hint sparkles near undiscovered treasures */}
       {showHints && TREASURE_SPOTS.map(t => !foundTreasures.has(t.id) && (
         <circle key={`hint-${t.id}`} cx={t.cx} cy={t.cy - 12} r="1.5" fill={C.sunGlow} opacity="0">
@@ -467,12 +551,42 @@ function SeaLayer() {
   )
 }
 
-function Boat() {
+function WaterDetails() {
   return (
-    <g><animateTransform attributeName="transform" type="translate" values="120,430;280,426;120,430" dur="30s" repeatCount="indefinite" />
-      <polygon points="-8,3 -6,7 6,7 8,3" fill={C.building1} />
-      <polygon points="0,3 0,-8 6,1" fill="#fff8f0" opacity="0.9" />
-      <line x1="0" y1="-8" x2="0" y2="7" stroke={C.building1} strokeWidth="1" />
+    <g>
+      {/* Building reflections in water — blurred, wavy */}
+      <g opacity="0.08">
+        <rect x="20" y="405" width="40" height="40" fill={C.building2} />
+        <rect x="60" y="408" width="70" height="35" fill={C.building1} />
+        <rect x="240" y="406" width="80" height="38" fill={C.building2} />
+        <rect x="320" y="405" width="38" height="42" fill={C.building1} />
+        <animateTransform attributeName="transform" type="translate" values="0,0;3,0;0,0" dur="4s" repeatCount="indefinite" />
+      </g>
+
+      {/* Sailboat 1 */}
+      <g>
+        <animateTransform attributeName="transform" type="translate" values="120,430;280,426;120,430" dur="30s" repeatCount="indefinite" />
+        <polygon points="-8,3 -6,7 6,7 8,3" fill={C.building1} />
+        <polygon points="0,3 0,-8 6,1" fill="#fff8f0" opacity="0.9" />
+        <line x1="0" y1="-8" x2="0" y2="7" stroke={C.building1} strokeWidth="1" />
+      </g>
+
+      {/* Small rowing boat */}
+      <g>
+        <animateTransform attributeName="transform" type="translate" values="320,460;80,465;320,460" dur="50s" repeatCount="indefinite" />
+        <ellipse cx="0" cy="2" rx="6" ry="2.5" fill={C.building2} />
+        <ellipse cx="0" cy="1" rx="5" ry="1.8" fill={C.building3} />
+        {/* Person in boat */}
+        <rect x="-1.5" y="-3" width="3" height="3" fill={C.hairDark} rx="0.5" />
+        <rect x="-2" y="0" width="4" height="2" fill={C.dressRed} rx="0.3" />
+      </g>
+
+      {/* Floating debris / leaves */}
+      {[{x:50,y:420,d:25},{x:150,y:445,d:30},{x:300,y:435,d:22},{x:350,y:470,d:35}].map((l,i) => (
+        <rect key={`leaf${i}`} x={l.x} y={l.y} width="2" height="1.5" fill={C.green2} opacity="0.25" rx="0.5">
+          <animateTransform attributeName="transform" type="translate" values={`0,0;${15 + i * 3},${Math.sin(i) * 3}`} dur={`${l.d}s`} repeatCount="indefinite" />
+        </rect>
+      ))}
     </g>
   )
 }
@@ -499,14 +613,25 @@ interface Ripple { id: number; x: number; y: number }
 interface CatchBurst { id: number; x: number; y: number; color: string }
 
 function Hearts({ hearts }: { hearts: HeartData[] }) {
-  return <g style={{pointerEvents:'none'}}>{hearts.map(h=>(
-    <g key={h.id} opacity="0.85">
+  return <g style={{pointerEvents:'none'}}>{hearts.map(h=>{
+    const s = h.size
+    return (
+    <g key={h.id}>
       <animateTransform attributeName="transform" type="translate" values={`${h.x},${h.sy};${h.x+h.drift},${h.ey}`} dur={`${h.dur}s`} fill="freeze" />
-      <rect x={-h.size*0.5} y={0} width={h.size*0.45} height={h.size*0.45} fill={h.color} rx="0.5" />
-      <rect x={h.size*0.05} y={0} width={h.size*0.45} height={h.size*0.45} fill={h.color} rx="0.5" />
-      <rect x={-h.size*0.25} y={h.size*0.25} width={h.size*0.5} height={h.size*0.45} fill={h.color} rx="0.5" />
+      {/* Soft glow behind heart */}
+      <circle cx={s*0.05} cy={s*0.3} r={s*0.7} fill={h.color} opacity="0.15" filter="url(#glow)">
+        <animate attributeName="opacity" values="0.1;0.25;0.1" dur="2s" repeatCount="indefinite" />
+      </circle>
+      {/* Heart shape — pixel art */}
+      <rect x={-s*0.5} y={0} width={s*0.45} height={s*0.45} fill={h.color} rx="0.8" opacity="0.9" />
+      <rect x={s*0.05} y={0} width={s*0.45} height={s*0.45} fill={h.color} rx="0.8" opacity="0.9" />
+      <rect x={-s*0.25} y={s*0.25} width={s*0.5} height={s*0.45} fill={h.color} rx="0.8" opacity="0.9" />
+      {/* Highlight */}
+      <rect x={-s*0.35} y={s*0.08} width={s*0.2} height={s*0.2} fill="#fff" opacity="0.3" rx="0.5" />
+      {/* Gentle bob animation */}
+      <animateTransform attributeName="transform" type="translate" values="0,0;2,-3;-1,1;0,0" dur="4s" repeatCount="indefinite" additive="sum" />
     </g>
-  ))}</g>
+  )})}</g>
 }
 
 function Lanterns({ lanterns }: { lanterns: LanternData[] }) {
@@ -587,7 +712,10 @@ function GameUI({ hc, ht, ft, tt, lr, allDone, melodyShown, zoom }: {
       {!allDone && (
         <div className="text-center mt-2 px-4">
           <p className="font-mono text-xs tracking-wide" style={{ color: C.textSub, opacity: 0.55, textShadow: '0 1px 4px rgba(0,0,0,0.5)' }}>
-            {zoom < 1.5 ? 'pinch to zoom in \u2022 tap hearts, sky & sea' : 'explore the city \u2022 find the hidden scenes'}
+            {ft >= tt && hc >= ht ? 'tap the sky to release wish lanterns' :
+             ft >= tt ? 'catch floating hearts \u2022 tap the sky & sea' :
+             zoom < 1.5 ? 'pinch to zoom \u2022 tap hearts, sky & sea' :
+             'explore the city \u2022 find hidden love stories'}
           </p>
         </div>
       )}
@@ -722,16 +850,16 @@ export default function FarePage() {
     const spawn = () => {
       const r = Math.random
       setHearts(prev => {
-        const cutoff = idRef.current.h - 20
+        const cutoff = idRef.current.h - 25
         return [...prev.filter(h => h.id > cutoff), {
-          id: idRef.current.h++, x: 40 + r() * 320, sy: 780, ey: -40,
-          size: 6 + r() * 5, dur: 14 + r() * 10, drift: (r() - 0.5) * 60,
+          id: idRef.current.h++, x: 30 + r() * 340, sy: 780, ey: -40,
+          size: 8 + r() * 6, dur: 18 + r() * 12, drift: (r() - 0.5) * 50,
           color: r() > 0.5 ? C.heartPink : C.heartRed, born: Date.now(),
         }]
       })
     }
     spawn()
-    const iv = setInterval(spawn, 2000)
+    const iv = setInterval(spawn, 1500)
     return () => clearInterval(iv)
   }, [mounted])
 
@@ -807,7 +935,8 @@ export default function FarePage() {
     for (const heart of hearts) {
       const hp = getHeartPos(heart)
       const dx = pt.x - hp.x, dy = pt.y - hp.y
-      if (dx * dx + dy * dy < 30 * 30) {
+      // Generous 45-unit radius — hearts are the main "fun" interaction
+      if (dx * dx + dy * dy < 45 * 45) {
         setHearts(prev => prev.filter(h => h.id !== heart.id))
         setHeartsCaught(prev => prev + 1)
         setBursts(prev => [...prev, { id: idRef.current.b++, x: pt.x, y: pt.y, color: heart.color }])
@@ -974,7 +1103,7 @@ export default function FarePage() {
         <DetailedCity foundTreasures={foundTreasures} zoom={zoom} />
         <Fireflies />
         <SeaLayer />
-        <Boat />
+        <WaterDetails />
         <Petals />
         <Hearts hearts={hearts} />
         <Lanterns lanterns={lanterns} />
