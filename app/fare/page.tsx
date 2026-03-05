@@ -1,1577 +1,1483 @@
 'use client'
 
-import { useEffect, useState, useMemo, useCallback, useRef, memo } from 'react'
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
-// --- Pixel-art color palette ---
+const WORLD_W = 400
+const WORLD_H = 1500
+const CITY_BASE = 760
+const COUPLE_CENTER = { x: 210, y: CITY_BASE + 30, r: 50 }
+
 const C = {
-  sky1: '#ff6b35', sky2: '#ff8c42', sky3: '#ffb366', sky4: '#ffd4a3',
-  sky5: '#ffe8cc', sky6: '#e8d5f5', sun: '#fff4c1', sunGlow: '#ffdd57',
-  sea1: '#2d6a4f', sea2: '#40916c', sea3: '#52b788', seaHighlight: '#95d5b2',
-  building1: '#8b6f47', building2: '#a0845c', building3: '#c4a97d', buildingLight: '#e8d5b7',
-  roof: '#c0392b', roofDark: '#96281b', window: '#ffd580', windowDark: '#cc8800',
-  green1: '#588157', green2: '#6b9a5b', green3: '#a7c957',
-  flowerPink: '#ffb3c6', flowerWhite: '#fff0f5',
-  heartPink: '#ff6b8a', heartRed: '#e63946',
-  cloud: 'rgba(255,240,230,0.6)',
-  textMain: '#fff8f0', textSub: '#ffd4a3',
-  skin: '#f5cba7', skinDark: '#e0a87c', hairDark: '#5c3d2e', hairLight: '#d4a574',
-  dressRed: '#e63946', dressPink: '#ffb3c6', shirtBlue: '#4a90d9',
-  shirtGreen: '#2d6a4f', pants: '#3d3d3d', cobble: '#9c8b7a',
-  hillFar: '#c4a0c8', hillMid: '#b08860', hillNear: '#6b7a4a',
+  skyTop: '#f7dcc0',
+  skyMid: '#efbe84',
+  skyBottom: '#d9864d',
+  sunCore: '#ffe7a6',
+  sunHalo: '#ffd573',
+  sunRim: '#ffbc61',
+  cloud: 'rgba(255,243,224,0.78)',
+
+  hillFar: '#c09f7e',
+  hillMid: '#a68363',
+  hillNear: '#88694f',
+
+  wallA: '#9d8363',
+  wallB: '#ad906c',
+  wallC: '#bea079',
+  sideA: '#7e664b',
+  sideB: '#8c7256',
+  sideC: '#9a7d5f',
+
+  roofFront: '#b34a36',
+  roofSide: '#8f3125',
+  roofTop: '#cc624a',
+  trim: '#d8c39f',
+
+  windowFrame: '#ba8628',
+  windowLit: '#f2cf88',
+  windowGlow: '#ffd778',
+
+  streetTop: '#7a7160',
+  streetBottom: '#655d4f',
+  waterTop: '#3f7e6a',
+  waterBottom: '#2e5f52',
+  waterGlow: '#9fd9a9',
+
+  treeDark: '#3f4a35',
+  treeMid: '#526343',
+  treeLight: '#647b50',
+
+  skinLight: '#f4d5bf',
+  hairDarkBrown: '#4a2d22',
+
+  textMain: '#fff7ea',
+  textSub: '#f4dfbf',
+  textAccent: '#ffe07e',
+
+  heartPink: '#f28da7',
+  heartRed: '#e36b79',
+
+  shadow: 'rgba(30,24,18,0.35)',
+  shadowSoft: 'rgba(30,24,18,0.22)',
+  silhouette: '#273026',
 }
 
-// =============================================
-// SOUND ENGINE (lazy init)
-// =============================================
-class SoundEngine {
-  private ctx: AudioContext | null = null
-  private notes: Record<string, number> = {
-    C4: 261.63, D4: 293.66, E4: 329.63, G4: 392.00, A4: 440.00,
-    C5: 523.25, D5: 587.33, E5: 659.25, G5: 783.99, A5: 880.00,
-  }
-  private getCtx(): AudioContext {
-    if (!this.ctx) this.ctx = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)()
-    if (this.ctx.state === 'suspended') this.ctx.resume()
-    return this.ctx
-  }
-  playNote(name: string, dur = 0.5, vol = 0.3) {
-    try {
-      const ctx = this.getCtx(), freq = this.notes[name]
-      if (!freq) return
-      const o = ctx.createOscillator(), g = ctx.createGain()
-      o.type = 'sine'; o.frequency.value = freq
-      g.gain.setValueAtTime(vol, ctx.currentTime)
-      g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur)
-      o.connect(g); g.connect(ctx.destination); o.start(); o.stop(ctx.currentTime + dur)
-    } catch { /* */ }
-  }
-  playMelody(notes: string[], tempo = 300) { notes.forEach((n, i) => setTimeout(() => this.playNote(n, 0.8, 0.25), i * tempo)) }
-  playSeaNote(x: number) {
-    const ns = ['C4', 'D4', 'E4', 'G4', 'A4', 'C5', 'D5', 'E5']
-    this.playNote(ns[Math.min(Math.floor((x / 400) * ns.length), ns.length - 1)], 0.8, 0.2)
-  }
-  playHeartCatch() { this.playNote('E5', 0.3, 0.2); setTimeout(() => this.playNote('G5', 0.3, 0.2), 80) }
-  playLanternRelease() { this.playNote('C5', 1.0, 0.15); setTimeout(() => this.playNote('E5', 0.8, 0.1), 200) }
-  playConfetti() { ['C5','E5','G5','A5','G5','E5','C5','E5','G5','C5'].forEach((n, i) => setTimeout(() => this.playNote(n, 0.4, 0.2), i * 100)) }
-}
-let _snd: SoundEngine | null = null
-function snd(): SoundEngine { if (!_snd) _snd = new SoundEngine(); return _snd }
+type RoofType = 'gable' | 'tower' | 'flat'
+type DetailType = 'clock' | 'cafe' | 'cathedral' | 'balcony' | 'tower'
 
-// =============================================
-// HELPERS
-// =============================================
+interface Building {
+  x: number
+  w: number
+  h: number
+  depth: number
+  roof: RoofType
+  tone: 0 | 1 | 2
+  windows: { cols: number; rows: number }
+  detail: DetailType
+}
+
+interface Vec2 {
+  x: number
+  y: number
+}
+
+interface TapHeart {
+  id: number
+  x: number
+  y: number
+  sx: number
+  sy: number
+  size: number
+  dx: number
+  rise: number
+  dur: number
+  color: string
+  born: number
+}
+
+interface FireworkBurst {
+  id: number
+  x: number
+  y: number
+  dur: number
+  color: string
+  born: number
+}
+
+const LOVE_LINES = [
+  'Bitanecik sevgiliiiiim',
+  'İyi ki doğdun aşkım benim',
+  'İyi ki varsın',
+  'İyi ki benim sevgilimsin',
+  'Nice mutlulara baltanem benim ❤️❤️❤️❤️❤️',
+]
+
+const BUILDINGS: Building[] = [
+  { x: 18, w: 60, h: 226, depth: 20, roof: 'tower', tone: 0, windows: { cols: 2, rows: 4 }, detail: 'clock' },
+  { x: 86, w: 74, h: 176, depth: 22, roof: 'gable', tone: 1, windows: { cols: 3, rows: 3 }, detail: 'cafe' },
+  { x: 166, w: 62, h: 150, depth: 18, roof: 'flat', tone: 2, windows: { cols: 2, rows: 2 }, detail: 'cathedral' },
+  { x: 236, w: 92, h: 194, depth: 25, roof: 'gable', tone: 1, windows: { cols: 3, rows: 3 }, detail: 'balcony' },
+  { x: 326, w: 46, h: 218, depth: 18, roof: 'tower', tone: 0, windows: { cols: 1, rows: 4 }, detail: 'tower' },
+]
+
+const CLOUDS = [
+  { x: -38, y: 148, s: 0.88, d: 78 },
+  { x: 78, y: 114, s: 0.72, d: 92 },
+  { x: 188, y: 134, s: 0.84, d: 88 },
+  { x: 302, y: 120, s: 0.68, d: 94 },
+]
+
+const NOTE_FREQ: Record<string, number> = {
+  C4: 261.63,
+  D4: 293.66,
+  E4: 329.63,
+  F4: 349.23,
+  G4: 392.0,
+  A4: 440.0,
+  B4: 493.88,
+  C5: 523.25,
+  D5: 587.33,
+  E5: 659.25,
+  F5: 698.46,
+  G5: 783.99,
+}
+
+const HAPPY_BDAY: Array<{ note: string | null; beats: number }> = [
+  { note: 'G4', beats: 0.8 },
+  { note: 'G4', beats: 0.45 },
+  { note: 'A4', beats: 1.2 },
+  { note: 'G4', beats: 1.2 },
+  { note: 'C5', beats: 1.2 },
+  { note: 'B4', beats: 2 },
+
+  { note: 'G4', beats: 0.8 },
+  { note: 'G4', beats: 0.45 },
+  { note: 'A4', beats: 1.2 },
+  { note: 'G4', beats: 1.2 },
+  { note: 'D5', beats: 1.2 },
+  { note: 'C5', beats: 2 },
+
+  { note: 'G4', beats: 0.8 },
+  { note: 'G4', beats: 0.45 },
+  { note: 'G5', beats: 1.2 },
+  { note: 'E5', beats: 1.2 },
+  { note: 'C5', beats: 1.2 },
+  { note: 'B4', beats: 1.2 },
+  { note: 'A4', beats: 2 },
+
+  { note: 'F5', beats: 0.8 },
+  { note: 'F5', beats: 0.45 },
+  { note: 'E5', beats: 1.2 },
+  { note: 'C5', beats: 1.2 },
+  { note: 'D5', beats: 1.2 },
+  { note: 'C5', beats: 2.1 },
+]
+
+function clamp(v: number, min: number, max: number) {
+  return Math.min(max, Math.max(min, v))
+}
+
 function seededRandom(seed: number) {
   let s = seed
-  return () => { s = (s * 16807) % 2147483647; return s / 2147483647 }
+  return () => {
+    s = (s * 1664525 + 1013904223) >>> 0
+    return s / 4294967295
+  }
 }
 
-interface ViewBox { x: number; y: number; w: number; h: number }
+class BirthdayMusicEngine {
+  private ctx: AudioContext | null = null
+  private running = false
+  private timer: number | null = null
+  private readonly beatSec = 0.34
 
-/** Screen coords -> SVG viewBox coords (handles xMidYMid slice) */
-function screenToSvg(clientX: number, clientY: number, svgEl: SVGSVGElement | null, vb: ViewBox): { x: number; y: number } | null {
-  if (!svgEl) return null
-  const r = svgEl.getBoundingClientRect()
-  const scale = Math.max(r.width / vb.w, r.height / vb.h)
-  const ox = (r.width - vb.w * scale) / 2
-  const oy = (r.height - vb.h * scale) / 2
-  return { x: vb.x + (clientX - r.left - ox) / scale, y: vb.y + (clientY - r.top - oy) / scale }
+  private getCtx() {
+    if (!this.ctx) {
+      const AC = window.AudioContext || (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext
+      if (!AC) return null
+      this.ctx = new AC()
+    }
+
+    if (this.ctx.state === 'suspended') {
+      void this.ctx.resume()
+    }
+
+    return this.ctx
+  }
+
+  private playNoteAt(ctx: AudioContext, note: string, when: number, dur: number) {
+    const freq = NOTE_FREQ[note]
+    if (!freq) return
+
+    const o1 = ctx.createOscillator()
+    const o2 = ctx.createOscillator()
+    const g = ctx.createGain()
+
+    o1.type = 'triangle'
+    o2.type = 'sine'
+    o1.frequency.setValueAtTime(freq, when)
+    o2.frequency.setValueAtTime(freq * 2, when)
+
+    g.gain.setValueAtTime(0.0001, when)
+    g.gain.exponentialRampToValueAtTime(0.08, when + 0.03)
+    g.gain.exponentialRampToValueAtTime(0.0001, when + dur)
+
+    o1.connect(g)
+    o2.connect(g)
+    g.connect(ctx.destination)
+
+    o1.start(when)
+    o2.start(when)
+    o1.stop(when + dur)
+    o2.stop(when + dur)
+  }
+
+  private playCycle() {
+    if (!this.running) return
+    const ctx = this.getCtx()
+    if (!ctx) return
+
+    let t = ctx.currentTime + 0.06
+    for (const step of HAPPY_BDAY) {
+      const d = step.beats * this.beatSec
+      if (step.note) this.playNoteAt(ctx, step.note, t, d)
+      t += d
+    }
+
+    const nextMs = Math.max(1200, (t - ctx.currentTime + 0.45) * 1000)
+    this.timer = window.setTimeout(() => this.playCycle(), nextMs)
+  }
+
+  start() {
+    if (this.running) return
+    this.running = true
+    this.playCycle()
+  }
+
+  stop() {
+    this.running = false
+    if (this.timer !== null) {
+      clearTimeout(this.timer)
+      this.timer = null
+    }
+    if (this.ctx && this.ctx.state === 'running') {
+      void this.ctx.suspend()
+    }
+  }
+
+  dispose() {
+    this.stop()
+    if (this.ctx) {
+      void this.ctx.close()
+      this.ctx = null
+    }
+  }
 }
 
-function clampVB(vb: ViewBox, ratio = 2): ViewBox {
-  const w = Math.min(400, Math.max(400 / 3.5, vb.w))
-  let h = w * ratio
-  if (h > 800) h = 800
-  const x = Math.max(0, Math.min(400 - w, vb.x))
-  const maxY = Math.max(0, 800 - h)
-  const y = Math.max(0, Math.min(maxY, vb.y))
-  return { x, y, w, h }
-}
-
-// =============================================
-// SVG FILTERS
-// =============================================
 const Defs = memo(function Defs() {
   return (
     <defs>
-      <filter id="glow"><feGaussianBlur stdDeviation="3" result="b" /><feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge></filter>
-      <filter id="softGlow"><feGaussianBlur stdDeviation="4" result="b" /><feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge></filter>
-      <filter id="haze"><feGaussianBlur stdDeviation="1" /></filter>
       <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stopColor={C.sky6} /><stop offset="20%" stopColor={C.sky5} /><stop offset="40%" stopColor={C.sky4} />
-        <stop offset="60%" stopColor={C.sky3} /><stop offset="80%" stopColor={C.sky2} /><stop offset="100%" stopColor={C.sky1} />
+        <stop offset="0%" stopColor={C.skyTop} />
+        <stop offset="48%" stopColor={C.skyMid} />
+        <stop offset="100%" stopColor={C.skyBottom} />
       </linearGradient>
-      <linearGradient id="seaGrad" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stopColor={C.seaHighlight} stopOpacity="0.4" /><stop offset="30%" stopColor={C.sea3} stopOpacity="0.3" /><stop offset="100%" stopColor={C.sea1} stopOpacity="0" />
+      <radialGradient id="sunGrad" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stopColor={C.sunCore} stopOpacity="1" />
+        <stop offset="100%" stopColor={C.sunHalo} stopOpacity="0" />
+      </radialGradient>
+      <linearGradient id="streetGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stopColor={C.streetTop} />
+        <stop offset="100%" stopColor={C.streetBottom} />
       </linearGradient>
-      <linearGradient id="sunRef" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stopColor={C.sunGlow} stopOpacity="0.45" /><stop offset="100%" stopColor={C.sunGlow} stopOpacity="0" />
+      <linearGradient id="waterGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stopColor={C.waterTop} />
+        <stop offset="100%" stopColor={C.waterBottom} />
       </linearGradient>
       <linearGradient id="hazeGrad" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stopColor={C.sky3} stopOpacity="0" />
-        <stop offset="40%" stopColor={C.sky3} stopOpacity="0.15" />
-        <stop offset="100%" stopColor={C.sky3} stopOpacity="0.35" />
+        <stop offset="0%" stopColor={C.skyTop} stopOpacity="0" />
+        <stop offset="100%" stopColor={C.skyTop} stopOpacity="0.42" />
       </linearGradient>
+      <linearGradient id="skinGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stopColor="#fde9d8" />
+        <stop offset="100%" stopColor="#eec4ab" />
+      </linearGradient>
+      <linearGradient id="hairGrad" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stopColor="#5b382c" />
+        <stop offset="100%" stopColor="#3d241b" />
+      </linearGradient>
+      <linearGradient id="dressGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stopColor="#cc5e74" />
+        <stop offset="100%" stopColor="#b14d64" />
+      </linearGradient>
+      <linearGradient id="jacketGrad" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stopColor="#5a8cba" />
+        <stop offset="100%" stopColor="#3b6486" />
+      </linearGradient>
+      <filter id="glow">
+        <feGaussianBlur stdDeviation="2.2" result="b" />
+        <feMerge>
+          <feMergeNode in="b" />
+          <feMergeNode in="SourceGraphic" />
+        </feMerge>
+      </filter>
+      <filter id="softBlur">
+        <feGaussianBlur stdDeviation="1.7" />
+      </filter>
+      <filter id="waterBlur">
+        <feGaussianBlur stdDeviation="2.3" />
+      </filter>
     </defs>
   )
 })
 
-// =============================================
-// BACKGROUND
-// =============================================
-const Background = memo(function Background() {
-  const stars = useMemo(() => { const r = seededRandom(13); return Array.from({ length: 40 }, () => ({ x: r() * 400, y: r() * 220, s: 1 + r() * 2, d: 2 + r() * 3, dl: r() * 4 })) }, [])
-  const clouds = [{ x: 20, y: 50, s: 0.9, d: 70 }, { x: 180, y: 30, s: 0.6, d: 90 }, { x: 300, y: 70, s: 0.75, d: 80 }, { x: 100, y: 100, s: 0.5, d: 95 }, { x: -60, y: 80, s: 0.7, d: 85 }]
-  const birds = [{ x: 60, y: 120, d: 20, dl: 0 }, { x: 68, y: 126, d: 20, dl: 0.3 }, { x: 280, y: 150, d: 25, dl: 5 }, { x: 288, y: 156, d: 25, dl: 5.4 }, { x: 170, y: 90, d: 18, dl: 8 }]
+const FloatingMusicNotes = memo(function FloatingMusicNotes({ seed, count, yMin, yMax }: { seed: number; count: number; yMin: number; yMax: number }) {
+  const notes = useMemo(() => {
+    const rand = seededRandom(seed)
+    return Array.from({ length: count }, () => ({
+      x: 22 + rand() * 356,
+      y: yMin + rand() * (yMax - yMin),
+      size: 10 + rand() * 10,
+      d: 6 + rand() * 7,
+      dl: rand() * 8,
+      drift: (rand() - 0.5) * 22,
+      glyph: rand() > 0.5 ? '♪' : '♫',
+    }))
+  }, [seed, count, yMin, yMax])
 
   return (
     <g>
-      {/* Sky */}
-      <rect x="0" y="0" width="400" height="800" fill="url(#skyGrad)" />
-      {/* Stars */}
-      {stars.map((s, i) => <rect key={`s${i}`} x={s.x} y={s.y} width={s.s} height={s.s} fill="#fff8f0" rx="0.3"><animate attributeName="opacity" values="0.1;0.5;0.1" dur={`${s.d}s`} begin={`${s.dl}s`} repeatCount="indefinite" /></rect>)}
-      {/* Sun — larger, more dramatic */}
-      <circle cx="200" cy="370" r="100" fill={C.sky3} opacity="0.1"><animate attributeName="r" values="100;110;100" dur="8s" repeatCount="indefinite" /></circle>
-      <circle cx="200" cy="370" r="70" fill={C.sunGlow} opacity="0.15"><animate attributeName="r" values="70;78;70" dur="6s" repeatCount="indefinite" /></circle>
-      <circle cx="200" cy="370" r="55" fill={C.sunGlow} opacity="0.25" filter="url(#softGlow)"><animate attributeName="r" values="55;62;55" dur="4s" repeatCount="indefinite" /></circle>
-      <circle cx="200" cy="370" r="35" fill={C.sunGlow} opacity="0.4" filter="url(#glow)"><animate attributeName="r" values="35;38;35" dur="3s" repeatCount="indefinite" /></circle>
-      <circle cx="200" cy="370" r="24" fill={C.sun} opacity="0.95"><animate attributeName="r" values="24;26;24" dur="5s" repeatCount="indefinite" /></circle>
-      {/* Sun rays */}
-      {[0, 30, 60, 90, 120, 150].map((a, i) => {
-        const rad = (a * Math.PI) / 180
-        const x1 = 200 + Math.cos(rad) * 40, y1 = 370 + Math.sin(rad) * 40
-        const x2 = 200 + Math.cos(rad) * 120, y2 = 370 + Math.sin(rad) * 120
-        return <line key={`ray${i}`} x1={x1} y1={y1} x2={x2} y2={y2} stroke={C.sunGlow} strokeWidth="0.8" opacity="0.08">
-          <animate attributeName="opacity" values="0.04;0.12;0.04" dur={`${4 + i * 0.5}s`} repeatCount="indefinite" />
-        </line>
-      })}
-      {/* Clouds */}
-      {clouds.map((c, i) => (
-        <g key={`c${i}`} opacity="0.6" transform={`scale(${c.s})`}><g>
-          <animateTransform attributeName="transform" type="translate" values={`${c.x},${c.y};${c.x + 500},${c.y}`} dur={`${c.d}s`} repeatCount="indefinite" />
-          <rect x="0" y="8" width="6" height="6" fill={C.cloud} rx="1" /><rect x="6" y="4" width="6" height="10" fill={C.cloud} rx="1" />
-          <rect x="12" y="0" width="10" height="14" fill={C.cloud} rx="1" /><rect x="22" y="2" width="8" height="12" fill={C.cloud} rx="1" />
-          <rect x="30" y="4" width="8" height="10" fill={C.cloud} rx="1" /><rect x="38" y="6" width="6" height="8" fill={C.cloud} rx="1" />
-        </g></g>
-      ))}
-      {/* Birds */}
-      {birds.map((b, i) => (
-        <g key={`b${i}`} opacity="0.5">
-          <polyline points="-3,0 0,-2 3,0" fill="none" stroke="#5c4a3a" strokeWidth="1.5" strokeLinecap="round">
-            <animate attributeName="points" values="-3,0 0,-2 3,0;-3,-1 0,0 3,-1;-3,0 0,-2 3,0" dur="0.8s" repeatCount="indefinite" />
-          </polyline>
-          <animateTransform attributeName="transform" type="translate" values={`${b.x},${b.y};${b.x + 200},${b.y - 15}`} dur={`${b.d}s`} begin={`${b.dl}s`} repeatCount="indefinite" />
-        </g>
+      {notes.map((n, i) => (
+        <text key={`n-${i}`} x={n.x} y={n.y} fill={C.textMain} opacity="0" fontSize={n.size} fontFamily="Georgia, serif">
+          <animate attributeName="opacity" values="0;0.45;0" dur={`${n.d}s`} begin={`${n.dl}s`} repeatCount="indefinite" />
+          <animate attributeName="y" values={`${n.y};${n.y - 26};${n.y - 40}`} dur={`${n.d}s`} begin={`${n.dl}s`} repeatCount="indefinite" />
+          <animate attributeName="x" values={`${n.x};${n.x + n.drift};${n.x + n.drift * 1.2}`} dur={`${n.d}s`} begin={`${n.dl}s`} repeatCount="indefinite" />
+          {n.glyph}
+        </text>
       ))}
     </g>
   )
 })
 
-// =============================================
-// DISTANT HILLS — depth layers behind city
-// =============================================
-const DistantHills = memo(function DistantHills() {
+const SkyLayer = memo(function SkyLayer() {
+  const stars = useMemo(() => {
+    const rand = seededRandom(7)
+    return Array.from({ length: 46 }, () => ({
+      x: rand() * WORLD_W,
+      y: 30 + rand() * 230,
+      r: 0.6 + rand() * 1.3,
+      d: 2 + rand() * 3,
+      dl: rand() * 5,
+    }))
+  }, [])
+
   return (
     <g>
-      {/* Warm atmospheric glow on horizon */}
-      <ellipse cx="200" cy="310" rx="220" ry="60" fill={C.sky3} opacity="0.12" />
-      {/* Very distant mountains — misty purple/lavender */}
-      <path d="M-20,250 Q30,200 80,228 Q120,185 170,215 Q210,180 260,210 Q310,175 360,208 Q390,198 420,218 L420,290 L-20,290 Z"
-        fill={C.hillFar} opacity="0.12" filter="url(#haze)" />
-      {/* Tiny distant village on far mountains */}
-      <g opacity="0.1" filter="url(#haze)">
-        <rect x="140" y="212" width="4" height="8" fill={C.building2} />
-        <rect x="148" y="215" width="3" height="5" fill={C.building2} />
-        <rect x="155" y="210" width="3" height="10" fill={C.building2} />
-        <polygon points="155,210 156.5,206 158,210" fill={C.roofDark} />
-        <rect x="260" y="208" width="5" height="7" fill={C.building2} />
-        <rect x="268" y="210" width="3" height="5" fill={C.building2} />
-      </g>
-      {/* Mid-distance hills — warmer tone */}
-      <path d="M-20,268 Q20,235 70,255 Q110,222 160,246 Q200,228 250,244 Q290,218 340,240 Q380,230 420,250 L420,310 L-20,310 Z"
-        fill={C.hillMid} opacity="0.18" filter="url(#haze)" />
-      {/* Mid-hill scattered houses */}
-      <g opacity="0.12" filter="url(#haze)">
-        {[60,110,200,290,350].map((x, i) => (
-          <g key={`mh${i}`}>
-            <rect x={x} y={238 + Math.sin(i * 1.7) * 8} width={3 + i % 2} height={4 + i % 3} fill={C.building3} />
-            <polygon points={`${x-0.5},${238 + Math.sin(i * 1.7) * 8} ${x + 2},${234 + Math.sin(i * 1.7) * 8} ${x + 4.5},${238 + Math.sin(i * 1.7) * 8}`} fill={C.roofDark} />
-          </g>
-        ))}
-      </g>
-      {/* Near hills — green-brown with tree silhouettes */}
-      <path d="M-20,285 Q30,262 80,278 Q130,254 180,272 Q220,252 270,270 Q320,248 370,268 Q400,260 420,275 L420,330 L-20,330 Z"
-        fill={C.hillNear} opacity="0.3" />
-      {/* Tree silhouettes on near hills — denser forest */}
-      {[10,22,38,52,65,80,95,115,130,150,165,182,200,220,240,258,275,295,310,328,345,360,375,392].map((x, i) => {
-        const baseY = 260 + Math.sin(i * 0.9 + 0.5) * 12
-        const tall = i % 5 === 0
-        return (
-          <g key={`ht${i}`} opacity={0.12 + (i % 4) * 0.04}>
-            <rect x={x} y={baseY} width={tall ? 2.5 : 1.5} height={tall ? 10 : 6 + (i % 4) * 2} fill="#3d4a2a" />
-            <circle cx={x + 1} cy={baseY - (tall ? 4 : 2)} r={tall ? 4 : 2.5 + (i % 3) * 1.2} fill={i % 2 === 0 ? "#4a5a32" : "#3d5a28"} />
-            {tall && <circle cx={x + 3} cy={baseY - 1} r={2.5} fill="#3d5a28" opacity="0.7" />}
-          </g>
-        )
-      })}
-      {/* Atmospheric haze between hills and city */}
-      <rect x="0" y="255" width="400" height="60" fill="url(#hazeGrad)" />
-      {/* Light dust particles in the air */}
-      {[0,1,2,3,4,5].map(i => (
-        <circle key={`dp${i}`} cx={50 + i * 65} cy={280 + (i % 3) * 15} r="1" fill={C.sky4} opacity="0">
-          <animate attributeName="opacity" values="0;0.2;0" dur={`${4 + i}s`} begin={`${i * 1.5}s`} repeatCount="indefinite" />
+      <rect x="0" y="0" width={WORLD_W} height={WORLD_H} fill="url(#skyGrad)" />
+
+      <circle cx="204" cy="250" r="126" fill="url(#sunGrad)" opacity="0.7" />
+      <circle cx="204" cy="250" r="46" fill={C.sunCore} opacity="0.9" filter="url(#glow)">
+        <animate attributeName="r" values="46;49;46" dur="8s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="204" cy="250" r="58" fill="none" stroke={C.sunRim} strokeOpacity="0.28" strokeWidth="2" />
+
+      {stars.map((s, i) => (
+        <circle key={`st-${i}`} cx={s.x} cy={s.y} r={s.r} fill="#fff6df" opacity="0.3">
+          <animate attributeName="opacity" values="0.1;0.46;0.1" dur={`${s.d}s`} begin={`${s.dl}s`} repeatCount="indefinite" />
         </circle>
       ))}
+
+      {CLOUDS.map((c, i) => (
+        <g key={`cl-${i}`} transform={`scale(${c.s})`} opacity="0.76">
+          <g>
+            <animateTransform attributeName="transform" type="translate" values={`${c.x},${c.y};${c.x + 520},${c.y}`} dur={`${c.d}s`} repeatCount="indefinite" />
+            <rect x="0" y="9" width="8" height="6" fill={C.cloud} rx="2" />
+            <rect x="7" y="4" width="11" height="11" fill={C.cloud} rx="3" />
+            <rect x="16" y="0" width="15" height="15" fill={C.cloud} rx="4" />
+            <rect x="29" y="4" width="11" height="10" fill={C.cloud} rx="3" />
+            <rect x="39" y="8" width="8" height="6" fill={C.cloud} rx="2" />
+          </g>
+        </g>
+      ))}
+
+      <g opacity="0.45">
+        {[{ x: 44, y: 314, d: 20, dl: 0 }, { x: 58, y: 324, d: 19, dl: 0.4 }, { x: 256, y: 286, d: 23, dl: 4 }, { x: 270, y: 295, d: 24, dl: 4.2 }].map((b, i) => (
+          <g key={`bird-${i}`}>
+            <polyline points="-3,0 0,-2 3,0" fill="none" stroke="#6d5038" strokeWidth="1.2" strokeLinecap="round">
+              <animate attributeName="points" values="-3,0 0,-2 3,0;-3,-1 0,0 3,-1;-3,0 0,-2 3,0" dur="0.82s" repeatCount="indefinite" />
+            </polyline>
+            <animateTransform attributeName="transform" type="translate" values={`${b.x},${b.y};${b.x + 165},${b.y - 14}`} dur={`${b.d}s`} begin={`${b.dl}s`} repeatCount="indefinite" />
+          </g>
+        ))}
+      </g>
+
+      <FloatingMusicNotes seed={33} count={12} yMin={120} yMax={460} />
     </g>
   )
 })
 
-// =============================================
-// DETAILED CITY with hidden treasure scenes
-// =============================================
-interface TreasureSpot {
-  id: string; cx: number; cy: number; r: number; note: string
-}
-
-const TREASURE_SPOTS: TreasureSpot[] = [
-  { id: 'dancing', cx: 47, cy: 387, r: 20, note: 'C4' },
-  { id: 'pizza', cx: 107, cy: 390, r: 20, note: 'E4' },
-  { id: 'vintage', cx: 205, cy: 382, r: 20, note: 'G4' },
-  { id: 'walking', cx: 285, cy: 394, r: 20, note: 'C5' },
-]
-const TREASURE_MELODY = ['C4', 'E4', 'G4', 'A4', 'C5', 'E5', 'G5', 'E5', 'C5']
-
-const DetailedCity = memo(function DetailedCity({ foundTreasures, zoom }: { foundTreasures: Set<string>; zoom: number }) {
-  const showHints = zoom >= 1.8
-
+const HillsLayer = memo(function HillsLayer() {
   return (
     <g>
-      {/* === FAR BACKGROUND BUILDINGS (depth layer) === */}
-      <g opacity="0.35">
-        {/* Distant cathedral silhouette */}
-        <rect x="145" y="252" width="30" height="60" fill={C.building1} />
-        <polygon points="145,252 160,228 175,252" fill={C.building1} />
-        <rect x="158" y="222" width="4" height="10" fill={C.building1} />
-        <circle cx="160" cy="220" r="2" fill={C.building1} />
-        {/* Distant towers and rooftops */}
-        <rect x="5" y="260" width="18" height="50" fill={C.building2} />
-        <polygon points="5,260 14,248 23,260" fill={C.building2} />
-        <rect x="375" y="255" width="20" height="55" fill={C.building2} />
-        <polygon points="375,255 385,243 395,255" fill={C.building2} />
-        {/* Background apartment blocks */}
-        <rect x="80" y="268" width="40" height="42" fill={C.building1} />
-        <rect x="80" y="268" width="40" height="3" fill={C.building2} />
-        <rect x="260" y="265" width="35" height="45" fill={C.building1} />
-        <rect x="260" y="265" width="35" height="3" fill={C.building2} />
-        {/* Tiny windows on background buildings */}
-        {[88, 96, 104].map((x, i) => (
-          <rect key={`bgw1-${i}`} x={x} y={278} width="4" height="5" fill={C.windowDark} opacity="0.5" />
-        ))}
-        {[268, 276, 284].map((x, i) => (
-          <rect key={`bgw2-${i}`} x={x} y={275} width="4" height="5" fill={C.windowDark} opacity="0.5" />
+      <path d="M-20,430 Q34,382 86,412 Q136,376 188,404 Q238,370 286,398 Q334,362 420,398 L420,490 L-20,490 Z" fill={C.hillFar} opacity="0.52" />
+      <path d="M-20,486 Q40,444 98,468 Q156,432 214,456 Q272,424 328,448 Q368,434 420,452 L420,550 L-20,550 Z" fill={C.hillMid} opacity="0.68" />
+      <path d="M-20,546 Q52,504 118,530 Q184,496 248,522 Q312,492 372,514 Q396,506 420,516 L420,600 L-20,600 Z" fill={C.hillNear} opacity="0.84" />
+
+      <g opacity="0.24">
+        {[10, 25, 44, 62, 84, 106, 128, 150, 172, 194, 220, 246, 270, 294, 320, 344, 366, 388].map((x, i) => (
+          <g key={`tree-s-${x}`}>
+            <rect x={x} y={508 + Math.sin(i * 0.7) * 10} width="2" height="13" fill={C.treeDark} />
+            <circle cx={x + 1} cy={504 + Math.sin(i * 0.7) * 10} r="5" fill={i % 2 ? C.treeMid : C.treeLight} />
+          </g>
         ))}
       </g>
 
-      {/* === LEFT CLUSTER === */}
-      {/* Bell tower */}
-      <rect x="20" y="260" width="40" height="140" fill={C.building2} />
-      <rect x="20" y="260" width="40" height="5" fill={C.building3} />
-      <polygon points="18,260 40,232 62,260" fill={C.roof} />
-      <polygon points="18,260 40,236 40,260" fill={C.roofDark} />
-      {[278, 300, 322, 348, 370].map((y, i) => (
-        <g key={`tw${i}`}>
-          <rect x="33" y={y} width="8" height="12" fill={C.windowDark} />
-          <rect x="34" y={y + 1} width="6" height="10" fill={C.window}>
-            <animate attributeName="opacity" values="0.7;1;0.7" dur={`${2 + i * 0.3}s`} repeatCount="indefinite" />
-          </rect>
+      <rect x="0" y="500" width={WORLD_W} height="120" fill="url(#hazeGrad)" />
+    </g>
+  )
+})
+
+function Building3D({ b, index }: { b: Building; index: number }) {
+  const front = [C.wallA, C.wallB, C.wallC][b.tone]
+  const side = [C.sideA, C.sideB, C.sideC][b.tone]
+  const top = C.trim
+  const roofY = CITY_BASE - b.h
+  const dx = b.depth
+  const dy = b.depth * 0.56
+
+  const winW = Math.max(7, (b.w - 14) / b.windows.cols - 4)
+  const winH = Math.max(13, (b.h - 56) / b.windows.rows - 4)
+  const xStep = (b.w - 14) / b.windows.cols
+  const yStep = (b.h - 48) / b.windows.rows
+
+  const detail = (() => {
+    if (b.detail === 'clock') {
+      return (
+        <g>
+          <circle cx={b.x + b.w / 2} cy={roofY + 34} r="11" fill={C.trim} opacity="0.6" />
+          <circle cx={b.x + b.w / 2} cy={roofY + 34} r="8.6" fill="none" stroke={C.windowFrame} strokeWidth="1" opacity="0.45" />
+          <line x1={b.x + b.w / 2} y1={roofY + 34} x2={b.x + b.w / 2} y2={roofY + 29} stroke={C.sideA} strokeWidth="0.9" />
+          <line x1={b.x + b.w / 2} y1={roofY + 34} x2={b.x + b.w / 2 + 3.3} y2={roofY + 35.5} stroke={C.sideA} strokeWidth="0.9" />
         </g>
-      ))}
-      {/* Clock on bell tower */}
-      <circle cx="40" cy="268" r="6" fill={C.buildingLight} opacity="0.5" />
-      <circle cx="40" cy="268" r="5" fill={C.windowDark} opacity="0.3" />
-      <line x1="40" y1="268" x2="40" y2="264" stroke={C.buildingLight} strokeWidth="0.5" opacity="0.6" />
-      <line x1="40" y1="268" x2="43" y2="269" stroke={C.buildingLight} strokeWidth="0.5" opacity="0.6" />
-      {/* Flower box on tower window */}
-      <rect x="31" y="324" width="12" height="2" fill={C.green2} />
-      <rect x="32" y="322" width="3" height="3" fill={C.flowerPink} rx="1" />
-      <rect x="37" y="321" width="3" height="4" fill={C.dressRed} rx="1" />
+      )
+    }
 
-      {/* Main building left */}
-      <rect x="60" y="300" width="70" height="100" fill={C.building1} />
-      <rect x="60" y="300" width="70" height="4" fill={C.building3} />
-      <polygon points="56,300 95,278 134,300" fill={C.roof} />
-      <polygon points="56,300 95,282 95,300" fill={C.roofDark} />
-      {[72, 92, 112].map((x, i) => (
-        <g key={`bw1${i}`}>
-          <rect x={x} y="318" width="10" height="14" fill={C.windowDark} />
-          <rect x={x + 1} y="319" width="8" height="12" fill={C.window}><animate attributeName="opacity" values="0.6;1;0.6" dur={`${2.5 + i * 0.4}s`} repeatCount="indefinite" /></rect>
-          <rect x={x} y="348" width="10" height="14" fill={C.windowDark} />
-          <rect x={x + 1} y="349" width="8" height="12" fill={C.window}><animate attributeName="opacity" values="0.8;0.5;0.8" dur={`${3 + i * 0.3}s`} repeatCount="indefinite" /></rect>
+    if (b.detail === 'cafe') {
+      return (
+        <g>
+          <polygon points={`${b.x + 4},${CITY_BASE - 24} ${b.x + b.w - 4},${CITY_BASE - 24} ${b.x + b.w - 6},${CITY_BASE - 32} ${b.x + 6},${CITY_BASE - 32}`} fill={C.roofFront} opacity="0.82" />
+          <rect x={b.x + 10} y={CITY_BASE - 18} width="10" height="2" fill={C.trim} />
+          <rect x={b.x + b.w - 20} y={CITY_BASE - 18} width="10" height="2" fill={C.trim} />
         </g>
-      ))}
-      {/* Laundry line between buildings */}
-      <line x1="58" y1="315" x2="22" y2="317" stroke="#fff8f0" strokeWidth="0.4" opacity="0.5" />
-      <rect x="35" y="314" width="3" height="4" fill="#fff8f0" opacity="0.4" />
-      <rect x="42" y="313" width="4" height="5" fill={C.flowerPink} opacity="0.4" />
+      )
+    }
 
-      {/* Cafe awning over left building ground floor */}
-      <polygon points="62,375 130,375 128,370 64,370" fill={C.dressRed} opacity="0.8" />
-      <polygon points="62,375 130,375 128,370 64,370" fill={C.roofDark} opacity="0.3" />
-      {/* Cafe tables */}
-      <rect x="75" y="385" width="8" height="1.5" fill={C.building3} />
-      <rect x="78" y="386" width="2" height="7" fill={C.building3} />
-      <rect x="118" y="385" width="8" height="1.5" fill={C.building3} />
-      <rect x="121" y="386" width="2" height="7" fill={C.building3} />
-      {/* Flower pots at cafe */}
-      <rect x="68" y="390" width="4" height="4" fill={C.building3} />
-      <rect x="69" y="388" width="3" height="3" fill={C.green2} rx="1" />
-      <rect x="128" y="390" width="4" height="4" fill={C.building3} />
-      <rect x="129" y="388" width="3" height="3" fill={C.flowerPink} rx="1" />
+    if (b.detail === 'cathedral') {
+      return (
+        <g>
+          <circle cx={b.x + b.w / 2} cy={roofY + 44} r="9" fill="#c89d52" opacity="0.7" />
+          <circle cx={b.x + b.w / 2} cy={roofY + 44} r="5.5" fill={C.windowLit} opacity="0.58" />
+          <rect x={b.x + b.w / 2 - 6} y={CITY_BASE - 30} width="12" height="30" fill={side} rx="2" />
+          <rect x={b.x + b.w / 2 - 4} y={CITY_BASE - 27} width="8" height="10" fill={C.windowLit} opacity="0.38" />
+        </g>
+      )
+    }
 
-      {/* === TREASURE 1: Couple dancing in street === */}
-      <g opacity={foundTreasures.has('dancing') ? 1 : 0.7}>
-        {/* String lights above */}
-        <line x1="22" y1="375" x2="58" y2="375" stroke={C.sunGlow} strokeWidth="0.4" opacity="0.6" />
-        {[28, 36, 44, 52].map(x => (
-          <circle key={`dl${x}`} cx={x} cy="375" r="1" fill={C.sunGlow} opacity="0.7">
-            <animate attributeName="opacity" values="0.4;0.9;0.4" dur="2s" begin={`${x * 0.05}s`} repeatCount="indefinite" />
+    if (b.detail === 'balcony') {
+      return (
+        <g>
+          <rect x={b.x + b.w * 0.42} y={CITY_BASE - 74} width="20" height="3" fill={C.trim} />
+          <rect x={b.x + b.w * 0.44} y={CITY_BASE - 77} width="16" height="16" fill={C.sideA} />
+          <rect x={b.x + b.w * 0.45} y={CITY_BASE - 76} width="14" height="13" fill={C.windowLit} opacity="0.5" />
+          <rect x={b.x + b.w * 0.44} y={CITY_BASE - 71} width="4" height="4" fill="#b34d67" rx="1" />
+          <rect x={b.x + b.w * 0.52} y={CITY_BASE - 72} width="4" height="5" fill="#58744e" rx="1" />
+        </g>
+      )
+    }
+
+    return (
+      <g>
+        <rect x={b.x + b.w / 2 - 1} y={roofY - 46} width="2" height="11" fill={side} />
+        <polygon points={`${b.x + b.w / 2 + 1},${roofY - 46} ${b.x + b.w / 2 + 11},${roofY - 41} ${b.x + b.w / 2 + 1},${roofY - 36}`} fill={C.roofTop} />
+      </g>
+    )
+  })()
+
+  return (
+    <g>
+      <polygon points={`${b.x},${CITY_BASE} ${b.x + b.w},${CITY_BASE} ${b.x + b.w + dx * 1.8},${CITY_BASE + 30} ${b.x + dx * 0.8},${CITY_BASE + 30}`} fill={C.shadowSoft} />
+
+      <polygon points={`${b.x + b.w},${roofY} ${b.x + b.w + dx},${roofY - dy} ${b.x + b.w + dx},${CITY_BASE - dy} ${b.x + b.w},${CITY_BASE}`} fill={side} />
+      <polygon points={`${b.x},${roofY} ${b.x + b.w},${roofY} ${b.x + b.w + dx},${roofY - dy} ${b.x + dx},${roofY - dy}`} fill={top} opacity="0.66" />
+
+      <rect x={b.x} y={roofY} width={b.w} height={b.h} fill={front} />
+      <rect x={b.x} y={roofY} width={b.w} height="4" fill={C.trim} opacity="0.72" />
+
+      {b.roof === 'gable' && (
+        <g>
+          <polygon points={`${b.x - 2},${roofY} ${b.x + b.w / 2},${roofY - 34} ${b.x + b.w + 2},${roofY}`} fill={C.roofFront} />
+          <polygon points={`${b.x + b.w},${roofY} ${b.x + b.w + dx},${roofY - dy} ${b.x + b.w / 2 + dx},${roofY - 34 - dy} ${b.x + b.w / 2},${roofY - 34}`} fill={C.roofSide} />
+        </g>
+      )}
+
+      {b.roof === 'tower' && (
+        <g>
+          <polygon points={`${b.x - 1},${roofY} ${b.x + b.w / 2},${roofY - 38} ${b.x + b.w + 1},${roofY}`} fill={C.roofFront} />
+          <polygon points={`${b.x + b.w / 2},${roofY - 38} ${b.x + b.w / 2 + dx},${roofY - 38 - dy} ${b.x + b.w + dx},${roofY - dy} ${b.x + b.w},${roofY}`} fill={C.roofSide} />
+        </g>
+      )}
+
+      {b.roof === 'flat' && (
+        <g>
+          <rect x={b.x - 1} y={roofY - 8} width={b.w + 2} height="8" fill={C.trim} />
+          <polygon points={`${b.x + b.w + 1},${roofY - 8} ${b.x + b.w + dx + 1},${roofY - 8 - dy} ${b.x + b.w + dx + 1},${roofY - dy} ${b.x + b.w + 1},${roofY}`} fill={side} />
+        </g>
+      )}
+
+      {Array.from({ length: b.windows.rows }).map((_, row) =>
+        Array.from({ length: b.windows.cols }).map((__, col) => {
+          const wx = b.x + 7 + col * xStep
+          const wy = roofY + 18 + row * yStep
+          const flicker = 2.3 + ((index + row + col) % 4) * 0.4
+          return (
+            <g key={`w-${index}-${row}-${col}`}>
+              <rect x={wx} y={wy} width={winW} height={winH} fill={C.windowFrame} />
+              <rect x={wx + 1.1} y={wy + 1.1} width={winW - 2.2} height={winH - 2.2} fill={C.windowLit}>
+                <animate attributeName="opacity" values="0.62;0.96;0.62" dur={`${flicker}s`} repeatCount="indefinite" />
+              </rect>
+            </g>
+          )
+        }),
+      )}
+
+      {detail}
+    </g>
+  )
+}
+
+const CityDecor = memo(function CityDecor() {
+  return (
+    <g>
+      <line x1="16" y1="560" x2="380" y2="574" stroke="#f4d7b3" strokeWidth="0.7" opacity="0.35" />
+
+      <g opacity="0.58">
+        {[30, 46, 62, 78, 94, 110].map((x, i) => (
+          <circle key={`light-l-${x}`} cx={x} cy="736" r="1.4" fill={C.windowGlow}>
+            <animate attributeName="opacity" values="0.4;0.9;0.4" dur={`${2 + i * 0.2}s`} repeatCount="indefinite" />
           </circle>
         ))}
-        {/* Small plaza floor */}
-        <rect x="30" y="392" width="34" height="6" fill={C.cobble} opacity="0.3" rx="1" />
-        {/* Woman (red dress) — detailed with flowing hair */}
-        <rect x="38" y="381" width="3" height="3.5" fill={C.hairLight} rx="0.5" />
-        <rect x="37" y="382" width="1.5" height="3" fill={C.hairLight} rx="0.3" opacity="0.7" />
-        <rect x="37" y="384.5" width="5" height="4.5" fill={C.dressRed} rx="0.3" />
-        <rect x="36" y="386" width="2" height="3" fill={C.dressRed} opacity="0.6" rx="0.5" />
-        <rect x="38" y="389" width="2" height="2.5" fill={C.dressRed} />
-        <rect x="41" y="389" width="2" height="2.5" fill={C.dressRed} />
-        <rect x="38.5" y="389" width="1.5" height="1" fill={C.skin} rx="0.3" />
-        {/* Man (green shirt) — detailed with stance */}
-        <rect x="49" y="381" width="3" height="3.5" fill={C.hairDark} rx="0.5" />
-        <rect x="48" y="384.5" width="5" height="4.5" fill={C.shirtGreen} rx="0.3" />
-        <rect x="53" y="386" width="2" height="2" fill={C.shirtGreen} opacity="0.5" rx="0.3" />
-        <rect x="49" y="389" width="2" height="2.5" fill={C.pants} />
-        <rect x="51" y="389" width="2" height="2.5" fill={C.pants} />
-        {/* Joined hands — clasped together */}
-        <rect x="42" y="386" width="6" height="1.8" fill={C.skin} rx="0.5" />
-        <rect x="44" y="385.5" width="2" height="2.5" fill={C.skin} rx="0.5" opacity="0.6" />
-        {/* Musical notes floating around them */}
-        {[0, 1].map(i => (
-          <text key={`mn${i}`} x={43 + i * 8} y={378 - i * 3} fill={C.sunGlow} fontSize="3" fontFamily="serif" opacity="0">
-            <animate attributeName="opacity" values="0;0.5;0" dur={`${2 + i}s`} begin={`${i * 1.5}s`} repeatCount="indefinite" />
-            <animate attributeName="y" values={`${378 - i * 3};${374 - i * 3}`} dur={`${2 + i}s`} begin={`${i * 1.5}s`} repeatCount="indefinite" />
-            {'\u266A'}
+        <line x1="28" y1="736" x2="112" y2="736" stroke={C.windowGlow} strokeWidth="0.4" opacity="0.5" />
+      </g>
+
+      <g opacity="0.62">
+        <ellipse cx="200" cy="766" rx="13" ry="4.5" fill="#7bb08b" opacity="0.35" />
+        <rect x="197" y="754" width="6" height="12" fill={C.sideB} />
+        <ellipse cx="200" cy="754" rx="10" ry="4" fill={C.trim} opacity="0.7" />
+        <circle cx="196" cy="750" r="1" fill="#9fd9c9" opacity="0">
+          <animate attributeName="opacity" values="0;0.7;0" dur="2s" repeatCount="indefinite" />
+          <animate attributeName="cy" values="750;757" dur="2s" repeatCount="indefinite" />
+        </circle>
+        <circle cx="204" cy="749" r="1" fill="#9fd9c9" opacity="0">
+          <animate attributeName="opacity" values="0;0.7;0" dur="2.4s" begin="0.3s" repeatCount="indefinite" />
+          <animate attributeName="cy" values="749;757" dur="2.4s" begin="0.3s" repeatCount="indefinite" />
+        </circle>
+      </g>
+
+      <g opacity="0.45">
+        {[248, 270, 292].map((x, i) => (
+          <g key={`bal-fl-${x}`}>
+            <rect x={x} y="688" width="10" height="2" fill={C.trim} />
+            <rect x={x + 1} y="686" width="3" height="3" fill="#cf6d8c" rx="1" />
+            <rect x={x + 5} y="685" width="3" height="4" fill="#5a7a4e" rx="1" />
+            <circle cx={x + 7.5} cy={683.6} r="0.7" fill="#ffcf78" opacity="0.4">
+              <animate attributeName="opacity" values="0.2;0.55;0.2" dur={`${2.2 + i * 0.3}s`} repeatCount="indefinite" />
+            </circle>
+          </g>
+        ))}
+      </g>
+    </g>
+  )
+})
+
+const Promenade = memo(function Promenade() {
+  const cobbles = useMemo(() => {
+    return Array.from({ length: 60 }, (_, i) => ({
+      x: (i % 10) * 40 + 4 + (Math.floor(i / 10) % 2) * 8,
+      y: CITY_BASE + 18 + Math.floor(i / 10) * 6,
+    }))
+  }, [])
+
+  return (
+    <g>
+      <rect x="0" y={CITY_BASE - 4} width={WORLD_W} height="18" fill={C.trim} opacity="0.4" />
+      <rect x="0" y={CITY_BASE + 14} width={WORLD_W} height="72" fill="url(#streetGrad)" />
+
+      <g opacity="0.16">
+        {Array.from({ length: 26 }).map((_, i) => (
+          <line key={`pers-${i}`} x1={i * 16 - 40} y1={CITY_BASE + 88} x2={200 + (i - 13) * 4} y2={CITY_BASE + 14} stroke="#f0dcc0" strokeWidth="0.9" />
+        ))}
+      </g>
+
+      <g opacity="0.28">
+        {cobbles.map((c, i) => (
+          <rect key={`cb-${i}`} x={c.x} y={c.y} width="12" height="2" fill="#9c8f7b" rx="0.5" />
+        ))}
+      </g>
+
+      {[42, 118, 196, 274, 348].map((x, i) => (
+        <g key={`lamp-${x}`}>
+          <rect x={x} y={CITY_BASE - 2} width="2" height="34" fill={C.sideA} />
+          <rect x={x - 2} y={CITY_BASE - 4} width="6" height="2" fill={C.sideA} rx="1" />
+          <circle cx={x + 1} cy={CITY_BASE - 6} r="3" fill={C.windowGlow} opacity="0.42" filter="url(#glow)">
+            <animate attributeName="opacity" values="0.28;0.6;0.28" dur={`${3 + i * 0.35}s`} repeatCount="indefinite" />
+          </circle>
+        </g>
+      ))}
+
+      <g>
+        <rect x="154" y={CITY_BASE + 18} width="17" height="2" fill={C.trim} />
+        <rect x="161" y={CITY_BASE + 20} width="2" height="11" fill={C.sideB} />
+        <circle cx="149" cy={CITY_BASE + 32} r="4" fill="none" stroke={C.sideA} strokeWidth="1.3" />
+        <circle cx="173" cy={CITY_BASE + 32} r="4" fill="none" stroke={C.sideA} strokeWidth="1.3" />
+        <line x1="149" y1={CITY_BASE + 32} x2="161" y2={CITY_BASE + 20} stroke={C.sideA} strokeWidth="1" />
+        <line x1="173" y1={CITY_BASE + 32} x2="161" y2={CITY_BASE + 20} stroke={C.sideA} strokeWidth="1" />
+      </g>
+
+      {[34, 98, 248, 314, 366].map((x, i) => (
+        <g key={`tree-${x}`}>
+          <rect x={x} y={CITY_BASE + 8} width="5" height="10" fill={C.sideB} />
+          <circle cx={x + 2.5} cy={CITY_BASE + 4} r="6" fill={i % 2 ? C.treeLight : C.treeMid} opacity="0.7" />
+          <circle cx={x + 5.2} cy={CITY_BASE + 2.3} r="3.8" fill={C.treeLight} opacity="0.52" />
+        </g>
+      ))}
+    </g>
+  )
+})
+
+const FeaturedCouple = memo(function FeaturedCouple({ kissPulse }: { kissPulse: number }) {
+  return (
+    <g>
+      <ellipse cx={COUPLE_CENTER.x} cy={CITY_BASE + 42} rx="28" ry="5" fill={C.shadow} opacity="0.65" />
+
+      <g>
+        <animateTransform attributeName="transform" type="translate" values="0,0;1.8,-1.2;0,0;-1.4,-0.7;0,0" dur="2.8s" repeatCount="indefinite" />
+        <animateTransform attributeName="transform" type="rotate" values="-1.1 206 800;1.5 206 800;-1.1 206 800" dur="3.2s" repeatCount="indefinite" additive="sum" />
+
+        {/* ===== BOY (right, x≈221) ===== */}
+        <g>
+          <animateTransform attributeName="transform" type="rotate" values="-0.8 221 800;1 221 800;-0.8 221 800" dur="2.6s" repeatCount="indefinite" additive="sum" />
+
+          {/* Pants */}
+          <path d="M217.5 797 L216.8 822 L220.2 822 L220.5 797 Z" fill="#334458" />
+          <path d="M222 797 L221.5 822 L224.8 821.5 L225 797 Z" fill="#2a3a50" />
+          {/* Shoes */}
+          <g>
+            <animateTransform attributeName="transform" type="translate" values="0,0;0.5,-0.4;0,0" dur="1.9s" repeatCount="indefinite" />
+            <ellipse cx="218.8" cy="822.5" rx="3.3" ry="1.4" fill="#1f2f42" />
+          </g>
+          <g>
+            <animateTransform attributeName="transform" type="translate" values="0,0;-0.5,-0.4;0,0" dur="2.1s" repeatCount="indefinite" />
+            <ellipse cx="223.5" cy="822.5" rx="3.3" ry="1.4" fill="#1b293b" />
+          </g>
+
+          {/* Jacket body */}
+          <path d="M214.5 768 C215.5 765 218 763.5 221 763.5 C224 763.5 226.5 765 227.5 768 L228 797 L214 797 Z" fill="url(#jacketGrad)" />
+          {/* Shirt front */}
+          <rect x="219" y="764" width="4" height="33" fill="#eee6d8" rx="0.5" />
+          {/* Lapels */}
+          <path d="M215 768.5 L219 773 L219 797 L214.5 797 Z" fill="#345a7a" opacity="0.9" />
+          <path d="M223.5 768.5 L227 773 L227.5 797 L223.5 797 Z" fill="#345a7a" opacity="0.9" />
+          {/* Buttons */}
+          <circle cx="221" cy="772" r="0.4" fill="#d8cab6" />
+          <circle cx="221" cy="776.5" r="0.4" fill="#d8cab6" />
+          <circle cx="221" cy="781" r="0.4" fill="#d8cab6" />
+
+          {/* Right arm (away from girl) */}
+          <path d="M227 769 C229.5 772 230.5 778 229.5 785 C229 787 227.5 787.5 226.5 786 C227 781 227 775 226.5 770 Z" fill="#3a6283" />
+
+          {/* Neck */}
+          <rect x="219.5" y="758" width="3" height="5.5" rx="1.2" fill="url(#skinGrad)" />
+          {/* Face */}
+          <ellipse cx="221" cy="753.5" rx="5" ry="5.5" fill="url(#skinGrad)" />
+          {/* Right ear */}
+          <ellipse cx="225.8" cy="754" rx="0.85" ry="1.3" fill="url(#skinGrad)" opacity="0.9" />
+
+          {/* Hair - messy tousled, full volume */}
+          {/* Base hair mass covering top and sides */}
+          <path d="M214.5 753 C214 749 215 746 217 744 C218.5 742.5 220 742 221 742 C222 742 223.5 742.5 225 744 C227 746 228 749 227.5 753 C227 751 225 749.5 221 749.5 C217 749.5 215 751 214.5 753 Z" fill={C.hairDarkBrown} />
+          {/* Messy volume on top - soft wavy tufts */}
+          <path d="M216.5 745 C216 743.5 216.5 742 218 741 C218.5 742 218.5 743.5 218 745 Z" fill={C.hairDarkBrown} />
+          <path d="M219 744 C219 742 220 740.5 221.5 740 C222 741 221.5 743 220.5 744.5 Z" fill={C.hairDarkBrown} />
+          <path d="M222.5 744 C223 742 224.5 741 225.5 741.5 C225.5 742.5 224.5 744 223.5 744.5 Z" fill={C.hairDarkBrown} />
+          <path d="M225 745 C226 743 227.5 742.5 228 743 C227.5 744.5 226.5 746 225.5 746.5 Z" fill="#43281f" opacity="0.65" />
+          {/* Left side volume - covers ear area */}
+          <path d="M214.5 753 C213.5 751 213 749 213.5 747.5 C214 746 215 745 216 744.5 C215 746 214.5 749 214.5 753 Z" fill={C.hairDarkBrown} opacity="0.85" />
+          <path d="M214.5 753 C214 755 214.5 756.5 215.5 757 C215.8 755.5 215.5 754 214.5 753 Z" fill={C.hairDarkBrown} opacity="0.6" />
+          {/* Right side volume */}
+          <path d="M227.5 753 C228.5 751 229 749 228.5 747.5 C228 746 227 745 226 744.5 C227 746 227.5 749 227.5 753 Z" fill="#43281f" opacity="0.7" />
+          <path d="M227.5 753 C228 755 227.5 756.5 226.5 757 C226.2 755.5 226.5 754 227.5 753 Z" fill="#43281f" opacity="0.5" />
+          {/* Texture strands */}
+          <path d="M217 743 C217.5 741.5 219 741 220 742" fill="none" stroke="#5a3a2d" strokeWidth="0.5" strokeLinecap="round" opacity="0.4" />
+          <path d="M223 741.5 C224 741 225.5 741.5 226 743" fill="none" stroke="#5a3a2d" strokeWidth="0.5" strokeLinecap="round" opacity="0.35" />
+
+          {/* Eyebrows */}
+          <path d="M218.5 752 L220 751.5" stroke="#3f271d" strokeWidth="0.6" strokeLinecap="round" />
+          <path d="M222.5 751.5 L224 752" stroke="#3f271d" strokeWidth="0.6" strokeLinecap="round" />
+          {/* Eyes */}
+          <ellipse cx="219.5" cy="753.5" rx="0.65" ry="0.7" fill="#4f372d" />
+          <ellipse cx="223" cy="753.5" rx="0.65" ry="0.7" fill="#4f372d" />
+          {/* Nose */}
+          <path d="M221 755 C220.6 755.5 220.6 756.1 221 756.5" stroke="#bb8678" strokeWidth="0.4" strokeLinecap="round" fill="none" />
+          {/* Cheek blush */}
+          <ellipse cx="219" cy="756.5" rx="0.8" ry="0.32" fill="#dd9a95" opacity="0.3" />
+          <ellipse cx="223.5" cy="756.5" rx="0.8" ry="0.32" fill="#dd9a95" opacity="0.3" />
+          {/* Mouth */}
+          <path d="M219.5 758 C220.5 758.6 222 758.6 223 758" stroke="#5a3a2d" strokeWidth="0.5" strokeLinecap="round" fill="none" />
+        </g>
+
+        {/* ===== GIRL (left, x≈200) ===== */}
+        <g>
+          <animateTransform attributeName="transform" type="rotate" values="1 199 800;-1.2 199 800;1 199 800" dur="2.6s" repeatCount="indefinite" additive="sum" />
+
+          {/* Back hair - curly volume on sides, flat on top */}
+          <path d="M196 750 C196 747.5 198 746 200.5 746 C203 746 205 747.5 205 750 L205.5 755 C206 758 207 761 207 763 C206.5 765 205 766 203 766 L198 766 C196 766 194.5 765 194 763 C194 761 195 758 195.5 755 Z" fill="url(#hairGrad)" />
+
+          {/* Legs */}
+          <path d="M196.5 800 C196 808 196.5 816 197.5 822 L200.2 822 C199.2 816 199 808 199.5 800 Z" fill="#ead0b7" />
+          <path d="M201.5 800 C201 808 201.5 816 203 822 L205.5 821.5 C204.5 816 204 808 204.5 800 Z" fill="#e3c8ae" />
+          {/* Shoes */}
+          <g>
+            <animateTransform attributeName="transform" type="translate" values="0,0;0.5,-0.5;0,0" dur="1.85s" repeatCount="indefinite" />
+            <ellipse cx="199" cy="822.5" rx="3" ry="1.3" fill="#384555" />
+          </g>
+          <g>
+            <animateTransform attributeName="transform" type="translate" values="0,0;-0.4,-0.4;0,0" dur="2.2s" repeatCount="indefinite" />
+            <ellipse cx="204.5" cy="822.5" rx="3" ry="1.3" fill="#344253" />
+          </g>
+
+          {/* Dress */}
+          <path d="M192.5 768 C194 765 197 763.5 200.5 763.5 C204 763.5 207 765 208.5 768 L210 800 L191 800 Z" fill="url(#dressGrad)" />
+          {/* Neckline */}
+          <path d="M195 768 C197 766 199.5 765.5 200.5 765.5 C201.5 765.5 204 766 206 768 C203.5 770 198 770 195 768 Z" fill="#cf667b" opacity="0.5" />
+          {/* Waist */}
+          <path d="M193 776 L208 776" stroke="#8c3348" strokeWidth="0.85" opacity="0.4" />
+          {/* Dress stripes */}
+          <path d="M192.5 784 C196 785.5 204 785.5 208 784" stroke="#e59aae" strokeWidth="0.85" opacity="0.32" />
+          <path d="M192 791 C195.5 792.5 204.5 792.5 208.5 791" stroke="#e89eb1" strokeWidth="0.75" opacity="0.22" />
+
+          {/* Left arm (away from boy) */}
+          <path d="M193 769 C190.5 772 189.5 778 190.5 785 C191 786.5 192.5 787 193.5 785.5 C193 781 193.2 775 193.5 770 Z" fill="#c85a6f" />
+
+          {/* Neck */}
+          <rect x="199" y="758" width="2.8" height="5.5" rx="1.2" fill="url(#skinGrad)" />
+          {/* Face */}
+          <ellipse cx="200.5" cy="753.5" rx="5.2" ry="5.8" fill="url(#skinGrad)" />
+          {/* Left ear */}
+          <ellipse cx="195.5" cy="754" rx="0.85" ry="1.3" fill="url(#skinGrad)" opacity="0.86" />
+
+          {/* Hair - front/top, very thin just covering hairline */}
+          <path d="M196.5 750 C197 748.5 198.5 747.5 200.5 747.5 C202.5 747.5 204 748.5 204.5 750 C203.5 749 202 748.5 200.5 748.5 C199 748.5 197.5 749 196.5 750 Z" fill={C.hairDarkBrown} opacity="0.8" />
+          {/* Curly side strands - left, bouncy S-curve curls */}
+          <path d="M195.5 751 C194 753 193.5 755 194.5 757 C193 758.5 192.5 761 193.5 763 C194 764.5 194.5 765.5 195 766" fill="none" stroke="#472b21" strokeWidth="2.5" strokeLinecap="round" opacity="0.7" />
+          <path d="M195 752 C193.5 754 193.5 756.5 194.8 758 C193.5 759.5 193 762 194 764" fill="none" stroke="#5a3a2d" strokeWidth="1.5" strokeLinecap="round" opacity="0.4" />
+          {/* Curl loops left */}
+          <path d="M194.5 757 C195.5 756 195.5 754.5 194.2 754" fill="none" stroke="#5a3a2d" strokeWidth="0.8" strokeLinecap="round" opacity="0.45" />
+          <path d="M193.5 763 C194.5 762 194.5 760.5 193.3 760" fill="none" stroke="#5a3a2d" strokeWidth="0.8" strokeLinecap="round" opacity="0.4" />
+          {/* Curly side strands - right, bouncy S-curve curls */}
+          <path d="M205.5 751 C207 753 207.5 755 206.5 757 C208 758.5 208.5 761 207.5 763 C207 764.5 206.5 765.5 206 766" fill="none" stroke="#472b21" strokeWidth="2.3" strokeLinecap="round" opacity="0.65" />
+          <path d="M206 752 C207.5 754 207.5 756.5 206.2 758 C207.5 759.5 208 762 207 764" fill="none" stroke="#5a3a2d" strokeWidth="1.5" strokeLinecap="round" opacity="0.35" />
+          {/* Curl loops right */}
+          <path d="M206.5 757 C205.5 756 205.5 754.5 206.8 754" fill="none" stroke="#5a3a2d" strokeWidth="0.8" strokeLinecap="round" opacity="0.45" />
+          <path d="M207.5 763 C206.5 762 206.5 760.5 207.7 760" fill="none" stroke="#5a3a2d" strokeWidth="0.8" strokeLinecap="round" opacity="0.4" />
+
+          {/* Eyebrows - delicate arched */}
+          <path d="M197.5 751.5 C198.2 751 199 750.8 199.8 751" stroke="#5a3a2d" strokeWidth="0.45" strokeLinecap="round" fill="none" />
+          <path d="M201.7 751 C202.5 750.8 203.3 751 204 751.5" stroke="#5a3a2d" strokeWidth="0.45" strokeLinecap="round" fill="none" />
+          {/* Eyes - larger with highlights */}
+          <ellipse cx="199" cy="753.2" rx="0.9" ry="1" fill="#4d362c" />
+          <ellipse cx="202.5" cy="753.2" rx="0.9" ry="1" fill="#4d362c" />
+          {/* Eye highlights */}
+          <ellipse cx="199.3" cy="752.8" rx="0.3" ry="0.35" fill="#fff" opacity="0.7" />
+          <ellipse cx="202.8" cy="752.8" rx="0.3" ry="0.35" fill="#fff" opacity="0.7" />
+          {/* Eyelashes */}
+          <path d="M197.9 752.5 L197.5 752" stroke="#3f261d" strokeWidth="0.3" strokeLinecap="round" />
+          <path d="M198.3 752.2 L198 751.6" stroke="#3f261d" strokeWidth="0.3" strokeLinecap="round" />
+          <path d="M203.2 752.2 L203.5 751.6" stroke="#3f261d" strokeWidth="0.3" strokeLinecap="round" />
+          <path d="M203.6 752.5 L204 752" stroke="#3f261d" strokeWidth="0.3" strokeLinecap="round" />
+          {/* Nose - small cute */}
+          <path d="M200.6 754.8 C200.3 755.2 200.3 755.7 200.6 756" stroke="#c09080" strokeWidth="0.35" strokeLinecap="round" fill="none" />
+          {/* Cheek blush - rosier */}
+          <ellipse cx="198" cy="756" rx="1.2" ry="0.5" fill="#e8918e" opacity="0.3" />
+          <ellipse cx="203.5" cy="756" rx="1.2" ry="0.5" fill="#e8918e" opacity="0.3" />
+          {/* Smile - wider, happier */}
+          <path d="M198.8 757.5 C199.8 758.5 201.7 758.5 202.7 757.5" stroke="#b85a60" strokeWidth="0.5" strokeLinecap="round" fill="none" />
+          {/* Lip color hint */}
+          <path d="M199.5 757.8 C200.3 758.3 201.2 758.3 202 757.8" fill="#d4777e" opacity="0.25" />
+        </g>
+
+        {/* ===== HOLDING HANDS ===== */}
+        {/* Girl's right arm reaching to boy */}
+        <path d="M208 775 C209.5 778 210.5 781 211.5 784 L210 786 C209 783 207.5 780 206.5 777 Z" fill={C.skinLight} />
+        {/* Boy's left arm reaching to girl */}
+        <path d="M215 774 C213.5 777 212.5 780 211.5 783 L213 785.5 C214 783 215 780 216 776 Z" fill="#446f93" />
+        {/* Clasped hands */}
+        <ellipse cx="211.5" cy="785" rx="2.3" ry="1.7" fill="url(#skinGrad)" />
+        <path d="M210 784.5 C210.5 785.5 212.5 785.5 213 784.5" stroke="#dfc0a8" strokeWidth="0.35" fill="none" />
+      </g>
+
+      <g>
+        {[0, 1, 2, 3].map(i => (
+          <text key={`dc-note-${i}`} x={183 + i * 11} y={748 - i * 10} fill={C.textMain} fontSize="8" opacity="0" fontFamily="Georgia, serif">
+            <animate attributeName="opacity" values="0;0.6;0" dur={`${2.5 + i * 0.35}s`} begin={`${i * 0.45}s`} repeatCount="indefinite" />
+            <animate attributeName="y" values={`${748 - i * 10};${740 - i * 10};${732 - i * 10}`} dur={`${2.5 + i * 0.35}s`} begin={`${i * 0.45}s`} repeatCount="indefinite" />
+            {i % 2 ? '♪' : '♫'}
           </text>
         ))}
-        {/* Discovery glow */}
-        {foundTreasures.has('dancing') && (
-          <circle cx="47" cy="387" r="18" fill={C.sunGlow} opacity="0.12" filter="url(#softGlow)">
-            <animate attributeName="opacity" values="0.08;0.18;0.08" dur="3s" repeatCount="indefinite" />
+      </g>
+
+      {kissPulse > 0 && (
+        <g key={`kiss-pulse-${kissPulse}`}>
+          <circle cx={COUPLE_CENTER.x} cy={COUPLE_CENTER.y - 15} r="10" fill={C.windowGlow} opacity="0.22">
+            <animate attributeName="r" from="10" to="40" dur="0.85s" fill="freeze" />
+            <animate attributeName="opacity" from="0.28" to="0" dur="0.85s" fill="freeze" />
           </circle>
-        )}
-      </g>
-
-      {/* Connecting building */}
-      <rect x="130" y="330" width="48" height="70" fill={C.building3} />
-      <rect x="130" y="330" width="48" height="3" fill={C.buildingLight} />
-      <polygon points="128,330 154,314 180,330" fill={C.roof} />
-      {[140, 160].map((x, i) => (
-        <g key={`bw2${i}`}>
-          <rect x={x} y="344" width="8" height="12" fill={C.windowDark} />
-          <rect x={x + 1} y="345" width="6" height="10" fill={C.window}><animate attributeName="opacity" values="0.9;0.5;0.9" dur={`${2 + i}s`} repeatCount="indefinite" /></rect>
+          <text x={COUPLE_CENTER.x} y={COUPLE_CENTER.y - 40} textAnchor="middle" fill={C.textAccent} fontSize="14" fontFamily="Georgia, serif" opacity="0.9">
+            <animate attributeName="opacity" values="0;1;0" dur="1.2s" fill="freeze" />
+            <animate attributeName="y" values={`${COUPLE_CENTER.y - 26};${COUPLE_CENTER.y - 48}`} dur="1.2s" fill="freeze" />
+            💋
+          </text>
         </g>
-      ))}
-
-      {/* === TREASURE 2: Couple eating pizza === */}
-      <g opacity={foundTreasures.has('pizza') ? 1 : 0.7}>
-        {/* Table */}
-        <rect x="99" y="387" width="16" height="1.5" fill={C.buildingLight} />
-        <rect x="106" y="388" width="2" height="6" fill={C.building2} />
-        {/* Pizza on table */}
-        <circle cx="104" cy="386" r="2" fill={C.sunGlow} opacity="0.8" />
-        <rect x="107" y="385" width="3" height="2" fill={C.dressRed} rx="0.5" />
-        {/* Woman (pink top) */}
-        <rect x="95" y="381" width="3" height="3" fill={C.hairLight} rx="0.5" />
-        <rect x="94" y="384" width="5" height="3" fill={C.dressPink} rx="0.3" />
-        <rect x="94" y="387" width="5" height="3" fill={C.pants} />
-        {/* Man (blue shirt) */}
-        <rect x="113" y="381" width="3" height="3" fill={C.hairDark} rx="0.5" />
-        <rect x="112" y="384" width="5" height="3" fill={C.shirtBlue} rx="0.3" />
-        <rect x="112" y="387" width="5" height="3" fill={C.pants} />
-        {/* Candle on table */}
-        <rect x="106" y="383" width="1" height="3" fill={C.buildingLight} />
-        <circle cx="106.5" cy="382.5" r="0.8" fill={C.sunGlow}>
-          <animate attributeName="opacity" values="0.6;1;0.6" dur="1.5s" repeatCount="indefinite" />
-        </circle>
-        {foundTreasures.has('pizza') && (
-          <circle cx="107" cy="390" r="18" fill={C.sunGlow} opacity="0.12" filter="url(#softGlow)">
-            <animate attributeName="opacity" values="0.08;0.18;0.08" dur="3s" repeatCount="indefinite" />
-          </circle>
-        )}
-      </g>
-
-      {/* Center gap -- street with cobblestones */}
-      <g opacity="0.25">
-        {Array.from({ length: 12 }, (_, i) => (
-          <rect key={`cb${i}`} x={180 + (i % 4) * 10} y={385 + Math.floor(i / 4) * 4} width="8" height="3" fill={C.cobble} rx="0.5" />
-        ))}
-      </g>
-
-      {/* === Arched bridge/walkway between buildings === */}
-      <path d="M128,358 Q154,340 180,358 L180,362 Q154,344 128,362 Z" fill={C.building2} opacity="0.7" />
-      <rect x="128" y="357" width="52" height="3" fill={C.building3} opacity="0.6" />
-      {/* Bridge railing */}
-      <path d="M130,356 Q154,338 178,356" fill="none" stroke={C.building3} strokeWidth="1.5" opacity="0.5" />
-      {/* Bridge railing posts */}
-      {[136, 148, 160, 172].map(x => (
-        <rect key={`bp${x}`} x={x} y={346 + Math.abs(x - 154) * 0.15} width="1" height="4" fill={C.building3} opacity="0.4" />
-      ))}
-
-      {/* === TREASURE 3: Vintage shop === */}
-      <g opacity={foundTreasures.has('vintage') ? 1 : 0.7}>
-        {/* Shop front */}
-        <rect x="188" y="365" width="34" height="35" fill={C.building2} />
-        <rect x="188" y="365" width="34" height="3" fill={C.buildingLight} />
-        {/* Awning */}
-        <polygon points="186,370 224,370 222,366 188,366" fill="#7b4a8a" opacity="0.7" />
-        {/* Display window */}
-        <rect x="191" y="373" width="14" height="12" fill={C.windowDark} />
-        <rect x="192" y="374" width="12" height="10" fill={C.window} opacity="0.4" />
-        {/* Dress in window */}
-        <rect x="195" y="376" width="3" height="1.5" fill={C.flowerPink} rx="0.3" />
-        <rect x="194" y="377.5" width="5" height="4" fill={C.dressRed} rx="0.3" />
-        {/* Hat in window */}
-        <rect x="199" y="376" width="4" height="1" fill={C.hairDark} rx="0.5" />
-        <rect x="200" y="375" width="2" height="1.5" fill={C.hairDark} rx="0.5" />
-        {/* Door */}
-        <rect x="208" y="376" width="10" height="24" fill={C.building1} rx="1" />
-        <rect x="209" y="377" width="8" height="8" fill={C.window} opacity="0.3" />
-        <circle cx="216" cy="388" r="0.8" fill={C.sunGlow} />
-        {/* Shop sign */}
-        <rect x="193" y="371" width="18" height="2" fill={C.buildingLight} rx="0.5" />
-        {/* Open sign glow */}
-        <rect x="210" y="379" width="5" height="2" fill={C.sunGlow} opacity="0.4" rx="0.3">
-          <animate attributeName="opacity" values="0.3;0.6;0.3" dur="2s" repeatCount="indefinite" />
-        </rect>
-        {/* Street lamp next to shop */}
-        <rect x="186" y="372" width="1" height="26" fill={C.building1} />
-        <circle cx="186.5" cy="371" r="2" fill={C.sunGlow} opacity="0.5" filter="url(#glow)">
-          <animate attributeName="opacity" values="0.3;0.6;0.3" dur="3s" repeatCount="indefinite" />
-        </circle>
-        {foundTreasures.has('vintage') && (
-          <circle cx="205" cy="382" r="20" fill={C.sunGlow} opacity="0.12" filter="url(#softGlow)">
-            <animate attributeName="opacity" values="0.08;0.18;0.08" dur="3s" repeatCount="indefinite" />
-          </circle>
-        )}
-      </g>
-
-      {/* === RIGHT CLUSTER === */}
-      <rect x="240" y="290" width="80" height="110" fill={C.building2} />
-      <rect x="240" y="290" width="80" height="4" fill={C.building3} />
-      <polygon points="236,290 280,264 324,290" fill={C.roof} />
-      <polygon points="236,290 280,268 280,290" fill={C.roofDark} />
-      {[252, 272, 296].map((x, i) => (
-        <g key={`bw3${i}`}>
-          <rect x={x} y="306" width="10" height="14" fill={C.windowDark} />
-          <rect x={x + 1} y="307" width="8" height="12" fill={C.window}><animate attributeName="opacity" values="0.7;1;0.7" dur={`${2.2 + i * 0.5}s`} repeatCount="indefinite" /></rect>
-          <rect x={x} y="336" width="10" height="14" fill={C.windowDark} />
-          <rect x={x + 1} y="337" width="8" height="12" fill={C.window}><animate attributeName="opacity" values="0.5;0.9;0.5" dur={`${3 + i * 0.2}s`} repeatCount="indefinite" /></rect>
-        </g>
-      ))}
-      {/* Balcony with cat */}
-      <rect x="268" y="362" width="16" height="3" fill={C.building3} />
-      <rect x="270" y="350" width="12" height="14" fill={C.windowDark} />
-      <rect x="271" y="351" width="10" height="12" fill={C.window}><animate attributeName="opacity" values="0.8;1;0.8" dur="2s" repeatCount="indefinite" /></rect>
-      {/* Tiny cat on balcony */}
-      <rect x="273" y="360" width="3" height="2" fill={C.hairDark} rx="0.5" />
-      <rect x="272" y="359" width="2" height="1.5" fill={C.hairDark} rx="0.5" />
-      {/* Cat tail */}
-      <path d="M276,361 Q278,359 279,360" fill="none" stroke={C.hairDark} strokeWidth="0.6" />
-
-      {/* Waterfront promenade railing */}
-      <rect x="240" y="396" width="80" height="1" fill={C.building3} opacity="0.7" />
-      {[248, 260, 272, 284, 296, 308].map(x => (
-        <rect key={`rail${x}`} x={x} y="392" width="1" height="5" fill={C.building3} opacity="0.5" />
-      ))}
-
-      {/* === TREASURE 4: Couple walking hand-in-hand === */}
-      <g opacity={foundTreasures.has('walking') ? 1 : 0.7}>
-        {/* Woman — detailed with flowing hair and scarf */}
-        <rect x="277" y="385.5" width="3" height="3.5" fill={C.hairLight} rx="0.5" />
-        <rect x="276" y="386.5" width="1.5" height="2.5" fill={C.hairLight} rx="0.3" opacity="0.6" />
-        <rect x="276" y="389" width="5" height="4" fill={C.dressPink} rx="0.3" />
-        {/* Flowing scarf */}
-        <rect x="274" y="389" width="3" height="1.5" fill={C.heartPink} opacity="0.5" rx="0.5" />
-        <rect x="272" y="389.5" width="2" height="1" fill={C.heartPink} opacity="0.3" rx="0.5" />
-        <rect x="277" y="393" width="2" height="2.5" fill={C.dressPink} />
-        <rect x="279" y="393" width="2" height="2.5" fill={C.dressPink} />
-        {/* Man — taller, detailed */}
-        <rect x="287" y="384.5" width="3" height="3.5" fill={C.hairDark} rx="0.5" />
-        <rect x="286" y="388" width="5" height="4.5" fill={C.shirtBlue} rx="0.3" />
-        <rect x="287" y="392.5" width="2" height="3" fill={C.pants} />
-        <rect x="289" y="392.5" width="2" height="3" fill={C.pants} />
-        {/* Held hands — intertwined fingers */}
-        <rect x="281" y="390" width="5" height="1.8" fill={C.skin} rx="0.5" />
-        <rect x="282.5" y="389.5" width="2" height="2.5" fill={C.skin} rx="0.5" opacity="0.5" />
-        {/* Trail of hearts behind them */}
-        {[0, 1, 2].map(i => (
-          <g key={`th${i}`} opacity="0">
-            <animate attributeName="opacity" values="0;0.4;0" dur={`${2.5 + i * 0.5}s`} begin={`${i * 1}s`} repeatCount="indefinite" />
-            <rect x={270 - i * 8} y={386 - i * 2} width="1.5" height="1.5" fill={C.heartPink} rx="0.3" />
-            <rect x={271.5 - i * 8} y={386 - i * 2} width="1.5" height="1.5" fill={C.heartPink} rx="0.3" />
-            <rect x={270.5 - i * 8} y={387.2 - i * 2} width="1.5" height="1" fill={C.heartPink} rx="0.3" />
-          </g>
-        ))}
-        {foundTreasures.has('walking') && (
-          <circle cx="285" cy="392" r="18" fill={C.sunGlow} opacity="0.12" filter="url(#softGlow)">
-            <animate attributeName="opacity" values="0.08;0.18;0.08" dur="3s" repeatCount="indefinite" />
-          </circle>
-        )}
-      </g>
-
-      {/* Right tower */}
-      <rect x="320" y="270" width="38" height="130" fill={C.building1} />
-      <rect x="320" y="270" width="38" height="4" fill={C.building2} />
-      <polygon points="318,270 339,242 360,270" fill={C.roof} />
-      <polygon points="318,270 339,246 339,270" fill={C.roofDark} />
-      <circle cx="339" cy="290" r="7" fill={C.windowDark} />
-      <circle cx="339" cy="290" r="5" fill={C.window}><animate attributeName="opacity" values="0.7;1;0.7" dur="4s" repeatCount="indefinite" /></circle>
-      {/* Rose window detail */}
-      <circle cx="339" cy="290" r="3" fill="none" stroke={C.windowDark} strokeWidth="0.3" opacity="0.4" />
-      {[310, 336, 366].map((y, i) => (
-        <g key={`tw2${i}`}>
-          <rect x="332" y={y} width="8" height="12" fill={C.windowDark} />
-          <rect x="333" y={y + 1} width="6" height="10" fill={C.window}><animate attributeName="opacity" values="0.6;0.9;0.6" dur={`${2.8 + i * 0.4}s`} repeatCount="indefinite" /></rect>
-        </g>
-      ))}
-      {/* Flag on tower */}
-      <rect x="339" y="238" width="1" height="8" fill={C.building1} />
-      <polygon points="340,238 348,241 340,244" fill={C.dressRed} opacity="0.8" />
-
-      {/* Small rightmost building */}
-      <rect x="358" y="340" width="42" height="60" fill={C.building3} />
-      <polygon points="356,340 379,324 402,340" fill={C.roof} />
-      <rect x="367" y="355" width="8" height="12" fill={C.windowDark} />
-      <rect x="368" y="356" width="6" height="10" fill={C.window}><animate attributeName="opacity" values="0.8;0.5;0.8" dur="2.5s" repeatCount="indefinite" /></rect>
-      <rect x="383" y="355" width="8" height="12" fill={C.windowDark} />
-      <rect x="384" y="356" width="6" height="10" fill={C.window}><animate attributeName="opacity" values="0.6;1;0.6" dur="3s" repeatCount="indefinite" /></rect>
-
-      {/* Waterfront / dock */}
-      <rect x="0" y="396" width="400" height="6" fill={C.building1} opacity="0.6" />
-      <rect x="0" y="399" width="400" height="3" fill={C.sea2} opacity="0.3" />
-
-      {/* Street lamp posts */}
-      {[25, 135, 245, 350].map(x => (
-        <g key={`lamp${x}`}>
-          <rect x={x} y="378" width="1" height="20" fill={C.building1} />
-          <rect x={x - 2} y="377" width="5" height="1.5" fill={C.building1} rx="0.5" />
-          <circle cx={x + 0.5} cy="377" r="2.5" fill={C.sunGlow} opacity="0.4" filter="url(#glow)">
-            <animate attributeName="opacity" values="0.25;0.55;0.25" dur="3.5s" repeatCount="indefinite" />
-          </circle>
-          {/* Lamp light cone */}
-          <polygon points={`${x - 3},378 ${x + 4},378 ${x + 8},396 ${x - 7},396`} fill={C.sunGlow} opacity="0.04" />
-        </g>
-      ))}
-
-      {/* Greenery */}
-      {[28, 65, 135, 248, 326, 362].map((x, i) => (
-        <g key={`v${i}`}>
-          <rect x={x + 2} y="392" width="3" height="5" fill={C.green1} />
-          <rect x={x - 1} y="390" width="3" height="4" fill={C.green2} />
-          <rect x={x + 5} y="391" width="2" height="5" fill={C.green3} />
-        </g>
-      ))}
-
-      {/* === EXTRA CITY DETAILS === */}
-
-      {/* Chimneys with smoke */}
-      <rect x="94" y="274" width="6" height="8" fill={C.building1} />
-      {[0,1,2].map(i => (
-        <circle key={`smk1-${i}`} cx={97} cy={270 - i * 8} r={2 + i * 1.5} fill="#fff8f0" opacity="0">
-          <animate attributeName="opacity" values="0;0.15;0" dur={`${3 + i}s`} begin={`${i * 0.8}s`} repeatCount="indefinite" />
-          <animate attributeName="cy" values={`${270 - i * 8};${258 - i * 12}`} dur={`${3 + i}s`} begin={`${i * 0.8}s`} repeatCount="indefinite" />
-        </circle>
-      ))}
-      <rect x="275" y="260" width="5" height="6" fill={C.building1} />
-      {[0,1,2].map(i => (
-        <circle key={`smk2-${i}`} cx={277} cy={256 - i * 7} r={1.5 + i * 1.2} fill="#fff8f0" opacity="0">
-          <animate attributeName="opacity" values="0;0.12;0" dur={`${3.5 + i}s`} begin={`${i * 0.7 + 1}s`} repeatCount="indefinite" />
-          <animate attributeName="cy" values={`${256 - i * 7};${244 - i * 11}`} dur={`${3.5 + i}s`} begin={`${i * 0.7 + 1}s`} repeatCount="indefinite" />
-        </circle>
-      ))}
-
-      {/* Hanging shop signs */}
-      <rect x="70" y="372" width="1" height="5" fill={C.building1} />
-      <rect x="66" y="377" width="9" height="6" fill={C.buildingLight} rx="0.5" />
-      <rect x="68" y="378" width="5" height="4" fill={C.window} opacity="0.4" rx="0.3" />
-
-      <rect x="355" y="348" width="1" height="4" fill={C.building1} />
-      <rect x="351" y="352" width="9" height="5" fill={C.buildingLight} rx="0.5" />
-
-      {/* Window shutters on left building */}
-      <rect x="70" y="318" width="2" height="14" fill={C.green2} opacity="0.6" />
-      <rect x="84" y="318" width="2" height="14" fill={C.green2} opacity="0.6" />
-
-      {/* Balcony flower boxes */}
-      {[252, 272, 296].map(x => (
-        <g key={`fb${x}`}>
-          <rect x={x} y="320" width="10" height="2" fill={C.building3} />
-          <rect x={x + 1} y="318" width="3" height="3" fill={C.flowerPink} rx="1" />
-          <rect x={x + 5} y="317" width="3" height="4" fill={C.dressRed} rx="1" />
-        </g>
-      ))}
-
-      {/* Bicycle parked against wall */}
-      <circle cx="163" cy="393" r="3" fill="none" stroke={C.building1} strokeWidth="0.8" />
-      <circle cx="172" cy="393" r="3" fill="none" stroke={C.building1} strokeWidth="0.8" />
-      <line x1="163" y1="393" x2="167" y2="388" stroke={C.building1} strokeWidth="0.6" />
-      <line x1="172" y1="393" x2="167" y2="388" stroke={C.building1} strokeWidth="0.6" />
-      <line x1="167" y1="388" x2="165" y2="385" stroke={C.building1} strokeWidth="0.6" />
-
-      {/* Bench near waterfront */}
-      <rect x="300" y="393" width="14" height="1.5" fill={C.building2} />
-      <rect x="302" y="389" width="1.5" height="5" fill={C.building2} />
-      <rect x="311" y="389" width="1.5" height="5" fill={C.building2} />
-      <rect x="301" y="389" width="12" height="1.5" fill={C.building3} />
-
-      {/* === Couple watching sunset on bench === */}
-      {/* Woman leaning on man */}
-      <rect x="303" y="389" width="3" height="3" fill={C.hairLight} rx="0.5" />
-      <rect x="302" y="392" width="5" height="3" fill={C.dressPink} rx="0.3" />
-      {/* Man with arm around */}
-      <rect x="309" y="388" width="3" height="3" fill={C.hairDark} rx="0.5" />
-      <rect x="308" y="391" width="5" height="3" fill={C.shirtBlue} rx="0.3" />
-      {/* Arm around her */}
-      <rect x="306" y="391" width="3" height="1.5" fill={C.skin} rx="0.5" />
-      {/* Tiny heart floating above */}
-      <g opacity="0.5">
-        <animate attributeName="opacity" values="0.3;0.6;0.3" dur="3s" repeatCount="indefinite" />
-        <rect x="306" y="385" width="1.2" height="1.2" fill={C.heartPink} rx="0.3" />
-        <rect x="307.2" y="385" width="1.2" height="1.2" fill={C.heartPink} rx="0.3" />
-        <rect x="306.3" y="386" width="1.2" height="1" fill={C.heartPink} rx="0.3" />
-        <animate attributeName="opacity" values="0.2;0.6;0.2" dur="2.5s" repeatCount="indefinite" />
-      </g>
-
-      {/* Seagulls near waterfront */}
-      {[{x:160,y:380,d:15},{x:230,y:375,d:18},{x:340,y:385,d:12}].map((sg,i) => (
-        <g key={`sg${i}`} opacity="0.4">
-          <polyline points="-2,0 0,-1.5 2,0" fill="none" stroke="#fff8f0" strokeWidth="1" strokeLinecap="round">
-            <animate attributeName="points" values="-2,0 0,-1.5 2,0;-2,-0.5 0,0 2,-0.5;-2,0 0,-1.5 2,0" dur="0.6s" repeatCount="indefinite" />
-          </polyline>
-          <animateTransform attributeName="transform" type="translate" values={`${sg.x},${sg.y};${sg.x+80},${sg.y-10}`} dur={`${sg.d}s`} repeatCount="indefinite" />
-        </g>
-      ))}
-
-      {/* Potted trees along street */}
-      {[90, 230].map(x => (
-        <g key={`tree${x}`}>
-          <rect x={x} y="389" width="4" height="5" fill={C.building2} />
-          <circle cx={x + 2} cy="386" r="5" fill={C.green1} opacity="0.7" />
-          <circle cx={x + 4} cy="384" r="3" fill={C.green2} opacity="0.5" />
-          <circle cx={x} cy="385" r="3.5" fill={C.green1} opacity="0.6" />
-        </g>
-      ))}
-
-      {/* Clothesline between right buildings */}
-      <line x1="320" y1="335" x2="358" y2="337" stroke="#fff8f0" strokeWidth="0.3" opacity="0.4" />
-      <rect x="330" y="334" width="3" height="4" fill={C.dressPink} opacity="0.35" />
-      <rect x="338" y="333" width="4" height="5" fill="#fff8f0" opacity="0.3" />
-      <rect x="346" y="334" width="3" height="4" fill={C.shirtBlue} opacity="0.35" />
-
-      {/* === ADDITIONAL DEPTH: Foreground cobblestone street === */}
-      <g opacity="0.15">
-        {Array.from({ length: 24 }, (_, i) => (
-          <rect key={`fcb${i}`} x={(i % 8) * 50 + 5 + (Math.floor(i / 8) % 2) * 25} y={395 + Math.floor(i / 8) * 2} width="12" height="1.5" fill={C.cobble} rx="0.3" />
-        ))}
-      </g>
-
-      {/* === Ground shadows under buildings for depth === */}
-      <g opacity="0.1">
-        <rect x="18" y="398" width="44" height="2" fill="#000" rx="0.5" />
-        <rect x="58" y="398" width="74" height="2" fill="#000" rx="0.5" />
-        <rect x="186" y="398" width="36" height="2" fill="#000" rx="0.5" />
-        <rect x="238" y="398" width="84" height="2" fill="#000" rx="0.5" />
-        <rect x="322" y="398" width="40" height="2" fill="#000" rx="0.5" />
-      </g>
-
-      {/* === Warm atmospheric perspective between hills and city === */}
-      <rect x="0" y="290" width="400" height="30" fill={C.sky3} opacity="0.06" />
-
-      {/* === Fountain in plaza === */}
-      <g opacity="0.6">
-        <ellipse cx="200" cy="395" rx="8" ry="3" fill={C.sea3} opacity="0.3" />
-        <rect x="198" y="388" width="4" height="7" fill={C.building3} />
-        <ellipse cx="200" cy="388" rx="5" ry="2" fill={C.building3} />
-        {/* Water droplets */}
-        <circle cx="197" cy="386" r="0.6" fill={C.seaHighlight} opacity="0">
-          <animate attributeName="opacity" values="0;0.6;0" dur="2s" repeatCount="indefinite" />
-          <animate attributeName="cy" values="386;389" dur="2s" repeatCount="indefinite" />
-        </circle>
-        <circle cx="203" cy="385" r="0.6" fill={C.seaHighlight} opacity="0">
-          <animate attributeName="opacity" values="0;0.6;0" dur="2.3s" begin="0.5s" repeatCount="indefinite" />
-          <animate attributeName="cy" values="385;389" dur="2.3s" begin="0.5s" repeatCount="indefinite" />
-        </circle>
-      </g>
-
-      {/* === LOVE SCENES === */}
-
-      {/* --- Couple kissing on the bridge/archway --- */}
-      <g>
-        {/* Woman */}
-        <rect x="148" y="351" width="3" height="3" fill={C.hairLight} rx="0.5" />
-        <rect x="147" y="354" width="5" height="4" fill={C.dressRed} rx="0.3" />
-        <rect x="148" y="358" width="2" height="2" fill={C.dressRed} />
-        <rect x="150" y="358" width="2" height="2" fill={C.dressRed} />
-        {/* Man leaning in */}
-        <rect x="155" y="350" width="3" height="3" fill={C.hairDark} rx="0.5" />
-        <rect x="154" y="353" width="5" height="4" fill={C.shirtGreen} rx="0.3" />
-        <rect x="155" y="357" width="2" height="2.5" fill={C.pants} />
-        <rect x="157" y="357" width="2" height="2.5" fill={C.pants} />
-        {/* Their faces close — kissing */}
-        <rect x="150" y="352" width="5" height="1.5" fill={C.skin} rx="0.5" opacity="0.6" />
-        {/* Floating hearts */}
-        {[0, 1, 2].map(i => (
-          <g key={`kh${i}`} opacity="0">
-            <animate attributeName="opacity" values="0;0.6;0" dur={`${2 + i * 0.5}s`} begin={`${i * 1.2}s`} repeatCount="indefinite" />
-            <rect x={150 + i * 3} y={346 - i * 3} width="1.5" height="1.5" fill={i % 2 === 0 ? C.heartPink : C.heartRed} rx="0.3" />
-            <rect x={151.5 + i * 3} y={346 - i * 3} width="1.5" height="1.5" fill={i % 2 === 0 ? C.heartPink : C.heartRed} rx="0.3" />
-            <rect x={150.5 + i * 3} y={347.2 - i * 3} width="1.5" height="1" fill={i % 2 === 0 ? C.heartPink : C.heartRed} rx="0.3" />
-            <animate attributeName="opacity" values="0;0.5;0" dur={`${2.5 + i * 0.4}s`} begin={`${i * 0.8}s`} repeatCount="indefinite" />
-          </g>
-        ))}
-      </g>
-
-      {/* --- Couple taking selfie/photo near fountain --- */}
-      <g>
-        {/* Woman posing */}
-        <rect x="210" y="384" width="3" height="3" fill={C.hairLight} rx="0.5" />
-        <rect x="209" y="387" width="5" height="4" fill={C.dressPink} rx="0.3" />
-        <rect x="210" y="391" width="2" height="2" fill={C.dressPink} />
-        <rect x="212" y="391" width="2" height="2" fill={C.dressPink} />
-        {/* Man holding camera/phone */}
-        <rect x="218" y="383" width="3" height="3" fill={C.hairDark} rx="0.5" />
-        <rect x="217" y="386" width="5" height="4" fill={C.shirtBlue} rx="0.3" />
-        <rect x="218" y="390" width="2" height="2.5" fill={C.pants} />
-        <rect x="220" y="390" width="2" height="2.5" fill={C.pants} />
-        {/* Camera/phone */}
-        <rect x="215" y="385" width="2.5" height="2" fill={C.pants} rx="0.3" />
-        {/* Camera flash */}
-        <circle cx="216" cy="385" r="0.6" fill="#fff" opacity="0">
-          <animate attributeName="opacity" values="0;0.9;0" dur="4s" begin="2s" repeatCount="indefinite" />
-          <animate attributeName="r" values="0.6;3;0.6" dur="4s" begin="2s" repeatCount="indefinite" />
-        </circle>
-        {/* Peace sign / hand wave */}
-        <rect x="213" y="385" width="1" height="2.5" fill={C.skin} rx="0.3" />
-      </g>
-
-      {/* --- Couple strolling along waterfront promenade (animated walk) --- */}
-      <g>
-        <animateTransform attributeName="transform" type="translate" values="240,388;360,388;240,388" dur="25s" repeatCount="indefinite" />
-        {/* Woman walking */}
-        <rect x="0" y="-6" width="3" height="3" fill={C.hairLight} rx="0.5" />
-        <rect x="-1" y="-3" width="5" height="3.5" fill="#e8a0b0" rx="0.3" />
-        <rect x="0" y="0.5" width="2" height="2" fill="#e8a0b0" />
-        <rect x="2" y="0.5" width="2" height="2" fill="#e8a0b0" />
-        {/* Man walking next to her */}
-        <rect x="7" y="-7" width="3" height="3" fill={C.hairDark} rx="0.5" />
-        <rect x="6" y="-4" width="5" height="3.5" fill="#5a7a9a" rx="0.3" />
-        <rect x="7" y="-0.5" width="2" height="2.5" fill={C.pants} />
-        <rect x="9" y="-0.5" width="2" height="2.5" fill={C.pants} />
-        {/* Held hands between them */}
-        <rect x="3" y="-2" width="4" height="1.5" fill={C.skin} rx="0.5" />
-        {/* Small bouncing heart */}
-        <g>
-          <animate attributeName="opacity" values="0.4;0.7;0.4" dur="2s" repeatCount="indefinite" />
-          <rect x="3" y="-10" width="1.5" height="1.5" fill={C.heartPink} rx="0.3" />
-          <rect x="4.5" y="-10" width="1.5" height="1.5" fill={C.heartPink} rx="0.3" />
-          <rect x="3.5" y="-8.8" width="1.5" height="1.2" fill={C.heartPink} rx="0.3" />
-          <animate attributeName="opacity" values="0.3;0.7;0.3" dur="2s" repeatCount="indefinite" />
-        </g>
-      </g>
-
-      {/* --- Couple chasing each other playfully (animated) --- */}
-      <g>
-        <animateTransform attributeName="transform" type="translate" values="60,393;180,393;60,393" dur="18s" repeatCount="indefinite" />
-        {/* Woman running ahead (dress flowing) */}
-        <rect x="0" y="-6" width="3" height="2.5" fill={C.hairLight} rx="0.5" />
-        <rect x="-1" y="-3.5" width="5" height="3" fill={C.dressRed} rx="0.3" />
-        <rect x="0" y="-0.5" width="2" height="2" fill={C.dressRed} />
-        <rect x="3" y="-0.5" width="2" height="2" fill={C.dressRed} />
-        {/* Trailing dress motion */}
-        <rect x="-2" y="-2" width="2" height="2" fill={C.dressRed} opacity="0.3" rx="0.5" />
-        {/* Man chasing (arms out) */}
-        <rect x="-14" y="-7" width="3" height="2.5" fill={C.hairDark} rx="0.5" />
-        <rect x="-15" y="-4.5" width="5" height="3" fill={C.shirtGreen} rx="0.3" />
-        <rect x="-14" y="-1.5" width="2" height="2.5" fill={C.pants} />
-        <rect x="-12" y="-1.5" width="2" height="2.5" fill={C.pants} />
-        {/* Outstretched arms */}
-        <rect x="-10" y="-3.5" width="4" height="1.2" fill={C.skin} rx="0.3" />
-        {/* Laughter sparkles */}
-        {[0, 1, 2].map(i => (
-          <circle key={`ls${i}`} cx={-4 + i * 5} cy={-9 - i * 2} r="0.8" fill={C.sunGlow} opacity="0">
-            <animate attributeName="opacity" values="0;0.5;0" dur={`${1.5 + i * 0.3}s`} begin={`${i * 0.6}s`} repeatCount="indefinite" />
-          </circle>
-        ))}
-      </g>
-
-      {/* --- Couple playing cards at cafe table --- */}
-      <g>
-        {/* Table */}
-        <rect x="140" y="393" width="10" height="1.2" fill={C.buildingLight} />
-        <rect x="144" y="394" width="2" height="4" fill={C.building2} />
-        {/* Cards on table */}
-        <rect x="141" y="392" width="2" height="2.5" fill="#fff8f0" rx="0.2" />
-        <rect x="143" y="391.5" width="2" height="2.5" fill="#fff8f0" rx="0.2" />
-        <rect x="145" y="392" width="2" height="2.5" fill="#fff8f0" rx="0.2" />
-        {/* Red dots on cards */}
-        <circle cx="142" cy="393" r="0.3" fill={C.heartRed} />
-        <circle cx="146" cy="393" r="0.3" fill={C.heartRed} />
-        {/* Woman sitting */}
-        <rect x="135" y="387" width="3" height="3" fill={C.hairLight} rx="0.5" />
-        <rect x="134" y="390" width="5" height="3" fill="#d4a0c8" rx="0.3" />
-        {/* Man sitting */}
-        <rect x="151" y="387" width="3" height="3" fill={C.hairDark} rx="0.5" />
-        <rect x="150" y="390" width="5" height="3" fill={C.shirtBlue} rx="0.3" />
-        {/* Wine glasses */}
-        <rect x="139" y="390" width="0.8" height="2.5" fill={C.seaHighlight} opacity="0.5" />
-        <circle cx="139.4" cy="390" r="1" fill={C.seaHighlight} opacity="0.3" />
-        <rect x="148" y="390" width="0.8" height="2.5" fill={C.seaHighlight} opacity="0.5" />
-        <circle cx="148.4" cy="390" r="1" fill={C.seaHighlight} opacity="0.3" />
-      </g>
-
-      {/* --- Couple with ice cream walking --- */}
-      <g>
-        <animateTransform attributeName="transform" type="translate" values="330,392;370,392;330,392" dur="12s" repeatCount="indefinite" />
-        {/* Woman */}
-        <rect x="0" y="-6" width="2.5" height="2.5" fill={C.hairLight} rx="0.5" />
-        <rect x="-0.5" y="-3.5" width="4" height="3" fill="#f0b8d0" rx="0.3" />
-        <rect x="0" y="-0.5" width="1.5" height="2" fill="#f0b8d0" />
-        <rect x="2" y="-0.5" width="1.5" height="2" fill="#f0b8d0" />
-        {/* Ice cream cone */}
-        <rect x="3.5" y="-4" width="1" height="2" fill={C.buildingLight} />
-        <circle cx="4" cy="-4.5" r="1.2" fill={C.flowerPink} />
-        {/* Man */}
-        <rect x="7" y="-7" width="2.5" height="2.5" fill={C.hairDark} rx="0.5" />
-        <rect x="6.5" y="-4.5" width="4" height="3" fill="#6a8aa0" rx="0.3" />
-        <rect x="7" y="-1.5" width="1.5" height="2.5" fill={C.pants} />
-        <rect x="9" y="-1.5" width="1.5" height="2.5" fill={C.pants} />
-        {/* His ice cream */}
-        <rect x="-1" y="-5" width="1" height="2" fill={C.buildingLight} />
-        <circle cx="-0.5" cy="-5.5" r="1.2" fill={C.sunGlow} />
-      </g>
-
-      {/* --- Couple on balcony overlooking city (on the cat balcony at y=362) --- */}
-      <g>
-        {/* Woman leaning on railing */}
-        <rect x="275" y="355" width="2.5" height="2.5" fill={C.hairLight} rx="0.5" />
-        <rect x="274" y="357.5" width="4.5" height="3.5" fill={C.dressPink} rx="0.3" />
-        {/* Man behind her, arms around */}
-        <rect x="280" y="354" width="2.5" height="2.5" fill={C.hairDark} rx="0.5" />
-        <rect x="279" y="356.5" width="4.5" height="3.5" fill={C.shirtGreen} rx="0.3" />
-        {/* Arms resting on railing */}
-        <rect x="276" y="361" width="6" height="1" fill={C.skin} rx="0.3" opacity="0.6" />
-        {/* Hearts rising from them */}
-        {[0, 1].map(i => (
-          <g key={`bh${i}`} opacity="0">
-            <animate attributeName="opacity" values="0;0.5;0" dur={`${3 + i}s`} begin={`${i * 2}s`} repeatCount="indefinite" />
-            <animateTransform attributeName="transform" type="translate" values={`${277 + i * 3},${352};${277 + i * 3},${342}`} dur={`${3 + i}s`} begin={`${i * 2}s`} repeatCount="indefinite" />
-            <rect x="0" y="0" width="1.5" height="1.5" fill={C.heartPink} rx="0.3" />
-            <rect x="1.5" y="0" width="1.5" height="1.5" fill={C.heartPink} rx="0.3" />
-            <rect x="0.5" y="1.2" width="1.5" height="1" fill={C.heartPink} rx="0.3" />
-          </g>
-        ))}
-      </g>
-
-      {/* --- Couple sitting at edge of dock, feet dangling --- */}
-      <g>
-        {/* Woman */}
-        <rect x="55" y="392" width="2.5" height="2.5" fill={C.hairLight} rx="0.5" />
-        <rect x="54" y="394.5" width="4.5" height="2.5" fill={C.dressRed} rx="0.3" />
-        <rect x="55" y="397" width="1.5" height="3" fill={C.skin} />
-        <rect x="57" y="397" width="1.5" height="3" fill={C.skin} />
-        {/* Man */}
-        <rect x="61" y="391" width="2.5" height="2.5" fill={C.hairDark} rx="0.5" />
-        <rect x="60" y="393.5" width="4.5" height="2.5" fill={C.shirtBlue} rx="0.3" />
-        <rect x="61" y="396" width="1.5" height="3.5" fill={C.pants} />
-        <rect x="63" y="396" width="1.5" height="3.5" fill={C.pants} />
-        {/* Her head on his shoulder */}
-        <rect x="57" y="392.5" width="4" height="1.2" fill={C.skin} rx="0.3" opacity="0.4" />
-      </g>
-
-      {/* Zoom-in hint sparkles near undiscovered treasures */}
-      {showHints && TREASURE_SPOTS.map(t => !foundTreasures.has(t.id) && (
-        <circle key={`hint-${t.id}`} cx={t.cx} cy={t.cy - 12} r="1.5" fill={C.sunGlow} opacity="0">
-          <animate attributeName="opacity" values="0;0.5;0" dur="2s" repeatCount="indefinite" />
-        </circle>
-      ))}
+      )}
     </g>
   )
 })
 
-// =============================================
-// SEA
-// =============================================
-const SeaLayer = memo(function SeaLayer() {
+const WaterLayer = memo(function WaterLayer() {
   return (
     <g>
-      <rect x="0" y="400" width="400" height="400" fill={C.sea1} />
-      <rect x="0" y="400" width="400" height="400" fill="url(#seaGrad)" />
-      <ellipse cx="200" cy="420" rx="50" ry="80" fill="url(#sunRef)"><animate attributeName="rx" values="50;58;50" dur="4s" repeatCount="indefinite" /></ellipse>
-      {[0,1,2,3,4,5,6,7,8,9].map(i => (
-        <path key={`w${i}`} d={`M-20,${408+i*28} Q30,${403+i*28} 60,${408+i*28} T120,${408+i*28} T180,${408+i*28} T240,${408+i*28} T300,${408+i*28} T360,${408+i*28} T420,${408+i*28}`}
-          fill="none" stroke={i<3?C.seaHighlight:C.sea3} strokeWidth="1.2" opacity={0.3-i*0.025}>
-          <animateTransform attributeName="transform" type="translate" values={`0,0;${i%2===0?15:-15},${Math.sin(i)*2}`} dur={`${3+i*0.5}s`} repeatCount="indefinite" />
+      <rect x="0" y="860" width={WORLD_W} height={WORLD_H - 860} fill="url(#waterGrad)" />
+
+      <ellipse cx="206" cy="900" rx="68" ry="126" fill={C.waterGlow} opacity="0.18" filter="url(#softBlur)" />
+
+      <g opacity="0.14" filter="url(#waterBlur)">
+        {BUILDINGS.map((b, i) => (
+          <rect key={`r-${i}`} x={b.x + 2} y="864" width={b.w - 4} height={66 + i * 5} fill={C.wallC} />
+        ))}
+      </g>
+
+      {Array.from({ length: 20 }).map((_, i) => (
+        <path
+          key={`wv-${i}`}
+          d={`M-20,${880 + i * 28} Q30,${876 + i * 28} 74,${880 + i * 28} T166,${880 + i * 28} T258,${880 + i * 28} T350,${880 + i * 28} T430,${880 + i * 28}`}
+          fill="none"
+          stroke={i < 5 ? C.waterGlow : '#78a88e'}
+          strokeWidth="1.4"
+          opacity={0.34 - i * 0.013}
+        >
+          <animateTransform attributeName="transform" type="translate" values={`0,0;${i % 2 === 0 ? 13 : -13},0;0,0`} dur={`${4.6 + i * 0.55}s`} repeatCount="indefinite" />
         </path>
       ))}
-      {[{x:160,y:415,d:2},{x:190,y:425,d:3},{x:210,y:412,d:2.5},{x:180,y:438,d:1.8},{x:220,y:430,d:3.2},{x:175,y:450,d:2.7}].map((s,i) => (
-        <rect key={`sp${i}`} x={s.x} y={s.y} width="2" height="2" fill={C.sun} rx="0.3"><animate attributeName="opacity" values="0;0.8;0" dur={`${s.d}s`} begin={`${i*0.3}s`} repeatCount="indefinite" /></rect>
-      ))}
+
+      <g>
+        <animateTransform attributeName="transform" type="translate" values="104,990;286,980;104,990" dur="36s" repeatCount="indefinite" />
+        <polygon points="-9,4 -6,8 6,8 9,4" fill={C.sideA} />
+        <polygon points="0,4 0,-10 8,2" fill="#f9f0dd" opacity="0.92" />
+        <line x1="0" y1="-10" x2="0" y2="8" stroke={C.sideA} strokeWidth="1" />
+      </g>
     </g>
   )
 })
 
-const WaterDetails = memo(function WaterDetails() {
+const ForegroundLayer = memo(function ForegroundLayer() {
   return (
-    <g>
-      {/* Building reflections in water */}
-      <g opacity="0.08">
-        <rect x="20" y="405" width="40" height="40" fill={C.building2} />
-        <rect x="60" y="408" width="70" height="35" fill={C.building1} />
-        <rect x="240" y="406" width="80" height="38" fill={C.building2} />
-        <rect x="320" y="405" width="38" height="42" fill={C.building1} />
-        <animateTransform attributeName="transform" type="translate" values="0,0;3,0;0,0" dur="4s" repeatCount="indefinite" />
+    <g style={{ pointerEvents: 'none' }}>
+      <rect x="0" y="840" width={WORLD_W} height="90" fill="rgba(24,21,19,0.26)" />
+
+      <g opacity="0.3" filter="url(#softBlur)">
+        <polygon points="0,860 58,860 104,942 0,942" fill={C.silhouette} />
+        <polygon points="302,860 400,860 400,942 338,942" fill={C.silhouette} />
       </g>
 
-      {/* Sailboat 1 */}
-      <g>
-        <animateTransform attributeName="transform" type="translate" values="120,430;280,426;120,430" dur="30s" repeatCount="indefinite" />
-        <polygon points="-8,3 -6,7 6,7 8,3" fill={C.building1} />
-        <polygon points="0,3 0,-8 6,1" fill="#fff8f0" opacity="0.9" />
-        <line x1="0" y1="-8" x2="0" y2="7" stroke={C.building1} strokeWidth="1" />
-      </g>
-
-      {/* Small rowing boat */}
-      <g>
-        <animateTransform attributeName="transform" type="translate" values="320,460;80,465;320,460" dur="50s" repeatCount="indefinite" />
-        <ellipse cx="0" cy="2" rx="6" ry="2.5" fill={C.building2} />
-        <ellipse cx="0" cy="1" rx="5" ry="1.8" fill={C.building3} />
-        {/* Person in boat */}
-        <rect x="-1.5" y="-3" width="3" height="3" fill={C.hairDark} rx="0.5" />
-        <rect x="-2" y="0" width="4" height="2" fill={C.dressRed} rx="0.3" />
-      </g>
-
-      {/* Floating debris / leaves */}
-      {[{x:50,y:420,d:25},{x:150,y:445,d:30},{x:300,y:435,d:22},{x:350,y:470,d:35}].map((l,i) => (
-        <rect key={`leaf${i}`} x={l.x} y={l.y} width="2" height="1.5" fill={C.green2} opacity="0.25" rx="0.5">
-          <animateTransform attributeName="transform" type="translate" values={`0,0;${15 + i * 3},${Math.sin(i) * 3}`} dur={`${l.d}s`} repeatCount="indefinite" />
-        </rect>
-      ))}
-    </g>
-  )
-})
-
-const Fireflies = memo(function Fireflies() {
-  const f = useMemo(() => { const r = seededRandom(77); return Array.from({length:15},()=>({cx:20+r()*360,cy:350+r()*50,d:3+r()*4,dl:r()*6,r:1.2+r()*1.2})) }, [])
-  return <g>{f.map((v,i)=><circle key={`ff${i}`} cx={v.cx} cy={v.cy} r={v.r} fill={C.sunGlow} opacity="0.6"><animate attributeName="opacity" values="0;0.8;0" dur={`${v.d}s`} begin={`${v.dl}s`} repeatCount="indefinite" /><animate attributeName="cy" values={`${v.cy};${v.cy-8};${v.cy}`} dur={`${v.d+1}s`} begin={`${v.dl}s`} repeatCount="indefinite" /></circle>)}</g>
-})
-
-const Petals = memo(function Petals() {
-  const p = useMemo(() => { const r = seededRandom(42); return Array.from({length:18},()=>({x:r()*400,sy:-20-r()*80,ey:700+r()*100,sz:2.5+r()*3,d:12+r()*14,dl:r()*10,dr:(r()-0.5)*60,c:r()>0.5?C.flowerPink:C.flowerWhite,o:0.35+r()*0.4})) }, [])
-  return <g>{p.map((v,i)=>(
-    <g key={`p${i}`} opacity={v.o}><rect x="0" y="0" width={v.sz} height={v.sz*0.7} fill={v.c} rx="0.8"><animateTransform attributeName="transform" type="rotate" values="0;360" dur={`${v.d*0.8}s`} repeatCount="indefinite" /></rect>
-    <animateTransform attributeName="transform" type="translate" values={`${v.x},${v.sy};${v.x+v.dr},${v.ey}`} dur={`${v.d}s`} begin={`${v.dl}s`} repeatCount="indefinite" /></g>
-  ))}</g>
-})
-
-// =============================================
-// INTERACTIVE ELEMENTS (pure visual, no event handlers)
-// =============================================
-interface HeartData { id: number; x: number; sy: number; ey: number; size: number; dur: number; drift: number; color: string; born: number; layer: number }
-interface LanternData { id: number; x: number; sy: number; word: string }
-interface Ripple { id: number; x: number; y: number }
-interface CatchBurst { id: number; x: number; y: number; color: string }
-
-const Hearts = memo(function Hearts({ hearts }: { hearts: HeartData[] }) {
-  return <g style={{pointerEvents:'none'}}>{hearts.map(h=>{
-    const s = h.size
-    const layerOpacity = [0.4, 0.7, 1.0][h.layer] || 1
-    return (
-    <g key={h.id} data-hid={h.id} opacity={layerOpacity}>
-      <animateTransform attributeName="transform" type="translate" values={`${h.x},${h.sy};${h.x+h.drift},${h.ey}`} dur={`${h.dur}s`} fill="freeze" />
-      <rect x={-s*0.5} y={0} width={s*0.45} height={s*0.45} fill={h.color} rx="0.8" />
-      <rect x={s*0.05} y={0} width={s*0.45} height={s*0.45} fill={h.color} rx="0.8" />
-      <rect x={-s*0.25} y={s*0.25} width={s*0.5} height={s*0.45} fill={h.color} rx="0.8" />
-      <rect x={-s*0.35} y={s*0.08} width={s*0.2} height={s*0.2} fill="#fff" opacity="0.3" rx="0.5" />
-    </g>
-  )})}</g>
-})
-
-const Lanterns = memo(function Lanterns({ lanterns }: { lanterns: LanternData[] }) {
-  return <g style={{pointerEvents:'none'}}>{lanterns.map(l=>(
-    <g key={l.id}>
-      <animateTransform attributeName="transform" type="translate" values={`${l.x},${l.sy};${l.x},${-50}`} dur="20s" fill="freeze" />
-      <animate attributeName="opacity" values="0;1;1;0.7;0" dur="20s" fill="freeze" />
-      <ellipse cx="0" cy="0" rx="6" ry="8" fill={C.sunGlow} opacity="0.7" filter="url(#glow)" />
-      <ellipse cx="0" cy="0" rx="4" ry="6" fill={C.sun} opacity="0.9" />
-      <ellipse cx="0" cy="1" rx="1.5" ry="2" fill="#fff" opacity="0.8"><animate attributeName="ry" values="2;2.5;2" dur="0.5s" repeatCount="indefinite" /></ellipse>
-      <text x="0" y="-14" textAnchor="middle" fill={C.textMain} fontSize="7" fontFamily="monospace" opacity="0.9">{l.word}</text>
-    </g>
-  ))}</g>
-})
-
-const Effects = memo(function Effects({ ripples, bursts }: { ripples: Ripple[]; bursts: CatchBurst[] }) {
-  return <g style={{pointerEvents:'none'}}>
-    {ripples.map(r=><g key={`rp${r.id}`}>
-      <circle cx={r.x} cy={r.y} r="3" fill="none" stroke={C.seaHighlight} strokeWidth="1.2"><animate attributeName="r" from="3" to="28" dur="1s" fill="freeze" /><animate attributeName="opacity" from="0.8" to="0" dur="1s" fill="freeze" /></circle>
-      <circle cx={r.x} cy={r.y} r="3" fill="none" stroke={C.sun} strokeWidth="0.8"><animate attributeName="r" from="3" to="18" dur="0.7s" fill="freeze" /><animate attributeName="opacity" from="0.5" to="0" dur="0.7s" fill="freeze" /></circle>
-    </g>)}
-    {bursts.map(b=><g key={`br${b.id}`}>
-      <circle cx={b.x} cy={b.y} r="2" fill={b.color}><animate attributeName="r" from="2" to="15" dur="0.4s" fill="freeze" /><animate attributeName="opacity" from="0.8" to="0" dur="0.4s" fill="freeze" /></circle>
-      {[0,60,120,180,240,300].map((a,i)=>{const rad=a*Math.PI/180;return(
-        <rect key={i} x={b.x-1} y={b.y-1} width="2.5" height="2.5" fill={b.color} rx="0.5">
-          <animateTransform attributeName="transform" type="translate" values={`0,0;${Math.cos(rad)*18},${Math.sin(rad)*18}`} dur="0.5s" fill="freeze" />
-          <animate attributeName="opacity" from="1" to="0" dur="0.5s" fill="freeze" />
-        </rect>
-      )})}
-      <text x={b.x} y={b.y-4} textAnchor="middle" fill={C.sun} fontSize="8" fontFamily="monospace" fontWeight="bold">
-        <animate attributeName="opacity" values="1;0" dur="0.8s" fill="freeze" />
-        <animateTransform attributeName="transform" type="translate" values="0,0;0,-18" dur="0.8s" fill="freeze" />+1</text>
-    </g>)}
-  </g>
-})
-
-const Confetti = memo(function Confetti({ k }: { k: number }) {
-  const ps = useMemo(() => {
-    const r = seededRandom(k * 137 + 555)
-    const cs = [C.heartPink, C.heartRed, C.sunGlow, C.sun, C.flowerPink, C.seaHighlight, '#fff']
-    return Array.from({length:50},()=>({x:180+r()*40,y:350+r()*40,dx:(r()-0.5)*300,dy:-100-r()*400,s:2+r()*4,c:cs[Math.floor(r()*cs.length)],rot:r()*360,d:2+r()*2}))
-  }, [k])
-  if (k === 0) return null
-  return <g style={{pointerEvents:'none'}}>{ps.map((p,i)=>(
-    <rect key={`cf${i}`} x="0" y="0" width={p.s} height={p.s*0.6} fill={p.c} rx="0.5">
-      <animateTransform attributeName="transform" type="translate" values={`${p.x},${p.y};${p.x+p.dx},${p.y+p.dy}`} dur={`${p.d}s`} fill="freeze" />
-      <animateTransform attributeName="transform" type="rotate" values={`0;${p.rot}`} dur={`${p.d}s`} fill="freeze" additive="sum" />
-      <animate attributeName="opacity" values="1;1;0" dur={`${p.d}s`} fill="freeze" />
-    </rect>
-  ))}</g>
-})
-
-// =============================================
-// GAME UI
-// =============================================
-const WISH_WORDS = ['Wishing', 'you', 'endless', 'joy,', 'love,', 'and', 'magic', 'forever']
-
-function GameUI({ hc, ht, ft, tt, lr, allDone, melodyShown, zoom }: {
-  hc: number; ht: number; ft: number; tt: number; lr: number; allDone: boolean; melodyShown: boolean; zoom: number
-}) {
-  const pills = [
-    { icon: '\u2665', n: hc, t: ht, done: hc >= ht },
-    { icon: '\u2726', n: ft, t: tt, done: ft >= tt },
-    { icon: '\u25D0', n: lr, t: WISH_WORDS.length, done: lr >= WISH_WORDS.length },
-  ]
-  return (
-    <div className="absolute top-0 left-0 right-0 z-30 pointer-events-none" style={{ paddingTop: 'max(env(safe-area-inset-top, 0px), 8px)' }}>
-      <div className="flex justify-center gap-2.5 px-3 pt-2 flex-wrap">
-        {pills.map((p, i) => (
-          <div key={i} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full font-mono text-xs transition-colors duration-300"
-            style={{ background: 'rgba(33,39,51,0.75)', backdropFilter: 'blur(8px)', color: p.done ? C.sunGlow : C.textSub, border: `1px solid ${p.done ? C.sunGlow + '44' : C.sea3 + '33'}` }}>
-            <span style={{ fontSize: '14px' }}>{p.icon}</span>
-            <span>{p.n}/{p.t}</span>
-            {p.done && <span style={{ color: C.sunGlow }}>{'\u2713'}</span>}
-          </div>
+      <g opacity="0.26">
+        {[8, 16, 24, 32, 42, 348, 356, 364, 372, 382].map((x, i) => (
+          <path key={`reed-${x}`} d={`M${x},940 Q${x + (i % 2 ? -9 : 9)},${892 - (i % 3) * 9} ${x + (i % 2 ? -4 : 4)},${860 - (i % 4) * 11}`} fill="none" stroke={C.silhouette} strokeWidth="3" strokeLinecap="round" />
         ))}
-      </div>
-      {!allDone && (
-        <div className="text-center mt-2 px-4">
-          <p className="font-mono text-xs tracking-wide" style={{ color: C.textSub, opacity: 0.55, textShadow: '0 1px 4px rgba(0,0,0,0.5)' }}>
-            {ft >= tt && hc >= ht ? 'tap the sky to release wish lanterns' :
-             ft >= tt ? 'catch floating hearts \u2022 tap the sky & sea' :
-             zoom < 1.5 ? 'pinch to zoom \u2022 tap hearts, sky & sea' :
-             'explore the city \u2022 find hidden love stories'}
-          </p>
+      </g>
+    </g>
+  )
+})
+
+const HeartsEffect = memo(function HeartsEffect({ hearts }: { hearts: TapHeart[] }) {
+  return (
+    <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 50, overflow: 'hidden' }}>
+      {hearts.map(h => (
+        <div
+          key={h.id}
+          style={{
+            position: 'absolute',
+            left: h.sx,
+            top: h.sy,
+            fontSize: h.size,
+            lineHeight: 1,
+            color: h.color,
+            animation: `heartFloat ${h.dur}s ease-out forwards`,
+            ['--dx' as string]: `${h.dx}px`,
+            ['--rise' as string]: `${-h.rise}px`,
+          }}
+        >
+          ❤️
         </div>
-      )}
-      {melodyShown && (
-        <div className="flex justify-center mt-2">
-          <div className="px-4 py-2 rounded-lg font-mono text-xs animate-fade-in"
-            style={{ background: 'rgba(33,39,51,0.85)', color: C.sunGlow, border: `1px solid ${C.sunGlow}44` }}>
-            melody unlocked!
+      ))}
+      <style>{`
+        @keyframes heartFloat {
+          0% { opacity: 0; transform: translate(0, 0) scale(0.5); }
+          10% { opacity: 1; transform: translate(0, 0) scale(1); }
+          70% { opacity: 1; }
+          100% { opacity: 0; transform: translate(var(--dx), var(--rise)) scale(0.3); }
+        }
+      `}</style>
+    </div>
+  )
+})
+
+const FireworksEffect = memo(function FireworksEffect({ fireworks }: { fireworks: FireworkBurst[] }) {
+  return (
+    <g style={{ pointerEvents: 'none' }}>
+      {fireworks.map(f => (
+        <g key={f.id}>
+          <circle cx={f.x} cy={f.y} r="2" fill={f.color} opacity="0.9">
+            <animate attributeName="r" from="2" to="34" dur={`${f.dur}s`} fill="freeze" />
+            <animate attributeName="opacity" from="0.9" to="0" dur={`${f.dur}s`} fill="freeze" />
+          </circle>
+          {[0, 45, 90, 135, 180, 225, 270, 315].map((a, i) => {
+            const rad = (a * Math.PI) / 180
+            const px = Math.cos(rad) * 34
+            const py = Math.sin(rad) * 34
+            return (
+              <rect key={`p-${f.id}-${i}`} x={f.x - 1.2} y={f.y - 1.2} width="2.4" height="2.4" rx="0.7" fill={i % 2 === 0 ? f.color : C.windowGlow}>
+                <animateTransform attributeName="transform" type="translate" values={`0,0;${px},${py}`} dur={`${f.dur}s`} fill="freeze" />
+                <animate attributeName="opacity" from="1" to="0" dur={`${f.dur}s`} fill="freeze" />
+              </rect>
+            )
+          })}
+        </g>
+      ))}
+    </g>
+  )
+})
+
+const Atmosphere = memo(function Atmosphere() {
+  return (
+    <>
+      <div className="absolute inset-0 pointer-events-none z-20" style={{ background: 'radial-gradient(ellipse at center, rgba(255,255,255,0) 32%, rgba(0,0,0,0.38) 100%)' }} />
+      <div className="absolute inset-0 pointer-events-none z-20" style={{ background: 'linear-gradient(120deg, rgba(255,243,214,0.22) 0%, rgba(255,243,214,0.06) 44%, rgba(30,23,17,0.24) 100%)', mixBlendMode: 'soft-light' }} />
+      <div className="absolute inset-0 pointer-events-none z-20" style={{ backgroundImage: 'repeating-linear-gradient(0deg, rgba(255,255,255,0.05) 0px, rgba(255,255,255,0.05) 1px, transparent 1px, transparent 3px)', opacity: 0.05 }} />
+    </>
+  )
+})
+
+function KissNotesOverlay({ lines, activeLine, pulseKey, done }: { lines: string[]; activeLine: string; pulseKey: number; done: boolean }) {
+  return (
+    <div
+      className="absolute left-1/2 z-30 pointer-events-none"
+      style={{ bottom: 'max(env(safe-area-inset-bottom, 0px), 16px)', transform: 'translateX(-50%)', width: 'min(92vw, 620px)' }}
+    >
+      <div
+        style={{
+          padding: '12px 14px',
+          borderRadius: 14,
+          background: 'rgba(34,28,24,0.62)',
+          border: `1px solid ${done ? 'rgba(255,224,126,0.5)' : 'rgba(255,224,126,0.26)'}`,
+          boxShadow: done ? '0 0 26px rgba(255,224,126,0.25)' : 'none',
+          backdropFilter: 'blur(8px)',
+          WebkitBackdropFilter: 'blur(8px)',
+          maxHeight: '42vh',
+          overflow: 'hidden',
+        }}
+      >
+        {lines.length === 0 ? (
+          <div
+            style={{
+              color: C.textSub,
+              fontSize: 'clamp(0.78rem, 2.8vw, 0.95rem)',
+              fontFamily: '"IBM Plex Mono", "SFMono-Regular", Menlo, monospace',
+              textAlign: 'center',
+              letterSpacing: '0.04em',
+            }}
+          >
+            Çifte dokun • her öpücükte yeni bir not açılsın
           </div>
-        </div>
-      )}
-    </div>
-  )
-}
-
-// =============================================
-// BIRTHDAY OVERLAY
-// =============================================
-function BirthdayOverlay({ allDone }: { allDone: boolean }) {
-  const [vis, setVis] = useState(false)
-  useEffect(() => { const t = setTimeout(() => setVis(true), 800); return () => clearTimeout(t) }, [])
-  return (
-    <div className={`absolute inset-0 flex flex-col items-center pointer-events-none z-10 transition-opacity duration-[2000ms] ${vis ? 'opacity-100' : 'opacity-0'}`}
-      style={{ paddingTop: 'max(env(safe-area-inset-top, 0px), 12px)' }}>
-      <div className="flex-shrink-0 text-center pt-14 pb-2 px-4 sm:pt-18">
-        <h1 className="font-mono tracking-widest drop-shadow-lg leading-tight"
-          style={{ color: C.textMain, fontSize: 'clamp(1.5rem, 7vw, 3.2rem)', textShadow: `0 0 30px ${C.sky1}88, 0 2px 10px rgba(0,0,0,0.5)`, letterSpacing: '0.12em' }}>
-          Happy Birthday
-        </h1>
-        <h1 className="font-mono tracking-widest drop-shadow-lg leading-tight mt-1"
-          style={{ color: C.sunGlow, fontSize: 'clamp(1.8rem, 8vw, 3.8rem)', textShadow: `0 0 40px ${C.sky1}aa, 0 0 20px ${C.sunGlow}66, 0 2px 10px rgba(0,0,0,0.5)`, letterSpacing: '0.15em' }}>
-          Lara
-        </h1>
-        <div className="mt-3 font-mono tracking-wider" style={{ color: C.textSub, fontSize: 'clamp(0.7rem, 2.5vw, 1rem)', textShadow: '0 1px 8px rgba(0,0,0,0.4)' }}>
-          a little world, just for you
-        </div>
+        ) : (
+          <>
+            <div
+              key={`line-${pulseKey}`}
+              style={{
+                color: C.textMain,
+                fontSize: 'clamp(0.95rem, 3.2vw, 1.25rem)',
+                fontFamily: '"Cormorant Garamond", "Times New Roman", serif',
+                textAlign: 'center',
+                textShadow: '0 2px 10px rgba(0,0,0,0.35)',
+                marginBottom: 8,
+                animation: 'kissLineIn 560ms ease',
+                lineHeight: 1.2,
+              }}
+            >
+              {activeLine}
+            </div>
+            <div
+              style={{
+                color: C.textSub,
+                fontSize: 'clamp(0.68rem, 2.2vw, 0.82rem)',
+                fontFamily: '"IBM Plex Mono", "SFMono-Regular", Menlo, monospace',
+                lineHeight: 1.45,
+              }}
+            >
+              {lines.map((line, i) => (
+                <div key={`saved-${i}`}>
+                  {i + 1}. {line}
+                </div>
+              ))}
+            </div>
+          </>
+        )}
       </div>
-      <div className="flex-1 min-h-0" />
-      <div className={`flex-shrink-0 mx-5 mb-8 px-6 py-5 rounded-xl pointer-events-auto max-w-sm w-full sm:mb-12 sm:px-8 sm:py-6 transition-all duration-1000 ${allDone ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`}
-        style={{ background: 'rgba(33,39,51,0.85)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)',
-          border: `1px solid ${allDone ? C.sunGlow + '44' : C.sea3 + '33'}`,
-          boxShadow: allDone ? `0 8px 32px rgba(0,0,0,0.35), inset 0 1px 0 ${C.sunGlow}28, 0 0 40px ${C.sunGlow}15` : '0 8px 32px rgba(0,0,0,0.35)' }}>
-        <div className="text-center">
-          <p className="font-mono leading-relaxed italic m-0" style={{ color: C.textSub, fontSize: 'clamp(0.8rem, 2.8vw, 0.95rem)', lineHeight: '1.7' }}>
-            You found all the secrets! This sunset, this melody, these little moments — they&apos;re all for you. Happy birthday, Lara.
-          </p>
-        </div>
-      </div>
-      <div style={{ height: 'env(safe-area-inset-bottom, 0px)', flexShrink: 0 }} />
+      <style>{`@keyframes kissLineIn {0%{opacity:0; transform:translateY(8px)}100%{opacity:1; transform:translateY(0)}}`}</style>
     </div>
   )
 }
 
-// =============================================
-// ZOOM BUTTONS
-// =============================================
-function ZoomButtons({ zoom, onZoomIn, onZoomOut }: { zoom: number; onZoomIn: () => void; onZoomOut: () => void }) {
-  return (
-    <div className="absolute bottom-4 right-3 z-30 flex flex-col gap-2 pointer-events-auto"
-      style={{ paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 0px)' }}>
-      <button onClick={onZoomIn} disabled={zoom >= 3.5}
-        className="w-10 h-10 rounded-full font-mono text-lg flex items-center justify-center transition-opacity"
-        style={{ background: 'rgba(33,39,51,0.75)', backdropFilter: 'blur(8px)', color: C.textSub, border: `1px solid ${C.sea3}33`, opacity: zoom >= 3.5 ? 0.3 : 0.8 }}>
-        +
-      </button>
-      <button onClick={onZoomOut} disabled={zoom <= 1}
-        className="w-10 h-10 rounded-full font-mono text-lg flex items-center justify-center transition-opacity"
-        style={{ background: 'rgba(33,39,51,0.75)', backdropFilter: 'blur(8px)', color: C.textSub, border: `1px solid ${C.sea3}33`, opacity: zoom <= 1 ? 0.3 : 0.8 }}>
-        -
-      </button>
-    </div>
-  )
-}
-
-// =============================================
-// MAIN PAGE — unified pointer handler, viewBox zoom/pan
-// =============================================
 export default function FarePage() {
-  const [mounted, setMounted] = useState(false)
-  const svgRef = useRef<SVGSVGElement | null>(null)
+  const [viewportH, setViewportH] = useState(820)
+  const [cameraY, setCameraY] = useState(150)
+  const [parallax, setParallax] = useState<Vec2>({ x: 0, y: 0 })
+  const [musicEnabled, setMusicEnabled] = useState(true)
+  const [hasInteracted, setHasInteracted] = useState(false)
 
-  // Screen aspect ratio (h/w), used to keep viewBox proportional to screen
-  const screenRatioRef = useRef(2)
+  const [kissCount, setKissCount] = useState(0)
+  const [noteLines, setNoteLines] = useState<string[]>([])
+  const [activeLine, setActiveLine] = useState('')
+  const [linePulseKey, setLinePulseKey] = useState(0)
+  const [kissPulse, setKissPulse] = useState(0)
 
-  // ViewBox-based zoom/pan
-  const [viewBox, setViewBox] = useState<ViewBox>({ x: 0, y: 0, w: 400, h: 800 })
-  const zoom = 400 / viewBox.w
+  const [tapHearts, setTapHearts] = useState<TapHeart[]>([])
+  const [fireworks, setFireworks] = useState<FireworkBurst[]>([])
 
-  // Game state
-  const [heartsCaught, setHeartsCaught] = useState(0)
-  const [foundTreasures, setFoundTreasures] = useState<Set<string>>(new Set())
-  const [lanternsReleased, setLanternsReleased] = useState(0)
-  const [confettiKey, setConfettiKey] = useState(0)
-  const [melodyShown, setMelodyShown] = useState(false)
-  const confettiFiredRef = useRef(false)
+  const containerRef = useRef<HTMLDivElement | null>(null)
+  const targetRef = useRef<Vec2>({ x: 0, y: 0 })
+  const currentRef = useRef<Vec2>({ x: 0, y: 0 })
+  const musicRef = useRef<BirthdayMusicEngine | null>(null)
+  const idRef = useRef({ heart: 0, firework: 0 })
+  const kissCountRef = useRef(0)
+  const finaleRef = useRef(false)
+  const lastKissAtRef = useRef(0)
+  const dragRef = useRef({ active: false, pointerId: -1, startClientX: 0, startClientY: 0, startCamera: 0, startTime: 0, moved: false })
 
-  // Visual elements
-  const [hearts, setHearts] = useState<HeartData[]>([])
-  const heartsRef = useRef<HeartData[]>([])
-  heartsRef.current = hearts
-  const [lanterns, setLanterns] = useState<LanternData[]>([])
-  const [ripples, setRipples] = useState<Ripple[]>([])
-  const [bursts, setBursts] = useState<CatchBurst[]>([])
-
-  const idRef = useRef({ h: 0, l: 0, r: 0, b: 0 })
-
-  const HEARTS_TARGET = 5
-  const allDone = heartsCaught >= HEARTS_TARGET && foundTreasures.size >= TREASURE_SPOTS.length && lanternsReleased >= WISH_WORDS.length
-
-  // --- Gesture tracking ---
-  const ptrsRef = useRef(new Map<number, { x: number; y: number }>())
-  const gestRef = useRef({
-    isPinch: false, isPan: false,
-    startDist: 0, startMid: { x: 0, y: 0 },
-    startVB: { x: 0, y: 0, w: 400, h: 800 },
-    tapStart: { x: 0, y: 0, time: 0 },
-    lastTap: { x: 0, y: 0, time: 0 },
-  })
-  const tapTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const pendingVB = useRef<ViewBox | null>(null)
-  const rafRef = useRef(0)
-
-  function commitVB(vb: ViewBox) {
-    pendingVB.current = clampVB(vb, screenRatioRef.current)
-    if (!rafRef.current) {
-      rafRef.current = requestAnimationFrame(() => {
-        if (pendingVB.current) setViewBox(pendingVB.current)
-        rafRef.current = 0
-      })
-    }
-  }
-
-  // Mount + responsive viewBox
   useEffect(() => {
-    setMounted(true)
-    const ratio = window.innerHeight / window.innerWidth
-    screenRatioRef.current = Math.max(0.4, Math.min(3, ratio))
-    const r = screenRatioRef.current
-    const h = Math.min(800, 400 * r)
-    // Center view to show sky + city + some sea
-    const centerY = 360
-    const y = Math.max(0, Math.min(Math.max(0, 800 - h), centerY - h / 2))
-    setViewBox({ x: 0, y, w: 400, h })
+    const onResize = () => {
+      const ratio = window.innerHeight / window.innerWidth
+      const h = Math.round(clamp(WORLD_W * ratio, 650, 960))
+      setViewportH(h)
+      setCameraY(prev => clamp(prev, 0, Math.max(0, WORLD_H - h)))
+    }
+
+    onResize()
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
   }, [])
 
-  // Heart spawner — WAVES: 2-3 depth layers, groups every 2.5s
   useEffect(() => {
-    if (!mounted) return
-    const MAX_HEARTS = 50
-    const LAYER_CONFIG = [
-      { sizeMin: 5, sizeMax: 8, durMin: 14, durMax: 20, driftMax: 40 },   // layer 0: background (small, slow)
-      { sizeMin: 9, sizeMax: 14, durMin: 10, durMax: 15, driftMax: 60 },  // layer 1: midground
-      { sizeMin: 15, sizeMax: 22, durMin: 7, durMax: 12, driftMax: 80 },  // layer 2: foreground (large, fast)
-    ]
+    musicRef.current = new BirthdayMusicEngine()
+    return () => {
+      musicRef.current?.dispose()
+      musicRef.current = null
+    }
+  }, [])
 
-    const spawnWave = () => {
-      const r = Math.random
-      const now = Date.now()
-      const waveSize = 5 + Math.floor(r() * 4) // 5-8 hearts per wave
+  useEffect(() => {
+    const m = musicRef.current
+    if (!m) return
+    if (musicEnabled && hasInteracted) m.start()
+    else m.stop()
+  }, [musicEnabled, hasInteracted])
 
-      setHearts(prev => {
-        const alive = prev.filter(h => (now - h.born) / 1000 < h.dur)
-        if (alive.length >= MAX_HEARTS) return alive
-        const newHearts: HeartData[] = []
-        for (let i = 0; i < waveSize && alive.length + newHearts.length < MAX_HEARTS; i++) {
-          const layer = i % 3
-          const cfg = LAYER_CONFIG[layer]
-          newHearts.push({
-            id: idRef.current.h++,
-            x: 15 + r() * 370,
-            sy: 420 + r() * 380,
-            ey: -40 - r() * 60,
-            size: cfg.sizeMin + r() * (cfg.sizeMax - cfg.sizeMin),
-            dur: cfg.durMin + r() * (cfg.durMax - cfg.durMin),
-            drift: (r() - 0.5) * cfg.driftMax,
-            color: r() > 0.5 ? C.heartPink : C.heartRed,
-            born: now,
-            layer,
-          })
-        }
-        return [...alive, ...newHearts]
+  useEffect(() => {
+    let raf = 0
+
+    const tick = () => {
+      const tt = performance.now() * 0.001
+      const tx = targetRef.current.x + Math.sin(tt * 0.35) * 0.45
+      const ty = targetRef.current.y + Math.cos(tt * 0.31) * 0.35
+
+      const cx = currentRef.current.x + (tx - currentRef.current.x) * 0.1
+      const cy = currentRef.current.y + (ty - currentRef.current.y) * 0.1
+      currentRef.current = { x: cx, y: cy }
+
+      setParallax(prev => {
+        if (Math.abs(prev.x - cx) < 0.01 && Math.abs(prev.y - cy) < 0.01) return prev
+        return { x: cx, y: cy }
       })
+
+      raf = requestAnimationFrame(tick)
     }
 
-    // Initial burst: 3 staggered waves
-    spawnWave()
-    setTimeout(spawnWave, 600)
-    setTimeout(spawnWave, 1200)
-    // Continuous waves every 2.5 seconds
-    const iv = setInterval(spawnWave, 2500)
-    return () => clearInterval(iv)
-  }, [mounted])
+    raf = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(raf)
+  }, [])
 
-  // Cleanup old effects
   useEffect(() => {
-    if (!mounted) return
     const iv = setInterval(() => {
-      setRipples(prev => prev.filter(r => r.id > idRef.current.r - 10))
-      setBursts(prev => prev.filter(b => b.id > idRef.current.b - 10))
-    }, 3000)
+      const now = Date.now()
+      setTapHearts(prev => prev.filter(h => now - h.born < h.dur * 1000 + 250))
+      setFireworks(prev => prev.filter(f => now - f.born < f.dur * 1000 + 300))
+    }, 300)
+
     return () => clearInterval(iv)
-  }, [mounted])
+  }, [])
 
-  // Confetti on complete
   useEffect(() => {
-    if (allDone && !confettiFiredRef.current) {
-      confettiFiredRef.current = true
-      setConfettiKey(k => k + 1)
-      snd().playConfetti()
-    }
-  }, [allDone])
+    kissCountRef.current = kissCount
+  }, [kissCount])
 
-  // Auto-dismiss melody badge after 4s
-  useEffect(() => {
-    if (!melodyShown) return
-    const t = setTimeout(() => setMelodyShown(false), 4000)
-    return () => clearTimeout(t)
-  }, [melodyShown])
+  const maxCameraY = Math.max(0, WORLD_H - viewportH)
+  const progress = maxCameraY > 0 ? cameraY / maxCameraY : 0
 
-  // --- Get heart's actual screen position from the DOM ---
-  const getHeartScreenPos = useCallback((heartId: number): { x: number; y: number } | null => {
-    const svg = svgRef.current
-    if (!svg) return null
-    const el = svg.querySelector(`[data-hid="${heartId}"]`) as SVGGraphicsElement | null
+  const updatePointerTarget = useCallback((clientX: number, clientY: number) => {
+    const nx = (clientX / window.innerWidth - 0.5) * 2
+    const ny = (clientY / window.innerHeight - 0.5) * 2
+    targetRef.current = { x: nx * 9, y: ny * 7 }
+  }, [])
+
+  const screenToWorld = useCallback((clientX: number, clientY: number) => {
+    const el = containerRef.current
     if (!el) return null
-    const rect = el.getBoundingClientRect()
-    if (rect.width === 0 && rect.height === 0) return null
-    return { x: rect.x + rect.width / 2, y: rect.y + rect.height / 2 }
+    const r = el.getBoundingClientRect()
+
+    const scale = Math.max(r.width / WORLD_W, r.height / viewportH)
+    const ox = (r.width - WORLD_W * scale) / 2
+    const oy = (r.height - viewportH * scale) / 2
+
+    return {
+      x: (clientX - r.left - ox) / scale,
+      y: cameraY + (clientY - r.top - oy) / scale,
+    }
+  }, [cameraY, viewportH])
+
+  const spawnTapHearts = useCallback((sx: number, sy: number, count = 5) => {
+    const now = Date.now()
+    const newHearts: TapHeart[] = Array.from({ length: count }, () => {
+      const size = 20 + Math.random() * 16
+      return {
+        id: idRef.current.heart++,
+        x: 0,
+        y: 0,
+        sx: sx + (Math.random() - 0.5) * 40,
+        sy: sy + (Math.random() - 0.5) * 30,
+        size,
+        dx: (Math.random() - 0.5) * 80,
+        rise: 80 + Math.random() * 100,
+        dur: 1.5 + Math.random() * 1,
+        color: Math.random() > 0.5 ? C.heartPink : C.heartRed,
+        born: now,
+      }
+    })
+
+    setTapHearts(prev => [...prev, ...newHearts])
   }, [])
 
-  // --- Unified game tap handler ---
-  const handleGameTap = useCallback((clientX: number, clientY: number) => {
-    const pt = screenToSvg(clientX, clientY, svgRef.current, viewBox)
-    if (!pt) return
+  const launchFireworks = useCallback(() => {
+    const now = Date.now()
+    const colors = ['#ffd778', '#ff9bac', '#9ee3ff', '#fff2be', '#ffb574']
+    const baseY = clamp(cameraY + 120, 140, WORLD_H - 360)
 
-    // 1. Sky zone (y < 260): release lantern
-    if (pt.y < 260 && pt.y > 0 && lanternsReleased < WISH_WORDS.length) {
-      const word = WISH_WORDS[lanternsReleased]
-      setLanterns(prev => [...prev, { id: idRef.current.l++, x: pt.x, sy: pt.y, word: word || '' }])
-      setLanternsReleased(prev => prev + 1)
-      snd().playLanternRelease()
+    const bursts: FireworkBurst[] = Array.from({ length: 7 }, (_, i) => ({
+      id: idRef.current.firework++,
+      x: 44 + Math.random() * 312,
+      y: baseY + Math.random() * 150,
+      dur: 0.9 + Math.random() * 0.5,
+      color: colors[i % colors.length] || '#ffd778',
+      born: now,
+    }))
+
+    setFireworks(prev => [...prev, ...bursts])
+  }, [cameraY])
+
+  const onKiss = useCallback(() => {
+    const now = Date.now()
+    if (now - lastKissAtRef.current < 260) return
+    lastKissAtRef.current = now
+
+    setKissPulse(k => k + 1)
+    const cx = window.innerWidth / 2
+    const cy = window.innerHeight / 2
+    spawnTapHearts(cx, cy, 8)
+
+    const current = kissCountRef.current
+    if (current >= LOVE_LINES.length) {
+      spawnTapHearts(cx, cy - 40, 5)
       return
     }
 
-    // 2. Hearts — use actual DOM position for accuracy
-    for (const heart of heartsRef.current) {
-      const sp = getHeartScreenPos(heart.id)
-      if (!sp) continue
-      const sdx = clientX - sp.x, sdy = clientY - sp.y
-      if (sdx * sdx + sdy * sdy < 45 * 45) {
-        setHearts(prev => prev.filter(h => h.id !== heart.id))
-        setHeartsCaught(prev => prev + 1)
-        setBursts(prev => [...prev, { id: idRef.current.b++, x: pt.x, y: pt.y, color: heart.color }])
-        snd().playHeartCatch()
-        return
+    const line = LOVE_LINES[current] || ''
+    const next = current + 1
+
+    kissCountRef.current = next
+    setKissCount(next)
+    setActiveLine(line)
+    setNoteLines(lines => [...lines, line])
+    setLinePulseKey(k => k + 1)
+
+    if (next >= LOVE_LINES.length && !finaleRef.current) {
+      finaleRef.current = true
+      setTimeout(() => launchFireworks(), 240)
+    }
+  }, [spawnTapHearts, launchFireworks])
+
+  const onPointerDown = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+    const target = e.target as HTMLElement
+    if (target.closest('button')) return
+
+    setHasInteracted(true)
+    updatePointerTarget(e.clientX, e.clientY)
+
+    dragRef.current = {
+      active: true,
+      pointerId: e.pointerId,
+      startClientX: e.clientX,
+      startClientY: e.clientY,
+      startCamera: cameraY,
+      startTime: Date.now(),
+      moved: false,
+    }
+
+    // Spawn hearts immediately on touch/click
+    spawnTapHearts(e.clientX, e.clientY, 5)
+
+    // Check if tap is on the couple for kiss
+    const pt = screenToWorld(e.clientX, e.clientY)
+    if (pt) {
+      const dx = pt.x - COUPLE_CENTER.x
+      const dy = pt.y - COUPLE_CENTER.y
+      if (dx * dx + dy * dy <= COUPLE_CENTER.r * COUPLE_CENTER.r) {
+        onKiss()
       }
     }
 
-    // 3. Treasure scenes
-    for (const spot of TREASURE_SPOTS) {
-      if (!foundTreasures.has(spot.id)) {
-        const dx = pt.x - spot.cx, dy = pt.y - spot.cy
-        const hitR = spot.r + (zoom > 1.5 ? 10 : 5)
-        if (dx * dx + dy * dy < hitR * hitR) {
-          setFoundTreasures(prev => {
-            const next = new Set(prev); next.add(spot.id)
-            snd().playNote(spot.note, 1.0, 0.3)
-            if (next.size === TREASURE_SPOTS.length) {
-              setTimeout(() => { snd().playMelody(TREASURE_MELODY, 250); setMelodyShown(true) }, 800)
-            }
-            return next
-          })
-          setBursts(prev => [...prev, { id: idRef.current.b++, x: pt.x, y: pt.y, color: C.sunGlow }])
-          return
-        }
-      }
+    try {
+      e.currentTarget.setPointerCapture(e.pointerId)
+    } catch {
+      // Ignore browsers that do not support capture here.
+    }
+  }, [cameraY, updatePointerTarget, screenToWorld, spawnTapHearts, onKiss])
+
+  const onPointerMove = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+    updatePointerTarget(e.clientX, e.clientY)
+
+    if (!dragRef.current.active || dragRef.current.pointerId !== e.pointerId) return
+
+    const dx = e.clientX - dragRef.current.startClientX
+    const dy = e.clientY - dragRef.current.startClientY
+
+    if (Math.abs(dx) > 12 || Math.abs(dy) > 12) {
+      dragRef.current.moved = true
     }
 
-    // 4. Sea zone: play note
-    if (pt.y > 400) {
-      setRipples(prev => [...prev, { id: idRef.current.r++, x: pt.x, y: pt.y }])
-      snd().playSeaNote(pt.x)
-      return
-    }
-  }, [viewBox, lanternsReleased, foundTreasures, getHeartScreenPos, zoom])
+    const worldDy = (dy / Math.max(window.innerHeight, 1)) * viewportH
+    const next = clamp(dragRef.current.startCamera - worldDy * 1.4, 0, Math.max(0, WORLD_H - viewportH))
+    setCameraY(next)
+  }, [updatePointerTarget, viewportH])
 
-  // --- Pointer handlers for zoom/pan + tap detection ---
-  const onPtrDown = useCallback((e: React.PointerEvent) => {
-    if ((e.target as HTMLElement).tagName === 'BUTTON') return
-
-    ptrsRef.current.set(e.pointerId, { x: e.clientX, y: e.clientY })
-    const g = gestRef.current
-
-    if (ptrsRef.current.size === 1) {
-      g.tapStart = { x: e.clientX, y: e.clientY, time: Date.now() }
-      g.isPan = false
-      g.isPinch = false
-      g.startVB = { ...viewBox }
-    }
-    if (ptrsRef.current.size === 2) {
-      const [p1, p2] = Array.from(ptrsRef.current.values())
-      g.isPinch = true
-      g.startDist = Math.hypot(p2.x - p1.x, p2.y - p1.y)
-      g.startMid = { x: (p1.x + p2.x) / 2, y: (p1.y + p2.y) / 2 }
-      g.startVB = { ...viewBox }
-    }
-  }, [viewBox])
-
-  const onPtrMove = useCallback((e: React.PointerEvent) => {
-    if (!ptrsRef.current.has(e.pointerId)) return
-    ptrsRef.current.set(e.pointerId, { x: e.clientX, y: e.clientY })
-    const g = gestRef.current
-    const svg = svgRef.current
-    if (!svg) return
-    const rect = svg.getBoundingClientRect()
-    const ratio = screenRatioRef.current
-
-    if (ptrsRef.current.size === 2 && g.isPinch) {
-      const [p1, p2] = Array.from(ptrsRef.current.values())
-      const dist = Math.hypot(p2.x - p1.x, p2.y - p1.y)
-      const pinchRatio = g.startDist / dist
-      const newW = Math.min(400, Math.max(400 / 3.5, g.startVB.w * pinchRatio))
-      let newH = newW * ratio
-      if (newH > 800) newH = 800
-
-      // Zoom toward pinch midpoint
-      const scale = Math.max(rect.width / g.startVB.w, rect.height / g.startVB.h)
-      const ox = (rect.width - g.startVB.w * scale) / 2
-      const oy = (rect.height - g.startVB.h * scale) / 2
-      const midSvgX = g.startVB.x + (g.startMid.x - rect.left - ox) / scale
-      const midSvgY = g.startVB.y + (g.startMid.y - rect.top - oy) / scale
-
-      const curMid = { x: (p1.x + p2.x) / 2, y: (p1.y + p2.y) / 2 }
-      const newScale = Math.max(rect.width / newW, rect.height / newH)
-      const newOx = (rect.width - newW * newScale) / 2
-      const newOy = (rect.height - newH * newScale) / 2
-
-      const newX = midSvgX - (curMid.x - rect.left - newOx) / newScale
-      const newY = midSvgY - (curMid.y - rect.top - newOy) / newScale
-
-      commitVB({ x: newX, y: newY, w: newW, h: newH })
-    } else if (ptrsRef.current.size === 1 && (viewBox.w < 399 || viewBox.h < 799)) {
-      const dx = e.clientX - g.tapStart.x
-      const dy = e.clientY - g.tapStart.y
-      if (Math.abs(dx) > 8 || Math.abs(dy) > 8) g.isPan = true
-
-      if (g.isPan) {
-        const svgDx = -dx * (g.startVB.w / rect.width)
-        const svgDy = -dy * (g.startVB.h / rect.height)
-        commitVB({ x: g.startVB.x + svgDx, y: g.startVB.y + svgDy, w: viewBox.w, h: viewBox.h })
-      }
-    }
-  }, [viewBox])
-
-  const doZoomToggle = useCallback((clientX: number, clientY: number) => {
-    const ratio = screenRatioRef.current
-    if (zoom < 1.5) {
-      const pt = screenToSvg(clientX, clientY, svgRef.current, viewBox)
-      if (pt) {
-        const nw = 400 / 2.5
-        let nh = nw * ratio
-        if (nh > 800) nh = 800
-        commitVB({ x: pt.x - nw / 2, y: pt.y - nh / 2, w: nw, h: nh })
-      }
-    } else {
-      const h = Math.min(800, 400 * ratio)
-      const centerY = 300
-      const y = Math.max(0, Math.min(Math.max(0, 800 - h), centerY - h / 2))
-      setViewBox({ x: 0, y, w: 400, h })
-    }
-  }, [zoom, viewBox])
-
-  const onPtrUp = useCallback((e: React.PointerEvent) => {
-    ptrsRef.current.delete(e.pointerId)
-    const g = gestRef.current
-
-    if (ptrsRef.current.size === 0) {
-      const elapsed = Date.now() - g.tapStart.time
-      const dist = Math.hypot(e.clientX - g.tapStart.x, e.clientY - g.tapStart.y)
-
-      if (!g.isPan && !g.isPinch && elapsed < 350 && dist < 15) {
-        const isTouch = e.pointerType === 'touch'
-
-        if (isTouch) {
-          const now = Date.now()
-          const lt = g.lastTap
-          if (now - lt.time < 350 && Math.hypot(e.clientX - lt.x, e.clientY - lt.y) < 30) {
-            g.lastTap = { x: 0, y: 0, time: 0 }
-            if (tapTimerRef.current) { clearTimeout(tapTimerRef.current); tapTimerRef.current = null }
-            doZoomToggle(e.clientX, e.clientY)
-          } else {
-            g.lastTap = { time: now, x: e.clientX, y: e.clientY }
-            const cx = e.clientX, cy = e.clientY
-            if (tapTimerRef.current) clearTimeout(tapTimerRef.current)
-            tapTimerRef.current = setTimeout(() => {
-              tapTimerRef.current = null
-              handleGameTap(cx, cy)
-            }, 250)
-          }
-        } else {
-          handleGameTap(e.clientX, e.clientY)
-        }
-      }
-      g.isPinch = false
-      g.isPan = false
-    }
-  }, [handleGameTap, doZoomToggle])
-
-  const onPtrCancel = useCallback((e: React.PointerEvent) => {
-    ptrsRef.current.delete(e.pointerId)
-    if (ptrsRef.current.size === 0) { gestRef.current.isPinch = false; gestRef.current.isPan = false }
+  const onPointerUp = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+    if (dragRef.current.pointerId !== e.pointerId) return
+    dragRef.current.active = false
+    dragRef.current.pointerId = -1
   }, [])
 
-  // Zoom buttons
-  const zoomIn = useCallback(() => {
-    const ratio = screenRatioRef.current
-    setViewBox(vb => {
-      const nw = Math.max(400 / 3.5, vb.w * 0.65)
-      let nh = nw * ratio
-      if (nh > 800) nh = 800
-      return clampVB({ x: vb.x + (vb.w - nw) / 2, y: vb.y + (vb.h - nh) / 2, w: nw, h: nh }, ratio)
-    })
+  const onPointerCancel = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+    if (dragRef.current.pointerId === e.pointerId) {
+      dragRef.current.active = false
+      dragRef.current.pointerId = -1
+    }
+    targetRef.current = { x: 0, y: 0 }
   }, [])
 
-  const zoomOut = useCallback(() => {
-    const ratio = screenRatioRef.current
-    setViewBox(vb => {
-      const nw = Math.min(400, vb.w * 1.5)
-      let nh = nw * ratio
-      if (nh > 800) nh = 800
-      return clampVB({ x: vb.x + (vb.w - nw) / 2, y: vb.y + (vb.h - nh) / 2, w: nw, h: nh }, ratio)
-    })
-  }, [])
-
-  // Wheel/trackpad: scroll = pan, ctrl/pinch = zoom
-  const onWheel = useCallback((e: React.WheelEvent) => {
+  const onWheel = useCallback((e: React.WheelEvent<HTMLDivElement>) => {
     e.preventDefault()
-    const ratio = screenRatioRef.current
-    if (e.ctrlKey || e.metaKey) {
-      // Pinch-to-zoom on trackpad (sends ctrlKey) or Ctrl+wheel
-      const factor = e.deltaY > 0 ? 1.15 : 0.85
-      const pt = screenToSvg(e.clientX, e.clientY, svgRef.current, viewBox)
-      if (!pt) return
-      const nw = Math.min(400, Math.max(400 / 3.5, viewBox.w * factor))
-      let nh = nw * ratio
-      if (nh > 800) nh = 800
-      commitVB({ x: pt.x - (pt.x - viewBox.x) * (nw / viewBox.w), y: pt.y - (pt.y - viewBox.y) * (nh / viewBox.h), w: nw, h: nh })
-    } else {
-      // Regular scroll/trackpad swipe = pan
-      const speed = 0.8
-      const svgDx = e.deltaX * (viewBox.w / window.innerWidth) * speed
-      const svgDy = e.deltaY * (viewBox.h / window.innerHeight) * speed
-      commitVB({ x: viewBox.x + svgDx, y: viewBox.y + svgDy, w: viewBox.w, h: viewBox.h })
-    }
-  }, [viewBox])
+    setHasInteracted(true)
 
-  if (!mounted) return null
+    const unit = viewportH / Math.max(window.innerHeight, 1)
+    setCameraY(prev => clamp(prev + e.deltaY * 0.82 * unit, 0, Math.max(0, WORLD_H - viewportH)))
+  }, [viewportH])
+
+  const skyShift = { x: parallax.x * 0.18, y: parallax.y * 0.1 }
+  const hillShift = { x: parallax.x * 0.34, y: parallax.y * 0.22 }
+  const cityShift = { x: parallax.x * 0.62, y: parallax.y * 0.4 }
+  const waterShift = { x: parallax.x * 0.5, y: parallax.y * 0.28 }
+  const fgShift = { x: parallax.x * 1.0, y: parallax.y * 0.64 }
 
   return (
-    <div className="fixed inset-0 overflow-hidden"
-      style={{ background: C.sky1, touchAction: 'none', userSelect: 'none', WebkitUserSelect: 'none' }}
-      onPointerDown={onPtrDown} onPointerMove={onPtrMove} onPointerUp={onPtrUp} onPointerCancel={onPtrCancel}
-      onWheel={onWheel}>
-      <svg ref={svgRef} viewBox={`${viewBox.x} ${viewBox.y} ${viewBox.w} ${viewBox.h}`}
-        xmlns="http://www.w3.org/2000/svg" className="absolute inset-0 w-full h-full"
-        preserveAspectRatio="xMidYMid slice" style={{ imageRendering: 'auto', touchAction: 'none' }}>
+    <div
+      ref={containerRef}
+      className="fixed inset-0 overflow-hidden"
+      style={{ background: C.skyBottom, touchAction: 'none', userSelect: 'none', WebkitUserSelect: 'none' }}
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={onPointerUp}
+      onPointerCancel={onPointerCancel}
+      onPointerLeave={() => {
+        targetRef.current = { x: 0, y: 0 }
+      }}
+      onWheel={onWheel}
+    >
+      <svg
+        viewBox={`0 ${cameraY} ${WORLD_W} ${viewportH}`}
+        xmlns="http://www.w3.org/2000/svg"
+        className="absolute inset-0 w-full h-full"
+        preserveAspectRatio="xMidYMid slice"
+        style={{ imageRendering: 'auto' }}
+      >
         <Defs />
-        <Background />
-        <DistantHills />
-        <DetailedCity foundTreasures={foundTreasures} zoom={zoom} />
-        <Fireflies />
-        <SeaLayer />
-        <WaterDetails />
-        <Petals />
-        <Hearts hearts={hearts} />
-        <Lanterns lanterns={lanterns} />
-        <Effects ripples={ripples} bursts={bursts} />
-        <Confetti k={confettiKey} />
+
+        <g transform={`translate(${skyShift.x} ${skyShift.y})`}>
+          <SkyLayer />
+        </g>
+
+        <g transform={`translate(${hillShift.x} ${hillShift.y})`}>
+          <HillsLayer />
+        </g>
+
+        <g transform={`translate(${cityShift.x} ${cityShift.y})`}>
+          {BUILDINGS.map((b, i) => (
+            <Building3D key={`b-${i}`} b={b} index={i} />
+          ))}
+          <CityDecor />
+          <Promenade />
+          <FeaturedCouple kissPulse={kissPulse} />
+          <FloatingMusicNotes seed={99} count={8} yMin={680} yMax={840} />
+        </g>
+
+        <g transform={`translate(${waterShift.x} ${waterShift.y})`}>
+          <WaterLayer />
+        </g>
+
+        <g transform={`translate(${fgShift.x} ${fgShift.y})`}>
+          <ForegroundLayer />
+        </g>
+
+        <FireworksEffect fireworks={fireworks} />
       </svg>
 
-      <div className="absolute inset-0 pointer-events-none z-0" style={{ background: 'radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.35) 100%)' }} />
-      <BirthdayOverlay allDone={allDone} />
-      <GameUI hc={heartsCaught} ht={HEARTS_TARGET} ft={foundTreasures.size} tt={TREASURE_SPOTS.length} lr={lanternsReleased} allDone={allDone} melodyShown={melodyShown} zoom={zoom} />
-      <ZoomButtons zoom={zoom} onZoomIn={zoomIn} onZoomOut={zoomOut} />
+      <HeartsEffect hearts={tapHearts} />
+
+      <Atmosphere />
+
+      <div className="absolute inset-x-0 z-30 text-center pointer-events-none" style={{ top: 'max(env(safe-area-inset-top, 0px), 14px)' }}>
+        <h1
+          className="m-0"
+          style={{
+            color: C.textMain,
+            fontSize: 'clamp(1.55rem, 7.1vw, 3.05rem)',
+            letterSpacing: '0.11em',
+            fontFamily: '"Cormorant Garamond", "Times New Roman", serif',
+            fontWeight: 700,
+            textShadow: '0 4px 14px rgba(0,0,0,0.28)',
+          }}
+        >
+          İyi ki doğdun bitanem! 💖💖💖
+        </h1>
+      </div>
+
+      <div className="absolute right-3 top-3 z-40 flex flex-col items-end gap-2" style={{ paddingTop: 'max(env(safe-area-inset-top, 0px), 0px)' }}>
+        <button
+          type="button"
+          onClick={() => {
+            setHasInteracted(true)
+            setMusicEnabled(v => !v)
+          }}
+          className="px-3 py-1.5 rounded-full text-xs"
+          style={{
+            background: 'rgba(35,30,25,0.72)',
+            color: musicEnabled ? C.textAccent : C.textSub,
+            border: `1px solid ${musicEnabled ? 'rgba(255,224,126,0.5)' : 'rgba(244,223,191,0.25)'}`,
+            fontFamily: '"IBM Plex Mono", "SFMono-Regular", Menlo, monospace',
+            letterSpacing: '0.06em',
+          }}
+        >
+          {musicEnabled ? 'Müzik: Açık' : 'Müzik: Kapalı'}
+        </button>
+        {!hasInteracted && (
+          <div style={{ padding: '5px 8px', borderRadius: 8, background: 'rgba(35,30,25,0.6)', color: C.textSub, fontSize: 11, fontFamily: '"IBM Plex Mono", "SFMono-Regular", Menlo, monospace' }}>
+            Müziği başlatmak için dokun veya kaydır
+          </div>
+        )}
+      </div>
+
+      <div
+        className="absolute right-2 z-40 pointer-events-none"
+        style={{
+          top: '50%',
+          transform: 'translateY(-50%)',
+          width: 6,
+          height: 140,
+          borderRadius: 999,
+          background: 'rgba(36,30,24,0.42)',
+          border: '1px solid rgba(255,224,126,0.24)',
+        }}
+      >
+        <div
+          style={{
+            width: '100%',
+            height: `${Math.max(10, progress * 100)}%`,
+            borderRadius: 999,
+            background: 'linear-gradient(180deg, rgba(255,224,126,0.95), rgba(255,175,90,0.88))',
+            boxShadow: '0 0 10px rgba(255,224,126,0.3)',
+            marginTop: `${(1 - progress) * 100}%`,
+            transition: 'margin-top 140ms linear, height 140ms linear',
+          }}
+        />
+      </div>
+
+      <div
+        className="absolute left-1/2 z-30 pointer-events-none text-center"
+        style={{
+          bottom: 'max(env(safe-area-inset-bottom, 0px), 128px)',
+          transform: 'translateX(-50%)',
+          width: 'min(92vw, 560px)',
+          color: C.textSub,
+          fontSize: 'clamp(0.67rem, 2.2vw, 0.82rem)',
+          fontFamily: '"IBM Plex Mono", "SFMono-Regular", Menlo, monospace',
+          letterSpacing: '0.08em',
+          opacity: 0.82,
+        }}
+      >
+        Kaydır • Dokun ❤️ • Çifte dokun 💋
+      </div>
+
+      {kissPulse > 0 && (
+        <div
+          key={`kiss-html-${kissPulse}`}
+          style={{
+            position: 'fixed',
+            left: '50%',
+            top: '40%',
+            transform: 'translate(-50%, -50%)',
+            fontSize: 48,
+            pointerEvents: 'none',
+            zIndex: 55,
+            animation: 'kissPopup 1.2s ease-out forwards',
+          }}
+        >
+          💋
+        </div>
+      )}
+      <style>{`
+        @keyframes kissPopup {
+          0% { opacity: 0; transform: translate(-50%, -50%) scale(0.3); }
+          20% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
+          40% { transform: translate(-50%, -50%) scale(1); }
+          100% { opacity: 0; transform: translate(-50%, -80%) scale(0.5); }
+        }
+      `}</style>
+
+      <KissNotesOverlay lines={noteLines} activeLine={activeLine} pulseKey={linePulseKey} done={kissCount >= LOVE_LINES.length} />
     </div>
   )
 }
