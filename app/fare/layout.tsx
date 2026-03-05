@@ -14,7 +14,8 @@ export default function FareLayout({
     <div className="fare-layout">
       <style>{`
         .fare-layout { position: fixed; inset: 0; z-index: 9999; overflow: hidden; }
-        nav, footer, main { display: none !important; }
+        nav, footer { display: none !important; }
+        main { padding: 0 !important; margin: 0 !important; }
         html, body { overflow: hidden !important; height: 100% !important; }
       `}</style>
       {children}
