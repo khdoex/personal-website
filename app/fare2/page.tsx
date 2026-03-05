@@ -782,7 +782,7 @@ function GameUI({ hc, ht, ft, tt, lr, allDone, melodyShown, zoom, songIndex, onS
             {hc >= ht ? 'gökyüzüne dokun, dilek fenerleri bırak ✨' :
              'kalplere dokun ve yakala ❤️'}
           </p>
-          <div className="flex justify-center gap-1.5 mt-1.5 flex-wrap">
+          <div className="flex justify-center gap-1.5 mt-1.5 flex-wrap pointer-events-auto">
             {SONGS.map((s, i) => (
               <button key={i} onClick={(e) => { e.stopPropagation(); onSongChange(i) }}
                 className="font-mono transition-all duration-200"
