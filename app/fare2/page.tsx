@@ -51,18 +51,21 @@ const SONGS: { name: string; emoji: string; notes: MelodyNote[] }[] = [
     { note: 'E4', dur: 0.4 }, { note: 'F4', dur: 0.4 }, { note: 'G4', dur: 0.6 },
     { note: 'C5', dur: 0.8 },
   ]},
-  // 3. A Thousand Years — Christina Perri (Twilight)
+  // 3. A Thousand Years — Christina Perri (key of G)
   { name: 'A Thousand Years', emoji: '🌙', notes: [
-    { note: 'E4', dur: 0.5 }, { note: 'G4', dur: 0.4 }, { note: 'A4', dur: 0.6 },
-    { note: 'G4', dur: 0.4 }, { note: 'E4', dur: 0.6 }, { note: 'D4', dur: 0.4 },
-    { note: 'E4', dur: 0.8 },
-    { note: 'E4', dur: 0.5 }, { note: 'G4', dur: 0.4 }, { note: 'A4', dur: 0.6 },
-    { note: 'B4', dur: 0.4 }, { note: 'C5', dur: 0.6 }, { note: 'B4', dur: 0.4 },
-    { note: 'A4', dur: 0.8 },
-    { note: 'A4', dur: 0.4 }, { note: 'G4', dur: 0.4 }, { note: 'E4', dur: 0.5 },
-    { note: 'D4', dur: 0.4 }, { note: 'C4', dur: 0.6 }, { note: 'D4', dur: 0.4 },
-    { note: 'E4', dur: 0.8 },
-    { note: 'G4', dur: 0.4 }, { note: 'A4', dur: 0.6 }, { note: 'C5', dur: 0.8 },
+    // Verse: "Heart beats fast, colors and promises"
+    { note: 'G4', dur: 0.5 }, { note: 'B4', dur: 0.4 }, { note: 'A4', dur: 0.4 },
+    { note: 'G4', dur: 0.5 }, { note: 'D5', dur: 0.4 }, { note: 'C5', dur: 0.4 },
+    { note: 'B4', dur: 0.6 },
+    // "How to be brave, how can I love when I'm afraid"
+    { note: 'G4', dur: 0.4 }, { note: 'E4', dur: 0.4 }, { note: 'D5', dur: 0.4 },
+    { note: 'C5', dur: 0.4 }, { note: 'B4', dur: 0.4 }, { note: 'A4', dur: 0.5 },
+    { note: 'B4', dur: 0.4 }, { note: 'Gb4', dur: 0.4 }, { note: 'G4', dur: 0.6 },
+    // Chorus: "I have died every day waiting for you"
+    { note: 'B4', dur: 0.4 }, { note: 'D5', dur: 0.5 }, { note: 'B4', dur: 0.4 },
+    { note: 'B4', dur: 0.4 }, { note: 'D5', dur: 0.5 }, { note: 'B4', dur: 0.4 },
+    { note: 'E5', dur: 0.5 }, { note: 'D5', dur: 0.4 }, { note: 'A4', dur: 0.4 },
+    { note: 'G4', dur: 0.6 },
   ]},
   // 4. Decode — Paramore (Twilight) — Bb minor, chorus melody
   { name: 'Decode', emoji: '🦇', notes: [
@@ -99,11 +102,19 @@ class SoundEngine {
     try {
       const ctx = this.getCtx(), freq = this.notes[name]
       if (!freq) return
-      const o = ctx.createOscillator(), g = ctx.createGain()
-      o.type = 'sine'; o.frequency.value = freq
-      g.gain.setValueAtTime(vol, ctx.currentTime)
-      g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur)
-      o.connect(g); g.connect(ctx.destination); o.start(); o.stop(ctx.currentTime + dur)
+      const t = ctx.currentTime
+      // Main tone — triangle wave (warm, piano-like)
+      const o1 = ctx.createOscillator(), g1 = ctx.createGain()
+      o1.type = 'triangle'; o1.frequency.value = freq
+      g1.gain.setValueAtTime(vol, t)
+      g1.gain.exponentialRampToValueAtTime(0.001, t + dur)
+      o1.connect(g1); g1.connect(ctx.destination); o1.start(); o1.stop(t + dur)
+      // Soft overtone — sine an octave up for shimmer
+      const o2 = ctx.createOscillator(), g2 = ctx.createGain()
+      o2.type = 'sine'; o2.frequency.value = freq * 2
+      g2.gain.setValueAtTime(vol * 0.15, t)
+      g2.gain.exponentialRampToValueAtTime(0.001, t + dur * 0.6)
+      o2.connect(g2); g2.connect(ctx.destination); o2.start(); o2.stop(t + dur * 0.6)
     } catch { /* */ }
   }
   playNextMelodyNote() {
