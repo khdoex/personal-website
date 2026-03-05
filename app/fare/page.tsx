@@ -38,43 +38,37 @@ const C = {
 
 // =============================================
 // SOUND ENGINE — Web Audio API pentatonic notes
+// Lazy-init: AudioContext only created on first user gesture
 // =============================================
 class SoundEngine {
   private ctx: AudioContext | null = null
-  // Pentatonic scale notes (C major pentatonic across octaves)
   private notes: Record<string, number> = {
     C4: 261.63, D4: 293.66, E4: 329.63, G4: 392.00, A4: 440.00,
     C5: 523.25, D5: 587.33, E5: 659.25, G5: 783.99, A5: 880.00,
   }
 
   private getCtx(): AudioContext {
-    if (!this.ctx) this.ctx = new AudioContext()
+    if (!this.ctx) this.ctx = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)()
     if (this.ctx.state === 'suspended') this.ctx.resume()
     return this.ctx
   }
 
   playNote(noteName: string, duration = 0.5, volume = 0.3) {
-    const ctx = this.getCtx()
-    const freq = this.notes[noteName]
-    if (!freq) return
-
-    const osc = ctx.createOscillator()
-    const gain = ctx.createGain()
-    osc.type = 'sine'
-    osc.frequency.value = freq
-    gain.gain.setValueAtTime(volume, ctx.currentTime)
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration)
-    osc.connect(gain)
-    gain.connect(ctx.destination)
-    osc.start()
-    osc.stop(ctx.currentTime + duration)
-  }
-
-  playChime(volume = 0.15) {
-    const notes = ['E5', 'G5', 'A5']
-    notes.forEach((n, i) => {
-      setTimeout(() => this.playNote(n, 0.6, volume), i * 120)
-    })
+    try {
+      const ctx = this.getCtx()
+      const freq = this.notes[noteName]
+      if (!freq) return
+      const osc = ctx.createOscillator()
+      const gain = ctx.createGain()
+      osc.type = 'sine'
+      osc.frequency.value = freq
+      gain.gain.setValueAtTime(volume, ctx.currentTime)
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration)
+      osc.connect(gain)
+      gain.connect(ctx.destination)
+      osc.start()
+      osc.stop(ctx.currentTime + duration)
+    } catch { /* audio not available */ }
   }
 
   playMelody(noteNames: string[], tempo = 300) {
@@ -83,33 +77,34 @@ class SoundEngine {
     })
   }
 
-  playSeaNote(x: number, volume = 0.2) {
-    // Map x position (0-400) to pentatonic notes
+  playSeaNote(x: number) {
     const seaNotes = ['C4', 'D4', 'E4', 'G4', 'A4', 'C5', 'D5', 'E5']
-    const idx = Math.floor((x / 400) * seaNotes.length)
-    const note = seaNotes[Math.min(idx, seaNotes.length - 1)]
-    this.playNote(note, 0.8, volume)
+    const idx = Math.min(Math.floor((x / 400) * seaNotes.length), seaNotes.length - 1)
+    this.playNote(seaNotes[idx], 0.8, 0.2)
   }
 
-  playHeartCatch(volume = 0.2) {
-    this.playNote('E5', 0.3, volume)
-    setTimeout(() => this.playNote('G5', 0.3, volume), 80)
+  playHeartCatch() {
+    this.playNote('E5', 0.3, 0.2)
+    setTimeout(() => this.playNote('G5', 0.3, 0.2), 80)
   }
 
-  playLanternRelease(volume = 0.15) {
-    this.playNote('C5', 1.0, volume)
-    setTimeout(() => this.playNote('E5', 0.8, volume * 0.7), 200)
+  playLanternRelease() {
+    this.playNote('C5', 1.0, 0.15)
+    setTimeout(() => this.playNote('E5', 0.8, 0.1), 200)
   }
 
   playConfetti() {
-    const melody = ['C5', 'E5', 'G5', 'A5', 'G5', 'E5', 'C5', 'E5', 'G5', 'C5']
-    melody.forEach((n, i) => {
-      setTimeout(() => this.playNote(n, 0.4, 0.2), i * 100)
-    })
+    const m = ['C5', 'E5', 'G5', 'A5', 'G5', 'E5', 'C5', 'E5', 'G5', 'C5']
+    m.forEach((n, i) => setTimeout(() => this.playNote(n, 0.4, 0.2), i * 100))
   }
 }
 
-const soundEngine = typeof window !== 'undefined' ? new SoundEngine() : null
+// Lazy singleton — only created when first accessed
+let _soundEngine: SoundEngine | null = null
+function getSoundEngine(): SoundEngine {
+  if (!_soundEngine) _soundEngine = new SoundEngine()
+  return _soundEngine
+}
 
 // =============================================
 // HELPER
@@ -122,6 +117,23 @@ function seededRandom(seed: number) {
   }
 }
 
+/** Convert screen coords to SVG viewBox coords */
+function screenToSvg(e: React.PointerEvent | PointerEvent, svgEl: SVGSVGElement | null): { x: number; y: number } | null {
+  if (!svgEl) return null
+  const rect = svgEl.getBoundingClientRect()
+  // viewBox is 400x800, fit via xMidYMid slice
+  const vbW = 400, vbH = 800
+  const scale = Math.max(rect.width / vbW, rect.height / vbH)
+  const renderedW = vbW * scale
+  const renderedH = vbH * scale
+  const offsetX = (rect.width - renderedW) / 2
+  const offsetY = (rect.height - renderedH) / 2
+  return {
+    x: ((e.clientX - rect.left - offsetX) / scale),
+    y: ((e.clientY - rect.top - offsetY) / scale),
+  }
+}
+
 // =============================================
 // SVG FILTERS
 // =============================================
@@ -130,24 +142,18 @@ function PixelFilters() {
     <defs>
       <filter id="glow">
         <feGaussianBlur stdDeviation="3" result="blur" />
-        <feMerge>
-          <feMergeNode in="blur" />
-          <feMergeNode in="SourceGraphic" />
-        </feMerge>
+        <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
       </filter>
       <filter id="softGlow">
         <feGaussianBlur stdDeviation="8" result="blur" />
-        <feMerge>
-          <feMergeNode in="blur" />
-          <feMergeNode in="SourceGraphic" />
-        </feMerge>
+        <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
       </filter>
     </defs>
   )
 }
 
 // =============================================
-// BACKGROUND ELEMENTS (unchanged from original)
+// BACKGROUND ELEMENTS
 // =============================================
 function Sky() {
   return (
@@ -171,11 +177,8 @@ function Stars() {
   const stars = useMemo(() => {
     const rng = seededRandom(13)
     return Array.from({ length: 30 }, () => ({
-      x: rng() * 400,
-      y: rng() * 200,
-      size: 1 + rng() * 2,
-      dur: 2 + rng() * 3,
-      delay: rng() * 4,
+      x: rng() * 400, y: rng() * 200,
+      size: 1 + rng() * 2, dur: 2 + rng() * 3, delay: rng() * 4,
     }))
   }, [])
 
@@ -216,7 +219,6 @@ function Clouds() {
     { x: 300, y: 70, scale: 0.75, dur: 80 },
     { x: 100, y: 100, scale: 0.5, dur: 95 },
   ]
-
   return (
     <g>
       {clouds.map((c, i) => (
@@ -244,7 +246,6 @@ function Birds() {
     { x: 288, y: 156, dur: 25, delay: 5.4 },
     { x: 170, y: 90, dur: 18, delay: 8 },
   ]
-
   return (
     <g>
       {birds.map((b, i) => (
@@ -274,14 +275,10 @@ function Fireflies() {
   const flies = useMemo(() => {
     const rng = seededRandom(77)
     return Array.from({ length: 15 }, () => ({
-      cx: 20 + rng() * 360,
-      cy: 350 + rng() * 50,
-      dur: 3 + rng() * 4,
-      delay: rng() * 6,
-      r: 1.2 + rng() * 1.2,
+      cx: 20 + rng() * 360, cy: 350 + rng() * 50,
+      dur: 3 + rng() * 4, delay: rng() * 6, r: 1.2 + rng() * 1.2,
     }))
   }, [])
-
   return (
     <g>
       {flies.map((f, i) => (
@@ -298,19 +295,13 @@ function FloatingPetals() {
   const petals = useMemo(() => {
     const rng = seededRandom(42)
     return Array.from({ length: 18 }, (_, i) => ({
-      x: rng() * 400,
-      startY: -20 - rng() * 80,
-      endY: 700 + rng() * 100,
-      size: 2.5 + rng() * 3,
-      dur: 12 + rng() * 14,
-      delay: rng() * 10,
+      x: rng() * 400, startY: -20 - rng() * 80, endY: 700 + rng() * 100,
+      size: 2.5 + rng() * 3, dur: 12 + rng() * 14, delay: rng() * 10,
       drift: (rng() - 0.5) * 60,
       color: rng() > 0.5 ? C.flowerPink : C.flowerWhite,
-      opacity: 0.35 + rng() * 0.4,
-      rotation: i * 30,
+      opacity: 0.35 + rng() * 0.4, rotation: i * 30,
     }))
   }, [])
-
   return (
     <g>
       {petals.map((p, i) => (
@@ -339,20 +330,22 @@ interface TreasureSpot {
 }
 
 const TREASURE_SPOTS: TreasureSpot[] = [
-  { id: 'cat', x: 33, y: 278, w: 14, h: 18, note: 'C4', label: '🐱' },
-  { id: 'flowers', x: 268, y: 350, w: 20, h: 18, note: 'E4', label: '🌸' },
-  { id: 'flag', x: 335, y: 242, w: 14, h: 20, note: 'G4', label: '🚩' },
-  { id: 'lamp', x: 140, y: 344, w: 14, h: 18, note: 'A4', label: '🏮' },
-  { id: 'bird', x: 367, y: 340, w: 18, h: 18, note: 'C5', label: '🕊️' },
+  { id: 'cat', x: 33, y: 278, w: 14, h: 18, note: 'C4', label: 'cat' },
+  { id: 'flowers', x: 268, y: 350, w: 20, h: 18, note: 'E4', label: 'flowers' },
+  { id: 'flag', x: 335, y: 242, w: 14, h: 20, note: 'G4', label: 'flag' },
+  { id: 'lamp', x: 140, y: 344, w: 14, h: 18, note: 'A4', label: 'lamp' },
+  { id: 'bird', x: 367, y: 340, w: 18, h: 18, note: 'C5', label: 'dove' },
 ]
 
 const TREASURE_MELODY = ['C4', 'E4', 'G4', 'A4', 'C5', 'E5', 'G5', 'E5', 'C5']
+
+// Minimum 48x48 SVG-unit hit area (≈44px on most phones)
+const MIN_HIT = 48
 
 function Building({ foundTreasures, onTreasureFind }: { foundTreasures: Set<string>; onTreasureFind: (spot: TreasureSpot) => void }) {
   return (
     <g>
       {/* === Left cluster === */}
-      {/* Bell tower */}
       <rect x="20" y="260" width="40" height="140" fill={C.building2} />
       <rect x="20" y="260" width="40" height="5" fill={C.building3} />
       <polygon points="18,260 40,232 62,260" fill={C.roof} />
@@ -367,7 +360,6 @@ function Building({ foundTreasures, onTreasureFind }: { foundTreasures: Set<stri
         </g>
       ))}
 
-      {/* Main building left */}
       <rect x="60" y="300" width="70" height="100" fill={C.building1} />
       <rect x="60" y="300" width="70" height="4" fill={C.building3} />
       <polygon points="56,300 95,278 134,300" fill={C.roof} />
@@ -387,7 +379,6 @@ function Building({ foundTreasures, onTreasureFind }: { foundTreasures: Set<stri
       <rect x="85" y="378" width="14" height="22" fill={C.windowDark} />
       <rect x="85" y="378" width="14" height="3" fill={C.building3} />
 
-      {/* Small connecting building */}
       <rect x="130" y="330" width="48" height="70" fill={C.building3} />
       <rect x="130" y="330" width="48" height="3" fill={C.buildingLight} />
       <polygon points="128,330 154,314 180,330" fill={C.roof} />
@@ -401,7 +392,6 @@ function Building({ foundTreasures, onTreasureFind }: { foundTreasures: Set<stri
       ))}
 
       {/* === Right cluster === */}
-      {/* Large right building */}
       <rect x="240" y="290" width="80" height="110" fill={C.building2} />
       <rect x="240" y="290" width="80" height="4" fill={C.building3} />
       <polygon points="236,290 280,264 324,290" fill={C.roof} />
@@ -418,19 +408,16 @@ function Building({ foundTreasures, onTreasureFind }: { foundTreasures: Set<stri
           </rect>
         </g>
       ))}
-      {/* Balcony */}
       <rect x="268" y="362" width="16" height="3" fill={C.building3} />
       <rect x="270" y="350" width="12" height="14" fill={C.windowDark} />
       <rect x="271" y="351" width="10" height="12" fill={C.window}>
         <animate attributeName="opacity" values="0.8;1;0.8" dur="2s" repeatCount="indefinite" />
       </rect>
 
-      {/* Right tall tower */}
       <rect x="320" y="270" width="38" height="130" fill={C.building1} />
       <rect x="320" y="270" width="38" height="4" fill={C.building2} />
       <polygon points="318,270 339,242 360,270" fill={C.roof} />
       <polygon points="318,270 339,246 339,270" fill={C.roofDark} />
-      {/* Clock window */}
       <circle cx="339" cy="290" r="7" fill={C.windowDark} />
       <circle cx="339" cy="290" r="5" fill={C.window}>
         <animate attributeName="opacity" values="0.7;1;0.7" dur="4s" repeatCount="indefinite" />
@@ -444,7 +431,6 @@ function Building({ foundTreasures, onTreasureFind }: { foundTreasures: Set<stri
         </g>
       ))}
 
-      {/* Small rightmost building */}
       <rect x="358" y="340" width="42" height="60" fill={C.building3} />
       <polygon points="356,340 379,324 402,340" fill={C.roof} />
       <rect x="367" y="355" width="8" height="12" fill={C.windowDark} />
@@ -456,11 +442,9 @@ function Building({ foundTreasures, onTreasureFind }: { foundTreasures: Set<stri
         <animate attributeName="opacity" values="0.6;1;0.6" dur="3s" repeatCount="indefinite" />
       </rect>
 
-      {/* Waterfront / dock line */}
       <rect x="0" y="396" width="400" height="6" fill={C.building1} opacity="0.6" />
       <rect x="0" y="399" width="400" height="3" fill={C.sea2} opacity="0.3" />
 
-      {/* Pixel greenery / vines */}
       {[28, 65, 135, 248, 326, 362].map((x, i) => (
         <g key={`vine-${i}`}>
           <rect x={x + 2} y="390" width="3" height="5" fill={C.green1} />
@@ -469,37 +453,48 @@ function Building({ foundTreasures, onTreasureFind }: { foundTreasures: Set<stri
         </g>
       ))}
 
-      {/* ===== TREASURE HUNT HOTSPOTS ===== */}
+      {/* ===== TREASURE HUNT HOTSPOTS — 48x48 SVG-unit min hit area ===== */}
       {TREASURE_SPOTS.map(spot => {
         const found = foundTreasures.has(spot.id)
+        const cx = spot.x + spot.w / 2
+        const cy = spot.y + spot.h / 2
+        const hitW = Math.max(spot.w, MIN_HIT)
+        const hitH = Math.max(spot.h, MIN_HIT)
         return (
           <g key={spot.id}>
-            {/* Subtle hint glow for undiscovered spots */}
+            {/* Subtle pulsing hint glow */}
             {!found && (
-              <rect
-                x={spot.x - 2} y={spot.y - 2}
-                width={spot.w + 4} height={spot.h + 4}
-                fill={C.sunGlow} opacity="0" rx="2"
-              >
-                <animate attributeName="opacity" values="0;0.25;0" dur="3s" repeatCount="indefinite" />
+              <rect x={spot.x - 2} y={spot.y - 2} width={spot.w + 4} height={spot.h + 4} fill={C.sunGlow} opacity="0" rx="2">
+                <animate attributeName="opacity" values="0;0.3;0" dur="2.5s" repeatCount="indefinite" />
               </rect>
             )}
-            {/* Found indicator */}
+            {/* Found: golden glow + note sparkle */}
             {found && (
               <g>
-                <rect x={spot.x} y={spot.y} width={spot.w} height={spot.h} fill={C.sunGlow} opacity="0.3" rx="1" />
-                <circle cx={spot.x + spot.w / 2} cy={spot.y - 4} r="3" fill={C.sunGlow} filter="url(#glow)">
-                  <animate attributeName="opacity" values="0.5;1;0.5" dur="2s" repeatCount="indefinite" />
+                <rect x={spot.x - 1} y={spot.y - 1} width={spot.w + 2} height={spot.h + 2} fill={C.sunGlow} opacity="0.35" rx="1">
+                  <animate attributeName="opacity" values="0.35;0.15;0.35" dur="3s" repeatCount="indefinite" />
+                </rect>
+                <circle cx={cx} cy={spot.y - 6} r="4" fill={C.sunGlow} filter="url(#glow)">
+                  <animate attributeName="opacity" values="0.4;0.9;0.4" dur="2s" repeatCount="indefinite" />
+                  <animate attributeName="r" values="3;5;3" dur="2s" repeatCount="indefinite" />
                 </circle>
+                {/* Note label */}
+                <text x={cx} y={spot.y - 12} textAnchor="middle" fill={C.sun} fontSize="5" fontFamily="monospace" opacity="0.7">
+                  {spot.note}
+                </text>
               </g>
             )}
-            {/* Clickable area */}
+            {/* Large tap target — centered on spot */}
             <rect
-              x={spot.x - 4} y={spot.y - 4}
-              width={spot.w + 8} height={spot.h + 8}
+              x={cx - hitW / 2} y={cy - hitH / 2}
+              width={hitW} height={hitH}
               fill="transparent"
               style={{ cursor: found ? 'default' : 'pointer' }}
-              onClick={() => !found && onTreasureFind(spot)}
+              onPointerDown={(e) => {
+                if (found) return
+                e.stopPropagation()
+                onTreasureFind(spot)
+              }}
             />
           </g>
         )
@@ -509,9 +504,9 @@ function Building({ foundTreasures, onTreasureFind }: { foundTreasures: Set<stri
 }
 
 // =============================================
-// SEA (with musical tap interaction)
+// SEA (with musical tap — uses pointer events)
 // =============================================
-function Sea({ onSeaTap }: { onSeaTap: (x: number, y: number) => void }) {
+function Sea() {
   return (
     <g>
       <rect x="0" y="400" width="400" height="400" fill={C.sea1} />
@@ -528,26 +523,21 @@ function Sea({ onSeaTap }: { onSeaTap: (x: number, y: number) => void }) {
       </defs>
       <rect x="0" y="400" width="400" height="400" fill="url(#seaGrad)" />
 
-      {/* Sun reflection */}
       <ellipse cx="200" cy="420" rx="50" ry="80" fill="url(#sunReflection)">
         <animate attributeName="rx" values="50;58;50" dur="4s" repeatCount="indefinite" />
       </ellipse>
 
-      {/* Wave lines */}
       {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(i => (
         <path
           key={`wave-${i}`}
           d={`M-20,${408 + i * 28} Q30,${403 + i * 28} 60,${408 + i * 28} T120,${408 + i * 28} T180,${408 + i * 28} T240,${408 + i * 28} T300,${408 + i * 28} T360,${408 + i * 28} T420,${408 + i * 28}`}
-          fill="none"
-          stroke={i < 3 ? C.seaHighlight : C.sea3}
-          strokeWidth="1.2"
-          opacity={0.3 - i * 0.025}
+          fill="none" stroke={i < 3 ? C.seaHighlight : C.sea3}
+          strokeWidth="1.2" opacity={0.3 - i * 0.025}
         >
           <animateTransform attributeName="transform" type="translate" values={`0,0;${i % 2 === 0 ? 15 : -15},${Math.sin(i) * 2}`} dur={`${3 + i * 0.5}s`} repeatCount="indefinite" />
         </path>
       ))}
 
-      {/* Sparkles */}
       {[
         { x: 160, y: 415, d: 2 }, { x: 190, y: 425, d: 3 },
         { x: 210, y: 412, d: 2.5 }, { x: 180, y: 438, d: 1.8 },
@@ -559,60 +549,52 @@ function Sea({ onSeaTap }: { onSeaTap: (x: number, y: number) => void }) {
           <animate attributeName="opacity" values="0;0.8;0" dur={`${s.d}s`} begin={`${i * 0.3}s`} repeatCount="indefinite" />
         </rect>
       ))}
-
-      {/* Invisible tap area for musical sea */}
-      <rect
-        x="0" y="400" width="400" height="400"
-        fill="transparent"
-        style={{ cursor: 'pointer' }}
-        onClick={(e) => {
-          const svg = (e.target as SVGElement).closest('svg')
-          if (!svg) return
-          const pt = svg.createSVGPoint()
-          pt.x = e.clientX
-          pt.y = e.clientY
-          const svgP = pt.matrixTransform(svg.getScreenCTM()?.inverse())
-          onSeaTap(svgP.x, svgP.y)
-        }}
-      />
     </g>
   )
 }
 
 // =============================================
 // INTERACTIVE FLOATING HEARTS (catchable!)
+// Using SVG animations for movement, React only for spawn/catch
 // =============================================
-interface CatchableHeart {
+interface HeartData {
   id: number
   x: number
-  y: number
+  startY: number
+  endY: number
   size: number
-  speed: number
+  dur: number
   drift: number
   color: string
-  caught: boolean
-  fadeOut: boolean
 }
 
-function CatchableHearts({ hearts, onCatch }: { hearts: CatchableHeart[]; onCatch: (id: number) => void }) {
+function CatchableHearts({ hearts, onCatch }: { hearts: HeartData[]; onCatch: (id: number, e: React.PointerEvent) => void }) {
   return (
     <g>
       {hearts.map(h => {
-        if (h.caught) return null
+        const hitSize = Math.max(h.size * 3, MIN_HIT)
         return (
-          <g
-            key={h.id}
-            transform={`translate(${h.x}, ${h.y})`}
-            style={{ cursor: 'pointer' }}
-            opacity={h.fadeOut ? 0.3 : 0.8}
-            onClick={() => onCatch(h.id)}
-          >
+          <g key={h.id} opacity="0.85">
+            <animateTransform
+              attributeName="transform" type="translate"
+              values={`${h.x},${h.startY};${h.x + h.drift},${h.endY}`}
+              dur={`${h.dur}s`} fill="freeze"
+            />
             {/* Heart shape */}
             <rect x={-h.size * 0.5} y={0} width={h.size * 0.45} height={h.size * 0.45} fill={h.color} rx="0.5" />
             <rect x={h.size * 0.05} y={0} width={h.size * 0.45} height={h.size * 0.45} fill={h.color} rx="0.5" />
             <rect x={-h.size * 0.25} y={h.size * 0.25} width={h.size * 0.5} height={h.size * 0.45} fill={h.color} rx="0.5" />
-            {/* Larger hit area */}
-            <rect x={-h.size} y={-h.size * 0.5} width={h.size * 2.5} height={h.size * 2} fill="transparent" />
+            {/* Generous centered hit area */}
+            <rect
+              x={-hitSize / 2} y={-hitSize / 3}
+              width={hitSize} height={hitSize}
+              fill="transparent"
+              style={{ cursor: 'pointer' }}
+              onPointerDown={(e) => {
+                e.stopPropagation()
+                onCatch(h.id, e)
+              }}
+            />
           </g>
         )
       })}
@@ -621,38 +603,33 @@ function CatchableHearts({ hearts, onCatch }: { hearts: CatchableHeart[]; onCatc
 }
 
 // =============================================
-// WISH LANTERNS
+// WISH LANTERNS — pure SVG animation, no RAF
 // =============================================
-interface Lantern {
+interface LanternData {
   id: number
   x: number
-  y: number
-  targetY: number
+  startY: number
   word: string
-  opacity: number
 }
 
-function WishLanterns({ lanterns }: { lanterns: Lantern[] }) {
+function WishLanterns({ lanterns }: { lanterns: LanternData[] }) {
   return (
     <g>
       {lanterns.map(l => (
-        <g key={l.id} transform={`translate(${l.x}, ${l.y})`} opacity={l.opacity}>
+        <g key={l.id}>
+          <animateTransform
+            attributeName="transform" type="translate"
+            values={`${l.x},${l.startY};${l.x + (Math.random() - 0.5) * 20},${-50}`}
+            dur="18s" fill="freeze"
+          />
+          <animate attributeName="opacity" values="0;1;1;0.7;0" dur="18s" fill="freeze" />
           {/* Lantern body */}
           <ellipse cx="0" cy="0" rx="6" ry="8" fill={C.sunGlow} opacity="0.7" filter="url(#glow)" />
           <ellipse cx="0" cy="0" rx="4" ry="6" fill={C.sun} opacity="0.9" />
-          {/* Flame inside */}
           <ellipse cx="0" cy="1" rx="1.5" ry="2" fill="#fff" opacity="0.8">
             <animate attributeName="ry" values="2;2.5;2" dur="0.5s" repeatCount="indefinite" />
           </ellipse>
-          {/* Word */}
-          <text
-            x="0" y="-14"
-            textAnchor="middle"
-            fill={C.textMain}
-            fontSize="7"
-            fontFamily="monospace"
-            opacity="0.9"
-          >
+          <text x="0" y="-14" textAnchor="middle" fill={C.textMain} fontSize="7" fontFamily="monospace" opacity="0.9">
             {l.word}
           </text>
         </g>
@@ -662,28 +639,69 @@ function WishLanterns({ lanterns }: { lanterns: Lantern[] }) {
 }
 
 // =============================================
-// SEA RIPPLES (visual feedback for musical taps)
+// SEA RIPPLES + CATCH BURSTS (visual feedback)
 // =============================================
 interface Ripple {
   id: number
   x: number
   y: number
-  birth: number
 }
 
-function SeaRipples({ ripples }: { ripples: Ripple[] }) {
+interface CatchBurst {
+  id: number
+  x: number
+  y: number
+  color: string
+}
+
+function VisualEffects({ ripples, catchBursts }: { ripples: Ripple[]; catchBursts: CatchBurst[] }) {
   return (
     <g>
+      {/* Sea ripples */}
       {ripples.map(r => (
-        <g key={r.id}>
-          <circle cx={r.x} cy={r.y} r="3" fill="none" stroke={C.seaHighlight} strokeWidth="1">
-            <animate attributeName="r" from="3" to="25" dur="1.2s" fill="freeze" />
-            <animate attributeName="opacity" from="0.7" to="0" dur="1.2s" fill="freeze" />
+        <g key={`ripple-${r.id}`}>
+          <circle cx={r.x} cy={r.y} r="3" fill="none" stroke={C.seaHighlight} strokeWidth="1.2">
+            <animate attributeName="r" from="3" to="28" dur="1s" fill="freeze" />
+            <animate attributeName="opacity" from="0.8" to="0" dur="1s" fill="freeze" />
           </circle>
           <circle cx={r.x} cy={r.y} r="3" fill="none" stroke={C.sun} strokeWidth="0.8">
-            <animate attributeName="r" from="3" to="18" dur="0.9s" fill="freeze" />
-            <animate attributeName="opacity" from="0.5" to="0" dur="0.9s" fill="freeze" />
+            <animate attributeName="r" from="3" to="18" dur="0.7s" fill="freeze" />
+            <animate attributeName="opacity" from="0.5" to="0" dur="0.7s" fill="freeze" />
           </circle>
+          {/* Note text flash */}
+          <text x={r.x} y={r.y - 8} textAnchor="middle" fill={C.sun} fontSize="6" fontFamily="monospace">
+            <animate attributeName="opacity" values="0.8;0" dur="0.8s" fill="freeze" />
+            <animateTransform attributeName="transform" type="translate" values={`0,0;0,-12`} dur="0.8s" fill="freeze" />
+          </text>
+        </g>
+      ))}
+
+      {/* Heart catch bursts — satisfying pop! */}
+      {catchBursts.map(b => (
+        <g key={`burst-${b.id}`}>
+          {/* Central flash */}
+          <circle cx={b.x} cy={b.y} r="2" fill={b.color}>
+            <animate attributeName="r" from="2" to="15" dur="0.4s" fill="freeze" />
+            <animate attributeName="opacity" from="0.8" to="0" dur="0.4s" fill="freeze" />
+          </circle>
+          {/* Particle ring */}
+          {[0, 60, 120, 180, 240, 300].map((angle, i) => {
+            const rad = (angle * Math.PI) / 180
+            const dx = Math.cos(rad) * 18
+            const dy = Math.sin(rad) * 18
+            return (
+              <rect key={i} x={b.x - 1} y={b.y - 1} width="2.5" height="2.5" fill={b.color} rx="0.5">
+                <animateTransform attributeName="transform" type="translate" values={`0,0;${dx},${dy}`} dur="0.5s" fill="freeze" />
+                <animate attributeName="opacity" from="1" to="0" dur="0.5s" fill="freeze" />
+              </rect>
+            )
+          })}
+          {/* "+1" text float */}
+          <text x={b.x} y={b.y - 4} textAnchor="middle" fill={C.sun} fontSize="8" fontFamily="monospace" fontWeight="bold">
+            <animate attributeName="opacity" values="1;0" dur="0.8s" fill="freeze" />
+            <animateTransform attributeName="transform" type="translate" values={`0,0;0,-18`} dur="0.8s" fill="freeze" />
+            +1
+          </text>
         </g>
       ))}
     </g>
@@ -691,51 +709,29 @@ function SeaRipples({ ripples }: { ripples: Ripple[] }) {
 }
 
 // =============================================
-// CONFETTI BURST
+// CONFETTI — uses key to force re-mount for replay
 // =============================================
-function ConfettiBurst({ active }: { active: boolean }) {
+function ConfettiBurst({ burstKey }: { burstKey: number }) {
   const particles = useMemo(() => {
-    const rng = seededRandom(555)
+    const rng = seededRandom(burstKey * 137 + 555)
     const colors = [C.heartPink, C.heartRed, C.sunGlow, C.sun, C.flowerPink, C.seaHighlight, '#fff']
     return Array.from({ length: 50 }, () => ({
-      x: 180 + rng() * 40,
-      y: 350 + rng() * 40,
-      dx: (rng() - 0.5) * 300,
-      dy: -100 - rng() * 400,
+      x: 180 + rng() * 40, y: 350 + rng() * 40,
+      dx: (rng() - 0.5) * 300, dy: -100 - rng() * 400,
       size: 2 + rng() * 4,
       color: colors[Math.floor(rng() * colors.length)],
-      rotation: rng() * 360,
-      dur: 2 + rng() * 2,
+      rotation: rng() * 360, dur: 2 + rng() * 2,
     }))
-  }, [])
+  }, [burstKey])
 
-  if (!active) return null
+  if (burstKey === 0) return null
 
   return (
     <g>
       {particles.map((p, i) => (
-        <rect
-          key={`confetti-${i}`}
-          x="0" y="0"
-          width={p.size} height={p.size * 0.6}
-          fill={p.color}
-          rx="0.5"
-        >
-          <animateTransform
-            attributeName="transform"
-            type="translate"
-            values={`${p.x},${p.y};${p.x + p.dx},${p.y + p.dy}`}
-            dur={`${p.dur}s`}
-            fill="freeze"
-          />
-          <animateTransform
-            attributeName="transform"
-            type="rotate"
-            values={`0;${p.rotation}`}
-            dur={`${p.dur}s`}
-            fill="freeze"
-            additive="sum"
-          />
+        <rect key={`confetti-${i}`} x="0" y="0" width={p.size} height={p.size * 0.6} fill={p.color} rx="0.5">
+          <animateTransform attributeName="transform" type="translate" values={`${p.x},${p.y};${p.x + p.dx},${p.y + p.dy}`} dur={`${p.dur}s`} fill="freeze" />
+          <animateTransform attributeName="transform" type="rotate" values={`0;${p.rotation}`} dur={`${p.dur}s`} fill="freeze" additive="sum" />
           <animate attributeName="opacity" values="1;1;0" dur={`${p.dur}s`} fill="freeze" />
         </rect>
       ))}
@@ -744,34 +740,31 @@ function ConfettiBurst({ active }: { active: boolean }) {
 }
 
 // =============================================
-// MAIN SCENE
+// MAIN SCENE SVG
 // =============================================
-function PixelScene({
-  foundTreasures,
-  onTreasureFind,
-  onSeaTap,
-  hearts,
-  onHeartCatch,
-  lanterns,
-  ripples,
-  confettiActive,
+const PixelScene = ({
+  svgRef, foundTreasures, onTreasureFind,
+  hearts, onHeartCatch, lanterns,
+  ripples, catchBursts, confettiBurstKey,
 }: {
+  svgRef: React.RefObject<SVGSVGElement | null>
   foundTreasures: Set<string>
   onTreasureFind: (spot: TreasureSpot) => void
-  onSeaTap: (x: number, y: number) => void
-  hearts: CatchableHeart[]
-  onHeartCatch: (id: number) => void
-  lanterns: Lantern[]
+  hearts: HeartData[]
+  onHeartCatch: (id: number, e: React.PointerEvent) => void
+  lanterns: LanternData[]
   ripples: Ripple[]
-  confettiActive: boolean
-}) {
+  catchBursts: CatchBurst[]
+  confettiBurstKey: number
+}) => {
   return (
     <svg
+      ref={svgRef}
       viewBox="0 0 400 800"
       xmlns="http://www.w3.org/2000/svg"
       className="absolute inset-0 w-full h-full"
       preserveAspectRatio="xMidYMid slice"
-      style={{ imageRendering: 'auto' }}
+      style={{ imageRendering: 'auto', touchAction: 'none' }}
     >
       <PixelFilters />
       <Sky />
@@ -781,13 +774,13 @@ function PixelScene({
       <Birds />
       <Building foundTreasures={foundTreasures} onTreasureFind={onTreasureFind} />
       <Fireflies />
-      <Sea onSeaTap={onSeaTap} />
+      <Sea />
       <Boat />
-      <SeaRipples ripples={ripples} />
       <FloatingPetals />
       <CatchableHearts hearts={hearts} onCatch={onHeartCatch} />
       <WishLanterns lanterns={lanterns} />
-      <ConfettiBurst active={confettiActive} />
+      <VisualEffects ripples={ripples} catchBursts={catchBursts} />
+      <ConfettiBurst burstKey={confettiBurstKey} />
     </svg>
   )
 }
@@ -798,95 +791,54 @@ function PixelScene({
 const WISH_WORDS = ['Wishing', 'you', 'endless', 'joy', 'love', 'and', 'magic', 'forever']
 
 function GameUI({
-  heartsCaught,
-  heartsTarget,
-  foundTreasures,
-  totalTreasures,
-  lanternsReleased,
-  allComplete,
-  treasureMelodyPlayed,
+  heartsCaught, heartsTarget, foundTreasures, totalTreasures,
+  lanternsReleased, allComplete, treasureMelodyPlayed,
 }: {
-  heartsCaught: number
-  heartsTarget: number
-  foundTreasures: number
-  totalTreasures: number
-  lanternsReleased: number
-  allComplete: boolean
+  heartsCaught: number; heartsTarget: number
+  foundTreasures: number; totalTreasures: number
+  lanternsReleased: number; allComplete: boolean
   treasureMelodyPlayed: boolean
 }) {
+  const pills = [
+    { icon: '\u2665', count: heartsCaught, total: heartsTarget, done: heartsCaught >= heartsTarget },
+    { icon: '\u2726', count: foundTreasures, total: totalTreasures, done: foundTreasures >= totalTreasures },
+    { icon: '\u25D0', count: lanternsReleased, total: WISH_WORDS.length, done: lanternsReleased >= WISH_WORDS.length },
+  ]
+
   return (
-    <div className="absolute top-0 left-0 right-0 pointer-events-none" style={{ paddingTop: 'max(env(safe-area-inset-top, 0px), 8px)' }}>
-      {/* Progress indicators */}
+    <div className="absolute top-0 left-0 right-0 z-20 pointer-events-none" style={{ paddingTop: 'max(env(safe-area-inset-top, 0px), 8px)' }}>
       <div className="flex justify-center gap-3 px-3 pt-2 flex-wrap">
-        {/* Hearts counter */}
-        <div
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full font-mono text-xs"
-          style={{
-            background: 'rgba(33, 39, 51, 0.7)',
-            backdropFilter: 'blur(8px)',
-            color: heartsCaught >= heartsTarget ? C.sunGlow : C.textSub,
-            border: `1px solid ${heartsCaught >= heartsTarget ? C.sunGlow + '44' : C.sea3 + '33'}`,
-          }}
-        >
-          <span style={{ fontSize: '14px' }}>{'♥'}</span>
-          <span>{heartsCaught}/{heartsTarget}</span>
-          {heartsCaught >= heartsTarget && <span>{'✓'}</span>}
-        </div>
-
-        {/* Treasure counter */}
-        <div
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full font-mono text-xs"
-          style={{
-            background: 'rgba(33, 39, 51, 0.7)',
-            backdropFilter: 'blur(8px)',
-            color: foundTreasures >= totalTreasures ? C.sunGlow : C.textSub,
-            border: `1px solid ${foundTreasures >= totalTreasures ? C.sunGlow + '44' : C.sea3 + '33'}`,
-          }}
-        >
-          <span style={{ fontSize: '14px' }}>{'✦'}</span>
-          <span>{foundTreasures}/{totalTreasures}</span>
-          {foundTreasures >= totalTreasures && <span>{'✓'}</span>}
-        </div>
-
-        {/* Lanterns counter */}
-        <div
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full font-mono text-xs"
-          style={{
-            background: 'rgba(33, 39, 51, 0.7)',
-            backdropFilter: 'blur(8px)',
-            color: lanternsReleased >= WISH_WORDS.length ? C.sunGlow : C.textSub,
-            border: `1px solid ${lanternsReleased >= WISH_WORDS.length ? C.sunGlow + '44' : C.sea3 + '33'}`,
-          }}
-        >
-          <span style={{ fontSize: '14px' }}>{'◐'}</span>
-          <span>{lanternsReleased}/{WISH_WORDS.length}</span>
-          {lanternsReleased >= WISH_WORDS.length && <span>{'✓'}</span>}
-        </div>
+        {pills.map((p, i) => (
+          <div
+            key={i}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full font-mono text-xs transition-colors duration-300"
+            style={{
+              background: 'rgba(33, 39, 51, 0.75)',
+              backdropFilter: 'blur(8px)',
+              color: p.done ? C.sunGlow : C.textSub,
+              border: `1px solid ${p.done ? C.sunGlow + '44' : C.sea3 + '33'}`,
+            }}
+          >
+            <span style={{ fontSize: '14px' }}>{p.icon}</span>
+            <span>{p.count}/{p.total}</span>
+            {p.done && <span style={{ color: C.sunGlow }}>{'✓'}</span>}
+          </div>
+        ))}
       </div>
 
-      {/* Hint text */}
       {!allComplete && (
         <div className="text-center mt-2 px-4">
-          <p
-            className="font-mono text-xs tracking-wide"
-            style={{ color: C.textSub, opacity: 0.6, textShadow: '0 1px 4px rgba(0,0,0,0.5)' }}
-          >
+          <p className="font-mono text-xs tracking-wide" style={{ color: C.textSub, opacity: 0.6, textShadow: '0 1px 4px rgba(0,0,0,0.5)' }}>
             tap hearts, find hidden treasures, touch the sky & sea
           </p>
         </div>
       )}
 
-      {/* Treasure melody notification */}
       {treasureMelodyPlayed && (
         <div className="flex justify-center mt-2">
           <div
-            className="px-4 py-2 rounded-lg font-mono text-xs"
-            style={{
-              background: 'rgba(33, 39, 51, 0.85)',
-              color: C.sunGlow,
-              border: `1px solid ${C.sunGlow}44`,
-              animation: 'fadeIn 0.5s ease-out',
-            }}
+            className="px-4 py-2 rounded-lg font-mono text-xs animate-fade-in"
+            style={{ background: 'rgba(33, 39, 51, 0.85)', color: C.sunGlow, border: `1px solid ${C.sunGlow}44` }}
           >
             melody unlocked!
           </div>
@@ -897,7 +849,7 @@ function GameUI({
 }
 
 // =============================================
-// BIRTHDAY OVERLAY (with completion state)
+// BIRTHDAY OVERLAY
 // =============================================
 function BirthdayOverlay({ allComplete }: { allComplete: boolean }) {
   const [visible, setVisible] = useState(false)
@@ -909,10 +861,9 @@ function BirthdayOverlay({ allComplete }: { allComplete: boolean }) {
 
   return (
     <div
-      className={`absolute inset-0 flex flex-col items-center pointer-events-none transition-opacity duration-[2000ms] ${visible ? 'opacity-100' : 'opacity-0'}`}
+      className={`absolute inset-0 flex flex-col items-center pointer-events-none z-10 transition-opacity duration-[2000ms] ${visible ? 'opacity-100' : 'opacity-0'}`}
       style={{ paddingTop: 'max(env(safe-area-inset-top, 0px), 12px)' }}
     >
-      {/* Title area — below the game UI */}
       <div className="flex-shrink-0 text-center pt-16 pb-2 px-4 sm:pt-20">
         <h1
           className="font-mono tracking-widest drop-shadow-lg leading-tight"
@@ -936,76 +887,62 @@ function BirthdayOverlay({ allComplete }: { allComplete: boolean }) {
         >
           Lara
         </h1>
-        <div
-          className="mt-3 font-mono tracking-wider"
-          style={{
-            color: C.textSub,
-            fontSize: 'clamp(0.7rem, 2.5vw, 1rem)',
-            textShadow: '0 1px 8px rgba(0,0,0,0.4)',
-          }}
-        >
+        <div className="mt-3 font-mono tracking-wider" style={{ color: C.textSub, fontSize: 'clamp(0.7rem, 2.5vw, 1rem)', textShadow: '0 1px 8px rgba(0,0,0,0.4)' }}>
           a little world, just for you
         </div>
       </div>
 
-      {/* Spacer */}
       <div className="flex-1 min-h-0" />
 
-      {/* Note card — revealed when all games complete */}
+      {/* Completion card */}
       <div
         className={`flex-shrink-0 mx-5 mb-8 px-6 py-5 rounded-xl pointer-events-auto max-w-sm w-full sm:mb-12 sm:px-8 sm:py-6 transition-all duration-1000 ${allComplete ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`}
         style={{
           background: 'rgba(33, 39, 51, 0.85)',
-          backdropFilter: 'blur(12px)',
-          WebkitBackdropFilter: 'blur(12px)',
+          backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)',
           border: `1px solid ${allComplete ? C.sunGlow + '44' : C.sea3 + '33'}`,
           boxShadow: allComplete
             ? `0 8px 32px rgba(0,0,0,0.35), inset 0 1px 0 ${C.sunGlow}28, 0 0 40px ${C.sunGlow}15`
-            : `0 8px 32px rgba(0,0,0,0.35), inset 0 1px 0 ${C.seaHighlight}18`,
+            : `0 8px 32px rgba(0,0,0,0.35)`,
         }}
       >
         <div className="text-center">
-          <p
-            className="font-mono leading-relaxed italic m-0"
-            style={{
-              color: C.textSub,
-              fontSize: 'clamp(0.8rem, 2.8vw, 0.95rem)',
-              lineHeight: '1.7',
-            }}
-          >
+          <p className="font-mono leading-relaxed italic m-0" style={{ color: C.textSub, fontSize: 'clamp(0.8rem, 2.8vw, 0.95rem)', lineHeight: '1.7' }}>
             You found all the secrets! This sunset, this melody, these little moments — they&apos;re all for you. Happy birthday, Lara.
           </p>
         </div>
       </div>
 
-      {/* Bottom safe area */}
       <div style={{ height: 'env(safe-area-inset-bottom, 0px)', flexShrink: 0 }} />
     </div>
   )
 }
 
 // =============================================
-// MAIN PAGE COMPONENT
+// MAIN PAGE — unified pointer handler, no RAF
 // =============================================
 export default function FarePage() {
   const [mounted, setMounted] = useState(false)
+  const svgRef = useRef<SVGSVGElement | null>(null)
 
   // Game state
   const [heartsCaught, setHeartsCaught] = useState(0)
   const [foundTreasures, setFoundTreasures] = useState<Set<string>>(new Set())
   const [lanternsReleased, setLanternsReleased] = useState(0)
-  const [confettiActive, setConfettiActive] = useState(false)
+  const [confettiBurstKey, setConfettiBurstKey] = useState(0)
   const [treasureMelodyPlayed, setTreasureMelodyPlayed] = useState(false)
+  const confettiFiredRef = useRef(false)
 
-  // Interactive elements
-  const [hearts, setHearts] = useState<CatchableHeart[]>([])
-  const [lanterns, setLanterns] = useState<Lantern[]>([])
+  // Interactive elements — hearts use SVG animations, no RAF needed
+  const [hearts, setHearts] = useState<HeartData[]>([])
+  const [lanterns, setLanterns] = useState<LanternData[]>([])
   const [ripples, setRipples] = useState<Ripple[]>([])
+  const [catchBursts, setCatchBursts] = useState<CatchBurst[]>([])
 
   const heartIdRef = useRef(0)
   const lanternIdRef = useRef(0)
   const rippleIdRef = useRef(0)
-  const animFrameRef = useRef<number>(0)
+  const burstIdRef = useRef(0)
 
   const HEARTS_TARGET = 15
 
@@ -1013,164 +950,113 @@ export default function FarePage() {
     && foundTreasures.size >= TREASURE_SPOTS.length
     && lanternsReleased >= WISH_WORDS.length
 
-  useEffect(() => {
-    setMounted(true)
-  }, [])
+  useEffect(() => { setMounted(true) }, [])
 
-  // Heart spawner
+  // Heart spawner — creates hearts with SVG animations (no RAF!)
   useEffect(() => {
     if (!mounted) return
     const spawn = () => {
-      const rng = Math.random
-      const heart: CatchableHeart = {
+      const r = Math.random
+      const heart: HeartData = {
         id: heartIdRef.current++,
-        x: 40 + rng() * 320,
-        y: 750,
-        size: 5 + rng() * 5,
-        speed: 0.4 + rng() * 0.5,
-        drift: (rng() - 0.5) * 0.3,
-        color: rng() > 0.5 ? C.heartPink : C.heartRed,
-        caught: false,
-        fadeOut: false,
+        x: 40 + r() * 320,
+        startY: 780,
+        endY: -40,
+        size: 6 + r() * 5,
+        dur: 14 + r() * 10,
+        drift: (r() - 0.5) * 60,
+        color: r() > 0.5 ? C.heartPink : C.heartRed,
       }
-      setHearts(prev => [...prev.slice(-20), heart]) // keep max 20
+      setHearts(prev => {
+        // Remove hearts older than 25s (well past their animation)
+        const cutoff = heartIdRef.current - 25
+        const cleaned = prev.filter(h => h.id > cutoff)
+        return [...cleaned, heart]
+      })
     }
-
-    const interval = setInterval(spawn, 2000)
-    spawn() // first one immediately
+    spawn()
+    const interval = setInterval(spawn, 1800)
     return () => clearInterval(interval)
   }, [mounted])
 
-  // Animation loop for hearts and lanterns
-  useEffect(() => {
-    if (!mounted) return
-    let lastTime = performance.now()
-
-    const tick = (now: number) => {
-      const dt = (now - lastTime) / 1000
-      lastTime = now
-
-      // Move hearts upward
-      setHearts(prev =>
-        prev
-          .map(h => ({
-            ...h,
-            y: h.y - h.speed * 60 * dt,
-            x: h.x + h.drift * 60 * dt,
-          }))
-          .filter(h => h.y > -30 && !h.caught)
-      )
-
-      // Move lanterns upward
-      setLanterns(prev =>
-        prev
-          .map(l => ({
-            ...l,
-            y: l.y - 0.3 * 60 * dt,
-            opacity: l.y < l.targetY ? Math.max(0, l.opacity - 0.005 * 60 * dt) : l.opacity,
-          }))
-          .filter(l => l.opacity > 0)
-      )
-
-      animFrameRef.current = requestAnimationFrame(tick)
-    }
-
-    animFrameRef.current = requestAnimationFrame(tick)
-    return () => cancelAnimationFrame(animFrameRef.current)
-  }, [mounted])
-
-  // Clean up old ripples
+  // Auto-clean old visual effects
   useEffect(() => {
     if (!mounted) return
     const interval = setInterval(() => {
-      setRipples(prev => {
-        const now = Date.now()
-        return prev.filter(r => now - r.birth < 1500)
-      })
-    }, 2000)
+      const cutoff = rippleIdRef.current - 8
+      setRipples(prev => prev.filter(r => r.id > cutoff))
+      const burstCutoff = burstIdRef.current - 8
+      setCatchBursts(prev => prev.filter(b => b.id > burstCutoff))
+    }, 3000)
     return () => clearInterval(interval)
   }, [mounted])
 
-  // Trigger confetti + melody when all complete
+  // Confetti on all complete — uses ref to prevent re-trigger
   useEffect(() => {
-    if (allComplete && !confettiActive) {
-      setConfettiActive(true)
-      soundEngine?.playConfetti()
-      setTimeout(() => setConfettiActive(false), 4000)
+    if (allComplete && !confettiFiredRef.current) {
+      confettiFiredRef.current = true
+      setConfettiBurstKey(k => k + 1)
+      getSoundEngine().playConfetti()
     }
-  }, [allComplete, confettiActive])
+  }, [allComplete])
 
-  const handleHeartCatch = useCallback((id: number) => {
+  // Heart catch handler — with catch burst visual feedback
+  const handleHeartCatch = useCallback((id: number, e: React.PointerEvent) => {
     setHearts(prev => prev.filter(h => h.id !== id))
     setHeartsCaught(prev => prev + 1)
-    soundEngine?.playHeartCatch()
+
+    // Spawn burst at pointer position in SVG coords
+    const pt = screenToSvg(e as unknown as React.PointerEvent, svgRef.current)
+    if (pt) {
+      setCatchBursts(prev => [...prev, {
+        id: burstIdRef.current++,
+        x: pt.x, y: pt.y,
+        color: Math.random() > 0.5 ? C.heartPink : C.heartRed,
+      }])
+    }
+    getSoundEngine().playHeartCatch()
   }, [])
 
+  // Treasure find handler
   const handleTreasureFind = useCallback((spot: TreasureSpot) => {
     setFoundTreasures(prev => {
       const next = new Set(prev)
       next.add(spot.id)
-
-      // Play the note
-      soundEngine?.playNote(spot.note, 1.0, 0.3)
-
-      // If all found, play the full melody
+      getSoundEngine().playNote(spot.note, 1.0, 0.3)
       if (next.size === TREASURE_SPOTS.length) {
         setTimeout(() => {
-          soundEngine?.playMelody(TREASURE_MELODY, 250)
+          getSoundEngine().playMelody(TREASURE_MELODY, 250)
           setTreasureMelodyPlayed(true)
         }, 800)
       }
-
       return next
     })
   }, [])
 
-  const handleSeaTap = useCallback((x: number, y: number) => {
-    // Add ripple
-    setRipples(prev => [...prev, { id: rippleIdRef.current++, x, y, birth: Date.now() }])
-    // Play note
-    soundEngine?.playSeaNote(x)
-  }, [])
+  // Unified pointer handler for sky (lanterns) and sea (music)
+  const handleScenePointerDown = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+    const pt = screenToSvg(e, svgRef.current)
+    if (!pt) return
 
-  const handleSkyTap = useCallback((e: React.MouseEvent | React.TouchEvent) => {
-    // Release a wish lantern on sky tap (above buildings, y < 260 in SVG space)
-    if (lanternsReleased >= WISH_WORDS.length) return
-
-    const target = e.target as HTMLElement
-    // Only trigger on the vignette/background overlay, not on SVG elements
-    if (target.tagName === 'svg' || target.closest('svg')) return
-
-    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect()
-    let clientX: number, clientY: number
-    if ('touches' in e) {
-      clientX = e.touches[0].clientX
-      clientY = e.touches[0].clientY
-    } else {
-      clientX = e.clientX
-      clientY = e.clientY
+    // Sea zone: y > 400
+    if (pt.y > 400 && pt.x >= 0 && pt.x <= 400) {
+      setRipples(prev => [...prev, { id: rippleIdRef.current++, x: pt.x, y: pt.y }])
+      getSoundEngine().playSeaNote(pt.x)
+      return
     }
 
-    // Convert to relative position
-    const relX = ((clientX - rect.left) / rect.width) * 400
-    const relY = ((clientY - rect.top) / rect.height) * 800
-
-    // Only in the sky area (above y=260)
-    if (relY > 260) return
-
-    const word = WISH_WORDS[lanternsReleased]
-    const lantern: Lantern = {
-      id: lanternIdRef.current++,
-      x: relX,
-      y: relY,
-      targetY: relY - 200,
-      word: word || '',
-      opacity: 1,
+    // Sky zone: y < 250 — release lantern
+    if (pt.y < 250 && lanternsReleased < WISH_WORDS.length) {
+      const word = WISH_WORDS[lanternsReleased]
+      setLanterns(prev => [...prev, {
+        id: lanternIdRef.current++,
+        x: pt.x,
+        startY: pt.y,
+        word: word || '',
+      }])
+      setLanternsReleased(prev => prev + 1)
+      getSoundEngine().playLanternRelease()
     }
-
-    setLanterns(prev => [...prev, lantern])
-    setLanternsReleased(prev => prev + 1)
-    soundEngine?.playLanternRelease()
   }, [lanternsReleased])
 
   if (!mounted) return null
@@ -1178,22 +1064,26 @@ export default function FarePage() {
   return (
     <div
       className="fixed inset-0 overflow-hidden"
-      style={{ background: C.sky1, cursor: 'default' }}
-      onClick={handleSkyTap}
+      style={{ background: C.sky1, touchAction: 'none', userSelect: 'none', WebkitUserSelect: 'none' }}
+      onPointerDown={handleScenePointerDown}
     >
       <PixelScene
+        svgRef={svgRef}
         foundTreasures={foundTreasures}
         onTreasureFind={handleTreasureFind}
-        onSeaTap={handleSeaTap}
         hearts={hearts}
         onHeartCatch={handleHeartCatch}
         lanterns={lanterns}
         ripples={ripples}
-        confettiActive={confettiActive}
+        catchBursts={catchBursts}
+        confettiBurstKey={confettiBurstKey}
       />
+
+      {/* Vignette — pointer-events-none, BELOW UI layers */}
+      <div className="absolute inset-0 pointer-events-none z-0" style={{ background: 'radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.35) 100%)' }} />
+
       <BirthdayOverlay allComplete={allComplete} />
 
-      {/* Game UI */}
       <GameUI
         heartsCaught={heartsCaught}
         heartsTarget={HEARTS_TARGET}
@@ -1202,14 +1092,6 @@ export default function FarePage() {
         lanternsReleased={lanternsReleased}
         allComplete={allComplete}
         treasureMelodyPlayed={treasureMelodyPlayed}
-      />
-
-      {/* Vignette overlay */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background: 'radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.35) 100%)',
-        }}
       />
     </div>
   )
