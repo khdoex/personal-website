@@ -4,20 +4,19 @@ import { useEffect, useState, useMemo } from 'react'
 
 // --- Pixel-art color palette (warm sunset + sage green) ---
 const C = {
-  sky1: '#ff6b35',   // deep orange horizon
-  sky2: '#ff8c42',   // warm orange
-  sky3: '#ffb366',   // golden
-  sky4: '#ffd4a3',   // peach
-  sky5: '#ffe8cc',   // light peach
-  sky6: '#e8d5f5',   // lavender top
+  sky1: '#ff6b35',
+  sky2: '#ff8c42',
+  sky3: '#ffb366',
+  sky4: '#ffd4a3',
+  sky5: '#ffe8cc',
+  sky6: '#e8d5f5',
   sun: '#fff4c1',
   sunGlow: '#ffdd57',
-  sea1: '#2d6a4f',   // deep sage sea
-  sea2: '#40916c',   // medium green sea
-  sea3: '#52b788',   // bright sea green
+  sea1: '#2d6a4f',
+  sea2: '#40916c',
+  sea3: '#52b788',
   seaHighlight: '#95d5b2',
-  seaFoam: '#d8f3dc',
-  building1: '#8b6f47', // warm stone
+  building1: '#8b6f47',
   building2: '#a0845c',
   building3: '#c4a97d',
   buildingLight: '#e8d5b7',
@@ -25,7 +24,7 @@ const C = {
   roofDark: '#96281b',
   window: '#ffd580',
   windowDark: '#cc8800',
-  green1: '#588157',  // sage green
+  green1: '#588157',
   green2: '#6b9a5b',
   green3: '#a7c957',
   flowerPink: '#ffb3c6',
@@ -37,7 +36,6 @@ const C = {
   textSub: '#ffd4a3',
 }
 
-// --- Helper: seeded random for consistent pixel placements ---
 function seededRandom(seed: number) {
   let s = seed
   return () => {
@@ -46,17 +44,9 @@ function seededRandom(seed: number) {
   }
 }
 
-// --- SVG Filters ---
 function PixelFilters() {
   return (
     <defs>
-      <filter id="pixelate">
-        <feFlood x="0" y="0" width="2" height="2" />
-        <feComposite width="2" height="2" />
-        <feTile result="a" />
-        <feComposite in="SourceGraphic" in2="a" operator="in" />
-        <feMorphology operator="dilate" radius="1" />
-      </filter>
       <filter id="glow">
         <feGaussianBlur stdDeviation="3" result="blur" />
         <feMerge>
@@ -75,462 +65,30 @@ function PixelFilters() {
   )
 }
 
-// --- Sky gradient background ---
 function Sky() {
   return (
     <g>
       <defs>
         <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor={C.sky6} />
-          <stop offset="25%" stopColor={C.sky5} />
-          <stop offset="50%" stopColor={C.sky4} />
-          <stop offset="70%" stopColor={C.sky3} />
-          <stop offset="85%" stopColor={C.sky2} />
+          <stop offset="20%" stopColor={C.sky5} />
+          <stop offset="40%" stopColor={C.sky4} />
+          <stop offset="60%" stopColor={C.sky3} />
+          <stop offset="80%" stopColor={C.sky2} />
           <stop offset="100%" stopColor={C.sky1} />
         </linearGradient>
       </defs>
-      <rect x="0" y="0" width="800" height="600" fill="url(#skyGrad)" />
+      <rect x="0" y="0" width="400" height="800" fill="url(#skyGrad)" />
     </g>
   )
 }
 
-// --- Animated Sun with warm glow ---
-function Sun() {
-  return (
-    <g>
-      {/* Outer glow rings */}
-      <circle cx="400" cy="310" r="120" fill={C.sky3} opacity="0.15" filter="url(#softGlow)">
-        <animate attributeName="r" values="120;130;120" dur="6s" repeatCount="indefinite" />
-      </circle>
-      <circle cx="400" cy="310" r="80" fill={C.sunGlow} opacity="0.25" filter="url(#softGlow)">
-        <animate attributeName="r" values="80;88;80" dur="4s" repeatCount="indefinite" />
-      </circle>
-      <circle cx="400" cy="310" r="50" fill={C.sunGlow} opacity="0.4" filter="url(#glow)">
-        <animate attributeName="r" values="50;54;50" dur="3s" repeatCount="indefinite" />
-      </circle>
-      {/* Sun body */}
-      <circle cx="400" cy="310" r="35" fill={C.sun} opacity="0.95">
-        <animate attributeName="r" values="35;37;35" dur="5s" repeatCount="indefinite" />
-      </circle>
-    </g>
-  )
-}
-
-// --- Pixel Clouds ---
-function Clouds() {
-  const clouds = [
-    { x: 80, y: 60, scale: 1, dur: 90 },
-    { x: 300, y: 40, scale: 0.7, dur: 110 },
-    { x: 580, y: 80, scale: 0.85, dur: 100 },
-    { x: 700, y: 30, scale: 0.6, dur: 85 },
-  ]
-
-  return (
-    <g>
-      {clouds.map((c, i) => (
-        <g key={i} opacity="0.7" transform={`scale(${c.scale})`}>
-          <g>
-            <animateTransform
-              attributeName="transform"
-              type="translate"
-              values={`${c.x},${c.y};${c.x + 800},${c.y}`}
-              dur={`${c.dur}s`}
-              repeatCount="indefinite"
-            />
-            {/* Pixel cloud shape - blocky rectangles */}
-            <rect x="0" y="8" width="8" height="8" fill={C.cloud} rx="1" />
-            <rect x="8" y="4" width="8" height="12" fill={C.cloud} rx="1" />
-            <rect x="16" y="0" width="12" height="16" fill={C.cloud} rx="1" />
-            <rect x="28" y="2" width="10" height="14" fill={C.cloud} rx="1" />
-            <rect x="38" y="4" width="12" height="12" fill={C.cloud} rx="1" />
-            <rect x="50" y="6" width="8" height="10" fill={C.cloud} rx="1" />
-            <rect x="58" y="8" width="6" height="8" fill={C.cloud} rx="1" />
-          </g>
-        </g>
-      ))}
-    </g>
-  )
-}
-
-// --- Sea with animated waves ---
-function Sea() {
-  return (
-    <g>
-      {/* Deep sea base */}
-      <rect x="0" y="360" width="800" height="240" fill={C.sea1} />
-
-      {/* Sea gradient overlay */}
-      <defs>
-        <linearGradient id="seaGrad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor={C.seaHighlight} stopOpacity="0.4" />
-          <stop offset="30%" stopColor={C.sea3} stopOpacity="0.3" />
-          <stop offset="100%" stopColor={C.sea1} stopOpacity="0" />
-        </linearGradient>
-      </defs>
-      <rect x="0" y="360" width="800" height="240" fill="url(#seaGrad)" />
-
-      {/* Sun reflection on water */}
-      <defs>
-        <linearGradient id="sunReflection" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor={C.sunGlow} stopOpacity="0.5" />
-          <stop offset="100%" stopColor={C.sunGlow} stopOpacity="0" />
-        </linearGradient>
-      </defs>
-      <ellipse cx="400" cy="380" rx="80" ry="60" fill="url(#sunReflection)">
-        <animate attributeName="rx" values="80;90;80" dur="4s" repeatCount="indefinite" />
-      </ellipse>
-
-      {/* Animated wave lines */}
-      {[0, 1, 2, 3, 4, 5, 6, 7].map(i => (
-        <path
-          key={`wave-${i}`}
-          d={`M-50,${370 + i * 22} Q50,${365 + i * 22} 100,${370 + i * 22} T200,${370 + i * 22} T300,${370 + i * 22} T400,${370 + i * 22} T500,${370 + i * 22} T600,${370 + i * 22} T700,${370 + i * 22} T800,${370 + i * 22} T900,${370 + i * 22}`}
-          fill="none"
-          stroke={i < 3 ? C.seaHighlight : C.sea3}
-          strokeWidth="1.5"
-          opacity={0.3 - i * 0.03}
-        >
-          <animateTransform
-            attributeName="transform"
-            type="translate"
-            values={`0,0;${i % 2 === 0 ? 20 : -20},${Math.sin(i) * 2}`}
-            dur={`${3 + i * 0.5}s`}
-            repeatCount="indefinite"
-          />
-        </path>
-      ))}
-
-      {/* Pixel sparkles on water */}
-      {[
-        { x: 320, y: 375, d: 2 }, { x: 380, y: 385, d: 3 },
-        { x: 420, y: 372, d: 2.5 }, { x: 360, y: 395, d: 1.8 },
-        { x: 440, y: 390, d: 3.2 }, { x: 350, y: 410, d: 2.7 },
-        { x: 410, y: 405, d: 2.2 }, { x: 300, y: 400, d: 3.5 },
-        { x: 460, y: 380, d: 2.8 }, { x: 370, y: 420, d: 1.5 },
-      ].map((s, i) => (
-        <rect key={`sparkle-${i}`} x={s.x} y={s.y} width="3" height="3" fill={C.sun} rx="0.5">
-          <animate attributeName="opacity" values="0;0.8;0" dur={`${s.d}s`} begin={`${i * 0.3}s`} repeatCount="indefinite" />
-        </rect>
-      ))}
-    </g>
-  )
-}
-
-// --- European Historic Building (Mediterranean / Italian style) ---
-function Building() {
-  return (
-    <g>
-      {/* === Left cluster === */}
-      {/* Tall tower / bell tower */}
-      <rect x="80" y="200" width="50" height="160" fill={C.building2} />
-      <rect x="80" y="200" width="50" height="6" fill={C.building3} />
-      {/* Tower top - pointed roof */}
-      <polygon points="78,200 105,170 132,200" fill={C.roof} />
-      <polygon points="78,200 105,175 105,200" fill={C.roofDark} />
-      {/* Tower windows */}
-      {[220, 245, 270, 300, 325].map((y, i) => (
-        <g key={`tw-${i}`}>
-          <rect x="95" y={y} width="10" height="14" fill={C.windowDark} rx="0" />
-          <rect x="96" y={y + 1} width="8" height="12" fill={C.window} rx="0">
-            <animate attributeName="opacity" values="0.7;1;0.7" dur={`${2 + i * 0.3}s`} repeatCount="indefinite" />
-          </rect>
-          {/* Arch top */}
-          <rect x="95" y={y} width="10" height="3" fill={C.building3} />
-        </g>
-      ))}
-
-      {/* Main building left */}
-      <rect x="130" y="250" width="90" height="110" fill={C.building1} />
-      <rect x="130" y="250" width="90" height="5" fill={C.building3} />
-      {/* Terracotta roof */}
-      <polygon points="125,250 175,225 225,250" fill={C.roof} />
-      <polygon points="125,250 175,230 175,250" fill={C.roofDark} />
-      {/* Windows row */}
-      {[145, 170, 195].map((x, i) => (
-        <g key={`bw1-${i}`}>
-          <rect x={x} y="272" width="12" height="16" fill={C.windowDark} />
-          <rect x={x + 1} y="273" width="10" height="14" fill={C.window}>
-            <animate attributeName="opacity" values="0.6;1;0.6" dur={`${2.5 + i * 0.4}s`} repeatCount="indefinite" />
-          </rect>
-          <rect x={x} y="305" width="12" height="16" fill={C.windowDark} />
-          <rect x={x + 1} y="306" width="10" height="14" fill={C.window}>
-            <animate attributeName="opacity" values="0.8;0.5;0.8" dur={`${3 + i * 0.3}s`} repeatCount="indefinite" />
-          </rect>
-        </g>
-      ))}
-      {/* Door */}
-      <rect x="160" y="335" width="16" height="25" fill={C.windowDark} rx="0" />
-      <rect x="160" y="335" width="16" height="4" fill={C.building3} />
-
-      {/* Small building connecting */}
-      <rect x="220" y="280" width="60" height="80" fill={C.building3} />
-      <rect x="220" y="280" width="60" height="4" fill={C.buildingLight} />
-      <polygon points="218,280 250,262 282,280" fill={C.roof} />
-      {[232, 256].map((x, i) => (
-        <g key={`bw2-${i}`}>
-          <rect x={x} y="295" width="10" height="14" fill={C.windowDark} />
-          <rect x={x + 1} y="296" width="8" height="12" fill={C.window}>
-            <animate attributeName="opacity" values="0.9;0.5;0.9" dur={`${2 + i}s`} repeatCount="indefinite" />
-          </rect>
-        </g>
-      ))}
-
-      {/* === Right cluster === */}
-      {/* Large right building */}
-      <rect x="530" y="240" width="100" height="120" fill={C.building2} />
-      <rect x="530" y="240" width="100" height="5" fill={C.building3} />
-      <polygon points="525,240 580,210 635,240" fill={C.roof} />
-      <polygon points="525,240 580,215 580,240" fill={C.roofDark} />
-      {/* Windows */}
-      {[545, 570, 595].map((x, i) => (
-        <g key={`bw3-${i}`}>
-          <rect x={x} y="258" width="12" height="16" fill={C.windowDark} />
-          <rect x={x + 1} y="259" width="10" height="14" fill={C.window}>
-            <animate attributeName="opacity" values="0.7;1;0.7" dur={`${2.2 + i * 0.5}s`} repeatCount="indefinite" />
-          </rect>
-          <rect x={x} y="290" width="12" height="16" fill={C.windowDark} />
-          <rect x={x + 1} y="291" width="10" height="14" fill={C.window}>
-            <animate attributeName="opacity" values="0.5;0.9;0.5" dur={`${3 + i * 0.2}s`} repeatCount="indefinite" />
-          </rect>
-        </g>
-      ))}
-      {/* Balcony */}
-      <rect x="565" y="318" width="20" height="3" fill={C.building3} />
-      <rect x="567" y="305" width="16" height="16" fill={C.windowDark} />
-      <rect x="568" y="306" width="14" height="14" fill={C.window}>
-        <animate attributeName="opacity" values="0.8;1;0.8" dur="2s" repeatCount="indefinite" />
-      </rect>
-
-      {/* Right tall tower */}
-      <rect x="630" y="220" width="45" height="140" fill={C.building1} />
-      <rect x="630" y="220" width="45" height="5" fill={C.building2} />
-      <polygon points="628,220 652,188 678,220" fill={C.roof} />
-      <polygon points="628,220 652,192 652,220" fill={C.roofDark} />
-      {/* Clock / round window */}
-      <circle cx="652" cy="242" r="8" fill={C.windowDark} />
-      <circle cx="652" cy="242" r="6" fill={C.window}>
-        <animate attributeName="opacity" values="0.7;1;0.7" dur="4s" repeatCount="indefinite" />
-      </circle>
-      {[265, 295, 325].map((y, i) => (
-        <g key={`tw2-${i}`}>
-          <rect x="644" y={y} width="10" height="14" fill={C.windowDark} />
-          <rect x="645" y={y + 1} width="8" height="12" fill={C.window}>
-            <animate attributeName="opacity" values="0.6;0.9;0.6" dur={`${2.8 + i * 0.4}s`} repeatCount="indefinite" />
-          </rect>
-        </g>
-      ))}
-
-      {/* Small rightmost building */}
-      <rect x="675" y="290" width="55" height="70" fill={C.building3} />
-      <polygon points="673,290 702,272 732,290" fill={C.roof} />
-      <rect x="690" y="308" width="10" height="14" fill={C.windowDark} />
-      <rect x="691" y="309" width="8" height="12" fill={C.window}>
-        <animate attributeName="opacity" values="0.8;0.5;0.8" dur="2.5s" repeatCount="indefinite" />
-      </rect>
-      <rect x="710" y="308" width="10" height="14" fill={C.windowDark} />
-      <rect x="711" y="309" width="8" height="12" fill={C.window}>
-        <animate attributeName="opacity" values="0.6;1;0.6" dur="3s" repeatCount="indefinite" />
-      </rect>
-
-      {/* === Waterfront / dock line === */}
-      <rect x="0" y="355" width="800" height="8" fill={C.building1} opacity="0.6" />
-      <rect x="0" y="358" width="800" height="4" fill={C.sea2} opacity="0.3" />
-
-      {/* Pixel greenery / vines on buildings */}
-      {[90, 135, 225, 540, 640, 685].map((x, i) => (
-        <g key={`vine-${i}`}>
-          <rect x={x + 2} y="348" width="4" height="6" fill={C.green1} />
-          <rect x={x - 2} y="345" width="4" height="5" fill={C.green2} />
-          <rect x={x + 6} y="346" width="3" height="6" fill={C.green3} />
-        </g>
-      ))}
-    </g>
-  )
-}
-
-// --- Floating sakura / flower petals ---
-function FloatingPetals() {
-  const petals = useMemo(() => {
-    const rng = seededRandom(42)
-    return Array.from({ length: 20 }, (_, i) => ({
-      x: rng() * 800,
-      startY: -20 - rng() * 100,
-      endY: 500 + rng() * 100,
-      size: 3 + rng() * 4,
-      dur: 10 + rng() * 12,
-      delay: rng() * 10,
-      drift: (rng() - 0.5) * 80,
-      color: rng() > 0.5 ? C.flowerPink : C.flowerWhite,
-      opacity: 0.4 + rng() * 0.4,
-    }))
-  }, [])
-
-  return (
-    <g>
-      {petals.map((p, i) => (
-        <g key={`petal-${i}`} opacity={p.opacity}>
-          <rect x="0" y="0" width={p.size} height={p.size * 0.7} fill={p.color} rx="1"
-            transform={`rotate(${i * 30})`}>
-            <animateTransform
-              attributeName="transform"
-              type="rotate"
-              values={`0;360`}
-              dur={`${p.dur * 0.8}s`}
-              repeatCount="indefinite"
-            />
-          </rect>
-          <animateTransform
-            attributeName="transform"
-            type="translate"
-            values={`${p.x},${p.startY};${p.x + p.drift},${p.endY}`}
-            dur={`${p.dur}s`}
-            begin={`${p.delay}s`}
-            repeatCount="indefinite"
-          />
-        </g>
-      ))}
-    </g>
-  )
-}
-
-// --- Floating hearts ---
-function FloatingHearts() {
-  const hearts = useMemo(() => {
-    const rng = seededRandom(99)
-    return Array.from({ length: 12 }, (_, i) => ({
-      x: 200 + rng() * 400,
-      startY: 500,
-      endY: 50 + rng() * 100,
-      size: 4 + rng() * 5,
-      dur: 8 + rng() * 8,
-      delay: rng() * 12,
-      drift: (rng() - 0.5) * 60,
-      color: rng() > 0.5 ? C.heartPink : C.heartRed,
-    }))
-  }, [])
-
-  return (
-    <g>
-      {hearts.map((h, i) => (
-        <g key={`heart-${i}`}>
-          {/* Pixel heart: 3 rects forming a heart shape */}
-          <g>
-            <rect x={-h.size * 0.5} y={0} width={h.size * 0.45} height={h.size * 0.45} fill={h.color} rx="0.5" />
-            <rect x={h.size * 0.05} y={0} width={h.size * 0.45} height={h.size * 0.45} fill={h.color} rx="0.5" />
-            <rect x={-h.size * 0.25} y={h.size * 0.25} width={h.size * 0.5} height={h.size * 0.45} fill={h.color} rx="0.5" />
-          </g>
-          <animateTransform
-            attributeName="transform"
-            type="translate"
-            values={`${h.x},${h.startY};${h.x + h.drift},${h.endY}`}
-            dur={`${h.dur}s`}
-            begin={`${h.delay}s`}
-            repeatCount="indefinite"
-          />
-          <animate attributeName="opacity" values="0;0.7;0.5;0" dur={`${h.dur}s`} begin={`${h.delay}s`} repeatCount="indefinite" />
-        </g>
-      ))}
-    </g>
-  )
-}
-
-// --- Pixel birds in the distance ---
-function Birds() {
-  const birds = [
-    { x: 150, y: 100, dur: 25, delay: 0 },
-    { x: 160, y: 108, dur: 25, delay: 0.3 },
-    { x: 500, y: 130, dur: 30, delay: 5 },
-    { x: 510, y: 138, dur: 30, delay: 5.4 },
-    { x: 350, y: 80, dur: 20, delay: 8 },
-  ]
-
-  return (
-    <g>
-      {birds.map((b, i) => (
-        <g key={`bird-${i}`} opacity="0.5">
-          {/* Simple pixel bird: V shape */}
-          <polyline
-            points="-3,0 0,-2 3,0"
-            fill="none"
-            stroke="#5c4a3a"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-          >
-            <animate attributeName="points" values="-3,0 0,-2 3,0;-3,-1 0,0 3,-1;-3,0 0,-2 3,0" dur="0.8s" repeatCount="indefinite" />
-          </polyline>
-          <animateTransform
-            attributeName="transform"
-            type="translate"
-            values={`${b.x},${b.y};${b.x + 300},${b.y - 20}`}
-            dur={`${b.dur}s`}
-            begin={`${b.delay}s`}
-            repeatCount="indefinite"
-          />
-        </g>
-      ))}
-    </g>
-  )
-}
-
-// --- Tiny pixel boat on the sea ---
-function Boat() {
-  return (
-    <g>
-      <animateTransform
-        attributeName="transform"
-        type="translate"
-        values="300,382;500,378;300,382"
-        dur="30s"
-        repeatCount="indefinite"
-      />
-      {/* Hull */}
-      <polygon points="-10,4 -8,8 8,8 10,4" fill={C.building1} />
-      {/* Sail */}
-      <polygon points="0,4 0,-10 8,2" fill="#fff8f0" opacity="0.9" />
-      <line x1="0" y1="-10" x2="0" y2="8" stroke={C.building1} strokeWidth="1" />
-    </g>
-  )
-}
-
-// --- Fireflies near the water ---
-function Fireflies() {
-  const flies = useMemo(() => {
-    const rng = seededRandom(77)
-    return Array.from({ length: 15 }, (_, i) => ({
-      cx: 50 + rng() * 700,
-      cy: 300 + rng() * 50,
-      dur: 3 + rng() * 4,
-      delay: rng() * 6,
-      r: 1.5 + rng() * 1.5,
-    }))
-  }, [])
-
-  return (
-    <g>
-      {flies.map((f, i) => (
-        <circle
-          key={`ff-${i}`}
-          cx={f.cx}
-          cy={f.cy}
-          r={f.r}
-          fill={C.sunGlow}
-          filter="url(#glow)"
-        >
-          <animate attributeName="opacity" values="0;0.8;0" dur={`${f.dur}s`} begin={`${f.delay}s`} repeatCount="indefinite" />
-          <animate attributeName="cy" values={`${f.cy};${f.cy - 10};${f.cy}`} dur={`${f.dur + 1}s`} begin={`${f.delay}s`} repeatCount="indefinite" />
-        </circle>
-      ))}
-    </g>
-  )
-}
-
-// --- Stars (faint, upper sky) ---
 function Stars() {
   const stars = useMemo(() => {
     const rng = seededRandom(13)
-    return Array.from({ length: 25 }, () => ({
-      x: rng() * 800,
-      y: rng() * 150,
+    return Array.from({ length: 30 }, () => ({
+      x: rng() * 400,
+      y: rng() * 200,
       size: 1 + rng() * 2,
       dur: 2 + rng() * 3,
       delay: rng() * 4,
@@ -540,15 +98,7 @@ function Stars() {
   return (
     <g>
       {stars.map((s, i) => (
-        <rect
-          key={`star-${i}`}
-          x={s.x}
-          y={s.y}
-          width={s.size}
-          height={s.size}
-          fill="#fff8f0"
-          rx="0.3"
-        >
+        <rect key={`star-${i}`} x={s.x} y={s.y} width={s.size} height={s.size} fill="#fff8f0" rx="0.3">
           <animate attributeName="opacity" values="0.1;0.5;0.1" dur={`${s.dur}s`} begin={`${s.delay}s`} repeatCount="indefinite" />
         </rect>
       ))}
@@ -556,15 +106,358 @@ function Stars() {
   )
 }
 
-// --- Main Scene SVG ---
+function Sun() {
+  return (
+    <g>
+      <circle cx="200" cy="370" r="80" fill={C.sky3} opacity="0.15" filter="url(#softGlow)">
+        <animate attributeName="r" values="80;88;80" dur="6s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="200" cy="370" r="55" fill={C.sunGlow} opacity="0.25" filter="url(#softGlow)">
+        <animate attributeName="r" values="55;62;55" dur="4s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="200" cy="370" r="35" fill={C.sunGlow} opacity="0.4" filter="url(#glow)">
+        <animate attributeName="r" values="35;38;35" dur="3s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="200" cy="370" r="24" fill={C.sun} opacity="0.95">
+        <animate attributeName="r" values="24;26;24" dur="5s" repeatCount="indefinite" />
+      </circle>
+    </g>
+  )
+}
+
+function Clouds() {
+  const clouds = [
+    { x: 20, y: 50, scale: 0.9, dur: 70 },
+    { x: 180, y: 30, scale: 0.6, dur: 90 },
+    { x: 300, y: 70, scale: 0.75, dur: 80 },
+    { x: 100, y: 100, scale: 0.5, dur: 95 },
+  ]
+
+  return (
+    <g>
+      {clouds.map((c, i) => (
+        <g key={i} opacity="0.6" transform={`scale(${c.scale})`}>
+          <g>
+            <animateTransform attributeName="transform" type="translate" values={`${c.x},${c.y};${c.x + 500},${c.y}`} dur={`${c.dur}s`} repeatCount="indefinite" />
+            <rect x="0" y="8" width="6" height="6" fill={C.cloud} rx="1" />
+            <rect x="6" y="4" width="6" height="10" fill={C.cloud} rx="1" />
+            <rect x="12" y="0" width="10" height="14" fill={C.cloud} rx="1" />
+            <rect x="22" y="2" width="8" height="12" fill={C.cloud} rx="1" />
+            <rect x="30" y="4" width="8" height="10" fill={C.cloud} rx="1" />
+            <rect x="38" y="6" width="6" height="8" fill={C.cloud} rx="1" />
+          </g>
+        </g>
+      ))}
+    </g>
+  )
+}
+
+function Birds() {
+  const birds = [
+    { x: 60, y: 120, dur: 20, delay: 0 },
+    { x: 68, y: 126, dur: 20, delay: 0.3 },
+    { x: 280, y: 150, dur: 25, delay: 5 },
+    { x: 288, y: 156, dur: 25, delay: 5.4 },
+    { x: 170, y: 90, dur: 18, delay: 8 },
+  ]
+
+  return (
+    <g>
+      {birds.map((b, i) => (
+        <g key={`bird-${i}`} opacity="0.5">
+          <polyline points="-3,0 0,-2 3,0" fill="none" stroke="#5c4a3a" strokeWidth="1.5" strokeLinecap="round">
+            <animate attributeName="points" values="-3,0 0,-2 3,0;-3,-1 0,0 3,-1;-3,0 0,-2 3,0" dur="0.8s" repeatCount="indefinite" />
+          </polyline>
+          <animateTransform attributeName="transform" type="translate" values={`${b.x},${b.y};${b.x + 200},${b.y - 15}`} dur={`${b.dur}s`} begin={`${b.delay}s`} repeatCount="indefinite" />
+        </g>
+      ))}
+    </g>
+  )
+}
+
+function Building() {
+  return (
+    <g>
+      {/* === Left cluster === */}
+      {/* Bell tower */}
+      <rect x="20" y="260" width="40" height="140" fill={C.building2} />
+      <rect x="20" y="260" width="40" height="5" fill={C.building3} />
+      <polygon points="18,260 40,232 62,260" fill={C.roof} />
+      <polygon points="18,260 40,236 40,260" fill={C.roofDark} />
+      {[278, 300, 322, 348, 370].map((y, i) => (
+        <g key={`tw-${i}`}>
+          <rect x="33" y={y} width="8" height="12" fill={C.windowDark} />
+          <rect x="34" y={y + 1} width="6" height="10" fill={C.window}>
+            <animate attributeName="opacity" values="0.7;1;0.7" dur={`${2 + i * 0.3}s`} repeatCount="indefinite" />
+          </rect>
+          <rect x="33" y={y} width="8" height="2" fill={C.building3} />
+        </g>
+      ))}
+
+      {/* Main building left */}
+      <rect x="60" y="300" width="70" height="100" fill={C.building1} />
+      <rect x="60" y="300" width="70" height="4" fill={C.building3} />
+      <polygon points="56,300 95,278 134,300" fill={C.roof} />
+      <polygon points="56,300 95,282 95,300" fill={C.roofDark} />
+      {[72, 92, 112].map((x, i) => (
+        <g key={`bw1-${i}`}>
+          <rect x={x} y="318" width="10" height="14" fill={C.windowDark} />
+          <rect x={x + 1} y="319" width="8" height="12" fill={C.window}>
+            <animate attributeName="opacity" values="0.6;1;0.6" dur={`${2.5 + i * 0.4}s`} repeatCount="indefinite" />
+          </rect>
+          <rect x={x} y="348" width="10" height="14" fill={C.windowDark} />
+          <rect x={x + 1} y="349" width="8" height="12" fill={C.window}>
+            <animate attributeName="opacity" values="0.8;0.5;0.8" dur={`${3 + i * 0.3}s`} repeatCount="indefinite" />
+          </rect>
+        </g>
+      ))}
+      <rect x="85" y="378" width="14" height="22" fill={C.windowDark} />
+      <rect x="85" y="378" width="14" height="3" fill={C.building3} />
+
+      {/* Small connecting building */}
+      <rect x="130" y="330" width="48" height="70" fill={C.building3} />
+      <rect x="130" y="330" width="48" height="3" fill={C.buildingLight} />
+      <polygon points="128,330 154,314 180,330" fill={C.roof} />
+      {[140, 160].map((x, i) => (
+        <g key={`bw2-${i}`}>
+          <rect x={x} y="344" width="8" height="12" fill={C.windowDark} />
+          <rect x={x + 1} y="345" width="6" height="10" fill={C.window}>
+            <animate attributeName="opacity" values="0.9;0.5;0.9" dur={`${2 + i}s`} repeatCount="indefinite" />
+          </rect>
+        </g>
+      ))}
+
+      {/* === Right cluster === */}
+      {/* Large right building */}
+      <rect x="240" y="290" width="80" height="110" fill={C.building2} />
+      <rect x="240" y="290" width="80" height="4" fill={C.building3} />
+      <polygon points="236,290 280,264 324,290" fill={C.roof} />
+      <polygon points="236,290 280,268 280,290" fill={C.roofDark} />
+      {[252, 272, 296].map((x, i) => (
+        <g key={`bw3-${i}`}>
+          <rect x={x} y="306" width="10" height="14" fill={C.windowDark} />
+          <rect x={x + 1} y="307" width="8" height="12" fill={C.window}>
+            <animate attributeName="opacity" values="0.7;1;0.7" dur={`${2.2 + i * 0.5}s`} repeatCount="indefinite" />
+          </rect>
+          <rect x={x} y="336" width="10" height="14" fill={C.windowDark} />
+          <rect x={x + 1} y="337" width="8" height="12" fill={C.window}>
+            <animate attributeName="opacity" values="0.5;0.9;0.5" dur={`${3 + i * 0.2}s`} repeatCount="indefinite" />
+          </rect>
+        </g>
+      ))}
+      {/* Balcony */}
+      <rect x="268" y="362" width="16" height="3" fill={C.building3} />
+      <rect x="270" y="350" width="12" height="14" fill={C.windowDark} />
+      <rect x="271" y="351" width="10" height="12" fill={C.window}>
+        <animate attributeName="opacity" values="0.8;1;0.8" dur="2s" repeatCount="indefinite" />
+      </rect>
+
+      {/* Right tall tower */}
+      <rect x="320" y="270" width="38" height="130" fill={C.building1} />
+      <rect x="320" y="270" width="38" height="4" fill={C.building2} />
+      <polygon points="318,270 339,242 360,270" fill={C.roof} />
+      <polygon points="318,270 339,246 339,270" fill={C.roofDark} />
+      {/* Clock window */}
+      <circle cx="339" cy="290" r="7" fill={C.windowDark} />
+      <circle cx="339" cy="290" r="5" fill={C.window}>
+        <animate attributeName="opacity" values="0.7;1;0.7" dur="4s" repeatCount="indefinite" />
+      </circle>
+      {[310, 336, 366].map((y, i) => (
+        <g key={`tw2-${i}`}>
+          <rect x="332" y={y} width="8" height="12" fill={C.windowDark} />
+          <rect x="333" y={y + 1} width="6" height="10" fill={C.window}>
+            <animate attributeName="opacity" values="0.6;0.9;0.6" dur={`${2.8 + i * 0.4}s`} repeatCount="indefinite" />
+          </rect>
+        </g>
+      ))}
+
+      {/* Small rightmost building */}
+      <rect x="358" y="340" width="42" height="60" fill={C.building3} />
+      <polygon points="356,340 379,324 402,340" fill={C.roof} />
+      <rect x="367" y="355" width="8" height="12" fill={C.windowDark} />
+      <rect x="368" y="356" width="6" height="10" fill={C.window}>
+        <animate attributeName="opacity" values="0.8;0.5;0.8" dur="2.5s" repeatCount="indefinite" />
+      </rect>
+      <rect x="383" y="355" width="8" height="12" fill={C.windowDark} />
+      <rect x="384" y="356" width="6" height="10" fill={C.window}>
+        <animate attributeName="opacity" values="0.6;1;0.6" dur="3s" repeatCount="indefinite" />
+      </rect>
+
+      {/* Waterfront / dock line */}
+      <rect x="0" y="396" width="400" height="6" fill={C.building1} opacity="0.6" />
+      <rect x="0" y="399" width="400" height="3" fill={C.sea2} opacity="0.3" />
+
+      {/* Pixel greenery / vines */}
+      {[28, 65, 135, 248, 326, 362].map((x, i) => (
+        <g key={`vine-${i}`}>
+          <rect x={x + 2} y="390" width="3" height="5" fill={C.green1} />
+          <rect x={x - 1} y="388" width="3" height="4" fill={C.green2} />
+          <rect x={x + 5} y="389" width="2" height="5" fill={C.green3} />
+        </g>
+      ))}
+    </g>
+  )
+}
+
+function Sea() {
+  return (
+    <g>
+      <rect x="0" y="400" width="400" height="400" fill={C.sea1} />
+      <defs>
+        <linearGradient id="seaGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={C.seaHighlight} stopOpacity="0.4" />
+          <stop offset="30%" stopColor={C.sea3} stopOpacity="0.3" />
+          <stop offset="100%" stopColor={C.sea1} stopOpacity="0" />
+        </linearGradient>
+        <linearGradient id="sunReflection" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={C.sunGlow} stopOpacity="0.45" />
+          <stop offset="100%" stopColor={C.sunGlow} stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      <rect x="0" y="400" width="400" height="400" fill="url(#seaGrad)" />
+
+      {/* Sun reflection */}
+      <ellipse cx="200" cy="420" rx="50" ry="80" fill="url(#sunReflection)">
+        <animate attributeName="rx" values="50;58;50" dur="4s" repeatCount="indefinite" />
+      </ellipse>
+
+      {/* Wave lines */}
+      {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(i => (
+        <path
+          key={`wave-${i}`}
+          d={`M-20,${408 + i * 28} Q30,${403 + i * 28} 60,${408 + i * 28} T120,${408 + i * 28} T180,${408 + i * 28} T240,${408 + i * 28} T300,${408 + i * 28} T360,${408 + i * 28} T420,${408 + i * 28}`}
+          fill="none"
+          stroke={i < 3 ? C.seaHighlight : C.sea3}
+          strokeWidth="1.2"
+          opacity={0.3 - i * 0.025}
+        >
+          <animateTransform attributeName="transform" type="translate" values={`0,0;${i % 2 === 0 ? 15 : -15},${Math.sin(i) * 2}`} dur={`${3 + i * 0.5}s`} repeatCount="indefinite" />
+        </path>
+      ))}
+
+      {/* Sparkles */}
+      {[
+        { x: 160, y: 415, d: 2 }, { x: 190, y: 425, d: 3 },
+        { x: 210, y: 412, d: 2.5 }, { x: 180, y: 438, d: 1.8 },
+        { x: 220, y: 430, d: 3.2 }, { x: 175, y: 450, d: 2.7 },
+        { x: 205, y: 445, d: 2.2 }, { x: 150, y: 440, d: 3.5 },
+        { x: 230, y: 420, d: 2.8 }, { x: 185, y: 460, d: 1.5 },
+      ].map((s, i) => (
+        <rect key={`sparkle-${i}`} x={s.x} y={s.y} width="2" height="2" fill={C.sun} rx="0.3">
+          <animate attributeName="opacity" values="0;0.8;0" dur={`${s.d}s`} begin={`${i * 0.3}s`} repeatCount="indefinite" />
+        </rect>
+      ))}
+    </g>
+  )
+}
+
+function Boat() {
+  return (
+    <g>
+      <animateTransform attributeName="transform" type="translate" values="120,430;280,426;120,430" dur="30s" repeatCount="indefinite" />
+      <polygon points="-8,3 -6,7 6,7 8,3" fill={C.building1} />
+      <polygon points="0,3 0,-8 6,1" fill="#fff8f0" opacity="0.9" />
+      <line x1="0" y1="-8" x2="0" y2="7" stroke={C.building1} strokeWidth="1" />
+    </g>
+  )
+}
+
+function Fireflies() {
+  const flies = useMemo(() => {
+    const rng = seededRandom(77)
+    return Array.from({ length: 15 }, () => ({
+      cx: 20 + rng() * 360,
+      cy: 350 + rng() * 50,
+      dur: 3 + rng() * 4,
+      delay: rng() * 6,
+      r: 1.2 + rng() * 1.2,
+    }))
+  }, [])
+
+  return (
+    <g>
+      {flies.map((f, i) => (
+        <circle key={`ff-${i}`} cx={f.cx} cy={f.cy} r={f.r} fill={C.sunGlow} filter="url(#glow)">
+          <animate attributeName="opacity" values="0;0.8;0" dur={`${f.dur}s`} begin={`${f.delay}s`} repeatCount="indefinite" />
+          <animate attributeName="cy" values={`${f.cy};${f.cy - 8};${f.cy}`} dur={`${f.dur + 1}s`} begin={`${f.delay}s`} repeatCount="indefinite" />
+        </circle>
+      ))}
+    </g>
+  )
+}
+
+function FloatingPetals() {
+  const petals = useMemo(() => {
+    const rng = seededRandom(42)
+    return Array.from({ length: 18 }, (_, i) => ({
+      x: rng() * 400,
+      startY: -20 - rng() * 80,
+      endY: 700 + rng() * 100,
+      size: 2.5 + rng() * 3,
+      dur: 12 + rng() * 14,
+      delay: rng() * 10,
+      drift: (rng() - 0.5) * 60,
+      color: rng() > 0.5 ? C.flowerPink : C.flowerWhite,
+      opacity: 0.35 + rng() * 0.4,
+      rotation: i * 30,
+    }))
+  }, [])
+
+  return (
+    <g>
+      {petals.map((p, i) => (
+        <g key={`petal-${i}`} opacity={p.opacity}>
+          <rect x="0" y="0" width={p.size} height={p.size * 0.7} fill={p.color} rx="0.8">
+            <animateTransform attributeName="transform" type="rotate" values="0;360" dur={`${p.dur * 0.8}s`} repeatCount="indefinite" />
+          </rect>
+          <animateTransform attributeName="transform" type="translate" values={`${p.x},${p.startY};${p.x + p.drift},${p.endY}`} dur={`${p.dur}s`} begin={`${p.delay}s`} repeatCount="indefinite" />
+        </g>
+      ))}
+    </g>
+  )
+}
+
+function FloatingHearts() {
+  const hearts = useMemo(() => {
+    const rng = seededRandom(99)
+    return Array.from({ length: 10 }, () => ({
+      x: 80 + rng() * 240,
+      startY: 700,
+      endY: 50 + rng() * 150,
+      size: 3.5 + rng() * 4,
+      dur: 10 + rng() * 10,
+      delay: rng() * 14,
+      drift: (rng() - 0.5) * 50,
+      color: rng() > 0.5 ? C.heartPink : C.heartRed,
+    }))
+  }, [])
+
+  return (
+    <g>
+      {hearts.map((h, i) => (
+        <g key={`heart-${i}`}>
+          <g>
+            <rect x={-h.size * 0.5} y={0} width={h.size * 0.45} height={h.size * 0.45} fill={h.color} rx="0.5" />
+            <rect x={h.size * 0.05} y={0} width={h.size * 0.45} height={h.size * 0.45} fill={h.color} rx="0.5" />
+            <rect x={-h.size * 0.25} y={h.size * 0.25} width={h.size * 0.5} height={h.size * 0.45} fill={h.color} rx="0.5" />
+          </g>
+          <animateTransform attributeName="transform" type="translate" values={`${h.x},${h.startY};${h.x + h.drift},${h.endY}`} dur={`${h.dur}s`} begin={`${h.delay}s`} repeatCount="indefinite" />
+          <animate attributeName="opacity" values="0;0.7;0.5;0" dur={`${h.dur}s`} begin={`${h.delay}s`} repeatCount="indefinite" />
+        </g>
+      ))}
+    </g>
+  )
+}
+
+// --- Main Scene SVG (portrait-first: 400x800 viewBox) ---
 function PixelScene() {
   return (
     <svg
-      viewBox="0 0 800 600"
+      viewBox="0 0 400 800"
       xmlns="http://www.w3.org/2000/svg"
-      className="w-full h-full"
+      className="absolute inset-0 w-full h-full"
       preserveAspectRatio="xMidYMid slice"
-      style={{ imageRendering: 'pixelated' }}
+      style={{ imageRendering: 'auto' }}
     >
       <PixelFilters />
       <Sky />
@@ -582,7 +475,7 @@ function PixelScene() {
   )
 }
 
-// --- Birthday text overlay ---
+// --- Birthday text overlay (mobile-first) ---
 function BirthdayOverlay() {
   const [visible, setVisible] = useState(false)
 
@@ -593,58 +486,80 @@ function BirthdayOverlay() {
 
   return (
     <div
-      className={`absolute inset-0 flex flex-col items-center justify-center pointer-events-none transition-opacity duration-[2000ms] ${visible ? 'opacity-100' : 'opacity-0'}`}
+      className={`absolute inset-0 flex flex-col items-center pointer-events-none transition-opacity duration-[2000ms] ${visible ? 'opacity-100' : 'opacity-0'}`}
+      style={{ paddingTop: 'max(env(safe-area-inset-top, 0px), 12px)' }}
     >
-      {/* Top title */}
-      <div className="text-center mb-4 pointer-events-none">
+      {/* Title area — top portion of screen */}
+      <div className="flex-shrink-0 text-center pt-8 pb-2 px-4 sm:pt-12">
         <h1
-          className="font-mono tracking-widest drop-shadow-lg"
+          className="font-mono tracking-widest drop-shadow-lg leading-tight"
           style={{
             color: C.textMain,
-            fontSize: 'clamp(1.8rem, 5vw, 3.5rem)',
-            textShadow: `0 0 30px ${C.sky1}88, 0 2px 10px rgba(0,0,0,0.4)`,
+            fontSize: 'clamp(1.5rem, 7vw, 3.2rem)',
+            textShadow: `0 0 30px ${C.sky1}88, 0 2px 10px rgba(0,0,0,0.5)`,
+            letterSpacing: '0.12em',
+          }}
+        >
+          Happy Birthday
+        </h1>
+        <h1
+          className="font-mono tracking-widest drop-shadow-lg leading-tight mt-1"
+          style={{
+            color: C.sunGlow,
+            fontSize: 'clamp(1.8rem, 8vw, 3.8rem)',
+            textShadow: `0 0 40px ${C.sky1}aa, 0 0 20px ${C.sunGlow}66, 0 2px 10px rgba(0,0,0,0.5)`,
             letterSpacing: '0.15em',
           }}
         >
-          Happy Birthday, Lara
+          Lara
         </h1>
         <div
-          className="mt-2 font-mono tracking-wider"
+          className="mt-3 font-mono tracking-wider"
           style={{
             color: C.textSub,
-            fontSize: 'clamp(0.75rem, 2vw, 1rem)',
-            textShadow: '0 1px 8px rgba(0,0,0,0.3)',
+            fontSize: 'clamp(0.7rem, 2.5vw, 1rem)',
+            textShadow: '0 1px 8px rgba(0,0,0,0.4)',
           }}
         >
           a little world, just for you
         </div>
       </div>
 
-      {/* Note card */}
+      {/* Spacer to push note card toward bottom */}
+      <div className="flex-1 min-h-0" />
+
+      {/* Note card — bottom portion, above the sea */}
       <div
-        className="mt-6 mx-4 max-w-md px-8 py-6 rounded-lg pointer-events-auto"
+        className="flex-shrink-0 mx-5 mb-8 px-6 py-5 rounded-xl pointer-events-auto max-w-sm w-full sm:mb-12 sm:px-8 sm:py-6"
         style={{
-          background: 'rgba(33, 39, 51, 0.75)',
-          backdropFilter: 'blur(10px)',
-          border: `1px solid ${C.sea3}44`,
-          boxShadow: `0 8px 32px rgba(0,0,0,0.3), inset 0 1px 0 ${C.seaHighlight}22`,
+          background: 'rgba(33, 39, 51, 0.78)',
+          backdropFilter: 'blur(12px)',
+          WebkitBackdropFilter: 'blur(12px)',
+          border: `1px solid ${C.sea3}33`,
+          boxShadow: `0 8px 32px rgba(0,0,0,0.35), inset 0 1px 0 ${C.seaHighlight}18`,
         }}
       >
-        <div
-          className="prose prose-sm text-center"
-          style={{ color: C.textMain }}
-        >
-          <p className="font-mono text-sm leading-relaxed italic" style={{ color: C.textSub }}>
+        <div className="text-center">
+          <p
+            className="font-mono leading-relaxed italic m-0"
+            style={{
+              color: C.textSub,
+              fontSize: 'clamp(0.8rem, 2.8vw, 0.95rem)',
+              lineHeight: '1.7',
+            }}
+          >
             {/* Your note goes here — supports markdown */}
             Your special note will go here...
           </p>
         </div>
       </div>
+
+      {/* Bottom safe area padding for phones with gesture bars */}
+      <div style={{ height: 'env(safe-area-inset-bottom, 0px)', flexShrink: 0 }} />
     </div>
   )
 }
 
-// --- Page ---
 export default function FarePage() {
   const [mounted, setMounted] = useState(false)
 
@@ -662,11 +577,11 @@ export default function FarePage() {
       <PixelScene />
       <BirthdayOverlay />
 
-      {/* Vignette overlay for cinematic feel */}
+      {/* Vignette overlay */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
-          background: 'radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.3) 100%)',
+          background: 'radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.35) 100%)',
         }}
       />
     </div>
