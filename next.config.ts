@@ -4,7 +4,7 @@ const withMDX = require('@next/mdx')()
 const nextConfig = {
   pageExtensions: ['ts', 'tsx', 'js', 'jsx', 'md', 'mdx'],
   images: {
-    domains: ['your-image-domain.com'], // Add your image domains here
+    unoptimized: true,
   },
   mdx: {
     extension: /\.mdx?$/,
