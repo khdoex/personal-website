@@ -17,8 +17,8 @@ const geistMono = localFont({
 
 export const metadata: Metadata = {
   title: "Kaan Hacihaliloglu | AI Engineer & Researcher",
-  description: "AI Engineer working on LLM interpretability & safety. MSc Data Science at Sabanci University. Building AI systems at SCL Synthetic Consumer Lab.",
-  keywords: ["AI engineer", "LLM interpretability", "AI safety", "machine learning", "data science", "Sabanci University"],
+  description: "Researching cross-lingual mechanistic interpretability in LLMs. Building synthetic consumer AI at SCL. MSc Data Science at Sabancı University.",
+  keywords: ["AI engineer", "mechanistic interpretability", "LLM safety", "cross-lingual", "machine learning", "data science", "Sabancı University"],
   authors: [{ name: "Kaan Hacihaliloglu" }],
   creator: "Kaan Hacihaliloglu",
   openGraph: {
