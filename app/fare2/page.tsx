@@ -64,18 +64,20 @@ const SONGS: { name: string; emoji: string; notes: MelodyNote[] }[] = [
     { note: 'E4', dur: 0.8 },
     { note: 'G4', dur: 0.4 }, { note: 'A4', dur: 0.6 }, { note: 'C5', dur: 0.8 },
   ]},
-  // 4. Decode — Paramore (Twilight)
+  // 4. Decode — Paramore (Twilight) — Bb minor, chorus melody
   { name: 'Decode', emoji: '🦇', notes: [
-    { note: 'E4', dur: 0.4 }, { note: 'E4', dur: 0.3 }, { note: 'D4', dur: 0.4 },
-    { note: 'C4', dur: 0.4 }, { note: 'D4', dur: 0.3 }, { note: 'E4', dur: 0.5 },
-    { note: 'E4', dur: 0.3 }, { note: 'G4', dur: 0.4 }, { note: 'F4', dur: 0.4 },
-    { note: 'E4', dur: 0.4 }, { note: 'D4', dur: 0.3 }, { note: 'C4', dur: 0.6 },
-    { note: 'C4', dur: 0.3 }, { note: 'D4', dur: 0.3 }, { note: 'E4', dur: 0.4 },
-    { note: 'E4', dur: 0.3 }, { note: 'F4', dur: 0.4 }, { note: 'G4', dur: 0.5 },
-    { note: 'A4', dur: 0.4 }, { note: 'G4', dur: 0.3 }, { note: 'F4', dur: 0.4 },
-    { note: 'E4', dur: 0.4 }, { note: 'D4', dur: 0.3 }, { note: 'E4', dur: 0.6 },
-    { note: 'G4', dur: 0.4 }, { note: 'A4', dur: 0.5 }, { note: 'G4', dur: 0.3 },
-    { note: 'E4', dur: 0.4 }, { note: 'D4', dur: 0.4 }, { note: 'C4', dur: 0.6 },
+    // "How can I de-cide what's right"
+    { note: 'Bb4', dur: 0.3 }, { note: 'Bb4', dur: 0.3 }, { note: 'Ab4', dur: 0.3 },
+    { note: 'F4', dur: 0.3 }, { note: 'Gb4', dur: 0.4 }, { note: 'F4', dur: 0.5 },
+    // "when you're cloud-ing up my mind"
+    { note: 'Db5', dur: 0.3 }, { note: 'Db5', dur: 0.3 }, { note: 'Bb4', dur: 0.3 },
+    { note: 'Ab4', dur: 0.3 }, { note: 'Gb4', dur: 0.4 }, { note: 'F4', dur: 0.5 },
+    // "I can't win your los-ing fight"
+    { note: 'Bb4', dur: 0.3 }, { note: 'Bb4', dur: 0.3 }, { note: 'Ab4', dur: 0.3 },
+    { note: 'F4', dur: 0.3 }, { note: 'Gb4', dur: 0.4 }, { note: 'Ab4', dur: 0.5 },
+    // "all the time"
+    { note: 'Bb4', dur: 0.4 }, { note: 'Ab4', dur: 0.3 }, { note: 'Gb4', dur: 0.3 },
+    { note: 'F4', dur: 0.6 },
   ]},
 ]
 
@@ -85,8 +87,8 @@ let melodyIndex = 0
 class SoundEngine {
   private ctx: AudioContext | null = null
   private notes: Record<string, number> = {
-    C4: 261.63, D4: 293.66, E4: 329.63, F4: 349.23, G4: 392.00, Ab4: 415.30, A4: 440.00, Bb4: 466.16, B4: 493.88,
-    C5: 523.25, D5: 587.33, Eb5: 622.25, E5: 659.25, F5: 698.46, G5: 783.99, A5: 880.00, B5: 987.77,
+    C4: 261.63, D4: 293.66, E4: 329.63, F4: 349.23, Gb4: 369.99, G4: 392.00, Ab4: 415.30, A4: 440.00, Bb4: 466.16, B4: 493.88,
+    C5: 523.25, Db5: 554.37, D5: 587.33, Eb5: 622.25, E5: 659.25, F5: 698.46, G5: 783.99, A5: 880.00, B5: 987.77,
   }
   private getCtx(): AudioContext {
     if (!this.ctx) this.ctx = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)()
