@@ -6,16 +6,20 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "build:cloudflare": "npx cloudflare",
+    "preview:cloudflare": "npx wrangler dev",
+    "deploy:cloudflare": "npx wrangler deploy"
   },
   "dependencies": {
     "@mdx-js/loader": "^3.1.0",
     "@mdx-js/react": "^3.1.0",
     "@next/mdx": "^15.0.3",
+    "@opennextjs/cloudflare": "^1.17.1",
     "framer-motion": "^11.11.11",
     "gray-matter": "^4.0.3",
     "lucide-react": "^0.456.0",
-    "next": "15.0.2",
+    "next": "^15.0.8",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-player": "^2.16.0",
