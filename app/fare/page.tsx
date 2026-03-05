@@ -17,6 +17,7 @@ const C = {
   skin: '#f5cba7', skinDark: '#e0a87c', hairDark: '#5c3d2e', hairLight: '#d4a574',
   dressRed: '#e63946', dressPink: '#ffb3c6', shirtBlue: '#4a90d9',
   shirtGreen: '#2d6a4f', pants: '#3d3d3d', cobble: '#9c8b7a',
+  hillFar: '#c4a0c8', hillMid: '#b08860', hillNear: '#6b7a4a',
 }
 
 // =============================================
@@ -66,7 +67,7 @@ function seededRandom(seed: number) {
 
 interface ViewBox { x: number; y: number; w: number; h: number }
 
-/** Screen coords → SVG viewBox coords (handles xMidYMid slice) */
+/** Screen coords -> SVG viewBox coords (handles xMidYMid slice) */
 function screenToSvg(clientX: number, clientY: number, svgEl: SVGSVGElement | null, vb: ViewBox): { x: number; y: number } | null {
   if (!svgEl) return null
   const r = svgEl.getBoundingClientRect()
@@ -76,11 +77,13 @@ function screenToSvg(clientX: number, clientY: number, svgEl: SVGSVGElement | nu
   return { x: vb.x + (clientX - r.left - ox) / scale, y: vb.y + (clientY - r.top - oy) / scale }
 }
 
-function clampVB(vb: ViewBox): ViewBox {
+function clampVB(vb: ViewBox, ratio = 2): ViewBox {
   const w = Math.min(400, Math.max(400 / 3.5, vb.w))
-  const h = w * 2
+  let h = w * ratio
+  if (h > 800) h = 800
   const x = Math.max(0, Math.min(400 - w, vb.x))
-  const y = Math.max(0, Math.min(800 - h, vb.y))
+  const maxY = Math.max(0, 800 - h)
+  const y = Math.max(0, Math.min(maxY, vb.y))
   return { x, y, w, h }
 }
 
@@ -91,7 +94,8 @@ const Defs = memo(function Defs() {
   return (
     <defs>
       <filter id="glow"><feGaussianBlur stdDeviation="3" result="b" /><feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge></filter>
-      <filter id="softGlow"><feGaussianBlur stdDeviation="8" result="b" /><feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge></filter>
+      <filter id="softGlow"><feGaussianBlur stdDeviation="4" result="b" /><feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge></filter>
+      <filter id="haze"><feGaussianBlur stdDeviation="1" /></filter>
       <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
         <stop offset="0%" stopColor={C.sky6} /><stop offset="20%" stopColor={C.sky5} /><stop offset="40%" stopColor={C.sky4} />
         <stop offset="60%" stopColor={C.sky3} /><stop offset="80%" stopColor={C.sky2} /><stop offset="100%" stopColor={C.sky1} />
@@ -102,6 +106,11 @@ const Defs = memo(function Defs() {
       <linearGradient id="sunRef" x1="0" y1="0" x2="0" y2="1">
         <stop offset="0%" stopColor={C.sunGlow} stopOpacity="0.45" /><stop offset="100%" stopColor={C.sunGlow} stopOpacity="0" />
       </linearGradient>
+      <linearGradient id="hazeGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stopColor={C.sky3} stopOpacity="0" />
+        <stop offset="40%" stopColor={C.sky3} stopOpacity="0.15" />
+        <stop offset="100%" stopColor={C.sky3} stopOpacity="0.35" />
+      </linearGradient>
     </defs>
   )
 })
@@ -110,8 +119,8 @@ const Defs = memo(function Defs() {
 // BACKGROUND
 // =============================================
 const Background = memo(function Background() {
-  const stars = useMemo(() => { const r = seededRandom(13); return Array.from({ length: 30 }, () => ({ x: r() * 400, y: r() * 200, s: 1 + r() * 2, d: 2 + r() * 3, dl: r() * 4 })) }, [])
-  const clouds = [{ x: 20, y: 50, s: 0.9, d: 70 }, { x: 180, y: 30, s: 0.6, d: 90 }, { x: 300, y: 70, s: 0.75, d: 80 }, { x: 100, y: 100, s: 0.5, d: 95 }]
+  const stars = useMemo(() => { const r = seededRandom(13); return Array.from({ length: 40 }, () => ({ x: r() * 400, y: r() * 220, s: 1 + r() * 2, d: 2 + r() * 3, dl: r() * 4 })) }, [])
+  const clouds = [{ x: 20, y: 50, s: 0.9, d: 70 }, { x: 180, y: 30, s: 0.6, d: 90 }, { x: 300, y: 70, s: 0.75, d: 80 }, { x: 100, y: 100, s: 0.5, d: 95 }, { x: -60, y: 80, s: 0.7, d: 85 }]
   const birds = [{ x: 60, y: 120, d: 20, dl: 0 }, { x: 68, y: 126, d: 20, dl: 0.3 }, { x: 280, y: 150, d: 25, dl: 5 }, { x: 288, y: 156, d: 25, dl: 5.4 }, { x: 170, y: 90, d: 18, dl: 8 }]
 
   return (
@@ -120,11 +129,21 @@ const Background = memo(function Background() {
       <rect x="0" y="0" width="400" height="800" fill="url(#skyGrad)" />
       {/* Stars */}
       {stars.map((s, i) => <rect key={`s${i}`} x={s.x} y={s.y} width={s.s} height={s.s} fill="#fff8f0" rx="0.3"><animate attributeName="opacity" values="0.1;0.5;0.1" dur={`${s.d}s`} begin={`${s.dl}s`} repeatCount="indefinite" /></rect>)}
-      {/* Sun */}
-      <circle cx="200" cy="370" r="80" fill={C.sky3} opacity="0.15" filter="url(#softGlow)"><animate attributeName="r" values="80;88;80" dur="6s" repeatCount="indefinite" /></circle>
+      {/* Sun — larger, more dramatic */}
+      <circle cx="200" cy="370" r="100" fill={C.sky3} opacity="0.1"><animate attributeName="r" values="100;110;100" dur="8s" repeatCount="indefinite" /></circle>
+      <circle cx="200" cy="370" r="70" fill={C.sunGlow} opacity="0.15"><animate attributeName="r" values="70;78;70" dur="6s" repeatCount="indefinite" /></circle>
       <circle cx="200" cy="370" r="55" fill={C.sunGlow} opacity="0.25" filter="url(#softGlow)"><animate attributeName="r" values="55;62;55" dur="4s" repeatCount="indefinite" /></circle>
       <circle cx="200" cy="370" r="35" fill={C.sunGlow} opacity="0.4" filter="url(#glow)"><animate attributeName="r" values="35;38;35" dur="3s" repeatCount="indefinite" /></circle>
       <circle cx="200" cy="370" r="24" fill={C.sun} opacity="0.95"><animate attributeName="r" values="24;26;24" dur="5s" repeatCount="indefinite" /></circle>
+      {/* Sun rays */}
+      {[0, 30, 60, 90, 120, 150].map((a, i) => {
+        const rad = (a * Math.PI) / 180
+        const x1 = 200 + Math.cos(rad) * 40, y1 = 370 + Math.sin(rad) * 40
+        const x2 = 200 + Math.cos(rad) * 120, y2 = 370 + Math.sin(rad) * 120
+        return <line key={`ray${i}`} x1={x1} y1={y1} x2={x2} y2={y2} stroke={C.sunGlow} strokeWidth="0.8" opacity="0.08">
+          <animate attributeName="opacity" values="0.04;0.12;0.04" dur={`${4 + i * 0.5}s`} repeatCount="indefinite" />
+        </line>
+      })}
       {/* Clouds */}
       {clouds.map((c, i) => (
         <g key={`c${i}`} opacity="0.6" transform={`scale(${c.s})`}><g>
@@ -148,6 +167,65 @@ const Background = memo(function Background() {
 })
 
 // =============================================
+// DISTANT HILLS — depth layers behind city
+// =============================================
+const DistantHills = memo(function DistantHills() {
+  return (
+    <g>
+      {/* Warm atmospheric glow on horizon */}
+      <ellipse cx="200" cy="310" rx="220" ry="60" fill={C.sky3} opacity="0.12" />
+      {/* Very distant mountains — misty purple/lavender */}
+      <path d="M-20,250 Q30,200 80,228 Q120,185 170,215 Q210,180 260,210 Q310,175 360,208 Q390,198 420,218 L420,290 L-20,290 Z"
+        fill={C.hillFar} opacity="0.12" filter="url(#haze)" />
+      {/* Tiny distant village on far mountains */}
+      <g opacity="0.1" filter="url(#haze)">
+        <rect x="140" y="212" width="4" height="8" fill={C.building2} />
+        <rect x="148" y="215" width="3" height="5" fill={C.building2} />
+        <rect x="155" y="210" width="3" height="10" fill={C.building2} />
+        <polygon points="155,210 156.5,206 158,210" fill={C.roofDark} />
+        <rect x="260" y="208" width="5" height="7" fill={C.building2} />
+        <rect x="268" y="210" width="3" height="5" fill={C.building2} />
+      </g>
+      {/* Mid-distance hills — warmer tone */}
+      <path d="M-20,268 Q20,235 70,255 Q110,222 160,246 Q200,228 250,244 Q290,218 340,240 Q380,230 420,250 L420,310 L-20,310 Z"
+        fill={C.hillMid} opacity="0.18" filter="url(#haze)" />
+      {/* Mid-hill scattered houses */}
+      <g opacity="0.12" filter="url(#haze)">
+        {[60,110,200,290,350].map((x, i) => (
+          <g key={`mh${i}`}>
+            <rect x={x} y={238 + Math.sin(i * 1.7) * 8} width={3 + i % 2} height={4 + i % 3} fill={C.building3} />
+            <polygon points={`${x-0.5},${238 + Math.sin(i * 1.7) * 8} ${x + 2},${234 + Math.sin(i * 1.7) * 8} ${x + 4.5},${238 + Math.sin(i * 1.7) * 8}`} fill={C.roofDark} />
+          </g>
+        ))}
+      </g>
+      {/* Near hills — green-brown with tree silhouettes */}
+      <path d="M-20,285 Q30,262 80,278 Q130,254 180,272 Q220,252 270,270 Q320,248 370,268 Q400,260 420,275 L420,330 L-20,330 Z"
+        fill={C.hillNear} opacity="0.3" />
+      {/* Tree silhouettes on near hills — denser forest */}
+      {[10,22,38,52,65,80,95,115,130,150,165,182,200,220,240,258,275,295,310,328,345,360,375,392].map((x, i) => {
+        const baseY = 260 + Math.sin(i * 0.9 + 0.5) * 12
+        const tall = i % 5 === 0
+        return (
+          <g key={`ht${i}`} opacity={0.12 + (i % 4) * 0.04}>
+            <rect x={x} y={baseY} width={tall ? 2.5 : 1.5} height={tall ? 10 : 6 + (i % 4) * 2} fill="#3d4a2a" />
+            <circle cx={x + 1} cy={baseY - (tall ? 4 : 2)} r={tall ? 4 : 2.5 + (i % 3) * 1.2} fill={i % 2 === 0 ? "#4a5a32" : "#3d5a28"} />
+            {tall && <circle cx={x + 3} cy={baseY - 1} r={2.5} fill="#3d5a28" opacity="0.7" />}
+          </g>
+        )
+      })}
+      {/* Atmospheric haze between hills and city */}
+      <rect x="0" y="255" width="400" height="60" fill="url(#hazeGrad)" />
+      {/* Light dust particles in the air */}
+      {[0,1,2,3,4,5].map(i => (
+        <circle key={`dp${i}`} cx={50 + i * 65} cy={280 + (i % 3) * 15} r="1" fill={C.sky4} opacity="0">
+          <animate attributeName="opacity" values="0;0.2;0" dur={`${4 + i}s`} begin={`${i * 1.5}s`} repeatCount="indefinite" />
+        </circle>
+      ))}
+    </g>
+  )
+})
+
+// =============================================
 // DETAILED CITY with hidden treasure scenes
 // =============================================
 interface TreasureSpot {
@@ -155,18 +233,44 @@ interface TreasureSpot {
 }
 
 const TREASURE_SPOTS: TreasureSpot[] = [
-  { id: 'dancing', cx: 47, cy: 387, r: 20, note: 'C4' },   // couple dancing
-  { id: 'pizza', cx: 107, cy: 390, r: 20, note: 'E4' },     // couple eating pizza
-  { id: 'vintage', cx: 205, cy: 382, r: 20, note: 'G4' },   // vintage shop
-  { id: 'walking', cx: 285, cy: 394, r: 20, note: 'C5' },   // couple walking
+  { id: 'dancing', cx: 47, cy: 387, r: 20, note: 'C4' },
+  { id: 'pizza', cx: 107, cy: 390, r: 20, note: 'E4' },
+  { id: 'vintage', cx: 205, cy: 382, r: 20, note: 'G4' },
+  { id: 'walking', cx: 285, cy: 394, r: 20, note: 'C5' },
 ]
 const TREASURE_MELODY = ['C4', 'E4', 'G4', 'A4', 'C5', 'E5', 'G5', 'E5', 'C5']
 
-function DetailedCity({ foundTreasures, zoom }: { foundTreasures: Set<string>; zoom: number }) {
+const DetailedCity = memo(function DetailedCity({ foundTreasures, zoom }: { foundTreasures: Set<string>; zoom: number }) {
   const showHints = zoom >= 1.8
 
   return (
     <g>
+      {/* === FAR BACKGROUND BUILDINGS (depth layer) === */}
+      <g opacity="0.35">
+        {/* Distant cathedral silhouette */}
+        <rect x="145" y="252" width="30" height="60" fill={C.building1} />
+        <polygon points="145,252 160,228 175,252" fill={C.building1} />
+        <rect x="158" y="222" width="4" height="10" fill={C.building1} />
+        <circle cx="160" cy="220" r="2" fill={C.building1} />
+        {/* Distant towers and rooftops */}
+        <rect x="5" y="260" width="18" height="50" fill={C.building2} />
+        <polygon points="5,260 14,248 23,260" fill={C.building2} />
+        <rect x="375" y="255" width="20" height="55" fill={C.building2} />
+        <polygon points="375,255 385,243 395,255" fill={C.building2} />
+        {/* Background apartment blocks */}
+        <rect x="80" y="268" width="40" height="42" fill={C.building1} />
+        <rect x="80" y="268" width="40" height="3" fill={C.building2} />
+        <rect x="260" y="265" width="35" height="45" fill={C.building1} />
+        <rect x="260" y="265" width="35" height="3" fill={C.building2} />
+        {/* Tiny windows on background buildings */}
+        {[88, 96, 104].map((x, i) => (
+          <rect key={`bgw1-${i}`} x={x} y={278} width="4" height="5" fill={C.windowDark} opacity="0.5" />
+        ))}
+        {[268, 276, 284].map((x, i) => (
+          <rect key={`bgw2-${i}`} x={x} y={275} width="4" height="5" fill={C.windowDark} opacity="0.5" />
+        ))}
+      </g>
+
       {/* === LEFT CLUSTER === */}
       {/* Bell tower */}
       <rect x="20" y="260" width="40" height="140" fill={C.building2} />
@@ -181,6 +285,11 @@ function DetailedCity({ foundTreasures, zoom }: { foundTreasures: Set<string>; z
           </rect>
         </g>
       ))}
+      {/* Clock on bell tower */}
+      <circle cx="40" cy="268" r="6" fill={C.buildingLight} opacity="0.5" />
+      <circle cx="40" cy="268" r="5" fill={C.windowDark} opacity="0.3" />
+      <line x1="40" y1="268" x2="40" y2="264" stroke={C.buildingLight} strokeWidth="0.5" opacity="0.6" />
+      <line x1="40" y1="268" x2="43" y2="269" stroke={C.buildingLight} strokeWidth="0.5" opacity="0.6" />
       {/* Flower box on tower window */}
       <rect x="31" y="324" width="12" height="2" fill={C.green2} />
       <rect x="32" y="322" width="3" height="3" fill={C.flowerPink} rx="1" />
@@ -204,15 +313,15 @@ function DetailedCity({ foundTreasures, zoom }: { foundTreasures: Set<string>; z
       <rect x="35" y="314" width="3" height="4" fill="#fff8f0" opacity="0.4" />
       <rect x="42" y="313" width="4" height="5" fill={C.flowerPink} opacity="0.4" />
 
-      {/* Café awning over left building ground floor */}
+      {/* Cafe awning over left building ground floor */}
       <polygon points="62,375 130,375 128,370 64,370" fill={C.dressRed} opacity="0.8" />
       <polygon points="62,375 130,375 128,370 64,370" fill={C.roofDark} opacity="0.3" />
-      {/* Café tables */}
+      {/* Cafe tables */}
       <rect x="75" y="385" width="8" height="1.5" fill={C.building3} />
       <rect x="78" y="386" width="2" height="7" fill={C.building3} />
       <rect x="118" y="385" width="8" height="1.5" fill={C.building3} />
       <rect x="121" y="386" width="2" height="7" fill={C.building3} />
-      {/* Flower pots at café */}
+      {/* Flower pots at cafe */}
       <rect x="68" y="390" width="4" height="4" fill={C.building3} />
       <rect x="69" y="388" width="3" height="3" fill={C.green2} rx="1" />
       <rect x="128" y="390" width="4" height="4" fill={C.building3} />
@@ -229,18 +338,31 @@ function DetailedCity({ foundTreasures, zoom }: { foundTreasures: Set<string>; z
         ))}
         {/* Small plaza floor */}
         <rect x="30" y="392" width="34" height="6" fill={C.cobble} opacity="0.3" rx="1" />
-        {/* Woman (red dress) */}
-        <rect x="38" y="382" width="3" height="3" fill={C.hairLight} rx="0.5" />
-        <rect x="37" y="385" width="5" height="4" fill={C.dressRed} rx="0.3" />
-        <rect x="38" y="389" width="2" height="2" fill={C.dressRed} />
-        <rect x="41" y="389" width="2" height="2" fill={C.dressRed} />
-        {/* Man (green shirt) */}
-        <rect x="49" y="382" width="3" height="3" fill={C.hairDark} rx="0.5" />
-        <rect x="48" y="385" width="5" height="4" fill={C.shirtGreen} rx="0.3" />
-        <rect x="49" y="389" width="2" height="2" fill={C.pants} />
-        <rect x="51" y="389" width="2" height="2" fill={C.pants} />
-        {/* Joined hands */}
-        <rect x="42" y="386" width="6" height="1.5" fill={C.skin} rx="0.5" />
+        {/* Woman (red dress) — detailed with flowing hair */}
+        <rect x="38" y="381" width="3" height="3.5" fill={C.hairLight} rx="0.5" />
+        <rect x="37" y="382" width="1.5" height="3" fill={C.hairLight} rx="0.3" opacity="0.7" />
+        <rect x="37" y="384.5" width="5" height="4.5" fill={C.dressRed} rx="0.3" />
+        <rect x="36" y="386" width="2" height="3" fill={C.dressRed} opacity="0.6" rx="0.5" />
+        <rect x="38" y="389" width="2" height="2.5" fill={C.dressRed} />
+        <rect x="41" y="389" width="2" height="2.5" fill={C.dressRed} />
+        <rect x="38.5" y="389" width="1.5" height="1" fill={C.skin} rx="0.3" />
+        {/* Man (green shirt) — detailed with stance */}
+        <rect x="49" y="381" width="3" height="3.5" fill={C.hairDark} rx="0.5" />
+        <rect x="48" y="384.5" width="5" height="4.5" fill={C.shirtGreen} rx="0.3" />
+        <rect x="53" y="386" width="2" height="2" fill={C.shirtGreen} opacity="0.5" rx="0.3" />
+        <rect x="49" y="389" width="2" height="2.5" fill={C.pants} />
+        <rect x="51" y="389" width="2" height="2.5" fill={C.pants} />
+        {/* Joined hands — clasped together */}
+        <rect x="42" y="386" width="6" height="1.8" fill={C.skin} rx="0.5" />
+        <rect x="44" y="385.5" width="2" height="2.5" fill={C.skin} rx="0.5" opacity="0.6" />
+        {/* Musical notes floating around them */}
+        {[0, 1].map(i => (
+          <text key={`mn${i}`} x={43 + i * 8} y={378 - i * 3} fill={C.sunGlow} fontSize="3" fontFamily="serif" opacity="0">
+            <animate attributeName="opacity" values="0;0.5;0" dur={`${2 + i}s`} begin={`${i * 1.5}s`} repeatCount="indefinite" />
+            <animate attributeName="y" values={`${378 - i * 3};${374 - i * 3}`} dur={`${2 + i}s`} begin={`${i * 1.5}s`} repeatCount="indefinite" />
+            {'\u266A'}
+          </text>
+        ))}
         {/* Discovery glow */}
         {foundTreasures.has('dancing') && (
           <circle cx="47" cy="387" r="18" fill={C.sunGlow} opacity="0.12" filter="url(#softGlow)">
@@ -288,12 +410,22 @@ function DetailedCity({ foundTreasures, zoom }: { foundTreasures: Set<string>; z
         )}
       </g>
 
-      {/* Center gap — street with cobblestones */}
+      {/* Center gap -- street with cobblestones */}
       <g opacity="0.25">
         {Array.from({ length: 12 }, (_, i) => (
           <rect key={`cb${i}`} x={180 + (i % 4) * 10} y={385 + Math.floor(i / 4) * 4} width="8" height="3" fill={C.cobble} rx="0.5" />
         ))}
       </g>
+
+      {/* === Arched bridge/walkway between buildings === */}
+      <path d="M128,358 Q154,340 180,358 L180,362 Q154,344 128,362 Z" fill={C.building2} opacity="0.7" />
+      <rect x="128" y="357" width="52" height="3" fill={C.building3} opacity="0.6" />
+      {/* Bridge railing */}
+      <path d="M130,356 Q154,338 178,356" fill="none" stroke={C.building3} strokeWidth="1.5" opacity="0.5" />
+      {/* Bridge railing posts */}
+      {[136, 148, 160, 172].map(x => (
+        <rect key={`bp${x}`} x={x} y={346 + Math.abs(x - 154) * 0.15} width="1" height="4" fill={C.building3} opacity="0.4" />
+      ))}
 
       {/* === TREASURE 3: Vintage shop === */}
       <g opacity={foundTreasures.has('vintage') ? 1 : 0.7}>
@@ -315,7 +447,7 @@ function DetailedCity({ foundTreasures, zoom }: { foundTreasures: Set<string>; z
         <rect x="208" y="376" width="10" height="24" fill={C.building1} rx="1" />
         <rect x="209" y="377" width="8" height="8" fill={C.window} opacity="0.3" />
         <circle cx="216" cy="388" r="0.8" fill={C.sunGlow} />
-        {/* Shop sign — small plaque */}
+        {/* Shop sign */}
         <rect x="193" y="371" width="18" height="2" fill={C.buildingLight} rx="0.5" />
         {/* Open sign glow */}
         <rect x="210" y="379" width="5" height="2" fill={C.sunGlow} opacity="0.4" rx="0.3">
@@ -353,6 +485,8 @@ function DetailedCity({ foundTreasures, zoom }: { foundTreasures: Set<string>; z
       {/* Tiny cat on balcony */}
       <rect x="273" y="360" width="3" height="2" fill={C.hairDark} rx="0.5" />
       <rect x="272" y="359" width="2" height="1.5" fill={C.hairDark} rx="0.5" />
+      {/* Cat tail */}
+      <path d="M276,361 Q278,359 279,360" fill="none" stroke={C.hairDark} strokeWidth="0.6" />
 
       {/* Waterfront promenade railing */}
       <rect x="240" y="396" width="80" height="1" fill={C.building3} opacity="0.7" />
@@ -362,24 +496,32 @@ function DetailedCity({ foundTreasures, zoom }: { foundTreasures: Set<string>; z
 
       {/* === TREASURE 4: Couple walking hand-in-hand === */}
       <g opacity={foundTreasures.has('walking') ? 1 : 0.7}>
-        {/* Woman */}
-        <rect x="277" y="387" width="3" height="3" fill={C.hairLight} rx="0.5" />
-        <rect x="276" y="390" width="5" height="4" fill={C.dressPink} rx="0.3" />
-        <rect x="277" y="394" width="2" height="2" fill={C.dressPink} />
-        <rect x="279" y="394" width="2" height="2" fill={C.dressPink} />
-        {/* Man */}
-        <rect x="287" y="386" width="3" height="3" fill={C.hairDark} rx="0.5" />
-        <rect x="286" y="389" width="5" height="4" fill={C.shirtBlue} rx="0.3" />
-        <rect x="287" y="393" width="2" height="2.5" fill={C.pants} />
-        <rect x="289" y="393" width="2" height="2.5" fill={C.pants} />
-        {/* Held hands */}
-        <rect x="281" y="391" width="5" height="1.5" fill={C.skin} rx="0.5" />
-        {/* Small heart above them */}
-        <g opacity="0.6"><animate attributeName="opacity" values="0.3;0.7;0.3" dur="3s" repeatCount="indefinite" />
-          <rect x="282" y="383" width="1.5" height="1.5" fill={C.heartPink} rx="0.3" />
-          <rect x="283.5" y="383" width="1.5" height="1.5" fill={C.heartPink} rx="0.3" />
-          <rect x="282.5" y="384.2" width="1.5" height="1.2" fill={C.heartPink} rx="0.3" />
-        </g>
+        {/* Woman — detailed with flowing hair and scarf */}
+        <rect x="277" y="385.5" width="3" height="3.5" fill={C.hairLight} rx="0.5" />
+        <rect x="276" y="386.5" width="1.5" height="2.5" fill={C.hairLight} rx="0.3" opacity="0.6" />
+        <rect x="276" y="389" width="5" height="4" fill={C.dressPink} rx="0.3" />
+        {/* Flowing scarf */}
+        <rect x="274" y="389" width="3" height="1.5" fill={C.heartPink} opacity="0.5" rx="0.5" />
+        <rect x="272" y="389.5" width="2" height="1" fill={C.heartPink} opacity="0.3" rx="0.5" />
+        <rect x="277" y="393" width="2" height="2.5" fill={C.dressPink} />
+        <rect x="279" y="393" width="2" height="2.5" fill={C.dressPink} />
+        {/* Man — taller, detailed */}
+        <rect x="287" y="384.5" width="3" height="3.5" fill={C.hairDark} rx="0.5" />
+        <rect x="286" y="388" width="5" height="4.5" fill={C.shirtBlue} rx="0.3" />
+        <rect x="287" y="392.5" width="2" height="3" fill={C.pants} />
+        <rect x="289" y="392.5" width="2" height="3" fill={C.pants} />
+        {/* Held hands — intertwined fingers */}
+        <rect x="281" y="390" width="5" height="1.8" fill={C.skin} rx="0.5" />
+        <rect x="282.5" y="389.5" width="2" height="2.5" fill={C.skin} rx="0.5" opacity="0.5" />
+        {/* Trail of hearts behind them */}
+        {[0, 1, 2].map(i => (
+          <g key={`th${i}`} opacity="0">
+            <animate attributeName="opacity" values="0;0.4;0" dur={`${2.5 + i * 0.5}s`} begin={`${i * 1}s`} repeatCount="indefinite" />
+            <rect x={270 - i * 8} y={386 - i * 2} width="1.5" height="1.5" fill={C.heartPink} rx="0.3" />
+            <rect x={271.5 - i * 8} y={386 - i * 2} width="1.5" height="1.5" fill={C.heartPink} rx="0.3" />
+            <rect x={270.5 - i * 8} y={387.2 - i * 2} width="1.5" height="1" fill={C.heartPink} rx="0.3" />
+          </g>
+        ))}
         {foundTreasures.has('walking') && (
           <circle cx="285" cy="392" r="18" fill={C.sunGlow} opacity="0.12" filter="url(#softGlow)">
             <animate attributeName="opacity" values="0.08;0.18;0.08" dur="3s" repeatCount="indefinite" />
@@ -394,6 +536,8 @@ function DetailedCity({ foundTreasures, zoom }: { foundTreasures: Set<string>; z
       <polygon points="318,270 339,246 339,270" fill={C.roofDark} />
       <circle cx="339" cy="290" r="7" fill={C.windowDark} />
       <circle cx="339" cy="290" r="5" fill={C.window}><animate attributeName="opacity" values="0.7;1;0.7" dur="4s" repeatCount="indefinite" /></circle>
+      {/* Rose window detail */}
+      <circle cx="339" cy="290" r="3" fill="none" stroke={C.windowDark} strokeWidth="0.3" opacity="0.4" />
       {[310, 336, 366].map((y, i) => (
         <g key={`tw2${i}`}>
           <rect x="332" y={y} width="8" height="12" fill={C.windowDark} />
@@ -420,9 +564,12 @@ function DetailedCity({ foundTreasures, zoom }: { foundTreasures: Set<string>; z
       {[25, 135, 245, 350].map(x => (
         <g key={`lamp${x}`}>
           <rect x={x} y="378" width="1" height="20" fill={C.building1} />
-          <circle cx={x + 0.5} cy="377" r="2" fill={C.sunGlow} opacity="0.4" filter="url(#glow)">
+          <rect x={x - 2} y="377" width="5" height="1.5" fill={C.building1} rx="0.5" />
+          <circle cx={x + 0.5} cy="377" r="2.5" fill={C.sunGlow} opacity="0.4" filter="url(#glow)">
             <animate attributeName="opacity" values="0.25;0.55;0.25" dur="3.5s" repeatCount="indefinite" />
           </circle>
+          {/* Lamp light cone */}
+          <polygon points={`${x - 3},378 ${x + 4},378 ${x + 8},396 ${x - 7},396`} fill={C.sunGlow} opacity="0.04" />
         </g>
       ))}
 
@@ -487,11 +634,23 @@ function DetailedCity({ foundTreasures, zoom }: { foundTreasures: Set<string>; z
       <rect x="311" y="389" width="1.5" height="5" fill={C.building2} />
       <rect x="301" y="389" width="12" height="1.5" fill={C.building3} />
 
-      {/* Person sitting on bench reading */}
-      <rect x="305" y="385" width="3" height="3" fill={C.hairDark} rx="0.5" />
-      <rect x="304" y="388" width="5" height="3" fill={C.shirtBlue} rx="0.3" />
-      {/* Book */}
-      <rect x="309" y="387" width="3" height="2" fill="#fff8f0" opacity="0.7" />
+      {/* === Couple watching sunset on bench === */}
+      {/* Woman leaning on man */}
+      <rect x="303" y="389" width="3" height="3" fill={C.hairLight} rx="0.5" />
+      <rect x="302" y="392" width="5" height="3" fill={C.dressPink} rx="0.3" />
+      {/* Man with arm around */}
+      <rect x="309" y="388" width="3" height="3" fill={C.hairDark} rx="0.5" />
+      <rect x="308" y="391" width="5" height="3" fill={C.shirtBlue} rx="0.3" />
+      {/* Arm around her */}
+      <rect x="306" y="391" width="3" height="1.5" fill={C.skin} rx="0.5" />
+      {/* Tiny heart floating above */}
+      <g opacity="0.5">
+        <animate attributeName="opacity" values="0.3;0.6;0.3" dur="3s" repeatCount="indefinite" />
+        <rect x="306" y="385" width="1.2" height="1.2" fill={C.heartPink} rx="0.3" />
+        <rect x="307.2" y="385" width="1.2" height="1.2" fill={C.heartPink} rx="0.3" />
+        <rect x="306.3" y="386" width="1.2" height="1" fill={C.heartPink} rx="0.3" />
+        <animate attributeName="opacity" values="0.2;0.6;0.2" dur="2.5s" repeatCount="indefinite" />
+      </g>
 
       {/* Seagulls near waterfront */}
       {[{x:160,y:380,d:15},{x:230,y:375,d:18},{x:340,y:385,d:12}].map((sg,i) => (
@@ -519,6 +678,226 @@ function DetailedCity({ foundTreasures, zoom }: { foundTreasures: Set<string>; z
       <rect x="338" y="333" width="4" height="5" fill="#fff8f0" opacity="0.3" />
       <rect x="346" y="334" width="3" height="4" fill={C.shirtBlue} opacity="0.35" />
 
+      {/* === ADDITIONAL DEPTH: Foreground cobblestone street === */}
+      <g opacity="0.15">
+        {Array.from({ length: 24 }, (_, i) => (
+          <rect key={`fcb${i}`} x={(i % 8) * 50 + 5 + (Math.floor(i / 8) % 2) * 25} y={395 + Math.floor(i / 8) * 2} width="12" height="1.5" fill={C.cobble} rx="0.3" />
+        ))}
+      </g>
+
+      {/* === Ground shadows under buildings for depth === */}
+      <g opacity="0.1">
+        <rect x="18" y="398" width="44" height="2" fill="#000" rx="0.5" />
+        <rect x="58" y="398" width="74" height="2" fill="#000" rx="0.5" />
+        <rect x="186" y="398" width="36" height="2" fill="#000" rx="0.5" />
+        <rect x="238" y="398" width="84" height="2" fill="#000" rx="0.5" />
+        <rect x="322" y="398" width="40" height="2" fill="#000" rx="0.5" />
+      </g>
+
+      {/* === Warm atmospheric perspective between hills and city === */}
+      <rect x="0" y="290" width="400" height="30" fill={C.sky3} opacity="0.06" />
+
+      {/* === Fountain in plaza === */}
+      <g opacity="0.6">
+        <ellipse cx="200" cy="395" rx="8" ry="3" fill={C.sea3} opacity="0.3" />
+        <rect x="198" y="388" width="4" height="7" fill={C.building3} />
+        <ellipse cx="200" cy="388" rx="5" ry="2" fill={C.building3} />
+        {/* Water droplets */}
+        <circle cx="197" cy="386" r="0.6" fill={C.seaHighlight} opacity="0">
+          <animate attributeName="opacity" values="0;0.6;0" dur="2s" repeatCount="indefinite" />
+          <animate attributeName="cy" values="386;389" dur="2s" repeatCount="indefinite" />
+        </circle>
+        <circle cx="203" cy="385" r="0.6" fill={C.seaHighlight} opacity="0">
+          <animate attributeName="opacity" values="0;0.6;0" dur="2.3s" begin="0.5s" repeatCount="indefinite" />
+          <animate attributeName="cy" values="385;389" dur="2.3s" begin="0.5s" repeatCount="indefinite" />
+        </circle>
+      </g>
+
+      {/* === LOVE SCENES === */}
+
+      {/* --- Couple kissing on the bridge/archway --- */}
+      <g>
+        {/* Woman */}
+        <rect x="148" y="351" width="3" height="3" fill={C.hairLight} rx="0.5" />
+        <rect x="147" y="354" width="5" height="4" fill={C.dressRed} rx="0.3" />
+        <rect x="148" y="358" width="2" height="2" fill={C.dressRed} />
+        <rect x="150" y="358" width="2" height="2" fill={C.dressRed} />
+        {/* Man leaning in */}
+        <rect x="155" y="350" width="3" height="3" fill={C.hairDark} rx="0.5" />
+        <rect x="154" y="353" width="5" height="4" fill={C.shirtGreen} rx="0.3" />
+        <rect x="155" y="357" width="2" height="2.5" fill={C.pants} />
+        <rect x="157" y="357" width="2" height="2.5" fill={C.pants} />
+        {/* Their faces close — kissing */}
+        <rect x="150" y="352" width="5" height="1.5" fill={C.skin} rx="0.5" opacity="0.6" />
+        {/* Floating hearts */}
+        {[0, 1, 2].map(i => (
+          <g key={`kh${i}`} opacity="0">
+            <animate attributeName="opacity" values="0;0.6;0" dur={`${2 + i * 0.5}s`} begin={`${i * 1.2}s`} repeatCount="indefinite" />
+            <rect x={150 + i * 3} y={346 - i * 3} width="1.5" height="1.5" fill={i % 2 === 0 ? C.heartPink : C.heartRed} rx="0.3" />
+            <rect x={151.5 + i * 3} y={346 - i * 3} width="1.5" height="1.5" fill={i % 2 === 0 ? C.heartPink : C.heartRed} rx="0.3" />
+            <rect x={150.5 + i * 3} y={347.2 - i * 3} width="1.5" height="1" fill={i % 2 === 0 ? C.heartPink : C.heartRed} rx="0.3" />
+            <animate attributeName="opacity" values="0;0.5;0" dur={`${2.5 + i * 0.4}s`} begin={`${i * 0.8}s`} repeatCount="indefinite" />
+          </g>
+        ))}
+      </g>
+
+      {/* --- Couple taking selfie/photo near fountain --- */}
+      <g>
+        {/* Woman posing */}
+        <rect x="210" y="384" width="3" height="3" fill={C.hairLight} rx="0.5" />
+        <rect x="209" y="387" width="5" height="4" fill={C.dressPink} rx="0.3" />
+        <rect x="210" y="391" width="2" height="2" fill={C.dressPink} />
+        <rect x="212" y="391" width="2" height="2" fill={C.dressPink} />
+        {/* Man holding camera/phone */}
+        <rect x="218" y="383" width="3" height="3" fill={C.hairDark} rx="0.5" />
+        <rect x="217" y="386" width="5" height="4" fill={C.shirtBlue} rx="0.3" />
+        <rect x="218" y="390" width="2" height="2.5" fill={C.pants} />
+        <rect x="220" y="390" width="2" height="2.5" fill={C.pants} />
+        {/* Camera/phone */}
+        <rect x="215" y="385" width="2.5" height="2" fill={C.pants} rx="0.3" />
+        {/* Camera flash */}
+        <circle cx="216" cy="385" r="0.6" fill="#fff" opacity="0">
+          <animate attributeName="opacity" values="0;0.9;0" dur="4s" begin="2s" repeatCount="indefinite" />
+          <animate attributeName="r" values="0.6;3;0.6" dur="4s" begin="2s" repeatCount="indefinite" />
+        </circle>
+        {/* Peace sign / hand wave */}
+        <rect x="213" y="385" width="1" height="2.5" fill={C.skin} rx="0.3" />
+      </g>
+
+      {/* --- Couple strolling along waterfront promenade (animated walk) --- */}
+      <g>
+        <animateTransform attributeName="transform" type="translate" values="240,388;360,388;240,388" dur="25s" repeatCount="indefinite" />
+        {/* Woman walking */}
+        <rect x="0" y="-6" width="3" height="3" fill={C.hairLight} rx="0.5" />
+        <rect x="-1" y="-3" width="5" height="3.5" fill="#e8a0b0" rx="0.3" />
+        <rect x="0" y="0.5" width="2" height="2" fill="#e8a0b0" />
+        <rect x="2" y="0.5" width="2" height="2" fill="#e8a0b0" />
+        {/* Man walking next to her */}
+        <rect x="7" y="-7" width="3" height="3" fill={C.hairDark} rx="0.5" />
+        <rect x="6" y="-4" width="5" height="3.5" fill="#5a7a9a" rx="0.3" />
+        <rect x="7" y="-0.5" width="2" height="2.5" fill={C.pants} />
+        <rect x="9" y="-0.5" width="2" height="2.5" fill={C.pants} />
+        {/* Held hands between them */}
+        <rect x="3" y="-2" width="4" height="1.5" fill={C.skin} rx="0.5" />
+        {/* Small bouncing heart */}
+        <g>
+          <animate attributeName="opacity" values="0.4;0.7;0.4" dur="2s" repeatCount="indefinite" />
+          <rect x="3" y="-10" width="1.5" height="1.5" fill={C.heartPink} rx="0.3" />
+          <rect x="4.5" y="-10" width="1.5" height="1.5" fill={C.heartPink} rx="0.3" />
+          <rect x="3.5" y="-8.8" width="1.5" height="1.2" fill={C.heartPink} rx="0.3" />
+          <animate attributeName="opacity" values="0.3;0.7;0.3" dur="2s" repeatCount="indefinite" />
+        </g>
+      </g>
+
+      {/* --- Couple chasing each other playfully (animated) --- */}
+      <g>
+        <animateTransform attributeName="transform" type="translate" values="60,393;180,393;60,393" dur="18s" repeatCount="indefinite" />
+        {/* Woman running ahead (dress flowing) */}
+        <rect x="0" y="-6" width="3" height="2.5" fill={C.hairLight} rx="0.5" />
+        <rect x="-1" y="-3.5" width="5" height="3" fill={C.dressRed} rx="0.3" />
+        <rect x="0" y="-0.5" width="2" height="2" fill={C.dressRed} />
+        <rect x="3" y="-0.5" width="2" height="2" fill={C.dressRed} />
+        {/* Trailing dress motion */}
+        <rect x="-2" y="-2" width="2" height="2" fill={C.dressRed} opacity="0.3" rx="0.5" />
+        {/* Man chasing (arms out) */}
+        <rect x="-14" y="-7" width="3" height="2.5" fill={C.hairDark} rx="0.5" />
+        <rect x="-15" y="-4.5" width="5" height="3" fill={C.shirtGreen} rx="0.3" />
+        <rect x="-14" y="-1.5" width="2" height="2.5" fill={C.pants} />
+        <rect x="-12" y="-1.5" width="2" height="2.5" fill={C.pants} />
+        {/* Outstretched arms */}
+        <rect x="-10" y="-3.5" width="4" height="1.2" fill={C.skin} rx="0.3" />
+        {/* Laughter sparkles */}
+        {[0, 1, 2].map(i => (
+          <circle key={`ls${i}`} cx={-4 + i * 5} cy={-9 - i * 2} r="0.8" fill={C.sunGlow} opacity="0">
+            <animate attributeName="opacity" values="0;0.5;0" dur={`${1.5 + i * 0.3}s`} begin={`${i * 0.6}s`} repeatCount="indefinite" />
+          </circle>
+        ))}
+      </g>
+
+      {/* --- Couple playing cards at cafe table --- */}
+      <g>
+        {/* Table */}
+        <rect x="140" y="393" width="10" height="1.2" fill={C.buildingLight} />
+        <rect x="144" y="394" width="2" height="4" fill={C.building2} />
+        {/* Cards on table */}
+        <rect x="141" y="392" width="2" height="2.5" fill="#fff8f0" rx="0.2" />
+        <rect x="143" y="391.5" width="2" height="2.5" fill="#fff8f0" rx="0.2" />
+        <rect x="145" y="392" width="2" height="2.5" fill="#fff8f0" rx="0.2" />
+        {/* Red dots on cards */}
+        <circle cx="142" cy="393" r="0.3" fill={C.heartRed} />
+        <circle cx="146" cy="393" r="0.3" fill={C.heartRed} />
+        {/* Woman sitting */}
+        <rect x="135" y="387" width="3" height="3" fill={C.hairLight} rx="0.5" />
+        <rect x="134" y="390" width="5" height="3" fill="#d4a0c8" rx="0.3" />
+        {/* Man sitting */}
+        <rect x="151" y="387" width="3" height="3" fill={C.hairDark} rx="0.5" />
+        <rect x="150" y="390" width="5" height="3" fill={C.shirtBlue} rx="0.3" />
+        {/* Wine glasses */}
+        <rect x="139" y="390" width="0.8" height="2.5" fill={C.seaHighlight} opacity="0.5" />
+        <circle cx="139.4" cy="390" r="1" fill={C.seaHighlight} opacity="0.3" />
+        <rect x="148" y="390" width="0.8" height="2.5" fill={C.seaHighlight} opacity="0.5" />
+        <circle cx="148.4" cy="390" r="1" fill={C.seaHighlight} opacity="0.3" />
+      </g>
+
+      {/* --- Couple with ice cream walking --- */}
+      <g>
+        <animateTransform attributeName="transform" type="translate" values="330,392;370,392;330,392" dur="12s" repeatCount="indefinite" />
+        {/* Woman */}
+        <rect x="0" y="-6" width="2.5" height="2.5" fill={C.hairLight} rx="0.5" />
+        <rect x="-0.5" y="-3.5" width="4" height="3" fill="#f0b8d0" rx="0.3" />
+        <rect x="0" y="-0.5" width="1.5" height="2" fill="#f0b8d0" />
+        <rect x="2" y="-0.5" width="1.5" height="2" fill="#f0b8d0" />
+        {/* Ice cream cone */}
+        <rect x="3.5" y="-4" width="1" height="2" fill={C.buildingLight} />
+        <circle cx="4" cy="-4.5" r="1.2" fill={C.flowerPink} />
+        {/* Man */}
+        <rect x="7" y="-7" width="2.5" height="2.5" fill={C.hairDark} rx="0.5" />
+        <rect x="6.5" y="-4.5" width="4" height="3" fill="#6a8aa0" rx="0.3" />
+        <rect x="7" y="-1.5" width="1.5" height="2.5" fill={C.pants} />
+        <rect x="9" y="-1.5" width="1.5" height="2.5" fill={C.pants} />
+        {/* His ice cream */}
+        <rect x="-1" y="-5" width="1" height="2" fill={C.buildingLight} />
+        <circle cx="-0.5" cy="-5.5" r="1.2" fill={C.sunGlow} />
+      </g>
+
+      {/* --- Couple on balcony overlooking city (on the cat balcony at y=362) --- */}
+      <g>
+        {/* Woman leaning on railing */}
+        <rect x="275" y="355" width="2.5" height="2.5" fill={C.hairLight} rx="0.5" />
+        <rect x="274" y="357.5" width="4.5" height="3.5" fill={C.dressPink} rx="0.3" />
+        {/* Man behind her, arms around */}
+        <rect x="280" y="354" width="2.5" height="2.5" fill={C.hairDark} rx="0.5" />
+        <rect x="279" y="356.5" width="4.5" height="3.5" fill={C.shirtGreen} rx="0.3" />
+        {/* Arms resting on railing */}
+        <rect x="276" y="361" width="6" height="1" fill={C.skin} rx="0.3" opacity="0.6" />
+        {/* Hearts rising from them */}
+        {[0, 1].map(i => (
+          <g key={`bh${i}`} opacity="0">
+            <animate attributeName="opacity" values="0;0.5;0" dur={`${3 + i}s`} begin={`${i * 2}s`} repeatCount="indefinite" />
+            <animateTransform attributeName="transform" type="translate" values={`${277 + i * 3},${352};${277 + i * 3},${342}`} dur={`${3 + i}s`} begin={`${i * 2}s`} repeatCount="indefinite" />
+            <rect x="0" y="0" width="1.5" height="1.5" fill={C.heartPink} rx="0.3" />
+            <rect x="1.5" y="0" width="1.5" height="1.5" fill={C.heartPink} rx="0.3" />
+            <rect x="0.5" y="1.2" width="1.5" height="1" fill={C.heartPink} rx="0.3" />
+          </g>
+        ))}
+      </g>
+
+      {/* --- Couple sitting at edge of dock, feet dangling --- */}
+      <g>
+        {/* Woman */}
+        <rect x="55" y="392" width="2.5" height="2.5" fill={C.hairLight} rx="0.5" />
+        <rect x="54" y="394.5" width="4.5" height="2.5" fill={C.dressRed} rx="0.3" />
+        <rect x="55" y="397" width="1.5" height="3" fill={C.skin} />
+        <rect x="57" y="397" width="1.5" height="3" fill={C.skin} />
+        {/* Man */}
+        <rect x="61" y="391" width="2.5" height="2.5" fill={C.hairDark} rx="0.5" />
+        <rect x="60" y="393.5" width="4.5" height="2.5" fill={C.shirtBlue} rx="0.3" />
+        <rect x="61" y="396" width="1.5" height="3.5" fill={C.pants} />
+        <rect x="63" y="396" width="1.5" height="3.5" fill={C.pants} />
+        {/* Her head on his shoulder */}
+        <rect x="57" y="392.5" width="4" height="1.2" fill={C.skin} rx="0.3" opacity="0.4" />
+      </g>
+
       {/* Zoom-in hint sparkles near undiscovered treasures */}
       {showHints && TREASURE_SPOTS.map(t => !foundTreasures.has(t.id) && (
         <circle key={`hint-${t.id}`} cx={t.cx} cy={t.cy - 12} r="1.5" fill={C.sunGlow} opacity="0">
@@ -527,7 +906,7 @@ function DetailedCity({ foundTreasures, zoom }: { foundTreasures: Set<string>; z
       ))}
     </g>
   )
-}
+})
 
 // =============================================
 // SEA
@@ -554,7 +933,7 @@ const SeaLayer = memo(function SeaLayer() {
 const WaterDetails = memo(function WaterDetails() {
   return (
     <g>
-      {/* Building reflections in water — blurred, wavy */}
+      {/* Building reflections in water */}
       <g opacity="0.08">
         <rect x="20" y="405" width="40" height="40" fill={C.building2} />
         <rect x="60" y="408" width="70" height="35" fill={C.building1} />
@@ -607,16 +986,17 @@ const Petals = memo(function Petals() {
 // =============================================
 // INTERACTIVE ELEMENTS (pure visual, no event handlers)
 // =============================================
-interface HeartData { id: number; x: number; sy: number; ey: number; size: number; dur: number; drift: number; color: string; born: number }
+interface HeartData { id: number; x: number; sy: number; ey: number; size: number; dur: number; drift: number; color: string; born: number; layer: number }
 interface LanternData { id: number; x: number; sy: number; word: string }
 interface Ripple { id: number; x: number; y: number }
 interface CatchBurst { id: number; x: number; y: number; color: string }
 
-function Hearts({ hearts }: { hearts: HeartData[] }) {
+const Hearts = memo(function Hearts({ hearts }: { hearts: HeartData[] }) {
   return <g style={{pointerEvents:'none'}}>{hearts.map(h=>{
     const s = h.size
+    const layerOpacity = [0.4, 0.7, 1.0][h.layer] || 1
     return (
-    <g key={h.id} data-hid={h.id}>
+    <g key={h.id} data-hid={h.id} opacity={layerOpacity}>
       <animateTransform attributeName="transform" type="translate" values={`${h.x},${h.sy};${h.x+h.drift},${h.ey}`} dur={`${h.dur}s`} fill="freeze" />
       <rect x={-s*0.5} y={0} width={s*0.45} height={s*0.45} fill={h.color} rx="0.8" />
       <rect x={s*0.05} y={0} width={s*0.45} height={s*0.45} fill={h.color} rx="0.8" />
@@ -624,9 +1004,9 @@ function Hearts({ hearts }: { hearts: HeartData[] }) {
       <rect x={-s*0.35} y={s*0.08} width={s*0.2} height={s*0.2} fill="#fff" opacity="0.3" rx="0.5" />
     </g>
   )})}</g>
-}
+})
 
-function Lanterns({ lanterns }: { lanterns: LanternData[] }) {
+const Lanterns = memo(function Lanterns({ lanterns }: { lanterns: LanternData[] }) {
   return <g style={{pointerEvents:'none'}}>{lanterns.map(l=>(
     <g key={l.id}>
       <animateTransform attributeName="transform" type="translate" values={`${l.x},${l.sy};${l.x},${-50}`} dur="20s" fill="freeze" />
@@ -637,9 +1017,9 @@ function Lanterns({ lanterns }: { lanterns: LanternData[] }) {
       <text x="0" y="-14" textAnchor="middle" fill={C.textMain} fontSize="7" fontFamily="monospace" opacity="0.9">{l.word}</text>
     </g>
   ))}</g>
-}
+})
 
-function Effects({ ripples, bursts }: { ripples: Ripple[]; bursts: CatchBurst[] }) {
+const Effects = memo(function Effects({ ripples, bursts }: { ripples: Ripple[]; bursts: CatchBurst[] }) {
   return <g style={{pointerEvents:'none'}}>
     {ripples.map(r=><g key={`rp${r.id}`}>
       <circle cx={r.x} cy={r.y} r="3" fill="none" stroke={C.seaHighlight} strokeWidth="1.2"><animate attributeName="r" from="3" to="28" dur="1s" fill="freeze" /><animate attributeName="opacity" from="0.8" to="0" dur="1s" fill="freeze" /></circle>
@@ -658,9 +1038,9 @@ function Effects({ ripples, bursts }: { ripples: Ripple[]; bursts: CatchBurst[] 
         <animateTransform attributeName="transform" type="translate" values="0,0;0,-18" dur="0.8s" fill="freeze" />+1</text>
     </g>)}
   </g>
-}
+})
 
-function Confetti({ k }: { k: number }) {
+const Confetti = memo(function Confetti({ k }: { k: number }) {
   const ps = useMemo(() => {
     const r = seededRandom(k * 137 + 555)
     const cs = [C.heartPink, C.heartRed, C.sunGlow, C.sun, C.flowerPink, C.seaHighlight, '#fff']
@@ -674,7 +1054,7 @@ function Confetti({ k }: { k: number }) {
       <animate attributeName="opacity" values="1;1;0" dur={`${p.d}s`} fill="freeze" />
     </rect>
   ))}</g>
-}
+})
 
 // =============================================
 // GAME UI
@@ -789,6 +1169,9 @@ export default function FarePage() {
   const [mounted, setMounted] = useState(false)
   const svgRef = useRef<SVGSVGElement | null>(null)
 
+  // Screen aspect ratio (h/w), used to keep viewBox proportional to screen
+  const screenRatioRef = useRef(2)
+
   // ViewBox-based zoom/pan
   const [viewBox, setViewBox] = useState<ViewBox>({ x: 0, y: 0, w: 400, h: 800 })
   const zoom = 400 / viewBox.w
@@ -803,13 +1186,15 @@ export default function FarePage() {
 
   // Visual elements
   const [hearts, setHearts] = useState<HeartData[]>([])
+  const heartsRef = useRef<HeartData[]>([])
+  heartsRef.current = hearts
   const [lanterns, setLanterns] = useState<LanternData[]>([])
   const [ripples, setRipples] = useState<Ripple[]>([])
   const [bursts, setBursts] = useState<CatchBurst[]>([])
 
   const idRef = useRef({ h: 0, l: 0, r: 0, b: 0 })
 
-  const HEARTS_TARGET = 15
+  const HEARTS_TARGET = 5
   const allDone = heartsCaught >= HEARTS_TARGET && foundTreasures.size >= TREASURE_SPOTS.length && lanternsReleased >= WISH_WORDS.length
 
   // --- Gesture tracking ---
@@ -826,7 +1211,7 @@ export default function FarePage() {
   const rafRef = useRef(0)
 
   function commitVB(vb: ViewBox) {
-    pendingVB.current = clampVB(vb)
+    pendingVB.current = clampVB(vb, screenRatioRef.current)
     if (!rafRef.current) {
       rafRef.current = requestAnimationFrame(() => {
         if (pendingVB.current) setViewBox(pendingVB.current)
@@ -835,28 +1220,64 @@ export default function FarePage() {
     }
   }
 
-  useEffect(() => { setMounted(true) }, [])
+  // Mount + responsive viewBox
+  useEffect(() => {
+    setMounted(true)
+    const ratio = window.innerHeight / window.innerWidth
+    screenRatioRef.current = Math.max(0.4, Math.min(3, ratio))
+    const r = screenRatioRef.current
+    const h = Math.min(800, 400 * r)
+    // Center view to show sky + city + some sea
+    const centerY = 360
+    const y = Math.max(0, Math.min(Math.max(0, 800 - h), centerY - h / 2))
+    setViewBox({ x: 0, y, w: 400, h })
+  }, [])
 
-  // Heart spawner — infinite loop, fast cycle, hard cap
+  // Heart spawner — WAVES: 2-3 depth layers, groups every 2.5s
   useEffect(() => {
     if (!mounted) return
-    const MAX_HEARTS = 20
-    const spawn = () => {
+    const MAX_HEARTS = 50
+    const LAYER_CONFIG = [
+      { sizeMin: 5, sizeMax: 8, durMin: 14, durMax: 20, driftMax: 40 },   // layer 0: background (small, slow)
+      { sizeMin: 9, sizeMax: 14, durMin: 10, durMax: 15, driftMax: 60 },  // layer 1: midground
+      { sizeMin: 15, sizeMax: 22, durMin: 7, durMax: 12, driftMax: 80 },  // layer 2: foreground (large, fast)
+    ]
+
+    const spawnWave = () => {
       const r = Math.random
       const now = Date.now()
+      const waveSize = 5 + Math.floor(r() * 4) // 5-8 hearts per wave
+
       setHearts(prev => {
         const alive = prev.filter(h => (now - h.born) / 1000 < h.dur)
         if (alive.length >= MAX_HEARTS) return alive
-        return [...alive, {
-          id: idRef.current.h++, x: 20 + r() * 360, sy: 780, ey: -40,
-          size: 10 + r() * 8, dur: 10 + r() * 8, drift: (r() - 0.5) * 60,
-          color: r() > 0.5 ? C.heartPink : C.heartRed, born: now,
-        }]
+        const newHearts: HeartData[] = []
+        for (let i = 0; i < waveSize && alive.length + newHearts.length < MAX_HEARTS; i++) {
+          const layer = i % 3
+          const cfg = LAYER_CONFIG[layer]
+          newHearts.push({
+            id: idRef.current.h++,
+            x: 15 + r() * 370,
+            sy: 420 + r() * 380,
+            ey: -40 - r() * 60,
+            size: cfg.sizeMin + r() * (cfg.sizeMax - cfg.sizeMin),
+            dur: cfg.durMin + r() * (cfg.durMax - cfg.durMin),
+            drift: (r() - 0.5) * cfg.driftMax,
+            color: r() > 0.5 ? C.heartPink : C.heartRed,
+            born: now,
+            layer,
+          })
+        }
+        return [...alive, ...newHearts]
       })
     }
-    // Initial burst
-    for (let i = 0; i < 6; i++) setTimeout(spawn, i * 200)
-    const iv = setInterval(spawn, 700)
+
+    // Initial burst: 3 staggered waves
+    spawnWave()
+    setTimeout(spawnWave, 600)
+    setTimeout(spawnWave, 1200)
+    // Continuous waves every 2.5 seconds
+    const iv = setInterval(spawnWave, 2500)
     return () => clearInterval(iv)
   }, [mounted])
 
@@ -887,8 +1308,6 @@ export default function FarePage() {
   }, [melodyShown])
 
   // --- Get heart's actual screen position from the DOM ---
-  // getBoundingClientRect() is guaranteed to reflect SMIL animateTransform positions
-  // (getScreenCTM() does NOT include SMIL animations in many browsers)
   const getHeartScreenPos = useCallback((heartId: number): { x: number; y: number } | null => {
     const svg = svgRef.current
     if (!svg) return null
@@ -899,12 +1318,12 @@ export default function FarePage() {
     return { x: rect.x + rect.width / 2, y: rect.y + rect.height / 2 }
   }, [])
 
-  // --- Unified game tap handler (called after gesture detection) ---
+  // --- Unified game tap handler ---
   const handleGameTap = useCallback((clientX: number, clientY: number) => {
     const pt = screenToSvg(clientX, clientY, svgRef.current, viewBox)
     if (!pt) return
 
-    // 1. Sky zone (y < 260): release lantern (HIGHEST priority in sky)
+    // 1. Sky zone (y < 260): release lantern
     if (pt.y < 260 && pt.y > 0 && lanternsReleased < WISH_WORDS.length) {
       const word = WISH_WORDS[lanternsReleased]
       setLanterns(prev => [...prev, { id: idRef.current.l++, x: pt.x, sy: pt.y, word: word || '' }])
@@ -913,13 +1332,11 @@ export default function FarePage() {
       return
     }
 
-    // 2. Hearts FIRST — use actual DOM position (getScreenCTM) for accuracy
-    //    Hearts are checked before treasures because they're moving targets
-    for (const heart of hearts) {
+    // 2. Hearts — use actual DOM position for accuracy
+    for (const heart of heartsRef.current) {
       const sp = getHeartScreenPos(heart.id)
       if (!sp) continue
       const sdx = clientX - sp.x, sdy = clientY - sp.y
-      // 45px screen radius — consistent regardless of zoom level
       if (sdx * sdx + sdy * sdy < 45 * 45) {
         setHearts(prev => prev.filter(h => h.id !== heart.id))
         setHeartsCaught(prev => prev + 1)
@@ -929,7 +1346,7 @@ export default function FarePage() {
       }
     }
 
-    // 3. Treasure scenes (check proximity — only when zoomed)
+    // 3. Treasure scenes
     for (const spot of TREASURE_SPOTS) {
       if (!foundTreasures.has(spot.id)) {
         const dx = pt.x - spot.cx, dy = pt.y - spot.cy
@@ -955,11 +1372,10 @@ export default function FarePage() {
       snd().playSeaNote(pt.x)
       return
     }
-  }, [viewBox, lanternsReleased, foundTreasures, hearts, getHeartScreenPos, zoom])
+  }, [viewBox, lanternsReleased, foundTreasures, getHeartScreenPos, zoom])
 
   // --- Pointer handlers for zoom/pan + tap detection ---
   const onPtrDown = useCallback((e: React.PointerEvent) => {
-    // Don't handle if from zoom buttons
     if ((e.target as HTMLElement).tagName === 'BUTTON') return
 
     ptrsRef.current.set(e.pointerId, { x: e.clientX, y: e.clientY })
@@ -987,13 +1403,15 @@ export default function FarePage() {
     const svg = svgRef.current
     if (!svg) return
     const rect = svg.getBoundingClientRect()
+    const ratio = screenRatioRef.current
 
     if (ptrsRef.current.size === 2 && g.isPinch) {
       const [p1, p2] = Array.from(ptrsRef.current.values())
       const dist = Math.hypot(p2.x - p1.x, p2.y - p1.y)
-      const ratio = g.startDist / dist
-      const newW = Math.min(400, Math.max(400 / 3.5, g.startVB.w * ratio))
-      const newH = newW * 2
+      const pinchRatio = g.startDist / dist
+      const newW = Math.min(400, Math.max(400 / 3.5, g.startVB.w * pinchRatio))
+      let newH = newW * ratio
+      if (newH > 800) newH = 800
 
       // Zoom toward pinch midpoint
       const scale = Math.max(rect.width / g.startVB.w, rect.height / g.startVB.h)
@@ -1011,7 +1429,7 @@ export default function FarePage() {
       const newY = midSvgY - (curMid.y - rect.top - newOy) / newScale
 
       commitVB({ x: newX, y: newY, w: newW, h: newH })
-    } else if (ptrsRef.current.size === 1 && viewBox.w < 399) {
+    } else if (ptrsRef.current.size === 1 && (viewBox.w < 399 || viewBox.h < 799)) {
       const dx = e.clientX - g.tapStart.x
       const dy = e.clientY - g.tapStart.y
       if (Math.abs(dx) > 8 || Math.abs(dy) > 8) g.isPan = true
@@ -1025,14 +1443,20 @@ export default function FarePage() {
   }, [viewBox])
 
   const doZoomToggle = useCallback((clientX: number, clientY: number) => {
+    const ratio = screenRatioRef.current
     if (zoom < 1.5) {
       const pt = screenToSvg(clientX, clientY, svgRef.current, viewBox)
       if (pt) {
-        const nw = 400 / 2.5, nh = nw * 2
+        const nw = 400 / 2.5
+        let nh = nw * ratio
+        if (nh > 800) nh = 800
         commitVB({ x: pt.x - nw / 2, y: pt.y - nh / 2, w: nw, h: nh })
       }
     } else {
-      setViewBox({ x: 0, y: 0, w: 400, h: 800 })
+      const h = Math.min(800, 400 * ratio)
+      const centerY = 300
+      const y = Math.max(0, Math.min(Math.max(0, 800 - h), centerY - h / 2))
+      setViewBox({ x: 0, y, w: 400, h })
     }
   }, [zoom, viewBox])
 
@@ -1048,17 +1472,14 @@ export default function FarePage() {
         const isTouch = e.pointerType === 'touch'
 
         if (isTouch) {
-          // Touch: support double-tap zoom — delay single-tap to detect second tap
           const now = Date.now()
           const lt = g.lastTap
           if (now - lt.time < 350 && Math.hypot(e.clientX - lt.x, e.clientY - lt.y) < 30) {
-            // Double tap → zoom toggle, cancel pending single-tap action
             g.lastTap = { x: 0, y: 0, time: 0 }
             if (tapTimerRef.current) { clearTimeout(tapTimerRef.current); tapTimerRef.current = null }
             doZoomToggle(e.clientX, e.clientY)
           } else {
             g.lastTap = { time: now, x: e.clientX, y: e.clientY }
-            // Delay single-tap so double-tap can cancel it
             const cx = e.clientX, cy = e.clientY
             if (tapTimerRef.current) clearTimeout(tapTimerRef.current)
             tapTimerRef.current = setTimeout(() => {
@@ -1067,8 +1488,6 @@ export default function FarePage() {
             }, 250)
           }
         } else {
-          // Mouse/pen: fire game action immediately, no double-click zoom
-          // (desktop users have scroll wheel for zoom)
           handleGameTap(e.clientX, e.clientY)
         }
       }
@@ -1084,30 +1503,45 @@ export default function FarePage() {
 
   // Zoom buttons
   const zoomIn = useCallback(() => {
+    const ratio = screenRatioRef.current
     setViewBox(vb => {
       const nw = Math.max(400 / 3.5, vb.w * 0.65)
-      const nh = nw * 2
-      return clampVB({ x: vb.x + (vb.w - nw) / 2, y: vb.y + (vb.h - nh) / 2, w: nw, h: nh })
+      let nh = nw * ratio
+      if (nh > 800) nh = 800
+      return clampVB({ x: vb.x + (vb.w - nw) / 2, y: vb.y + (vb.h - nh) / 2, w: nw, h: nh }, ratio)
     })
   }, [])
 
   const zoomOut = useCallback(() => {
+    const ratio = screenRatioRef.current
     setViewBox(vb => {
       const nw = Math.min(400, vb.w * 1.5)
-      const nh = nw * 2
-      return clampVB({ x: vb.x + (vb.w - nw) / 2, y: vb.y + (vb.h - nh) / 2, w: nw, h: nh })
+      let nh = nw * ratio
+      if (nh > 800) nh = 800
+      return clampVB({ x: vb.x + (vb.w - nw) / 2, y: vb.y + (vb.h - nh) / 2, w: nw, h: nh }, ratio)
     })
   }, [])
 
-  // Wheel zoom for desktop
+  // Wheel/trackpad: scroll = pan, ctrl/pinch = zoom
   const onWheel = useCallback((e: React.WheelEvent) => {
     e.preventDefault()
-    const factor = e.deltaY > 0 ? 1.15 : 0.85
-    const pt = screenToSvg(e.clientX, e.clientY, svgRef.current, viewBox)
-    if (!pt) return
-    const nw = Math.min(400, Math.max(400 / 3.5, viewBox.w * factor))
-    const nh = nw * 2
-    commitVB({ x: pt.x - (pt.x - viewBox.x) * (nw / viewBox.w), y: pt.y - (pt.y - viewBox.y) * (nh / viewBox.h), w: nw, h: nh })
+    const ratio = screenRatioRef.current
+    if (e.ctrlKey || e.metaKey) {
+      // Pinch-to-zoom on trackpad (sends ctrlKey) or Ctrl+wheel
+      const factor = e.deltaY > 0 ? 1.15 : 0.85
+      const pt = screenToSvg(e.clientX, e.clientY, svgRef.current, viewBox)
+      if (!pt) return
+      const nw = Math.min(400, Math.max(400 / 3.5, viewBox.w * factor))
+      let nh = nw * ratio
+      if (nh > 800) nh = 800
+      commitVB({ x: pt.x - (pt.x - viewBox.x) * (nw / viewBox.w), y: pt.y - (pt.y - viewBox.y) * (nh / viewBox.h), w: nw, h: nh })
+    } else {
+      // Regular scroll/trackpad swipe = pan
+      const speed = 0.8
+      const svgDx = e.deltaX * (viewBox.w / window.innerWidth) * speed
+      const svgDy = e.deltaY * (viewBox.h / window.innerHeight) * speed
+      commitVB({ x: viewBox.x + svgDx, y: viewBox.y + svgDy, w: viewBox.w, h: viewBox.h })
+    }
   }, [viewBox])
 
   if (!mounted) return null
@@ -1122,6 +1556,7 @@ export default function FarePage() {
         preserveAspectRatio="xMidYMid slice" style={{ imageRendering: 'auto', touchAction: 'none' }}>
         <Defs />
         <Background />
+        <DistantHills />
         <DetailedCity foundTreasures={foundTreasures} zoom={zoom} />
         <Fireflies />
         <SeaLayer />
