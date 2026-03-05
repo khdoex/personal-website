@@ -622,14 +622,15 @@ function Hearts({ hearts }: { hearts: HeartData[] }) {
       <circle cx={s*0.05} cy={s*0.3} r={s*0.7} fill={h.color} opacity="0.15" filter="url(#glow)">
         <animate attributeName="opacity" values="0.1;0.25;0.1" dur="2s" repeatCount="indefinite" />
       </circle>
-      {/* Heart shape — pixel art */}
-      <rect x={-s*0.5} y={0} width={s*0.45} height={s*0.45} fill={h.color} rx="0.8" opacity="0.9" />
-      <rect x={s*0.05} y={0} width={s*0.45} height={s*0.45} fill={h.color} rx="0.8" opacity="0.9" />
-      <rect x={-s*0.25} y={s*0.25} width={s*0.5} height={s*0.45} fill={h.color} rx="0.8" opacity="0.9" />
-      {/* Highlight */}
-      <rect x={-s*0.35} y={s*0.08} width={s*0.2} height={s*0.2} fill="#fff" opacity="0.3" rx="0.5" />
-      {/* Gentle scale pulse instead of positional bob (avoids tap-position mismatch) */}
-      <animateTransform attributeName="transform" type="scale" values="1;1.12;0.95;1" dur="4s" repeatCount="indefinite" additive="sum" />
+      {/* Heart shape — pixel art with opacity pulse for liveliness */}
+      <g>
+        <animate attributeName="opacity" values="0.85;1;0.85" dur="3s" repeatCount="indefinite" />
+        <rect x={-s*0.5} y={0} width={s*0.45} height={s*0.45} fill={h.color} rx="0.8" />
+        <rect x={s*0.05} y={0} width={s*0.45} height={s*0.45} fill={h.color} rx="0.8" />
+        <rect x={-s*0.25} y={s*0.25} width={s*0.5} height={s*0.45} fill={h.color} rx="0.8" />
+        {/* Highlight */}
+        <rect x={-s*0.35} y={s*0.08} width={s*0.2} height={s*0.2} fill="#fff" opacity="0.3" rx="0.5" />
+      </g>
     </g>
   )})}</g>
 }
@@ -892,8 +893,9 @@ export default function FarePage() {
   }, [melodyShown])
 
   // --- Get heart position at current time ---
+  // born is set when state updates, but SVG animation starts ~30ms later on render commit
   const getHeartPos = useCallback((h: HeartData) => {
-    const elapsed = (Date.now() - h.born) / 1000
+    const elapsed = Math.max(0, (Date.now() - h.born - 30) / 1000)
     const t = Math.min(elapsed / h.dur, 1)
     return { x: h.x + h.drift * t, y: h.sy + (h.ey - h.sy) * t }
   }, [])
@@ -912,11 +914,28 @@ export default function FarePage() {
       return
     }
 
-    // 2. Treasure scenes (check proximity)
+    // 2. Hearts FIRST (check proximity to current animated position)
+    //    Hearts are checked before treasures because they're moving targets
+    //    and the main "fun" interaction — easier to catch = more satisfying
+    const now = Date.now()
+    for (const heart of hearts) {
+      const elapsed = (now - heart.born) / 1000
+      if (elapsed >= heart.dur) continue  // skip expired
+      const hp = getHeartPos(heart)
+      const dx = pt.x - hp.x, dy = pt.y - hp.y
+      if (dx * dx + dy * dy < 50 * 50) {
+        setHearts(prev => prev.filter(h => h.id !== heart.id))
+        setHeartsCaught(prev => prev + 1)
+        setBursts(prev => [...prev, { id: idRef.current.b++, x: pt.x, y: pt.y, color: heart.color }])
+        snd().playHeartCatch()
+        return
+      }
+    }
+
+    // 3. Treasure scenes (check proximity — only when zoomed)
     for (const spot of TREASURE_SPOTS) {
       if (!foundTreasures.has(spot.id)) {
         const dx = pt.x - spot.cx, dy = pt.y - spot.cy
-        // Hit radius scales with zoom: easier to tap when zoomed in
         const hitR = spot.r + (zoom > 1.5 ? 10 : 5)
         if (dx * dx + dy * dy < hitR * hitR) {
           setFoundTreasures(prev => {
@@ -930,22 +949,6 @@ export default function FarePage() {
           setBursts(prev => [...prev, { id: idRef.current.b++, x: pt.x, y: pt.y, color: C.sunGlow }])
           return
         }
-      }
-    }
-
-    // 3. Hearts (check proximity to current animated position)
-    for (const heart of hearts) {
-      // Skip expired hearts (animation finished, frozen at end position)
-      if ((Date.now() - heart.born) / 1000 >= heart.dur) continue
-      const hp = getHeartPos(heart)
-      const dx = pt.x - hp.x, dy = pt.y - hp.y
-      // Generous 45-unit radius — hearts are the main "fun" interaction
-      if (dx * dx + dy * dy < 45 * 45) {
-        setHearts(prev => prev.filter(h => h.id !== heart.id))
-        setHeartsCaught(prev => prev + 1)
-        setBursts(prev => [...prev, { id: idRef.current.b++, x: pt.x, y: pt.y, color: heart.color }])
-        snd().playHeartCatch()
-        return
       }
     }
 
