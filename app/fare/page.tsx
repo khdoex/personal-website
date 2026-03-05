@@ -108,7 +108,7 @@ const LOVE_LINES = [
   'İyi ki doğdun aşkım benim',
   'İyi ki varsın',
   'İyi ki benim sevgilimsin',
-  'Nice mutlulara baltanem benim ❤️❤️❤️❤️❤️',
+  'Nice mutlu yıllara baltanem benim ❤️❤️❤️❤️❤️',
 ]
 
 const BUILDINGS: Building[] = [
