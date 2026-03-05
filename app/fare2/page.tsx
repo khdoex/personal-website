@@ -22,12 +22,12 @@ const C = {
 // =============================================
 // SOUND ENGINE (lazy init)
 // =============================================
-// Romantic melodies — one is picked randomly per session
+// Romantic melodies — user picks from selector
 type MelodyNote = { note: string; dur: number }
 
-const SONGS: { name: string; notes: MelodyNote[] }[] = [
+const SONGS: { name: string; emoji: string; notes: MelodyNote[] }[] = [
   // 1. Für Elise — Beethoven
-  { name: 'Für Elise', notes: [
+  { name: 'Für Elise', emoji: '🎹', notes: [
     { note: 'E5', dur: 0.4 }, { note: 'Eb5', dur: 0.4 }, { note: 'E5', dur: 0.4 },
     { note: 'Eb5', dur: 0.4 }, { note: 'E5', dur: 0.4 }, { note: 'B4', dur: 0.4 },
     { note: 'D5', dur: 0.4 }, { note: 'C5', dur: 0.4 }, { note: 'A4', dur: 0.6 },
@@ -39,19 +39,8 @@ const SONGS: { name: string; notes: MelodyNote[] }[] = [
     { note: 'Eb5', dur: 0.4 }, { note: 'E5', dur: 0.4 }, { note: 'B4', dur: 0.4 },
     { note: 'D5', dur: 0.4 }, { note: 'C5', dur: 0.4 }, { note: 'A4', dur: 0.6 },
   ]},
-  // 2. Can't Help Falling in Love — Elvis
-  { name: "Can't Help Falling in Love", notes: [
-    { note: 'C4', dur: 0.6 }, { note: 'E4', dur: 0.4 }, { note: 'G4', dur: 0.6 },
-    { note: 'E4', dur: 0.4 }, { note: 'F4', dur: 0.4 }, { note: 'G4', dur: 0.6 },
-    { note: 'A4', dur: 0.4 }, { note: 'G4', dur: 0.4 }, { note: 'F4', dur: 0.4 },
-    { note: 'E4', dur: 0.6 }, { note: 'D4', dur: 0.4 }, { note: 'C4', dur: 0.8 },
-    { note: 'C4', dur: 0.4 }, { note: 'E4', dur: 0.4 }, { note: 'G4', dur: 0.4 },
-    { note: 'C5', dur: 0.6 }, { note: 'B4', dur: 0.4 }, { note: 'A4', dur: 0.4 },
-    { note: 'G4', dur: 0.6 }, { note: 'F4', dur: 0.4 }, { note: 'E4', dur: 0.4 },
-    { note: 'D4', dur: 0.4 }, { note: 'C4', dur: 0.8 },
-  ]},
-  // 3. La Vie en Rose
-  { name: 'La Vie en Rose', notes: [
+  // 2. La Vie en Rose
+  { name: 'La Vie en Rose', emoji: '🌹', notes: [
     { note: 'G4', dur: 0.5 }, { note: 'A4', dur: 0.4 }, { note: 'C5', dur: 0.6 },
     { note: 'A4', dur: 0.4 }, { note: 'C5', dur: 0.5 }, { note: 'D5', dur: 0.6 },
     { note: 'C5', dur: 0.4 }, { note: 'A4', dur: 0.4 }, { note: 'G4', dur: 0.8 },
@@ -62,19 +51,8 @@ const SONGS: { name: string; notes: MelodyNote[] }[] = [
     { note: 'E4', dur: 0.4 }, { note: 'F4', dur: 0.4 }, { note: 'G4', dur: 0.6 },
     { note: 'C5', dur: 0.8 },
   ]},
-  // 4. Moon River
-  { name: 'Moon River', notes: [
-    { note: 'C4', dur: 0.6 }, { note: 'A4', dur: 0.8 }, { note: 'G4', dur: 0.4 },
-    { note: 'E4', dur: 0.4 }, { note: 'F4', dur: 0.4 }, { note: 'G4', dur: 0.8 },
-    { note: 'C4', dur: 0.6 }, { note: 'A4', dur: 0.8 }, { note: 'G4', dur: 0.4 },
-    { note: 'E4', dur: 0.4 }, { note: 'D4', dur: 0.4 }, { note: 'C4', dur: 0.8 },
-    { note: 'D4', dur: 0.4 }, { note: 'E4', dur: 0.4 }, { note: 'F4', dur: 0.5 },
-    { note: 'E4', dur: 0.4 }, { note: 'D4', dur: 0.4 }, { note: 'C4', dur: 0.6 },
-    { note: 'D4', dur: 0.4 }, { note: 'E4', dur: 0.6 }, { note: 'G4', dur: 0.4 },
-    { note: 'A4', dur: 0.8 }, { note: 'C5', dur: 0.8 },
-  ]},
-  // 5. A Thousand Years — Christina Perri
-  { name: 'A Thousand Years', notes: [
+  // 3. A Thousand Years — Christina Perri (Twilight)
+  { name: 'A Thousand Years', emoji: '🌙', notes: [
     { note: 'E4', dur: 0.5 }, { note: 'G4', dur: 0.4 }, { note: 'A4', dur: 0.6 },
     { note: 'G4', dur: 0.4 }, { note: 'E4', dur: 0.6 }, { note: 'D4', dur: 0.4 },
     { note: 'E4', dur: 0.8 },
@@ -86,10 +64,22 @@ const SONGS: { name: string; notes: MelodyNote[] }[] = [
     { note: 'E4', dur: 0.8 },
     { note: 'G4', dur: 0.4 }, { note: 'A4', dur: 0.6 }, { note: 'C5', dur: 0.8 },
   ]},
+  // 4. Decode — Paramore (Twilight)
+  { name: 'Decode', emoji: '🦇', notes: [
+    { note: 'E4', dur: 0.4 }, { note: 'E4', dur: 0.3 }, { note: 'D4', dur: 0.4 },
+    { note: 'C4', dur: 0.4 }, { note: 'D4', dur: 0.3 }, { note: 'E4', dur: 0.5 },
+    { note: 'E4', dur: 0.3 }, { note: 'G4', dur: 0.4 }, { note: 'F4', dur: 0.4 },
+    { note: 'E4', dur: 0.4 }, { note: 'D4', dur: 0.3 }, { note: 'C4', dur: 0.6 },
+    { note: 'C4', dur: 0.3 }, { note: 'D4', dur: 0.3 }, { note: 'E4', dur: 0.4 },
+    { note: 'E4', dur: 0.3 }, { note: 'F4', dur: 0.4 }, { note: 'G4', dur: 0.5 },
+    { note: 'A4', dur: 0.4 }, { note: 'G4', dur: 0.3 }, { note: 'F4', dur: 0.4 },
+    { note: 'E4', dur: 0.4 }, { note: 'D4', dur: 0.3 }, { note: 'E4', dur: 0.6 },
+    { note: 'G4', dur: 0.4 }, { note: 'A4', dur: 0.5 }, { note: 'G4', dur: 0.3 },
+    { note: 'E4', dur: 0.4 }, { note: 'D4', dur: 0.4 }, { note: 'C4', dur: 0.6 },
+  ]},
 ]
 
-// Pick a random song per session
-const currentSong = SONGS[Math.floor(Math.random() * SONGS.length)]
+let currentSongIndex = 0
 let melodyIndex = 0
 
 class SoundEngine {
@@ -115,12 +105,13 @@ class SoundEngine {
     } catch { /* */ }
   }
   playNextMelodyNote() {
-    const melody = currentSong.notes
-    const entry = melody[melodyIndex % melody.length]
+    const song = SONGS[currentSongIndex]
+    const entry = song.notes[melodyIndex % song.notes.length]
     this.playNote(entry.note, entry.dur, 0.35)
     melodyIndex++
   }
-  getSongName() { return currentSong.name }
+  getSongName() { return SONGS[currentSongIndex].name }
+  setSong(idx: number) { currentSongIndex = idx; melodyIndex = 0 }
   playMelody(notes: string[], tempo = 300) { notes.forEach((n, i) => setTimeout(() => this.playNote(n, 0.8, 0.25), i * tempo)) }
   playHeartCatch() { this.playNote('E5', 0.3, 0.2); setTimeout(() => this.playNote('G5', 0.3, 0.2), 80) }
   playLanternRelease() { this.playNote('C5', 1.0, 0.15); setTimeout(() => this.playNote('E5', 0.8, 0.1), 200) }
@@ -766,8 +757,8 @@ function Confetti({ k }: { k: number }) {
 // =============================================
 const WISH_WORDS = ['Seni', 'çok', 'seviyorum', 'bitanem', 'iyi', 'ki', 'doğdun', '❤️']
 
-function GameUI({ hc, ht, ft, tt, lr, allDone, melodyShown, zoom }: {
-  hc: number; ht: number; ft: number; tt: number; lr: number; allDone: boolean; melodyShown: boolean; zoom: number
+function GameUI({ hc, ht, ft, tt, lr, allDone, melodyShown, zoom, songIndex, onSongChange }: {
+  hc: number; ht: number; ft: number; tt: number; lr: number; allDone: boolean; melodyShown: boolean; zoom: number; songIndex: number; onSongChange: (i: number) => void
 }) {
   const pills = [
     { icon: '\u2665', n: hc, t: ht, done: hc >= ht },
@@ -791,9 +782,22 @@ function GameUI({ hc, ht, ft, tt, lr, allDone, melodyShown, zoom }: {
             {hc >= ht ? 'gökyüzüne dokun, dilek fenerleri bırak ✨' :
              'kalplere dokun ve yakala ❤️'}
           </p>
-          <p className="font-mono tracking-wide mt-1" style={{ color: C.sunGlow, opacity: 0.45, fontSize: '0.6rem', textShadow: '0 1px 4px rgba(0,0,0,0.4)' }}>
-            ♪ {snd().getSongName()}
-          </p>
+          <div className="flex justify-center gap-1.5 mt-1.5 flex-wrap">
+            {SONGS.map((s, i) => (
+              <button key={i} onClick={(e) => { e.stopPropagation(); onSongChange(i) }}
+                className="font-mono transition-all duration-200"
+                style={{
+                  fontSize: '0.6rem', padding: '2px 8px', borderRadius: '999px',
+                  background: i === songIndex ? C.sunGlow + '33' : 'rgba(33,39,51,0.6)',
+                  color: i === songIndex ? C.sunGlow : C.textSub,
+                  border: `1px solid ${i === songIndex ? C.sunGlow + '66' : 'transparent'}`,
+                  opacity: i === songIndex ? 1 : 0.5,
+                  textShadow: '0 1px 4px rgba(0,0,0,0.4)',
+                }}>
+                {s.emoji} {s.name}
+              </button>
+            ))}
+          </div>
         </div>
       )}
       {melodyShown && (
@@ -889,6 +893,7 @@ export default function FarePage() {
   const [lanternsReleased, setLanternsReleased] = useState(0)
   const [confettiKey, setConfettiKey] = useState(0)
   const [melodyShown, setMelodyShown] = useState(false)
+  const [songIndex, setSongIndex] = useState(0)
   const confettiFiredRef = useRef(false)
 
   // Visual elements
@@ -1241,7 +1246,7 @@ export default function FarePage() {
 
       <div className="absolute inset-0 pointer-events-none z-0" style={{ background: 'radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.35) 100%)' }} />
       <BirthdayOverlay allDone={allDone} />
-      <GameUI hc={heartsCaught} ht={HEARTS_TARGET} ft={foundTreasures.size} tt={TREASURE_SPOTS.length} lr={lanternsReleased} allDone={allDone} melodyShown={melodyShown} zoom={zoom} />
+      <GameUI hc={heartsCaught} ht={HEARTS_TARGET} ft={foundTreasures.size} tt={TREASURE_SPOTS.length} lr={lanternsReleased} allDone={allDone} melodyShown={melodyShown} zoom={zoom} songIndex={songIndex} onSongChange={(i) => { setSongIndex(i); snd().setSong(i) }} />
       <ZoomButtons zoom={zoom} onZoomIn={zoomIn} onZoomOut={zoomOut} />
     </div>
   )
