@@ -12,8 +12,9 @@ export default function Home() {
           </h1>
 
           <p className="text-lg text-foreground max-w-2xl leading-relaxed">
-            Working on LLM interpretability & safety. Building AI systems
-            at SCL Synthetic Consumer Lab. MSc Data Science @ Sabanci University.
+            Researching cross-lingual mechanistic interpretability — how LLMs
+            encode safety in Turkish vs. English. Building synthetic consumer AI
+            at SCL. MSc Data Science @ Sabancı University.
           </p>
 
           <div className="flex flex-wrap gap-3 pt-2">
@@ -53,8 +54,8 @@ export default function Home() {
               <div className="flex items-start gap-3">
                 <span className="font-mono text-sm text-terminal-green mt-0.5">&gt;</span>
                 <div>
-                  <h3 className="font-mono text-base font-semibold text-white">LLM Interpretability & Safety</h3>
-                  <p className="text-sm text-muted mt-1">Research on mechanistic interpretability and alignment</p>
+                  <h3 className="font-mono text-base font-semibold text-white">Cross-lingual Mechanistic Interpretability</h3>
+                  <p className="text-sm text-muted mt-1">How LLMs encode refusal behavior differently across Turkish and English</p>
                 </div>
               </div>
             </div>
@@ -64,7 +65,7 @@ export default function Home() {
                 <span className="font-mono text-sm text-terminal-green mt-0.5">&gt;</span>
                 <div>
                   <h3 className="font-mono text-base font-semibold text-white">SCL Synthetic Consumer Lab</h3>
-                  <p className="text-sm text-muted mt-1">AI Engineer — building intelligent consumer simulation systems</p>
+                  <p className="text-sm text-muted mt-1">AI Engineer — building synthetic consumer personas that simulate realistic behavior for market research</p>
                 </div>
               </div>
             </div>
@@ -73,8 +74,8 @@ export default function Home() {
               <div className="flex items-start gap-3">
                 <span className="font-mono text-sm text-terminal-green mt-0.5">&gt;</span>
                 <div>
-                  <h3 className="font-mono text-base font-semibold text-white">MSc Data Science — Sabanci University</h3>
-                  <p className="text-sm text-muted mt-1">Graduate studies in machine learning and data science</p>
+                  <h3 className="font-mono text-base font-semibold text-white">MSc Data Science — Sabancı University</h3>
+                  <p className="text-sm text-muted mt-1">Thesis: refusal direction analysis across languages in LLMs</p>
                 </div>
               </div>
             </div>
