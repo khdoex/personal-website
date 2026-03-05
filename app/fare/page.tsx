@@ -628,8 +628,8 @@ function Hearts({ hearts }: { hearts: HeartData[] }) {
       <rect x={-s*0.25} y={s*0.25} width={s*0.5} height={s*0.45} fill={h.color} rx="0.8" opacity="0.9" />
       {/* Highlight */}
       <rect x={-s*0.35} y={s*0.08} width={s*0.2} height={s*0.2} fill="#fff" opacity="0.3" rx="0.5" />
-      {/* Gentle bob animation */}
-      <animateTransform attributeName="transform" type="translate" values="0,0;2,-3;-1,1;0,0" dur="4s" repeatCount="indefinite" additive="sum" />
+      {/* Gentle scale pulse instead of positional bob (avoids tap-position mismatch) */}
+      <animateTransform attributeName="transform" type="scale" values="1;1.12;0.95;1" dur="4s" repeatCount="indefinite" additive="sum" />
     </g>
   )})}</g>
 }
@@ -849,12 +849,14 @@ export default function FarePage() {
     if (!mounted) return
     const spawn = () => {
       const r = Math.random
+      const now = Date.now()
       setHearts(prev => {
-        const cutoff = idRef.current.h - 25
-        return [...prev.filter(h => h.id > cutoff), {
+        // Remove expired hearts (animation finished) to prevent ghost taps
+        const alive = prev.filter(h => (now - h.born) / 1000 < h.dur)
+        return [...alive, {
           id: idRef.current.h++, x: 30 + r() * 340, sy: 780, ey: -40,
           size: 8 + r() * 6, dur: 18 + r() * 12, drift: (r() - 0.5) * 50,
-          color: r() > 0.5 ? C.heartPink : C.heartRed, born: Date.now(),
+          color: r() > 0.5 ? C.heartPink : C.heartRed, born: now,
         }]
       })
     }
@@ -933,6 +935,8 @@ export default function FarePage() {
 
     // 3. Hearts (check proximity to current animated position)
     for (const heart of hearts) {
+      // Skip expired hearts (animation finished, frozen at end position)
+      if ((Date.now() - heart.born) / 1000 >= heart.dur) continue
       const hp = getHeartPos(heart)
       const dx = pt.x - hp.x, dy = pt.y - hp.y
       // Generous 45-unit radius — hearts are the main "fun" interaction
