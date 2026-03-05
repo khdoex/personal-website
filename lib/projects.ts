@@ -3,8 +3,7 @@ export interface Project {
   description: string;
   githubUrl: string;
   tags: string[];
-  image?: string; // Optional screenshot/preview
-  demoUrl?: string; // Optional live demo link
+  demoUrl?: string;
 }
 
 export const projects: Project[] = [

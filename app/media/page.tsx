@@ -18,18 +18,6 @@ const MEDIA_ITEMS: MediaItem[] = [
     category: 'Generative Art'
   },
   {
-    url: '/videos/gallery/12-01_00001-audio-1.mov',
-    title: 'Audio-Reactive Visual Generation',
-    description: 'Real-time visual synthesis responding to audio input',
-    category: 'Audio AI'
-  },
-  {
-    url: '/videos/gallery/11-30_00001-audio-1.mov',
-    title: 'Generative Music Visualization',
-    description: 'ML-driven visual interpretation of musical elements',
-    category: 'Audio AI'
-  },
-  {
     url: '/videos/gallery/Professional_Mode_A_heavenly_woman_found_her_self_.mp4',
     title: 'Heavenly Woman - AI Character Study',
     description: 'Advanced character generation using diffusion models',
@@ -143,7 +131,6 @@ export default function Media() {
                   }}
                 >
                   <source src={item.url} type="video/mp4" />
-                  <source src={item.url} type="video/quicktime" />
                 </video>
                 <div className="absolute inset-0 bg-surface flex items-center justify-center -z-10">
                   <Play className="w-8 h-8 text-muted" />

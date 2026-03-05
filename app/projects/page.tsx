@@ -1,7 +1,6 @@
 import { projects } from '@/lib/projects'
 import { Github, ExternalLink } from 'lucide-react'
 import Link from 'next/link'
-import Image from 'next/image'
 
 export default function Projects() {
   return (
@@ -23,17 +22,6 @@ export default function Projects() {
               key={project.title}
               className="group border border-border rounded-lg overflow-hidden hover:border-accent/40 transition-all"
             >
-              {project.image && (
-                <div className="relative h-40 bg-surface overflow-hidden">
-                  <Image
-                    src={project.image}
-                    alt={project.title}
-                    fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                </div>
-              )}
-
               <div className="p-5 space-y-3">
                 <div className="flex items-center gap-2">
                   <span className="font-mono text-xs text-muted">[{String(index + 1).padStart(2, '0')}]</span>

@@ -19,12 +19,10 @@ export interface Post {
 
 export async function getAllPosts(): Promise<Post[]> {
   if (!fs.existsSync(postsDirectory)) {
-    console.error('Posts directory does not exist:', postsDirectory)
     return []
   }
 
   const fileNames = fs.readdirSync(postsDirectory)
-  console.log('Found files:', fileNames)
 
   const allPosts = await Promise.all(fileNames.map(async (fileName) => {
     if (!fileName.endsWith('.md')) {
@@ -35,8 +33,6 @@ export async function getAllPosts(): Promise<Post[]> {
     const fileContents = fs.readFileSync(fullPath, 'utf8')
     const { data, content } = matter(fileContents)
     
-    console.log('Processing file:', fileName, 'with data:', data)
-
     const processedContent = await remark()
       .use(html)
       .process(content)
