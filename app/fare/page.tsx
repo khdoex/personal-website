@@ -832,6 +832,7 @@ export default function FarePage() {
     tapStart: { x: 0, y: 0, time: 0 },
     lastTap: { x: 0, y: 0, time: 0 },
   })
+  const tapTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const pendingVB = useRef<ViewBox | null>(null)
   const rafRef = useRef(0)
 
@@ -894,15 +895,17 @@ export default function FarePage() {
     return () => clearTimeout(t)
   }, [melodyShown])
 
-  // --- Get heart's actual screen position from the DOM (no timestamp guessing) ---
+  // --- Get heart's actual screen position from the DOM ---
+  // getBoundingClientRect() is guaranteed to reflect SMIL animateTransform positions
+  // (getScreenCTM() does NOT include SMIL animations in many browsers)
   const getHeartScreenPos = useCallback((heartId: number): { x: number; y: number } | null => {
     const svg = svgRef.current
     if (!svg) return null
     const el = svg.querySelector(`[data-hid="${heartId}"]`) as SVGGraphicsElement | null
     if (!el) return null
-    const ctm = el.getScreenCTM()
-    if (!ctm) return null
-    return { x: ctm.e, y: ctm.f }
+    const rect = el.getBoundingClientRect()
+    if (rect.width === 0 && rect.height === 0) return null
+    return { x: rect.x + rect.width / 2, y: rect.y + rect.height / 2 }
   }, [])
 
   // --- Unified game tap handler (called after gesture detection) ---
@@ -1030,6 +1033,18 @@ export default function FarePage() {
     }
   }, [viewBox])
 
+  const doZoomToggle = useCallback((clientX: number, clientY: number) => {
+    if (zoom < 1.5) {
+      const pt = screenToSvg(clientX, clientY, svgRef.current, viewBox)
+      if (pt) {
+        const nw = 400 / 2.5, nh = nw * 2
+        commitVB({ x: pt.x - nw / 2, y: pt.y - nh / 2, w: nw, h: nh })
+      }
+    } else {
+      setViewBox({ x: 0, y: 0, w: 400, h: 800 })
+    }
+  }, [zoom, viewBox])
+
   const onPtrUp = useCallback((e: React.PointerEvent) => {
     ptrsRef.current.delete(e.pointerId)
     const g = gestRef.current
@@ -1039,31 +1054,37 @@ export default function FarePage() {
       const dist = Math.hypot(e.clientX - g.tapStart.x, e.clientY - g.tapStart.y)
 
       if (!g.isPan && !g.isPinch && elapsed < 350 && dist < 15) {
-        // Double-tap detection: zoom toggle on empty areas
-        const now = Date.now()
-        const lt = g.lastTap
-        if (now - lt.time < 400 && Math.hypot(e.clientX - lt.x, e.clientY - lt.y) < 30) {
-          // Double tap → toggle zoom
-          g.lastTap = { x: 0, y: 0, time: 0 }
-          if (zoom < 1.5) {
-            const pt = screenToSvg(e.clientX, e.clientY, svgRef.current, viewBox)
-            if (pt) {
-              const nw = 400 / 2.5, nh = nw * 2
-              commitVB({ x: pt.x - nw / 2, y: pt.y - nh / 2, w: nw, h: nh })
-            }
+        const isTouch = e.pointerType === 'touch'
+
+        if (isTouch) {
+          // Touch: support double-tap zoom — delay single-tap to detect second tap
+          const now = Date.now()
+          const lt = g.lastTap
+          if (now - lt.time < 350 && Math.hypot(e.clientX - lt.x, e.clientY - lt.y) < 30) {
+            // Double tap → zoom toggle, cancel pending single-tap action
+            g.lastTap = { x: 0, y: 0, time: 0 }
+            if (tapTimerRef.current) { clearTimeout(tapTimerRef.current); tapTimerRef.current = null }
+            doZoomToggle(e.clientX, e.clientY)
           } else {
-            setViewBox({ x: 0, y: 0, w: 400, h: 800 })
+            g.lastTap = { time: now, x: e.clientX, y: e.clientY }
+            // Delay single-tap so double-tap can cancel it
+            const cx = e.clientX, cy = e.clientY
+            if (tapTimerRef.current) clearTimeout(tapTimerRef.current)
+            tapTimerRef.current = setTimeout(() => {
+              tapTimerRef.current = null
+              handleGameTap(cx, cy)
+            }, 250)
           }
         } else {
-          g.lastTap = { time: now, x: e.clientX, y: e.clientY }
-          // Single tap — handle game action immediately
+          // Mouse/pen: fire game action immediately, no double-click zoom
+          // (desktop users have scroll wheel for zoom)
           handleGameTap(e.clientX, e.clientY)
         }
       }
       g.isPinch = false
       g.isPan = false
     }
-  }, [handleGameTap, zoom, viewBox])
+  }, [handleGameTap, doZoomToggle])
 
   const onPtrCancel = useCallback((e: React.PointerEvent) => {
     ptrsRef.current.delete(e.pointerId)
