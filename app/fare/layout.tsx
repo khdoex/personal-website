@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'For You',
+  title: 'Askim Benim',
   robots: { index: false, follow: false },
 }
 
