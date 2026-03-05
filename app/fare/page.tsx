@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useMemo, useCallback, useRef } from 'react'
+import { useEffect, useState, useMemo, useCallback, useRef, memo } from 'react'
 
 // --- Pixel-art color palette ---
 const C = {
@@ -87,7 +87,7 @@ function clampVB(vb: ViewBox): ViewBox {
 // =============================================
 // SVG FILTERS
 // =============================================
-function Defs() {
+const Defs = memo(function Defs() {
   return (
     <defs>
       <filter id="glow"><feGaussianBlur stdDeviation="3" result="b" /><feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge></filter>
@@ -104,12 +104,12 @@ function Defs() {
       </linearGradient>
     </defs>
   )
-}
+})
 
 // =============================================
 // BACKGROUND
 // =============================================
-function Background() {
+const Background = memo(function Background() {
   const stars = useMemo(() => { const r = seededRandom(13); return Array.from({ length: 30 }, () => ({ x: r() * 400, y: r() * 200, s: 1 + r() * 2, d: 2 + r() * 3, dl: r() * 4 })) }, [])
   const clouds = [{ x: 20, y: 50, s: 0.9, d: 70 }, { x: 180, y: 30, s: 0.6, d: 90 }, { x: 300, y: 70, s: 0.75, d: 80 }, { x: 100, y: 100, s: 0.5, d: 95 }]
   const birds = [{ x: 60, y: 120, d: 20, dl: 0 }, { x: 68, y: 126, d: 20, dl: 0.3 }, { x: 280, y: 150, d: 25, dl: 5 }, { x: 288, y: 156, d: 25, dl: 5.4 }, { x: 170, y: 90, d: 18, dl: 8 }]
@@ -145,7 +145,7 @@ function Background() {
       ))}
     </g>
   )
-}
+})
 
 // =============================================
 // DETAILED CITY with hidden treasure scenes
@@ -532,7 +532,7 @@ function DetailedCity({ foundTreasures, zoom }: { foundTreasures: Set<string>; z
 // =============================================
 // SEA
 // =============================================
-function SeaLayer() {
+const SeaLayer = memo(function SeaLayer() {
   return (
     <g>
       <rect x="0" y="400" width="400" height="400" fill={C.sea1} />
@@ -549,9 +549,9 @@ function SeaLayer() {
       ))}
     </g>
   )
-}
+})
 
-function WaterDetails() {
+const WaterDetails = memo(function WaterDetails() {
   return (
     <g>
       {/* Building reflections in water — blurred, wavy */}
@@ -589,20 +589,20 @@ function WaterDetails() {
       ))}
     </g>
   )
-}
+})
 
-function Fireflies() {
+const Fireflies = memo(function Fireflies() {
   const f = useMemo(() => { const r = seededRandom(77); return Array.from({length:15},()=>({cx:20+r()*360,cy:350+r()*50,d:3+r()*4,dl:r()*6,r:1.2+r()*1.2})) }, [])
-  return <g>{f.map((v,i)=><circle key={`ff${i}`} cx={v.cx} cy={v.cy} r={v.r} fill={C.sunGlow} filter="url(#glow)"><animate attributeName="opacity" values="0;0.8;0" dur={`${v.d}s`} begin={`${v.dl}s`} repeatCount="indefinite" /><animate attributeName="cy" values={`${v.cy};${v.cy-8};${v.cy}`} dur={`${v.d+1}s`} begin={`${v.dl}s`} repeatCount="indefinite" /></circle>)}</g>
-}
+  return <g>{f.map((v,i)=><circle key={`ff${i}`} cx={v.cx} cy={v.cy} r={v.r} fill={C.sunGlow} opacity="0.6"><animate attributeName="opacity" values="0;0.8;0" dur={`${v.d}s`} begin={`${v.dl}s`} repeatCount="indefinite" /><animate attributeName="cy" values={`${v.cy};${v.cy-8};${v.cy}`} dur={`${v.d+1}s`} begin={`${v.dl}s`} repeatCount="indefinite" /></circle>)}</g>
+})
 
-function Petals() {
+const Petals = memo(function Petals() {
   const p = useMemo(() => { const r = seededRandom(42); return Array.from({length:18},()=>({x:r()*400,sy:-20-r()*80,ey:700+r()*100,sz:2.5+r()*3,d:12+r()*14,dl:r()*10,dr:(r()-0.5)*60,c:r()>0.5?C.flowerPink:C.flowerWhite,o:0.35+r()*0.4})) }, [])
   return <g>{p.map((v,i)=>(
     <g key={`p${i}`} opacity={v.o}><rect x="0" y="0" width={v.sz} height={v.sz*0.7} fill={v.c} rx="0.8"><animateTransform attributeName="transform" type="rotate" values="0;360" dur={`${v.d*0.8}s`} repeatCount="indefinite" /></rect>
     <animateTransform attributeName="transform" type="translate" values={`${v.x},${v.sy};${v.x+v.dr},${v.ey}`} dur={`${v.d}s`} begin={`${v.dl}s`} repeatCount="indefinite" /></g>
   ))}</g>
-}
+})
 
 // =============================================
 // INTERACTIVE ELEMENTS (pure visual, no event handlers)
@@ -618,21 +618,10 @@ function Hearts({ hearts }: { hearts: HeartData[] }) {
     return (
     <g key={h.id} data-hid={h.id}>
       <animateTransform attributeName="transform" type="translate" values={`${h.x},${h.sy};${h.x+h.drift},${h.ey}`} dur={`${h.dur}s`} fill="freeze" />
-      {/* Soft glow behind heart */}
-      <circle cx={s*0.05} cy={s*0.3} r={s*0.8} fill={h.color} opacity="0.2" filter="url(#glow)">
-        <animate attributeName="opacity" values="0.15;0.35;0.15" dur="2s" repeatCount="indefinite" />
-      </circle>
-      {/* Heart shape — pixel art */}
-      <g>
-        <animate attributeName="opacity" values="0.9;1;0.9" dur="3s" repeatCount="indefinite" />
-        <rect x={-s*0.5} y={0} width={s*0.45} height={s*0.45} fill={h.color} rx="0.8" />
-        <rect x={s*0.05} y={0} width={s*0.45} height={s*0.45} fill={h.color} rx="0.8" />
-        <rect x={-s*0.25} y={s*0.25} width={s*0.5} height={s*0.45} fill={h.color} rx="0.8" />
-        {/* Highlight */}
-        <rect x={-s*0.35} y={s*0.08} width={s*0.2} height={s*0.2} fill="#fff" opacity="0.35" rx="0.5" />
-        {/* Outline for visibility */}
-        <rect x={-s*0.55} y={-s*0.05} width={s*1.1} height={s*0.8} fill="none" stroke="#fff" strokeWidth="0.5" opacity="0.15" rx="1" />
-      </g>
+      <rect x={-s*0.5} y={0} width={s*0.45} height={s*0.45} fill={h.color} rx="0.8" />
+      <rect x={s*0.05} y={0} width={s*0.45} height={s*0.45} fill={h.color} rx="0.8" />
+      <rect x={-s*0.25} y={s*0.25} width={s*0.5} height={s*0.45} fill={h.color} rx="0.8" />
+      <rect x={-s*0.35} y={s*0.08} width={s*0.2} height={s*0.2} fill="#fff" opacity="0.3" rx="0.5" />
     </g>
   )})}</g>
 }
@@ -848,24 +837,26 @@ export default function FarePage() {
 
   useEffect(() => { setMounted(true) }, [])
 
-  // Heart spawner
+  // Heart spawner — infinite loop, fast cycle, hard cap
   useEffect(() => {
     if (!mounted) return
+    const MAX_HEARTS = 20
     const spawn = () => {
       const r = Math.random
       const now = Date.now()
       setHearts(prev => {
-        // Remove expired hearts (animation finished) to prevent ghost taps
         const alive = prev.filter(h => (now - h.born) / 1000 < h.dur)
+        if (alive.length >= MAX_HEARTS) return alive
         return [...alive, {
-          id: idRef.current.h++, x: 30 + r() * 340, sy: 780, ey: -40,
-          size: 12 + r() * 8, dur: 18 + r() * 12, drift: (r() - 0.5) * 50,
+          id: idRef.current.h++, x: 20 + r() * 360, sy: 780, ey: -40,
+          size: 10 + r() * 8, dur: 10 + r() * 8, drift: (r() - 0.5) * 60,
           color: r() > 0.5 ? C.heartPink : C.heartRed, born: now,
         }]
       })
     }
-    spawn()
-    const iv = setInterval(spawn, 1500)
+    // Initial burst
+    for (let i = 0; i < 6; i++) setTimeout(spawn, i * 200)
+    const iv = setInterval(spawn, 700)
     return () => clearInterval(iv)
   }, [mounted])
 
