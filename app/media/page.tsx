@@ -13,32 +13,32 @@ interface MediaItem {
 const MEDIA_ITEMS: MediaItem[] = [
   {
     url: '/videos/gallery/Extended_Video.mp4',
-    title: 'Dancing Ethereal Creature',
-    description: 'Generative AI character animation with fluid motion dynamics',
-    category: 'Generative Art'
+    title: 'Generative Character Motion Study',
+    description: 'Character animation experiment exploring motion quality in generative video models',
+    category: 'Generative Video'
   },
   {
     url: '/videos/gallery/Professional_Mode_A_heavenly_woman_found_her_self_.mp4',
-    title: 'Heavenly Woman - AI Character Study',
-    description: 'Advanced character generation using diffusion models',
-    category: 'Character AI'
+    title: 'Character Synthesis Study',
+    description: 'Portrait-oriented generation experiment using diffusion-based character pipelines',
+    category: 'Character Modeling'
   },
   {
     url: '/videos/gallery/220ad93e-934b-408e-aaf4-19c5842b10c1-0.mp4',
-    title: 'AI Visual Experiment #1',
-    description: 'Experimental generative AI visual synthesis',
+    title: 'Visual Experiment 01',
+    description: 'Exploratory generative video test focused on composition and style consistency',
     category: 'Experimental'
   },
   {
     url: '/videos/gallery/d0db6f7a-a7ad-4ff7-9fa4-6789b49d565a-0.mp4',
-    title: 'AI Visual Experiment #2',
-    description: 'Advanced neural network visual generation',
+    title: 'Visual Experiment 02',
+    description: 'Neural visual generation test evaluating temporal coherence in short clips',
     category: 'Experimental'
   },
   {
     url: '/videos/gallery/eb0d5524-f22b-4b10-a131-51088e7a99be-0.mp4',
-    title: 'AI Visual Experiment #3',
-    description: 'Creative AI-driven visual content generation',
+    title: 'Visual Experiment 03',
+    description: 'Creative generation run focused on subject detail and motion fidelity',
     category: 'Experimental'
   },
 ]
@@ -56,7 +56,7 @@ export default function Media() {
             Media
           </h1>
           <p className="text-muted mt-3 max-w-xl">
-            AI experiments in computer vision, audio processing, and generative models.
+            Selected generative media experiments across character synthesis and video generation.
           </p>
         </div>
 

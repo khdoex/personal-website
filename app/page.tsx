@@ -12,9 +12,9 @@ export default function Home() {
           </h1>
 
           <p className="text-lg text-foreground max-w-2xl leading-relaxed">
-            Researching cross-lingual mechanistic interpretability — how LLMs
-            encode safety in Turkish vs. English. Building synthetic consumer AI
-            at SCL. MSc Data Science @ Sabancı University.
+            AI Engineer and researcher focused on cross-lingual mechanistic interpretability.
+            I study how safety and refusal behavior are represented across Turkish and English LLMs,
+            and build synthetic consumer AI systems at SCL.
           </p>
 
           <div className="flex flex-wrap gap-3 pt-2">
@@ -55,7 +55,7 @@ export default function Home() {
                 <span className="font-mono text-sm text-terminal-green mt-0.5">&gt;</span>
                 <div>
                   <h3 className="font-mono text-base font-semibold text-white">Cross-lingual Mechanistic Interpretability</h3>
-                  <p className="text-sm text-muted mt-1">How LLMs encode refusal behavior differently across Turkish and English</p>
+                  <p className="text-sm text-muted mt-1">Investigating how refusal behavior and safety representations differ across Turkish and English model internals</p>
                 </div>
               </div>
             </div>
@@ -65,7 +65,7 @@ export default function Home() {
                 <span className="font-mono text-sm text-terminal-green mt-0.5">&gt;</span>
                 <div>
                   <h3 className="font-mono text-base font-semibold text-white">SCL Synthetic Consumer Lab</h3>
-                  <p className="text-sm text-muted mt-1">AI Engineer — building synthetic consumer personas that simulate realistic behavior for market research</p>
+                  <p className="text-sm text-muted mt-1">AI Engineer building synthetic consumer systems for realistic behavior simulation and market research workflows</p>
                 </div>
               </div>
             </div>
@@ -75,7 +75,7 @@ export default function Home() {
                 <span className="font-mono text-sm text-terminal-green mt-0.5">&gt;</span>
                 <div>
                   <h3 className="font-mono text-base font-semibold text-white">MSc Data Science — Sabancı University</h3>
-                  <p className="text-sm text-muted mt-1">Thesis: refusal direction analysis across languages in LLMs</p>
+                  <p className="text-sm text-muted mt-1">MSc thesis on cross-lingual refusal direction analysis in large language models</p>
                 </div>
               </div>
             </div>

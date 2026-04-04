@@ -27,7 +27,7 @@ export default async function BlogPost({ params }: Props) {
         </article>
       </div>
     )
-  } catch (error) {
+  } catch {
     return notFound()
   }
 }
