@@ -1,36 +1,23 @@
 import type { Metadata, Viewport } from "next";
-import localFont from "next/font/local";
-import { Instrument_Serif, Newsreader } from "next/font/google";
+import { JetBrains_Mono, IBM_Plex_Sans } from "next/font/google";
 import "./globals.css";
 import Navigation from '@/components/Navigation'
 import Footer from '@/components/Footer'
 
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-});
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
-});
-const instrumentSerif = Instrument_Serif({
+const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin", "latin-ext"],
-  weight: "400",
-  style: ["normal", "italic"],
-  variable: "--font-display",
+  variable: "--font-mono",
 });
-const newsreader = Newsreader({
+const plexSans = IBM_Plex_Sans({
   subsets: ["latin", "latin-ext"],
-  style: ["normal", "italic"],
-  variable: "--font-serif",
+  weight: ["400", "500", "600"],
+  variable: "--font-sans",
 });
 
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  themeColor: '#0d0c0a',
+  themeColor: '#1d252c',
 };
 
 export const metadata: Metadata = {
@@ -68,7 +55,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${instrumentSerif.variable} ${newsreader.variable} antialiased`}
+        className={`${jetbrainsMono.variable} ${plexSans.variable} antialiased`}
       >
         <Navigation />
         <main className="min-h-screen pt-16">

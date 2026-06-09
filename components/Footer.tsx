@@ -2,12 +2,12 @@ export default function Footer() {
   return (
     <footer className="border-t border-border/70 mt-auto">
       <div className="max-w-3xl mx-auto px-6 md:px-8 py-10">
-        <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-          <span className="font-mono text-xs text-muted-dark">
-            &copy; {new Date().getFullYear()} kaan hacihaliloglu · istanbul
+        <div className="flex flex-col md:flex-row justify-between items-center gap-4 font-mono text-xs">
+          <span className="text-muted-dark">
+            &copy; {new Date().getFullYear()} kaan hacihaliloglu · istanbul, 41.0°N 28.9°E
           </span>
 
-          <div className="flex items-center gap-5 font-mono text-xs">
+          <div className="flex items-center gap-5">
             <a
               href="https://github.com/khdoex"
               target="_blank"

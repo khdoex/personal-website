@@ -36,16 +36,17 @@ export default async function BlogPost({ params }: Props) {
               ← writing
             </Link>
             <h1
-              className="reveal font-display text-4xl md:text-5xl leading-[1.1] tracking-tight text-foreground mt-8"
+              className="reveal font-mono text-xl md:text-2xl font-semibold leading-snug text-heading mt-8"
               style={{ '--d': 1 } as React.CSSProperties}
             >
               {post.data.title}
             </h1>
             <p
-              className="reveal font-mono text-xs text-muted-dark mt-6"
+              className="reveal font-mono text-xs mt-4"
               style={{ '--d': 2 } as React.CSSProperties}
             >
-              {post.data.date} · {post.data.readingTime} min read
+              <time className="text-amber">{post.data.date}</time>
+              <span className="text-muted-dark"> · {post.data.readingTime} min read</span>
             </p>
           </header>
 
