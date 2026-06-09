@@ -8,14 +8,11 @@ export const metadata = {
 export default function Projects() {
   return (
     <div className="max-w-3xl mx-auto px-6 md:px-8 pt-16 md:pt-24 pb-28">
-      <header className="mb-14">
-        <p className="reveal font-mono text-[13px] tracking-[0.2em] uppercase text-muted" style={{ '--d': 0 } as React.CSSProperties}>
-          Projects
-        </p>
-        <h1 className="reveal font-display text-4xl md:text-6xl tracking-tight text-foreground mt-4" style={{ '--d': 1 } as React.CSSProperties}>
-          Things I&apos;ve built.
+      <header className="mb-12">
+        <h1 className="reveal font-mono text-lg font-semibold text-heading" style={{ '--d': 0 } as React.CSSProperties}>
+          projects
         </h1>
-        <p className="reveal text-muted mt-5 max-w-xl leading-relaxed" style={{ '--d': 2 } as React.CSSProperties}>
+        <p className="reveal text-muted mt-3 max-w-xl leading-relaxed" style={{ '--d': 1 } as React.CSSProperties}>
           Research projects, ML implementations, and competition solutions.
         </p>
       </header>
@@ -24,14 +21,14 @@ export default function Projects() {
         {projects.map((project, i) => (
           <div
             key={project.title}
-            className="reveal group grid md:grid-cols-[3rem_1fr] gap-4 py-8"
-            style={{ '--d': 3 + i } as React.CSSProperties}
+            className="reveal group grid md:grid-cols-[3rem_1fr] gap-4 py-7"
+            style={{ '--d': 2 + i } as React.CSSProperties}
           >
-            <span className="font-mono text-xs text-muted-dark pt-2 group-hover:text-accent transition-colors">
+            <span className="font-mono text-xs text-muted-dark pt-0.5 group-hover:text-accent transition-colors">
               {String(i + 1).padStart(2, '0')}
             </span>
             <div>
-              <h2 className="font-serif text-xl md:text-2xl text-foreground group-hover:translate-x-1 transition-transform duration-300">
+              <h2 className="font-mono text-base font-medium text-heading">
                 {project.title}
               </h2>
               <p className="text-sm text-muted leading-relaxed mt-2 max-w-xl">
@@ -47,7 +44,7 @@ export default function Projects() {
                   href={project.githubUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="u-link text-accent hover:text-accent-light"
+                  className="u-link text-accent hover:text-heading"
                 >
                   source →
                 </Link>

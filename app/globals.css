@@ -3,16 +3,16 @@
 @tailwind utilities;
 
 :root {
-  /* Warm ink & ember */
-  --background: #0d0c0a;
-  --surface: #15130f;
-  --border: #262217;
-  --foreground: #e9e5da;
-  --muted: #918a78;
-  --muted-dark: #5a5443;
-  --accent: #f2b84b;
-  --accent-light: #ffd584;
-  --accent-deep: #8a6420;
+  /* City Lights — blue-charcoal, one cold accent */
+  --background: #1d252c;
+  --surface: #232d36;
+  --border: #2f3b47;
+  --foreground: #a0b3c5;
+  --heading: #e8eef4;
+  --muted: #718ca1;
+  --muted-dark: #4a5866;
+  --accent: #5ec4ff;
+  --amber: #d98e48;
 }
 
 html {
@@ -22,22 +22,20 @@ html {
 
 body {
   color: var(--foreground);
-  background:
-    radial-gradient(70% 45% at 50% 0%, rgba(242, 184, 75, 0.055), transparent 70%),
-    var(--background);
-  font-family: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--background);
+  font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Film grain — sits above everything, never intercepts input */
+/* Grain — 2.5%, analog texture, never intercepts input */
 body::before {
   content: '';
   position: fixed;
   inset: 0;
   z-index: 9999;
   pointer-events: none;
-  opacity: 0.05;
+  opacity: 0.025;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
@@ -65,7 +63,6 @@ main {
   background: var(--muted-dark);
 }
 
-/* Focus */
 *:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
@@ -80,22 +77,13 @@ a {
   transition: color 0.2s ease;
 }
 
-/* Display type */
-.font-display {
-  font-family: var(--font-display), Georgia, serif;
-}
-
-.font-serif {
-  font-family: var(--font-serif), Georgia, serif;
-}
-
-/* Animated underline for inline links */
+/* Underline draws in from the left */
 .u-link {
   background-image: linear-gradient(currentColor, currentColor);
   background-size: 0% 1px;
   background-position: 0 100%;
   background-repeat: no-repeat;
-  transition: background-size 0.35s cubic-bezier(0.16, 1, 0.3, 1), color 0.2s ease;
+  transition: background-size 0.2s ease, color 0.2s ease;
   padding-bottom: 2px;
 }
 
@@ -103,11 +91,11 @@ a {
   background-size: 100% 1px;
 }
 
-/* Staggered reveal — set --d per element for the cascade */
+/* Fade-up — slow, no bounce. Set --d per element for the cascade. */
 @keyframes rise {
   from {
     opacity: 0;
-    transform: translateY(16px);
+    transform: translateY(10px);
   }
   to {
     opacity: 1;
@@ -117,52 +105,54 @@ a {
 
 .reveal {
   opacity: 0;
-  animation: rise 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  animation-delay: calc(var(--d, 0) * 90ms);
+  animation: rise 0.5s ease-out forwards;
+  animation-delay: calc(var(--d, 0) * 80ms);
 }
 
-/* Prose — the reading experience */
+/* The one animation that runs constantly */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.cursor-blink {
+  animation: blink 1.2s step-end infinite;
+}
+
+/* Prose — sans for reading, mono for structure */
 .prose {
-  font-family: var(--font-serif), Georgia, serif;
-  font-size: 1.1875rem;
-  line-height: 1.85;
+  font-size: 1.0625rem;
+  line-height: 1.75;
   color: var(--foreground);
-  max-width: none;
+  max-width: 65ch;
 }
 
 .prose p {
   margin-bottom: 1.5em;
 }
 
-.prose p:first-of-type {
-  font-size: 1.28em;
-  line-height: 1.7;
-  color: #fbf9f4;
-}
-
 .prose h1,
 .prose h2,
 .prose h3,
 .prose h4 {
-  font-family: var(--font-serif), Georgia, serif;
-  font-weight: 500;
-  color: #fbf9f4;
-  letter-spacing: -0.01em;
+  font-family: var(--font-mono), monospace;
+  color: var(--heading);
+  font-weight: 600;
 }
 
 .prose h1 {
-  font-size: 1.9em;
-  margin: 1.8em 0 0.6em;
+  font-size: 1.2em;
+  margin: 2em 0 0.8em;
 }
 
 .prose h2 {
-  font-size: 1.55em;
-  margin: 1.8em 0 0.6em;
+  font-size: 1.1em;
+  margin: 2em 0 0.8em;
 }
 
 .prose h3 {
-  font-size: 1.25em;
-  margin: 1.6em 0 0.5em;
+  font-size: 1em;
+  margin: 1.8em 0 0.6em;
 }
 
 .prose ul,
@@ -184,7 +174,7 @@ a {
 }
 
 .prose li::marker {
-  color: var(--accent);
+  color: var(--muted-dark);
 }
 
 .prose blockquote {
@@ -207,23 +197,23 @@ a {
 }
 
 .prose a:hover {
-  color: var(--accent-light);
+  color: var(--heading);
 }
 
 .prose code {
-  font-family: var(--font-geist-mono), monospace;
-  font-size: 0.82em;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.85em;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 4px;
   padding: 0.15em 0.4em;
-  color: var(--accent-light);
+  color: var(--accent);
 }
 
 .prose pre {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: 6px;
   padding: 1.25em;
   margin: 2em 0;
   overflow-x: auto;
@@ -241,7 +231,7 @@ a {
 
 .prose strong {
   font-weight: 600;
-  color: #fbf9f4;
+  color: var(--heading);
 }
 
 .prose em {
@@ -267,7 +257,6 @@ a {
   border-collapse: collapse;
   margin: 2em 0;
   font-size: 0.9em;
-  font-family: var(--font-geist-sans), sans-serif;
 }
 
 .prose th,
@@ -279,7 +268,9 @@ a {
 
 .prose th {
   background: var(--surface);
-  color: #fbf9f4;
+  color: var(--heading);
+  font-family: var(--font-mono), monospace;
+  font-size: 0.85em;
   font-weight: 600;
 }
 
