@@ -13,7 +13,7 @@ export default function Projects() {
           Projects
         </p>
         <h1 className="reveal font-display text-4xl md:text-6xl tracking-tight text-foreground mt-4" style={{ '--d': 1 } as React.CSSProperties}>
-          Things I&apos;ve built<em className="text-accent">.</em>
+          Things I&apos;ve built.
         </h1>
         <p className="reveal text-muted mt-5 max-w-xl leading-relaxed" style={{ '--d': 2 } as React.CSSProperties}>
           Research projects, ML implementations, and competition solutions.

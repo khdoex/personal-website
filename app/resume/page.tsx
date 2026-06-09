@@ -11,7 +11,7 @@ export default function Resume() {
             Resume
           </p>
           <h1 className="reveal font-display text-4xl md:text-6xl tracking-tight text-foreground mt-4" style={{ '--d': 1 } as React.CSSProperties}>
-            The paper trail<em className="text-accent">.</em>
+            The paper trail.
           </h1>
         </div>
         <a

@@ -6,7 +6,7 @@ const currently = [
     desc: 'Investigating how refusal behavior and safety representations are encoded inside large language models',
   },
   {
-    title: 'SCL — Synthetic Consumer Lab',
+    title: 'SCL · Synthetic Consumer Lab',
     desc: 'AI Engineer building synthetic consumer systems for realistic behavior simulation and market research workflows',
   },
   {
@@ -21,7 +21,7 @@ export default function Home() {
       {/* Hero */}
       <section className="max-w-3xl mx-auto px-6 md:px-8 pt-24 md:pt-36 pb-20">
         <p className="reveal font-mono text-[13px] tracking-[0.2em] uppercase text-muted" style={{ '--d': 0 } as React.CSSProperties}>
-          Kaan Hacihaliloglu — AI engineer &amp; researcher
+          Kaan Hacihaliloglu · AI engineer &amp; researcher
         </p>
 
         <h1
@@ -29,16 +29,16 @@ export default function Home() {
           style={{ '--d': 1 } as React.CSSProperties}
         >
           Taking language models apart,{' '}
-          <em className="text-accent">one refusal at a time.</em>
+          <em>one refusal at a time.</em>
         </h1>
 
         <p
           className="reveal text-lg leading-relaxed text-muted max-w-xl mt-8"
           style={{ '--d': 2 } as React.CSSProperties}
         >
-          I work on mechanistic interpretability — how safety and refusal behavior
-          are represented inside LLMs — and build synthetic consumer AI systems
-          at SCL.
+          I work on mechanistic interpretability, studying how safety and
+          refusal behavior are represented inside large language models. At
+          SCL, I build synthetic consumer AI systems.
         </p>
 
         <div
