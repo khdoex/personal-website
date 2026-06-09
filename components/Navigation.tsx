@@ -20,7 +20,7 @@ export default function Navigation() {
             href="/"
             className="font-display text-lg tracking-tight text-foreground hover:text-accent transition-colors"
           >
-            kaan<span className="text-accent italic"> h.</span>
+            kaan h.
           </Link>
 
           <div className="flex items-center gap-6">

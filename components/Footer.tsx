@@ -4,7 +4,7 @@ export default function Footer() {
       <div className="max-w-3xl mx-auto px-6 md:px-8 py-10">
         <div className="flex flex-col md:flex-row justify-between items-center gap-4">
           <span className="font-mono text-xs text-muted-dark">
-            &copy; {new Date().getFullYear()} kaan hacihaliloglu — istanbul
+            &copy; {new Date().getFullYear()} kaan hacihaliloglu · istanbul
           </span>
 
           <div className="flex items-center gap-5 font-mono text-xs">
