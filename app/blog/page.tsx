@@ -1,57 +1,54 @@
 import { getAllPosts } from '@/lib/posts'
 import Link from 'next/link'
-import { ArrowRight } from 'lucide-react'
+
+export const metadata = {
+  title: 'Writing | Kaan Hacihaliloglu',
+}
 
 export default async function Blog() {
   const posts = await getAllPosts()
 
   return (
-    <div className="animate-fade-in">
-      <div className="max-w-3xl mx-auto px-6 md:px-8 py-16">
-        <div className="mb-12">
-          <p className="font-mono text-sm text-accent mb-2">~/blog</p>
-          <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-white font-mono">
-            Research Blog
-          </h1>
-          <p className="text-muted mt-3 max-w-xl">
-            Writing about machine learning, AI research, and data science.
-          </p>
-        </div>
+    <div className="max-w-3xl mx-auto px-6 md:px-8 pt-16 md:pt-24 pb-28">
+      <header className="mb-14">
+        <p className="reveal font-mono text-[13px] tracking-[0.2em] uppercase text-muted" style={{ '--d': 0 } as React.CSSProperties}>
+          Writing
+        </p>
+        <h1 className="reveal font-display text-4xl md:text-6xl tracking-tight text-foreground mt-4" style={{ '--d': 1 } as React.CSSProperties}>
+          Notes &amp; essays<em className="text-accent">.</em>
+        </h1>
+        <p className="reveal text-muted mt-5 max-w-xl leading-relaxed" style={{ '--d': 2 } as React.CSSProperties}>
+          On machine learning, interpretability research, and the occasional
+          detour through life.
+        </p>
+      </header>
 
-        {posts.length > 0 ? (
-          <div className="space-y-2">
-            {posts.map((post) => (
-              <Link
-                key={post.data.slug}
-                href={`/blog/${post.data.slug}`}
-                className="group flex items-center justify-between p-4 border border-border rounded-lg hover:border-accent/40 hover:bg-surface/50 transition-all"
-              >
-                <div>
-                  <h2 className="font-mono text-base font-semibold text-white group-hover:text-accent transition-colors">
-                    {post.data.title}
-                  </h2>
-                  <span className="font-mono text-xs text-muted mt-1">{post.data.date}</span>
-                </div>
-                <ArrowRight size={16} className="text-muted group-hover:text-accent transition-colors" />
-              </Link>
-            ))}
-          </div>
-        ) : (
-          <div className="border border-border rounded-lg p-8">
-            <p className="font-mono text-sm text-muted">
-              <span className="text-terminal-green">&gt;</span> no posts yet — coming soon.
-            </p>
-            <div className="flex gap-3 mt-4">
-              <Link
-                href="/projects"
-                className="inline-flex items-center gap-2 bg-accent-deep hover:bg-accent-deep/80 text-white px-4 py-2 rounded font-mono text-sm transition-colors"
-              >
-                view_projects <ArrowRight size={14} />
-              </Link>
-            </div>
-          </div>
-        )}
-      </div>
+      {posts.length > 0 ? (
+        <div className="divide-y divide-border border-y border-border">
+          {posts.map((post, i) => (
+            <Link
+              key={post.data.slug}
+              href={`/blog/${post.data.slug}`}
+              className="reveal group flex flex-col md:flex-row md:items-baseline gap-1.5 md:gap-6 py-6"
+              style={{ '--d': 3 + i } as React.CSSProperties}
+            >
+              <time className="font-mono text-xs text-muted-dark md:w-28 shrink-0 group-hover:text-accent transition-colors">
+                {post.data.date}
+              </time>
+              <span className="font-serif text-xl md:text-2xl text-foreground group-hover:text-accent group-hover:translate-x-1 transition-all duration-300">
+                {post.data.title}
+              </span>
+              <span className="font-mono text-xs text-muted-dark md:ml-auto shrink-0">
+                {post.data.readingTime} min
+              </span>
+            </Link>
+          ))}
+        </div>
+      ) : (
+        <p className="reveal font-serif text-xl text-muted italic" style={{ '--d': 3 } as React.CSSProperties}>
+          Nothing here yet — soon.
+        </p>
+      )}
     </div>
   )
 }

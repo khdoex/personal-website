@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
+import { Instrument_Serif, Newsreader } from "next/font/google";
 import "./globals.css";
 import Navigation from '@/components/Navigation'
 import Footer from '@/components/Footer'
@@ -14,29 +15,40 @@ const geistMono = localFont({
   variable: "--font-geist-mono",
   weight: "100 900",
 });
+const instrumentSerif = Instrument_Serif({
+  subsets: ["latin", "latin-ext"],
+  weight: "400",
+  style: ["normal", "italic"],
+  variable: "--font-display",
+});
+const newsreader = Newsreader({
+  subsets: ["latin", "latin-ext"],
+  style: ["normal", "italic"],
+  variable: "--font-serif",
+});
 
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  themeColor: '#212733',
+  themeColor: '#0d0c0a',
 };
 
 export const metadata: Metadata = {
   title: "Kaan Hacihaliloglu | AI Engineer & Researcher",
-  description: "Researching cross-lingual mechanistic interpretability in LLMs. Building synthetic consumer AI at SCL. MSc Data Science at Sabancı University.",
-  keywords: ["AI engineer", "mechanistic interpretability", "LLM safety", "cross-lingual", "machine learning", "data science", "Sabancı University"],
+  description: "Researching mechanistic interpretability and refusal behavior in LLMs. Building synthetic consumer AI at SCL. MSc Data Science at Sabancı University.",
+  keywords: ["AI engineer", "mechanistic interpretability", "LLM safety", "refusal behavior", "machine learning", "data science", "Sabancı University"],
   authors: [{ name: "Kaan Hacihaliloglu" }],
   creator: "Kaan Hacihaliloglu",
   openGraph: {
     title: "Kaan Hacihaliloglu | AI Engineer & Researcher",
-    description: "Researching cross-lingual mechanistic interpretability in LLMs. Building synthetic consumer AI at SCL.",
+    description: "Researching mechanistic interpretability and refusal behavior in LLMs. Building synthetic consumer AI at SCL.",
     type: "website",
     locale: "en_US",
   },
   twitter: {
     card: "summary",
     title: "Kaan Hacihaliloglu | AI Engineer & Researcher",
-    description: "Researching cross-lingual mechanistic interpretability in LLMs.",
+    description: "Researching mechanistic interpretability and refusal behavior in LLMs.",
     creator: "@kaanhho",
   },
   robots: {
@@ -56,10 +68,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${instrumentSerif.variable} ${newsreader.variable} antialiased`}
       >
         <Navigation />
-        <main className="min-h-screen pt-14">
+        <main className="min-h-screen pt-16">
           {children}
         </main>
         <Footer />
