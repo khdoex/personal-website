@@ -22,15 +22,12 @@ const config: Config = {
           DEFAULT: "var(--muted)",
           dark: "var(--muted-dark)",
         },
-        terminal: {
-          green: "var(--terminal-green)",
-          amber: "var(--terminal-amber)",
-          cursor: "var(--terminal-cursor)",
-        },
       },
       fontFamily: {
         mono: ["var(--font-geist-mono)", "monospace"],
         sans: ["var(--font-geist-sans)", "sans-serif"],
+        display: ["var(--font-display)", "Georgia", "serif"],
+        serif: ["var(--font-serif)", "Georgia", "serif"],
       },
     },
   },

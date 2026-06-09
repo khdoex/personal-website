@@ -1,120 +1,94 @@
 import Link from 'next/link'
-import { ArrowRight } from 'lucide-react'
+
+const currently = [
+  {
+    title: 'Mechanistic Interpretability',
+    desc: 'Investigating how refusal behavior and safety representations are encoded inside large language models',
+  },
+  {
+    title: 'SCL — Synthetic Consumer Lab',
+    desc: 'AI Engineer building synthetic consumer systems for realistic behavior simulation and market research workflows',
+  },
+  {
+    title: 'MSc Data Science, Sabancı University',
+    desc: 'Thesis on refusal direction analysis in large language models',
+  },
+]
 
 export default function Home() {
   return (
-    <div className="animate-fade-in">
+    <div>
       {/* Hero */}
-      <section className="max-w-3xl mx-auto px-6 md:px-8 py-20 md:py-28">
-        <div className="space-y-6">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-white font-mono leading-[1.1]">
-            kaan hacihaliloglu<span className="text-terminal-cursor animate-blink">_</span>
-          </h1>
+      <section className="max-w-3xl mx-auto px-6 md:px-8 pt-24 md:pt-36 pb-20">
+        <p className="reveal font-mono text-[13px] tracking-[0.2em] uppercase text-muted" style={{ '--d': 0 } as React.CSSProperties}>
+          Kaan Hacihaliloglu — AI engineer &amp; researcher
+        </p>
 
-          <p className="text-lg text-foreground max-w-2xl leading-relaxed">
-            AI Engineer and researcher focused on cross-lingual mechanistic interpretability.
-            I study how safety and refusal behavior are represented across Turkish and English LLMs,
-            and build synthetic consumer AI systems at SCL.
-          </p>
+        <h1
+          className="reveal font-display text-5xl md:text-7xl leading-[1.05] tracking-tight text-foreground mt-6"
+          style={{ '--d': 1 } as React.CSSProperties}
+        >
+          Taking language models apart,{' '}
+          <em className="text-accent">one refusal at a time.</em>
+        </h1>
 
-          <div className="flex flex-wrap gap-3 pt-2">
-            <Link
-              href="/projects"
-              className="inline-flex items-center gap-2 bg-accent-deep hover:bg-accent-deep/80 text-white px-5 py-2.5 rounded font-mono text-sm transition-colors"
-            >
-              <span className="text-terminal-green">&gt;</span> view_projects
-              <ArrowRight size={16} />
-            </Link>
-            <Link
-              href="/resume"
-              className="inline-flex items-center gap-2 border border-border hover:border-accent/40 hover:bg-surface text-foreground px-5 py-2.5 rounded font-mono text-sm transition-colors"
-            >
-              <span className="text-terminal-green">&gt;</span> resume
-            </Link>
-            <Link
-              href="mailto:kaanhacihaliloglu@gmail.com"
-              className="inline-flex items-center gap-2 border border-border hover:border-accent/40 hover:bg-surface text-foreground px-5 py-2.5 rounded font-mono text-sm transition-colors"
-            >
-              <span className="text-terminal-green">&gt;</span> contact
-            </Link>
-          </div>
+        <p
+          className="reveal text-lg leading-relaxed text-muted max-w-xl mt-8"
+          style={{ '--d': 2 } as React.CSSProperties}
+        >
+          I work on mechanistic interpretability — how safety and refusal behavior
+          are represented inside LLMs — and build synthetic consumer AI systems
+          at SCL.
+        </p>
+
+        <div
+          className="reveal flex flex-wrap items-center gap-x-8 gap-y-3 mt-10 font-mono text-sm"
+          style={{ '--d': 3 } as React.CSSProperties}
+        >
+          <Link href="/blog" className="u-link text-foreground hover:text-accent">
+            read the blog →
+          </Link>
+          <Link href="/projects" className="u-link text-muted hover:text-accent">
+            projects
+          </Link>
+          <Link href="/resume" className="u-link text-muted hover:text-accent">
+            resume
+          </Link>
+          <a href="mailto:kaanhacihaliloglu@gmail.com" className="u-link text-muted hover:text-accent">
+            say hello
+          </a>
         </div>
       </section>
 
-      {/* Current Work */}
-      <section className="max-w-3xl mx-auto px-6 md:px-8 pb-16">
-        <div className="border border-border rounded-lg overflow-hidden">
-          <div className="px-4 py-2 bg-surface border-b border-border flex items-center gap-2">
-            <span className="font-mono text-xs text-muted">~</span>
-            <span className="font-mono text-xs text-accent">current_work</span>
-          </div>
+      {/* Currently */}
+      <section className="max-w-3xl mx-auto px-6 md:px-8 pb-28">
+        <p
+          className="reveal font-mono text-[13px] tracking-[0.2em] uppercase text-muted-dark mb-2"
+          style={{ '--d': 4 } as React.CSSProperties}
+        >
+          Currently
+        </p>
 
-          <div className="divide-y divide-border">
-            <div className="p-5 hover:bg-surface/50 transition-colors">
-              <div className="flex items-start gap-3">
-                <span className="font-mono text-sm text-terminal-green mt-0.5">&gt;</span>
-                <div>
-                  <h3 className="font-mono text-base font-semibold text-white">Cross-lingual Mechanistic Interpretability</h3>
-                  <p className="text-sm text-muted mt-1">Investigating how refusal behavior and safety representations differ across Turkish and English model internals</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="p-5 hover:bg-surface/50 transition-colors">
-              <div className="flex items-start gap-3">
-                <span className="font-mono text-sm text-terminal-green mt-0.5">&gt;</span>
-                <div>
-                  <h3 className="font-mono text-base font-semibold text-white">SCL Synthetic Consumer Lab</h3>
-                  <p className="text-sm text-muted mt-1">AI Engineer building synthetic consumer systems for realistic behavior simulation and market research workflows</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="p-5 hover:bg-surface/50 transition-colors">
-              <div className="flex items-start gap-3">
-                <span className="font-mono text-sm text-terminal-green mt-0.5">&gt;</span>
-                <div>
-                  <h3 className="font-mono text-base font-semibold text-white">MSc Data Science — Sabancı University</h3>
-                  <p className="text-sm text-muted mt-1">MSc thesis on cross-lingual refusal direction analysis in large language models</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Explore Grid */}
-      <section className="max-w-3xl mx-auto px-6 md:px-8 pb-24">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {[
-            { href: '/blog', label: '/blog', desc: 'Writing about ML and AI research' },
-            { href: '/projects', label: '/projects', desc: 'Technical work & competition solutions' },
-            { href: '/media', label: '/media', desc: 'Generative AI experiments' },
-          ].map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="group block p-5 border border-border rounded-lg hover:border-accent/40 hover:bg-surface/50 transition-all"
+        <div className="divide-y divide-border border-y border-border">
+          {currently.map((item, i) => (
+            <div
+              key={item.title}
+              className="reveal group grid grid-cols-[3rem_1fr] gap-4 py-7 transition-colors"
+              style={{ '--d': 5 + i } as React.CSSProperties}
             >
-              <h3 className="font-mono text-base font-semibold text-white group-hover:text-accent transition-colors">
-                {item.label}
-              </h3>
-              <p className="text-sm text-muted mt-1.5">{item.desc}</p>
-              <div className="flex items-center gap-1.5 mt-3 font-mono text-xs text-accent opacity-0 group-hover:opacity-100 transition-opacity">
-                explore <ArrowRight size={12} />
+              <span className="font-mono text-xs text-muted-dark pt-1.5 group-hover:text-accent transition-colors">
+                {String(i + 1).padStart(2, '0')}
+              </span>
+              <div>
+                <h2 className="font-serif text-xl text-foreground group-hover:translate-x-1 transition-transform duration-300">
+                  {item.title}
+                </h2>
+                <p className="text-sm text-muted leading-relaxed mt-1.5 max-w-xl">
+                  {item.desc}
+                </p>
               </div>
-            </Link>
+            </div>
           ))}
-
-          <div className="p-5 border border-border rounded-lg bg-surface/30">
-            <h3 className="font-mono text-base font-semibold text-white">/about</h3>
-            <p className="text-sm text-muted mt-1.5">Istanbul, Turkey</p>
-            <div className="flex gap-3 mt-3 font-mono text-xs text-muted">
-              <a href="https://github.com/khdoex" target="_blank" rel="noopener noreferrer" className="hover:text-accent transition-colors">github</a>
-              <a href="https://x.com/kaanhho" target="_blank" rel="noopener noreferrer" className="hover:text-accent transition-colors">x.com</a>
-              <a href="mailto:kaanhacihaliloglu@gmail.com" className="hover:text-accent transition-colors">email</a>
-            </div>
-          </div>
         </div>
       </section>
     </div>

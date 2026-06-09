@@ -1,8 +1,20 @@
 import { getPostBySlug } from '@/lib/posts'
 import { notFound } from 'next/navigation'
+import Link from 'next/link'
+import ReadingProgress from '@/components/ReadingProgress'
 
 interface Props {
   params: Promise<{ slug: string }>
+}
+
+export async function generateMetadata({ params }: Props) {
+  const { slug } = await params
+  try {
+    const post = await getPostBySlug(slug)
+    return { title: `${post.data.title} | Kaan Hacihaliloglu` }
+  } catch {
+    return {}
+  }
 }
 
 export default async function BlogPost({ params }: Props) {
@@ -12,20 +24,38 @@ export default async function BlogPost({ params }: Props) {
     const post = await getPostBySlug(resolvedParams.slug)
 
     return (
-      <div className="animate-fade-in">
-        <article className="max-w-3xl mx-auto px-6 md:px-8 py-16">
-          <header className="mb-10 pb-6 border-b border-border">
-            <p className="font-mono text-xs text-muted mb-3">{post.data.date}</p>
-            <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-white font-mono">
+      <>
+        <ReadingProgress />
+        <article className="max-w-2xl mx-auto px-6 md:px-8 pt-16 md:pt-24 pb-28">
+          <header className="mb-12">
+            <Link
+              href="/blog"
+              className="reveal u-link inline-block font-mono text-xs text-muted hover:text-accent"
+              style={{ '--d': 0 } as React.CSSProperties}
+            >
+              ← writing
+            </Link>
+            <h1
+              className="reveal font-display text-4xl md:text-5xl leading-[1.1] tracking-tight text-foreground mt-8"
+              style={{ '--d': 1 } as React.CSSProperties}
+            >
               {post.data.title}
             </h1>
+            <p
+              className="reveal font-mono text-xs text-muted-dark mt-6"
+              style={{ '--d': 2 } as React.CSSProperties}
+            >
+              {post.data.date} · {post.data.readingTime} min read
+            </p>
           </header>
+
           <div
-            className="prose max-w-none"
+            className="reveal prose"
+            style={{ '--d': 3 } as React.CSSProperties}
             dangerouslySetInnerHTML={{ __html: post.data.content }}
           />
         </article>
-      </div>
+      </>
     )
   } catch {
     return notFound()
