@@ -119,6 +119,28 @@ a {
   animation: blink 1.2s step-end infinite;
 }
 
+/* Disclosure rows — native details, no JS */
+summary {
+  list-style: none;
+  cursor: pointer;
+}
+
+summary::-webkit-details-marker {
+  display: none;
+}
+
+details > summary .if-open {
+  display: none;
+}
+
+details[open] > summary .if-open {
+  display: inline;
+}
+
+details[open] > summary .if-closed {
+  display: none;
+}
+
 /* Prose — sans for reading, mono for structure */
 .prose {
   font-size: 1.0625rem;
