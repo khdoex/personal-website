@@ -13,20 +13,37 @@ export interface SkillGroup {
 }
 
 export const about =
-  'Creative AI Engineer with a strong foundation in physics and machine learning. Passionate about designing deep learning solutions and playing with advanced algorithms to solve problems.'
+  'Physicist turned AI engineer and researcher. My research is on mechanistic interpretability, mostly how concepts like refusal are represented geometrically inside language models. I also build applied AI systems, currently in synthetic market research and earlier in audio.'
 
 export const experience: ResumeEntry[] = [
-  // TODO(kaan): add your current SCL entry here — start date, title, and how
-  // much of the synthetic-consumer work you want to describe publicly.
   {
-    period: '2024 –',
+    period: '2025 –',
     title: 'AI Engineer',
-    org: 'Diktatorial Suite',
+    org: 'Synthetic Consumer Lab',
     summary:
-      'Architecting and deploying audio-based machine learning models for source separation, classification, and event detection.',
+      'Sole engineer responsible for the full product stack: backend, frontend, AI systems, and statistical methodology.',
     detail: [
-      'End-to-end AI solutions with a Django backend and real-time inference integration via JavaScript',
-      'Developing AI agents to further advance audio processing',
+      'Architected the platform on a Laravel, Python/FastAPI, and Redis stack',
+      'Built RAG pipelines and synthetic consumer persona systems grounded in real demographic and behavioral data',
+      'Willingness-to-pay experiments and focus group simulations, with AI outputs kept statistically valid and representative for market research',
+    ],
+  },
+  {
+    period: '2025 –',
+    title: 'Teaching Assistant',
+    org: 'Sabancı University',
+    summary:
+      'Teaching assistant for the Quantum Programming course, guiding students through quantum computing concepts, circuit design, and practical implementations using quantum programming frameworks.',
+  },
+  {
+    period: '2024 – 2025',
+    title: 'AI Engineer / Data Scientist',
+    org: 'SoundBoost',
+    summary:
+      'Designed and deployed deep learning models for audio source separation, classification, and acoustic event detection.',
+    detail: [
+      'End-to-end AI pipelines with Django backends for model serving and JavaScript for real-time inference',
+      'Led development of AI agents for complex audio processing workflows',
     ],
   },
   {
@@ -34,9 +51,9 @@ export const experience: ResumeEntry[] = [
     title: 'AI Engineer Intern',
     org: 'Live The World',
     summary:
-      'Engineered a content generation pipeline leveraging state-of-the-art NLP tools.',
+      'Engineered content generation pipelines using state-of-the-art NLP tools.',
     detail: [
-      'Enhanced web scraping capabilities and refined Python solutions to support AI-driven applications',
+      'Enhanced web scraping capabilities and developed Python solutions for AI-driven applications',
     ],
   },
   {
@@ -44,30 +61,26 @@ export const experience: ResumeEntry[] = [
     title: 'Data Analytics & Process Mining Intern',
     org: 'Allianz TR',
     summary:
-      'Automated Excel reporting with Python and SQL, integrated databases, and built dynamic dashboards for operational visibility.',
+      'Automated Excel reporting workflows using Python and SQL. Built dynamic dashboards for operational visibility and optimized business processes using Celonis process mining.',
+  },
+  {
+    period: '2020 – 2022',
+    title: 'Research Assistant',
+    org: 'Boğaziçi University',
+    href: 'https://arxiv.org/abs/2407.18402',
+    summary:
+      'Developed transformer-based architectures for seismic data analysis and earthquake detection.',
     detail: [
-      'Optimized business processes with Celonis process mining',
-      'Streamlined workflows and boosted business intelligence',
+      'Contributed to published research (arXiv:2407.18402)',
+      'Mentored five junior researchers',
     ],
   },
   {
     period: '2021 – 2022',
     title: 'Teaching Assistant',
-    org: 'Bogazici University',
+    org: 'Boğaziçi University',
     summary:
-      'Led interactive QA sessions for Numerical Methods, emphasizing practical applications of NumPy, SciPy, and Matplotlib.',
-  },
-  {
-    period: '2020 – 2022',
-    title: 'Research Assistant',
-    org: 'Bogazici University',
-    href: 'https://arxiv.org/abs/2407.18402',
-    summary:
-      'Developed machine learning algorithms for seismic data analysis, employing transformer-based architectures and feature engineering to enhance earthquake detection.',
-    detail: [
-      'Contributed to high-impact research (arXiv:2407.18402)',
-      'Mentored a team of five junior researchers',
-    ],
+      'Led QA sessions for Numerical Methods, teaching practical applications of NumPy, SciPy, and Matplotlib through hands-on problem solving.',
   },
 ]
 
@@ -77,30 +90,25 @@ export const education: ResumeEntry[] = [
     title: 'M.Sc. in Data Science',
     org: 'Sabancı University',
     summary:
-      'Specializing in deep learning and statistical analysis; thesis on refusal direction analysis in large language models.',
+      'Thesis research on mechanistic interpretability of large language models, studying how refusal and related concepts are represented geometrically in a model’s internal activations. Coursework in advanced deep learning and statistical analysis.',
   },
   {
     period: '2023 – 2024',
-    title: 'M.Sc. in Computer Science',
+    title: 'Graduate Studies in Computer Science',
     org: 'University of Padua',
     summary:
-      'Advanced coursework in artificial intelligence and deep learning before pursuing opportunities for practical application.',
+      'Completed the first year of the M.Sc. program. Advanced coursework in artificial intelligence and deep learning, building strong theoretical foundations in deep learning architectures and algorithmic problem-solving.',
   },
   {
     period: '2018 – 2023',
     title: 'B.Sc. in Physics',
-    org: 'Bogazici University',
+    org: 'Boğaziçi University',
     summary:
-      'Coursework in quantum physics, general relativity, and machine learning, while leading the Science Club.',
+      'Specialized in quantum physics and general relativity. Completed machine learning coursework and led the Science Club.',
   },
 ]
 
 export const resumeProjects: ResumeEntry[] = [
-  {
-    period: '',
-    title: 'Earth-ML',
-    summary: 'Enhanced time series classification using advanced modeling techniques.',
-  },
   {
     period: '',
     title: 'TÜBİTAK 2209-A',
@@ -108,40 +116,49 @@ export const resumeProjects: ResumeEntry[] = [
   },
   {
     period: '',
-    title: '"Burası" Art Exhibition',
-    summary: 'Merged seismic data with artistic representation, a fusion of art and science.',
+    title: 'Earth-ML',
+    summary: 'Enhanced time series classification using advanced modeling techniques for geophysical data.',
   },
   {
     period: '',
-    title: 'Türkiye İş Bankası ML Challenge 5',
+    title: 'Kaggle ML Challenge',
     href: 'https://github.com/khdoex/Past_ML_codes/blob/main/isb5-gradient-ensemble.ipynb',
-    summary: '8th place on Kaggle through effective feature engineering strategies.',
+    summary: '8th place in Türkiye İş Bankası ML Challenge 5 through effective feature engineering.',
   },
   {
     period: '',
     title: 'Datathon AI',
-    summary: 'Third place in a computer vision focused datathon.',
+    summary: '3rd place in computer vision competition.',
   },
   {
     period: '',
     title: 'NLP News Summarization',
     href: 'https://github.com/khdoex/nlp_news_sum',
-    summary: 'Comparative evaluation of summarization architectures like BART and T5.',
+    summary: 'Comparative evaluation of BART and T5 architectures for summarization tasks.',
+  },
+  {
+    period: '',
+    title: '"Burası" Art Exhibition',
+    summary: 'Merged seismic data with artistic representation, fusing science and art.',
   },
 ]
 
 export const skills: SkillGroup[] = [
   { label: 'programming', items: 'Python, SQL, JavaScript, TypeScript' },
-  { label: 'deep learning', items: 'PyTorch, TensorFlow' },
-  { label: 'machine learning', items: 'XGBoost, CatBoost, LightGBM' },
-  { label: 'ai techniques', items: 'OpenAI API, LangChain, LangGraph, Transformers' },
-  { label: 'web', items: 'Django, FastAPI, Celery' },
-  { label: 'libraries', items: 'NumPy, SciPy, Matplotlib' },
+  { label: 'ml / dl', items: 'PyTorch, XGBoost, CatBoost' },
+  { label: 'ai / llm', items: 'LLM APIs (OpenAI, OpenRouter), LangChain, LangGraph, Transformers' },
+  { label: 'interpretability', items: 'TransformerLens, nnsight, activation/ablation analysis' },
+  { label: 'backend', items: 'FastAPI, Laravel, Django, Celery, Redis' },
+  { label: 'scientific', items: 'NumPy, SciPy, Matplotlib, Pandas' },
+  { label: 'hpc', items: 'Slurm, multi-GPU / distributed training' },
+  { label: 'tools', items: 'Git, Docker, Linux' },
 ]
 
 export const certifications: ResumeEntry[] = [
   { period: '', title: 'Quantum Computing (Bronze)', org: 'QTurkey', summary: '' },
-  { period: '', title: 'Excellence in Audio Course', org: 'Hugging Face', summary: '' },
+  { period: '', title: 'Excellence in Audio', org: 'Hugging Face', summary: '' },
   { period: '', title: 'Process Mining', org: 'Celonis Academy', summary: '' },
-  { period: '', title: 'Building RAG Agents', org: 'NVIDIA Deep Learning Institute', summary: '' },
+  { period: '', title: 'Building RAG Agents', org: 'NVIDIA DLI', summary: '' },
 ]
+
+export const languages = 'Turkish (native) · English (fluent)'

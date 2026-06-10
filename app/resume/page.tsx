@@ -5,6 +5,7 @@ import {
   resumeProjects,
   skills,
   certifications,
+  languages,
   type ResumeEntry,
 } from '@/lib/resume'
 
@@ -125,6 +126,11 @@ export default function Resume() {
           </div>
         ))}
       </Section>
+
+      <section className="reveal" style={{ '--d': 7 } as React.CSSProperties}>
+        <p className="font-mono text-xs text-muted-dark mb-2">languages</p>
+        <p className="text-sm text-foreground border-y border-border py-3">{languages}</p>
+      </section>
     </div>
   )
 }
