@@ -22,9 +22,10 @@ const currently = [
 
 const story = [
   <>
-    i started in physics. the thing that stayed is not the formulas, it is the
-    reflex: when something works, ask what is actually happening underneath. a
-    curve that fits is not an answer, it is a question wearing a suit.
+    i studied physics, and it left me one habit i cannot turn off: asking what
+    is actually happening underneath. most of ai today runs on models nobody
+    can fully open up and read. that is either scary or interesting, i picked
+    interesting.
   </>,
   <>
     after physics i tried a computer science master&apos;s in padova. it did
