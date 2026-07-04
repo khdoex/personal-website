@@ -1,24 +1,14 @@
 import { Project, projects } from '@/lib/projects'
 import Link from 'next/link'
+import Reveal from '@/components/motion/Reveal'
 
 export const metadata = {
   title: 'Projects | Kaan Hacihaliloglu',
 }
 
-function ProjectRow({
-  project,
-  number,
-  delay,
-}: {
-  project: Project
-  number: number
-  delay: number
-}) {
+function ProjectRow({ project, number }: { project: Project; number: number }) {
   return (
-    <div
-      className="reveal group grid md:grid-cols-[3rem_1fr] gap-4 py-7"
-      style={{ '--d': delay } as React.CSSProperties}
-    >
+    <Reveal className="group grid md:grid-cols-[3rem_1fr] gap-4 py-7">
       <span className="font-mono text-xs text-muted-dark pt-0.5 group-hover:text-accent transition-colors">
         {String(number).padStart(2, '0')}
       </span>
@@ -59,7 +49,7 @@ function ProjectRow({
           </div>
         )}
       </div>
-    </div>
+    </Reveal>
   )
 }
 
@@ -70,45 +60,34 @@ export default function Projects() {
   return (
     <div className="max-w-3xl mx-auto px-6 md:px-8 pt-16 md:pt-24 pb-28">
       <header className="mb-12">
-        <h1
-          className="reveal font-mono text-lg font-semibold text-heading"
-          style={{ '--d': 0 } as React.CSSProperties}
-        >
-          projects
-        </h1>
-        <p
-          className="reveal text-muted mt-3 max-w-xl leading-relaxed"
-          style={{ '--d': 1 } as React.CSSProperties}
-        >
-          mostly the thesis these days: where refusal lives inside llms. the
-          older ml projects moved down to earlier work, they had their time.
-        </p>
+        <Reveal>
+          <h1 className="font-mono text-lg font-semibold text-heading">
+            projects
+          </h1>
+        </Reveal>
+        <Reveal delay={0.08}>
+          <p className="text-muted mt-3 max-w-xl leading-relaxed">
+            mostly the thesis these days: where refusal lives inside llms. the
+            older ml projects moved down to earlier work, they had their time.
+          </p>
+        </Reveal>
       </header>
 
       <div className="divide-y divide-border border-y border-border">
         {current.map((project, i) => (
-          <ProjectRow
-            key={project.title}
-            project={project}
-            number={i + 1}
-            delay={2 + i}
-          />
+          <ProjectRow key={project.title} project={project} number={i + 1} />
         ))}
       </div>
 
-      <p
-        className="reveal font-mono text-xs text-muted-dark mt-14 mb-2"
-        style={{ '--d': 3 + current.length } as React.CSSProperties}
-      >
-        earlier work
-      </p>
+      <Reveal className="mt-14 mb-2">
+        <p className="font-mono text-xs text-muted-dark">earlier work</p>
+      </Reveal>
       <div className="divide-y divide-border border-y border-border">
         {earlier.map((project, i) => (
           <ProjectRow
             key={project.title}
             project={project}
             number={current.length + i + 1}
-            delay={4 + current.length + i}
           />
         ))}
       </div>
