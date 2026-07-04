@@ -88,12 +88,12 @@ export default async function BlogPost({ params }: Props) {
         date={post.data.date}
         readingTime={post.data.readingTime}
       >
-        <Reveal>
-          <div
-            className="prose"
-            dangerouslySetInnerHTML={{ __html: post.data.content }}
-          />
-        </Reveal>
+        {/* No Reveal here: a body taller than ~4 viewports never reaches the
+            viewport-amount threshold and would stay invisible. */}
+        <div
+          className="prose"
+          dangerouslySetInnerHTML={{ __html: post.data.content }}
+        />
       </PostShell>
     )
   } catch {

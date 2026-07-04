@@ -101,11 +101,14 @@ export async function getAllPosts(): Promise<Post[]> {
   const richAsPosts: Post[] = richPosts.map(({ meta }) => ({
     data: { ...meta, content: '' },
   }))
+  const richSlugs = new Set(richAsPosts.map((post) => post.data.slug))
 
   return filePosts
     .filter((post): post is Post => post !== null)
+    // On a slug collision the rich post wins (matches the [slug] route).
+    .filter((post) => !richSlugs.has(post.data.slug))
     .concat(richAsPosts)
-    .sort((a, b) => (a.data.date < b.data.date ? 1 : -1))
+    .sort((a, b) => b.data.date.localeCompare(a.data.date))
 }
 
 export async function getPostBySlug(slug: string): Promise<Post> {

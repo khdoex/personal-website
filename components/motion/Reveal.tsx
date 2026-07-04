@@ -18,15 +18,15 @@ export default function Reveal({
 }) {
   const reduced = useReducedMotion()
 
-  if (reduced) {
-    return <div className={className}>{children}</div>
-  }
-
+  // Always render motion.div: swapping element types on the reduced-motion
+  // branch causes an SSR hydration mismatch that strands content at
+  // opacity 0. With initial={false} framer renders the resting state and
+  // imperatively syncs styles on mount.
   return (
     <motion.div
       className={className}
-      initial={{ opacity: 0, y: 14 }}
-      whileInView={{ opacity: 1, y: 0 }}
+      initial={reduced ? false : { opacity: 0, y: 14 }}
+      whileInView={reduced ? undefined : { opacity: 1, y: 0 }}
       viewport={{ once: false, amount: 0.25 }}
       transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1], delay }}
     >

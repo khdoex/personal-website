@@ -90,12 +90,9 @@ export default function RefusalToy() {
         </span>
       </div>
 
-      <div className="mt-4 font-mono text-xs border-t border-border pt-3">
+      <div className="mt-4 font-mono text-xs border-t border-border pt-3" aria-live="polite">
         <span className="text-muted-dark">model output: </span>
-        <span
-          className={refusing ? 'text-accent' : 'text-amber'}
-          style={{ transition: 'opacity 0.3s ease', opacity: 1 }}
-        >
+        <span className={refusing ? 'text-accent' : 'text-amber'}>
           {refusing
             ? '"i can\'t help with that"'
             : '"sure, here is how you would..."'}
