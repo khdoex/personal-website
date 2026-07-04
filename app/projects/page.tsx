@@ -40,14 +40,16 @@ export default function Projects() {
                 ))}
               </div>
               <div className="flex gap-5 mt-4 font-mono text-xs">
-                <Link
-                  href={project.githubUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="u-link text-accent hover:text-heading"
-                >
-                  source →
-                </Link>
+                {project.githubUrl && (
+                  <Link
+                    href={project.githubUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="u-link text-accent hover:text-heading"
+                  >
+                    source →
+                  </Link>
+                )}
                 {project.demoUrl && (
                   <Link
                     href={project.demoUrl}
