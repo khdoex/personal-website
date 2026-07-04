@@ -1,0 +1,97 @@
+import ScrollFigure from '@/components/mdx/ScrollFigure'
+import Bars from '@/components/mdx/Bars'
+import ConnectDots from '@/components/mdx/ConnectDots'
+import Widget from '@/components/mdx/Widget'
+import RefusalToy from '@/components/mdx/RefusalToy'
+import MarginNote from '@/components/mdx/MarginNote'
+
+export const meta = {
+  title: 'tracing refusal: how a model decides to say no',
+  date: '2026-07-04',
+  slug: 'tracing-refusal',
+  readingTime: 5,
+}
+
+this is my first post about anything technical.<MarginNote>bu benim teknik bir konu hakkinda ilk yazma denemem, biraz da kendime not gibi.</MarginNote> when it was time to pick a thesis, i wanted to work on diffusion and generative music models. but here i am doing llm interpretability instead, new to the area, teaching myself the concepts and trying ideas fast with the ai tools we have now.
+
+the question i kept circling back to: when you ask a safety-tuned model for something harmful, it says "i'm sorry, i can't help with that." where inside the network does that decision actually happen, and what would it take to change it? the model is qwen3.5-4b, and everything below is me poking at it.
+
+## the residual stream, quickly
+
+there is a shared stream of activations running through the network. a layer reads from the stream, does some computation, writes its result back by adding to it. the next layer does the same. because every write is an addition, many layers can each contribute a piece of the same feature, and a concept can end up living as a single direction you can add or subtract. that is why looking for one "refusal direction" is even a sensible thing to do.
+
+to get the direction, take the difference in mean activations between harmful and harmless prompts at the last prompt token (difference-in-means, DIM). to remove refusal you project it out. with a coefficient of 1 you zero it, and you actually want to push past zero (i used 3.5), because refusal behaves more like a threshold to cross than a dial to turn down. none of this is mine, it is the standard baseline from arditi et al. what i wanted was WHEN and WHERE the thing this direction points at gets built.
+
+<ScrollFigure n={1} caption="harmless vs harmful activations at the commit token, the direction is the gap between the clusters">
+  <ConnectDots
+    dots={[
+      { x: 48, y: 94, color: 'accent', label: 'harmless' },
+      { x: 120, y: 70, color: 'accent' },
+      { x: 200, y: 52, color: 'amber' },
+      { x: 256, y: 26, color: 'amber', label: 'harmful' },
+    ]}
+    edges={[[0, 1], [1, 2], [2, 3]]}
+  />
+</ScrollFigure>
+
+## who actually writes it
+
+each layer writes through two things: a token-mixer (attention or deltanet, which moves information between positions) and an MLP (which only works on the current position). when i measure how much of the refusal signal each one contributes, the MLP writes most of it, the token-mixer a bit, and real attention almost nothing.
+
+<ScrollFigure n={2} caption="share of the refusal signal written by each component">
+  <Bars
+    data={[
+      { label: 'mlp', value: 0.73 },
+      { label: 'token-mixer', value: 0.27 },
+      { label: 'attention', value: 0.06 },
+    ]}
+  />
+</ScrollFigure>
+
+it piles up in the late layers. removing each MLP's contribution bottom-up, nothing changes through the early layers, the signal starts falling in a mid-late band (roughly layers 13 to 22), and it flips to compliance about two-thirds of the way up. no single early trigger, it accumulates. the one relational piece is layer 0: the last prompt token is a template token with no harmful content in it, and the mixer pulls the actual content onto that token in the very first layer. so content gets gathered early, refusal gets computed locally after. and the whole decision commits in one forward pass, right at the boundary between reading the prompt and starting the answer.
+
+## the idea that almost fooled me
+
+when i projected every token instead of just the last one, refusal looked like a trajectory: the harmful projection climbs as the model reads the request, the gap to harmless grows and is widest at that reading/answering boundary, then both relax during the answer. because it looked like a trajectory, i was convinced the smart move was to control the dynamics, stop the signal from building, instead of just removing its value.
+
+so i tried three versions of that (clamp the buildup, freeze the rise, push the rise down) against plain value-ablation. the metric is harmful asr, higher means the harmful content actually came out.
+
+<ScrollFigure n={3} caption="harmful asr, higher = more compliance. only removing the value lands a compliant state">
+  <Bars
+    data={[
+      { label: 'baseline', value: 0.29 },
+      { label: 'remove the value', value: 0.58 },
+      { label: 'clamp the buildup', value: 0.17 },
+      { label: 'freeze the rise', value: 0.12 },
+      { label: 'push the rise down', value: 0.00 },
+    ]}
+  />
+</ScrollFigure>
+
+going after the dynamics peels off the surface. it removes the "i'm sorry", but it never makes the model comply. push gently and you lose only the apology prefix, push hard and the output turns to mush that the classifier reads as harmless anyway. only removing the static value lands a genuinely compliant state. behavior depends on the endpoint state at the commit, not the path taken to get there. the trajectory is real, but it is a description, not the control knob.
+
+so the handle is that local endpoint state. here is a toy of it: drag to ablate the direction and watch the output flip from refusing to complying.
+
+<Widget title="refusal-toy">
+  <RefusalToy />
+</Widget>
+
+## two refusals: the apology and the gate
+
+this is the part i find most interesting. maybe refusing is really two things: SAYING no (the apology), and actually WITHHOLDING the content (the gate). when i sweep the ablation strength and measure both, at the actuator layers the apology comes off first and the harm gate opens about half a unit later, so there is a window where the model has stopped apologizing but still is not telling you anything. and at the best-separating layer, i can strip the apology completely and the harm gate never opens at all.
+
+so the best-separating direction controls whether the model SAYS no, not whether it WITHHOLDS. separability buys you the surface refusal, not the substance. saying no and withholding the content are just separable things.
+
+## putting it together
+
+four stages. gather: early and generic, the commit token pulls the content in around layer 0. decide: a mid-late band of MLPs (roughly 13 to 22) computes refusal, locally. commit: it is finalized at the boundary between reading and answering, in one forward pass. control: the handle is that local endpoint state, remove the value and it complies, going after the dynamics or the relational path does not. it lines up with the bigger geometric picture too, refusal as a cone rather than one clean direction, sometimes sparse MLP neurons, persona directions nearby.
+
+what i am not claiming: this is one model, 16 to 24 prompts per run, read out through a projection. it is me learning, not a benchmark. the layer-0 transport mixes "reading the prompt" with "moving refusal content", so i can't fully separate those. the commit-at-the-first-token story is for short direct answers, a reasoning model could push the commit later. and everything here is aggregate rates, not a guarantee about any single prompt. we will see where it goes.
+
+## references
+
+1. arditi et al., refusal in language models is mediated by a single direction. arXiv:2406.11717
+2. marshall, scherlis, belrose, refusal as an affine feature. arXiv:2411.09003
+3. wollschläger et al., the geometry of refusal, a cone not a direction. arXiv:2502.17420
+4. souly et al., strongreject for empty jailbreaks. arXiv:2402.10260
+5. elhage et al., a mathematical framework for transformer circuits. transformer-circuits.pub/2021/framework
