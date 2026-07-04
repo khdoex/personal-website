@@ -31,7 +31,23 @@ function EntryRow({ entry }: { entry: ResumeEntry }) {
           ) : (
             entry.title
           )}
-          {entry.org && <span className="text-muted font-normal"> · {entry.org}</span>}
+          {entry.org && (
+            <span className="text-muted font-normal">
+              {' · '}
+              {entry.orgHref ? (
+                <a
+                  href={entry.orgHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="u-link hover:text-accent"
+                >
+                  {entry.org} ↗
+                </a>
+              ) : (
+                entry.org
+              )}
+            </span>
+          )}
         </h3>
         {entry.summary && (
           <p className="text-sm text-muted leading-relaxed mt-1.5 max-w-xl">

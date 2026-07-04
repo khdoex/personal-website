@@ -3,6 +3,7 @@ export interface ResumeEntry {
   title: string
   org?: string
   href?: string
+  orgHref?: string
   summary: string
   detail?: string[]
 }
@@ -20,6 +21,7 @@ export const experience: ResumeEntry[] = [
     period: '2025 –',
     title: 'AI Engineer',
     org: 'Synthetic Consumer Lab',
+    orgHref: 'https://synthetic-consumers.com/',
     summary:
       'Sole engineer responsible for the full product stack: backend, frontend, AI systems, and statistical methodology.',
     detail: [
@@ -32,6 +34,7 @@ export const experience: ResumeEntry[] = [
     period: '2025 –',
     title: 'Teaching Assistant',
     org: 'Sabancı University',
+    orgHref: 'https://sabanciuniv.edu/',
     summary:
       'Teaching assistant for the Quantum Programming course, guiding students through quantum computing concepts, circuit design, and practical implementations using quantum programming frameworks.',
   },
@@ -39,6 +42,7 @@ export const experience: ResumeEntry[] = [
     period: '2024 – 2025',
     title: 'AI Engineer / Data Scientist',
     org: 'SoundBoost',
+    orgHref: 'https://soundboost.ai/about',
     summary:
       'Designed and deployed deep learning models for audio source separation, classification, and acoustic event detection.',
     detail: [
@@ -67,6 +71,7 @@ export const experience: ResumeEntry[] = [
     period: '2020 – 2022',
     title: 'Research Assistant',
     org: 'Boğaziçi University',
+    orgHref: 'https://boun.edu.tr/',
     href: 'https://arxiv.org/abs/2407.18402',
     summary:
       'Developed transformer-based architectures for seismic data analysis and earthquake detection.',
@@ -79,6 +84,7 @@ export const experience: ResumeEntry[] = [
     period: '2021 – 2022',
     title: 'Teaching Assistant',
     org: 'Boğaziçi University',
+    orgHref: 'https://boun.edu.tr/',
     summary:
       'Led QA sessions for Numerical Methods, teaching practical applications of NumPy, SciPy, and Matplotlib through hands-on problem solving.',
   },
@@ -89,6 +95,7 @@ export const education: ResumeEntry[] = [
     period: '2025 –',
     title: 'M.Sc. in Data Science',
     org: 'Sabancı University',
+    orgHref: 'https://sabanciuniv.edu/',
     summary:
       'Thesis research on mechanistic interpretability of large language models, studying how refusal and related concepts are represented geometrically in a model’s internal activations. Coursework in advanced deep learning and statistical analysis.',
   },
@@ -96,6 +103,7 @@ export const education: ResumeEntry[] = [
     period: '2023 – 2024',
     title: 'Graduate Studies in Computer Science',
     org: 'University of Padua',
+    orgHref: 'https://www.unipd.it/en/',
     summary:
       'Completed the first year of the M.Sc. program. Advanced coursework in artificial intelligence and deep learning, building strong theoretical foundations in deep learning architectures and algorithmic problem-solving.',
   },
@@ -103,6 +111,7 @@ export const education: ResumeEntry[] = [
     period: '2018 – 2023',
     title: 'B.Sc. in Physics',
     org: 'Boğaziçi University',
+    orgHref: 'https://boun.edu.tr/',
     summary:
       'Specialized in quantum physics and general relativity. Completed machine learning coursework and led the Science Club.',
   },
