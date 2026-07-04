@@ -28,9 +28,11 @@ export default function Home() {
           className="reveal text-base leading-relaxed max-w-xl mt-6"
           style={{ '--d': 1 } as React.CSSProperties}
         >
-          Physicist turned AI engineer, interested in what&apos;s actually
-          happening inside language models and building products in the day
-          at SCL.
+          physicist turned ai engineer. my msc thesis was on the refusal
+          direction in llms: the place inside the model where &quot;i
+          can&apos;t help with that&quot; comes from, and what happens if you
+          move it. these days i am at SCL, building an ai based market
+          research engine (and still poking at model internals when i can).
         </p>
 
         <div
