@@ -54,6 +54,7 @@ export const experience: ResumeEntry[] = [
     period: '2023',
     title: 'AI Engineer Intern',
     org: 'Live The World',
+    orgHref: 'https://livetheworld.com/',
     summary:
       'Engineered content generation pipelines using state-of-the-art NLP tools.',
     detail: [
@@ -64,6 +65,7 @@ export const experience: ResumeEntry[] = [
     period: '2022 – 2023',
     title: 'Data Analytics & Process Mining Intern',
     org: 'Allianz TR',
+    orgHref: 'https://www.allianz.com.tr/',
     summary:
       'Automated Excel reporting workflows using Python and SQL. Built dynamic dashboards for operational visibility and optimized business processes using Celonis process mining.',
   },
