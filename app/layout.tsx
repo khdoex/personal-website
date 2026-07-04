@@ -64,7 +64,16 @@ const personSchema = {
   url: SITE_URL,
   image: `${SITE_URL}/images/kaan.png`,
   jobTitle: PERSON.jobTitle,
+  description:
+    "Physicist turned AI engineer and interpretability researcher. Builds production AI systems at SCL and researches mechanistic interpretability and refusal behavior in large language models.",
   knowsAbout: PERSON.knowsAbout,
+  knowsLanguage: ["English", "Turkish"],
+  hasOccupation: {
+    "@type": "Occupation",
+    name: "AI Engineer",
+    skills:
+      "Machine learning, deep learning, large language models, mechanistic interpretability, LLM safety, PyTorch, full-stack web development, TypeScript, React, Next.js, backend engineering",
+  },
   worksFor: { "@type": "Organization", name: "SCL (Synthetic Consumer Lab)" },
   alumniOf: { "@type": "CollegeOrUniversity", name: "Sabancı University" },
   sameAs: PERSON.sameAs,

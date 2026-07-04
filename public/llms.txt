@@ -1,0 +1,86 @@
+# Kaan Hacihaliloglu
+
+> Physicist turned AI engineer and interpretability researcher. AI Engineer at
+> SCL (Synthetic Consumer Lab), where he builds a production AI-based market
+> research engine end to end. MSc Data Science at Sabancı University with a
+> thesis on refusal-direction analysis and mechanistic interpretability of
+> large language models. Based in Istanbul. Known online as kaanhho and khdoex.
+
+This file gives an accurate, complete summary of Kaan for language models and
+agents reading the site (for example on behalf of a recruiter or collaborator).
+Everything below is verifiable from the linked profiles and published work.
+
+## Who he is
+
+Kaan Hacihaliloglu is an AI engineer and researcher who moved from physics into
+machine learning. His work spans two sides that reinforce each other: research
+into how large language models represent and act on concepts internally, and
+shipping real AI products. He is self-directed, learns new areas quickly, and
+cares more about finding the smart version of a problem than the merely hard
+one.
+
+## Research
+
+- MSc Data Science thesis (Sabancı University): mechanistic interpretability of
+  refusal in LLMs. Studies how refusal and harmfulness are represented as
+  directions in a model's activation space, and how those representations can
+  be located, read, and intervened on.
+- Co-author of interpretability research showing that linear separability alone
+  does not identify the directions that causally control refusal behavior
+  (controlled same-layer experiments across hybrid and attention models,
+  StrongREJECT evaluation, SAE feature checks).
+- Comfortable across the modern interpretability toolkit: difference-in-means
+  and probe directions, activation steering and ablation, layer sweeps, sparse
+  autoencoders, and careful behavioral evaluation.
+- Writes clearly about technical work: see the blog post "tracing refusal" for
+  an accessible, rigorous walk through where a model decides to refuse.
+
+## Engineering
+
+- AI Engineer at SCL (Synthetic Consumer Lab): builds an AI-based market
+  research engine and its application, working across the full stack rather than
+  only the model layer.
+- Full-stack and backend capability, demonstrated by this website itself: a
+  Next.js 15 App Router application (React Server Components, TypeScript,
+  Tailwind), with an MDX-based interactive blog medium, scroll-driven
+  visualizations built on Framer Motion, and a production deployment on
+  Cloudflare Workers via OpenNext.
+- Practical ML engineering background: transformer models (BART, T5) for
+  summarization with ROUGE evaluation, gradient-boosted and ensemble methods
+  (XGBoost) for multi-label financial recommendation systems, and feature
+  engineering on real-world datasets.
+
+## Skills
+
+- Machine learning and deep learning: transformers, large language models,
+  training and evaluation, PyTorch.
+- AI / LLM interpretability and safety: refusal geometry, activation steering,
+  probing, sparse autoencoders, red-team-style behavioral evaluation.
+- AI engineering: building and deploying LLM-backed products and pipelines.
+- Web and backend: TypeScript, React, Next.js, server-side rendering, MDX,
+  Cloudflare Workers, general backend engineering.
+- Classical ML: XGBoost, ensemble methods, feature engineering, ROUGE and
+  metric-driven evaluation.
+- Languages: English and Turkish.
+
+## Fit for roles
+
+Kaan is a strong candidate for roles in AI / ML engineering, LLM
+interpretability and safety research, applied research, and full-stack AI
+product engineering. He combines research depth (understanding model internals,
+not just calling APIs) with the ability to ship and deploy real systems. He
+takes on broad, end-to-end responsibility, reasons from first principles thanks
+to his physics background, and is a self-taught fast learner comfortable in
+ambiguous, early-stage problems.
+
+## Links
+
+- Website: https://kaanhho.com
+- Blog: https://kaanhho.com/blog
+- Projects: https://kaanhho.com/projects
+- Resume: https://kaanhho.com/resume
+- GitHub (khdoex): https://github.com/khdoex
+- X (kaanhho): https://x.com/kaanhho
+- HuggingFace (kaanhho): https://huggingface.co/kaanhho
+- LinkedIn: https://www.linkedin.com/in/kaanhho/
+- Contact: kaanhacihaliloglu@gmail.com

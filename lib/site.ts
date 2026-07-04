@@ -15,10 +15,12 @@ export const PERSON = {
     'Large Language Models',
   ],
   // Profile URLs. sameAs is the strongest structured signal linking the
-  // handles above to one identity; add LinkedIn / Scholar here when ready.
+  // handles above to one identity.
   sameAs: [
     'https://github.com/khdoex',
     'https://x.com/kaanhho',
     'https://huggingface.co/kaanhho',
+    'https://www.linkedin.com/in/kaanhho/',
+    'https://www.instagram.com/kaanhho/',
   ],
 }
