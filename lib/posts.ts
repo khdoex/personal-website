@@ -3,6 +3,7 @@ import path from 'path'
 import matter from 'gray-matter'
 import { remark } from 'remark'
 import html from 'remark-html'
+import { richPosts } from './rich-posts'
 
 const postsDirectory = path.join(process.cwd(), 'posts')
 
@@ -77,29 +78,33 @@ function parseHtmlPost(raw: string, slug: string, mtime: Date): PostData {
 }
 
 async function loadPost(fileName: string): Promise<Post | null> {
+  // Skip anything that isn't a post file (e.g. the rich/ mdx directory).
+  if (!fileName.endsWith('.md') && !fileName.endsWith('.html')) {
+    return null
+  }
+
   const fullPath = path.join(postsDirectory, fileName)
   const raw = fs.readFileSync(fullPath, 'utf8')
 
   if (fileName.endsWith('.md')) {
     return { data: await parseMarkdownPost(raw, fileName.replace(/\.md$/, '')) }
   }
-  if (fileName.endsWith('.html')) {
-    const mtime = fs.statSync(fullPath).mtime
-    return { data: parseHtmlPost(raw, fileName.replace(/\.html$/, ''), mtime) }
-  }
-  return null
+  const mtime = fs.statSync(fullPath).mtime
+  return { data: parseHtmlPost(raw, fileName.replace(/\.html$/, ''), mtime) }
 }
 
 export async function getAllPosts(): Promise<Post[]> {
-  if (!fs.existsSync(postsDirectory)) {
-    return []
-  }
+  const filePosts = fs.existsSync(postsDirectory)
+    ? await Promise.all(fs.readdirSync(postsDirectory).map(loadPost))
+    : []
 
-  const fileNames = fs.readdirSync(postsDirectory)
-  const allPosts = await Promise.all(fileNames.map(loadPost))
+  const richAsPosts: Post[] = richPosts.map(({ meta }) => ({
+    data: { ...meta, content: '' },
+  }))
 
-  return allPosts
+  return filePosts
     .filter((post): post is Post => post !== null)
+    .concat(richAsPosts)
     .sort((a, b) => (a.data.date < b.data.date ? 1 : -1))
 }
 

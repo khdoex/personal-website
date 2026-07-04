@@ -1,0 +1,102 @@
+<h2>What kind of motion makes the site feel alive?</h2>
+<p class="subtitle">You chose "noticeably more expressive." These three are live demos — hover option B's cards, watch A and C move. Pick ALL that belong (multi-select).</p>
+
+<style>
+  .cl-mock2 {
+    background: #1d252c; color: #a0b3c5; border: 1px solid #2f3b47;
+    border-radius: 8px; overflow: hidden; position: relative;
+    font-family: -apple-system, sans-serif;
+  }
+  .mono2 { font-family: "JetBrains Mono", ui-monospace, monospace; }
+
+  /* A: scroll-story simulation */
+  @keyframes fakeScroll {
+    0%, 12% { transform: translateY(0); }
+    38%, 55% { transform: translateY(-120px); }
+    80%, 100% { transform: translateY(-250px); }
+  }
+  @keyframes riseIn {
+    from { opacity: 0; transform: translateY(24px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .scroll-stage { height: 210px; overflow: hidden; position: relative; }
+  .scroll-track { animation: fakeScroll 9s ease-in-out infinite; padding: 24px 28px; }
+  .s-item { border: 1px solid #2f3b47; background: #232d36; border-radius: 8px; padding: 16px 18px; margin-bottom: 18px; }
+  .scroll-track .s-item:nth-child(1) { animation: riseIn 0.8s ease-out both; animation-delay: 0.3s; }
+  .scroll-track .s-item:nth-child(2) { animation: riseIn 0.8s ease-out both; animation-delay: 3.6s; }
+  .scroll-track .s-item:nth-child(3) { animation: riseIn 0.8s ease-out both; animation-delay: 7.4s; }
+  .s-bar { height: 7px; border-radius: 4px; background: #2f3b47; margin-top: 8px; }
+
+  /* B: hover physics */
+  .p-card {
+    border: 1px solid #2f3b47; background: #232d36; border-radius: 8px;
+    padding: 18px; flex: 1; cursor: pointer;
+    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.35s ease, box-shadow 0.35s ease;
+  }
+  .p-card:hover {
+    transform: translateY(-6px) rotate(-0.7deg) scale(1.02);
+    border-color: #5ec4ff;
+    box-shadow: 0 14px 40px rgba(0,0,0,0.45), 0 0 0 1px rgba(94,196,255,0.15);
+  }
+  .p-card:hover .p-num { color: #5ec4ff; transform: translateX(4px); }
+  .p-num { color: #4a5866; font-size: 11px; transition: color 0.3s, transform 0.3s; }
+
+  /* C: ambient field */
+  @keyframes drift1 { 0%{transform:translate(0,0)} 33%{transform:translate(40px,-24px)} 66%{transform:translate(-22px,18px)} 100%{transform:translate(0,0)} }
+  @keyframes drift2 { 0%{transform:translate(0,0)} 33%{transform:translate(-32px,20px)} 66%{transform:translate(24px,-14px)} 100%{transform:translate(0,0)} }
+  @keyframes pulse3 { 0%,100%{opacity:0.18} 50%{opacity:0.5} }
+  .field-dot { position:absolute; width:3px; height:3px; border-radius:50%; background:#5ec4ff; opacity:0.3; }
+  .field-line { position:absolute; height:1px; background:linear-gradient(90deg, transparent, rgba(94,196,255,0.25), transparent); animation: pulse3 6s ease-in-out infinite; }
+</style>
+
+<div class="options" data-multiselect>
+
+  <div class="option" data-choice="scroll-story" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content" style="width:100%">
+      <h3>Scroll-driven storytelling</h3>
+      <p>Sections rise, settle, and hand off as you scroll (simulated here on a loop). Content arrives when the reader reaches it: project rows cascade in, figures in blog posts assemble themselves. Framer Motion is already in your dependencies.</p>
+      <div class="cl-mock2 scroll-stage">
+        <div class="scroll-track">
+          <div class="s-item"><span class="mono2" style="color:#e8eef4;font-size:12px">01 &nbsp; refusal geometry in llms</span><div class="s-bar" style="width:82%"></div><div class="s-bar" style="width:64%"></div></div>
+          <div class="s-item"><span class="mono2" style="color:#e8eef4;font-size:12px">02 &nbsp; earlier work</span><div class="s-bar" style="width:74%"></div><div class="s-bar" style="width:58%"></div></div>
+          <div class="s-item"><span class="mono2" style="color:#e8eef4;font-size:12px">03 &nbsp; a figure assembling</span><div class="s-bar" style="width:68%"></div><div class="s-bar" style="width:80%"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="hover-physics" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content" style="width:100%">
+      <h3>Tactile hover physics</h3>
+      <p>Everything touchable responds: cards lift and tilt with a springy ease, numbers slide, borders catch the accent light. Try hovering these two cards. The site feels hand-built and reactive without anything moving on its own.</p>
+      <div class="cl-mock2" style="padding:24px;display:flex;gap:16px">
+        <div class="p-card"><div class="p-num mono2">01</div><div class="mono2" style="color:#e8eef4;font-size:12px;margin-top:6px">hover me</div><p style="font-size:11px;margin-top:6px;color:#718ca1">lifts, tilts, glows at the border</p></div>
+        <div class="p-card"><div class="p-num mono2">02</div><div class="mono2" style="color:#e8eef4;font-size:12px;margin-top:6px">me too</div><p style="font-size:11px;margin-top:6px;color:#718ca1">springy cubic-bezier, not linear</p></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="ambient-field" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content" style="width:100%">
+      <h3>Ambient activation field</h3>
+      <p>A very faint, always-on drift of points and connection lines in the background: your "activation space." It can react subtly to the cursor. Thematic (interp!), atmospheric, and it makes even a static page feel alive. Risk: competes with reading if not kept quiet.</p>
+      <div class="cl-mock2" style="height:170px">
+        <div class="field-dot" style="top:20%;left:15%;animation:drift1 8s ease-in-out infinite"></div>
+        <div class="field-dot" style="top:60%;left:30%;animation:drift2 11s ease-in-out infinite"></div>
+        <div class="field-dot" style="top:35%;left:55%;animation:drift1 9s ease-in-out infinite reverse"></div>
+        <div class="field-dot" style="top:70%;left:70%;animation:drift2 7s ease-in-out infinite"></div>
+        <div class="field-dot" style="top:25%;left:82%;animation:drift1 12s ease-in-out infinite"></div>
+        <div class="field-line" style="top:38%;left:18%;width:180px;transform:rotate(8deg)"></div>
+        <div class="field-line" style="top:62%;left:45%;width:150px;transform:rotate(-12deg);animation-delay:2s"></div>
+        <div style="position:relative;padding:32px 28px">
+          <div class="mono2" style="color:#e8eef4;font-size:13px;font-weight:600">kaan hacihaliloglu</div>
+          <p style="font-size:11.5px;color:#718ca1;margin-top:8px;max-width:55%">text stays perfectly readable, the field just breathes behind it</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

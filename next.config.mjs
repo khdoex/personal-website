@@ -1,11 +1,16 @@
+import createMDX from '@next/mdx'
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  pageExtensions: ['ts', 'tsx', 'js', 'jsx', 'mdx'],
   images: {
-    domains: [], // Add any external image domains here if needed
+    unoptimized: true, // Cloudflare Workers deploy has no image optimizer
   },
   eslint: {
-    ignoreDuringBuilds: true, // Optional: if you want to bypass ESLint during build
+    ignoreDuringBuilds: true,
   },
 }
 
-export default nextConfig 
+const withMDX = createMDX({})
+
+export default withMDX(nextConfig)

@@ -1,0 +1,112 @@
+<h2>How deep does the scroll medium go?</h2>
+<p class="subtitle">Two live demos — SCROLL INSIDE each dark box (needs a recent Chrome/Edge/Arc; if nothing moves, tell me). Then a third option described honestly. Click one level.</p>
+
+<style>
+  .cl3 { background:#1d252c; color:#a0b3c5; border:1px solid #2f3b47; border-radius:8px; font-family:-apple-system,sans-serif; }
+  .mono3 { font-family:"JetBrains Mono",ui-monospace,monospace; }
+  .scrollbox { height:240px; overflow-y:scroll; scrollbar-width:thin; }
+
+  /* Level 1: scrubbed reveals */
+  @keyframes slideRise {
+    from { opacity:0; transform:translateY(36px); }
+    to { opacity:1; transform:translateY(0); }
+  }
+  .l1-row {
+    border:1px solid #2f3b47; background:#232d36; border-radius:8px;
+    padding:14px 16px; margin:0 20px 16px;
+    animation: slideRise linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 85%;
+  }
+  .l1-bar { height:6px; border-radius:3px; background:#2f3b47; margin-top:7px; }
+
+  /* Level 2: scene choreography */
+  @keyframes heroShrink {
+    from { font-size:26px; letter-spacing:0.06em; opacity:1; }
+    to { font-size:13px; letter-spacing:0; opacity:0.55; }
+  }
+  .l2-hero {
+    position:sticky; top:0; padding:18px 20px 10px; background:linear-gradient(#1d252c 75%, transparent);
+    color:#e8eef4; font-weight:600; z-index:2;
+    animation: heroShrink linear both;
+    animation-timeline: scroll();
+    animation-range: 0% 30%;
+  }
+  @keyframes growBar { from { width:0; opacity:0.3; } to { opacity:1; } }
+  .l2-fig { margin:14px 20px; padding:16px; border:1px solid #2f3b47; border-radius:8px; background:#232d36; }
+  .l2-fbar {
+    height:10px; border-radius:3px; margin-top:8px;
+    background:linear-gradient(90deg,#5ec4ff,#2b6d94);
+    animation: growBar linear both;
+    animation-timeline: view();
+    animation-range: entry 10% entry 95%;
+  }
+  @keyframes wordUp { from { opacity:0; transform:translateY(14px) rotate(2deg); } to { opacity:1; transform:none; } }
+  .l2-word { display:inline-block; animation: wordUp linear both; animation-timeline: view(); }
+  .l2-word:nth-child(2) { animation-range: entry 0% entry 60%; }
+  .l2-word:nth-child(3) { animation-range: entry 10% entry 70%; }
+  .l2-word:nth-child(4) { animation-range: entry 20% entry 80%; }
+  .l2-word:nth-child(5) { animation-range: entry 30% entry 90%; }
+  @keyframes dotConnect { from { stroke-dashoffset: 120; } to { stroke-dashoffset: 0; } }
+  .l2-line { stroke-dasharray:120; animation: dotConnect linear both; animation-timeline: view(); animation-range: entry 20% entry 100%; }
+</style>
+
+<div class="options">
+
+  <div class="option" data-choice="level1-alive" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content" style="width:100%">
+      <h3>Level 1 — everything arrives</h3>
+      <p>Every element scrubs in tied to your scroll position (not a one-shot fade: scroll back up and it reverses). Applied site-wide to rows, headings, figures. Subtle but everywhere.</p>
+      <div class="cl3 scrollbox">
+        <p class="mono3" style="padding:14px 20px 6px;font-size:10px;color:#4a5866">scroll me ↓</p>
+        <div class="l1-row"><span class="mono3" style="color:#e8eef4;font-size:12px">01 · refusal geometry in llms</span><div class="l1-bar" style="width:78%"></div><div class="l1-bar" style="width:52%"></div></div>
+        <div class="l1-row"><span class="mono3" style="color:#e8eef4;font-size:12px">02 · neural text summarization</span><div class="l1-bar" style="width:66%"></div><div class="l1-bar" style="width:70%"></div></div>
+        <div class="l1-row"><span class="mono3" style="color:#e8eef4;font-size:12px">03 · multi-label classification</span><div class="l1-bar" style="width:81%"></div><div class="l1-bar" style="width:44%"></div></div>
+        <div class="l1-row"><span class="mono3" style="color:#e8eef4;font-size:12px">04 · ml implementations</span><div class="l1-bar" style="width:59%"></div><div class="l1-bar" style="width:73%"></div></div>
+        <div class="l1-row"><span class="mono3" style="color:#e8eef4;font-size:12px">05 · a future blog figure</span><div class="l1-bar" style="width:70%"></div><div class="l1-bar" style="width:62%"></div></div>
+        <div style="height:60px"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="level2-scenes" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content" style="width:100%">
+      <h3>Level 2 — scenes & assembling figures</h3>
+      <p>Level 1 PLUS choreographed scenes: sticky headers that shrink as you pass, blog figures that literally assemble (bars grow, lines draw, words rise) scrubbed to scroll. This is the wodniack feeling, tuned to City Lights restraint. Scroll the box.</p>
+      <div class="cl3 scrollbox">
+        <div class="l2-hero mono3">refusal directions</div>
+        <p style="padding:8px 20px;font-size:12px;line-height:1.7">
+          <span class="mono3" style="font-size:10px;color:#4a5866">scroll ↓ · the header shrinks, the figure builds</span><br><br>
+          <span class="l2-word">words</span> <span class="l2-word">rise</span> <span class="l2-word">as</span> <span class="l2-word">you</span> <span class="l2-word">arrive.</span>
+        </p>
+        <div class="l2-fig">
+          <span class="mono3" style="font-size:10px;color:#718ca1">fig 1 · ablation effect by layer</span>
+          <div class="l2-fbar" style="width:82%"></div>
+          <div class="l2-fbar" style="width:64%"></div>
+          <div class="l2-fbar" style="width:91%"></div>
+          <div class="l2-fbar" style="width:38%"></div>
+        </div>
+        <div class="l2-fig">
+          <span class="mono3" style="font-size:10px;color:#718ca1">fig 2 · two activations, one direction</span>
+          <svg width="100%" height="80" viewBox="0 0 300 80">
+            <circle cx="40" cy="55" r="4" fill="#5ec4ff"/>
+            <circle cx="250" cy="20" r="4" fill="#d98e48"/>
+            <line class="l2-line" x1="40" y1="55" x2="250" y2="20" stroke="#5ec4ff" stroke-width="1.5" opacity="0.7"/>
+          </svg>
+        </div>
+        <div style="height:80px"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="level3-takeover" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content" style="width:100%">
+      <h3>Level 3 — full takeover (the wodniack zone)</h3>
+      <p>Canvas/WebGL scenes, cursor-reactive drawings, letters that scatter and reform, the page as one continuous performance. Honest costs: weeks of work not days, heavy JS payload on a currently feather-light site, fights with reading-focused blog posts, and hard to keep excellent on mobile. I can build it, but I'd argue Level 2 gets you 80% of the feeling at 20% of the weight — and your content (research writing) rewards readability more than spectacle.</p>
+    </div>
+  </div>
+
+</div>

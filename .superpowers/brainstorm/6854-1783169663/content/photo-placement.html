@@ -1,0 +1,82 @@
+<h2>Where does the portrait live?</h2>
+<p class="subtitle">Three treatments using your actual photo on the real City Lights palette. Click the one that feels right.</p>
+
+<style>
+  .cl-mock {
+    background: #1d252c;
+    color: #a0b3c5;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #2f3b47;
+  }
+  .cl-mono { font-family: "JetBrains Mono", ui-monospace, monospace; }
+  .cl-heading { color: #e8eef4; }
+  .cl-muted { color: #718ca1; }
+  .cl-accent { color: #5ec4ff; }
+</style>
+
+<div class="options">
+
+  <div class="option" data-choice="blended-hero" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content" style="width:100%">
+      <h3>Blended into the hero</h3>
+      <p>Portrait sits on the right of the hero, edges dissolved into the page background with a mask. No frame, no box: you are part of the site's atmosphere. Duotone-tinted toward the blue palette so it reads as designed, not pasted.</p>
+      <div class="cl-mock" style="padding:0;position:relative;min-height:230px;margin-top:12px">
+        <div style="position:absolute;right:0;top:0;bottom:0;width:45%;overflow:hidden">
+          <img src="kaan.png" alt="" style="width:100%;height:100%;object-fit:cover;object-position:top;
+            -webkit-mask-image:radial-gradient(85% 90% at 65% 40%, black 35%, transparent 78%);
+            mask-image:radial-gradient(85% 90% at 65% 40%, black 35%, transparent 78%);
+            filter:saturate(0.75) contrast(1.02);opacity:0.9">
+        </div>
+        <div style="position:relative;padding:36px 32px;max-width:58%">
+          <div class="cl-mono cl-heading" style="font-size:15px;font-weight:600">kaan hacihaliloglu</div>
+          <p style="font-size:12.5px;line-height:1.7;margin-top:12px">physicist turned ai engineer. my msc thesis was on the refusal direction in llms: the place inside the model where "i can't help with that" comes from...</p>
+          <div class="cl-mono" style="font-size:10.5px;margin-top:16px"><span class="cl-heading">blog →</span> &nbsp; <span class="cl-muted">projects</span> &nbsp; <span class="cl-muted">resume</span> &nbsp; <span class="cl-muted">email</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="terminal-card" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content" style="width:100%">
+      <h3>Terminal card</h3>
+      <p>Photo in a bordered surface card with a mono title bar, like a window on a tiling desktop. Fits the mono/terminal identity of the site; the card can tilt or lift slightly on hover.</p>
+      <div class="cl-mock" style="padding:32px;display:flex;gap:28px;align-items:flex-start;min-height:230px">
+        <div style="flex:1">
+          <div class="cl-mono cl-heading" style="font-size:15px;font-weight:600">kaan hacihaliloglu</div>
+          <p style="font-size:12.5px;line-height:1.7;margin-top:12px">physicist turned ai engineer. my msc thesis was on the refusal direction in llms...</p>
+          <div class="cl-mono" style="font-size:10.5px;margin-top:16px"><span class="cl-heading">blog →</span> &nbsp; <span class="cl-muted">projects</span> &nbsp; <span class="cl-muted">resume</span></div>
+        </div>
+        <div style="width:150px;background:#232d36;border:1px solid #2f3b47;border-radius:8px;overflow:hidden;transform:rotate(1.5deg)">
+          <div class="cl-mono" style="font-size:9px;padding:6px 10px;border-bottom:1px solid #2f3b47;color:#4a5866">~/kaan.png</div>
+          <img src="kaan.png" alt="" style="width:100%;display:block">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="reveal-moment" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content" style="width:100%">
+      <h3>Hidden reveal moment</h3>
+      <p>The homepage stays text-only. The portrait appears as a delightful reveal: hovering your name (or tapping on mobile) fades the photo in behind the hero, tinted into the background. A secret for people who explore; the design stays quiet by default.</p>
+      <div class="cl-mock" style="padding:0;position:relative;min-height:230px">
+        <div style="position:absolute;inset:0;overflow:hidden">
+          <img src="kaan.png" alt="" style="position:absolute;right:-20px;top:-10px;width:55%;
+            -webkit-mask-image:radial-gradient(70% 80% at 60% 35%, black 25%, transparent 70%);
+            mask-image:radial-gradient(70% 80% at 60% 35%, black 25%, transparent 70%);
+            filter:saturate(0.6);opacity:0.35">
+        </div>
+        <div style="position:relative;padding:36px 32px;max-width:60%">
+          <div class="cl-mono" style="font-size:15px;font-weight:600"><span class="cl-accent" style="border-bottom:1px dashed #5ec4ff">kaan hacihaliloglu</span> <span class="cl-muted" style="font-size:10px">← hovering</span></div>
+          <p style="font-size:12.5px;line-height:1.7;margin-top:12px">physicist turned ai engineer. my msc thesis was on the refusal direction in llms...</p>
+          <div class="cl-mono" style="font-size:10.5px;margin-top:16px"><span class="cl-heading">blog →</span> &nbsp; <span class="cl-muted">projects</span> &nbsp; <span class="cl-muted">resume</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
