@@ -1,7 +1,4 @@
 import type { ComponentType } from 'react'
-import InsideTheMedium, {
-  meta as insideTheMediumMeta,
-} from '@/posts/rich/inside-the-medium.mdx'
 import TracingRefusal, {
   meta as tracingRefusalMeta,
 } from '@/posts/rich/tracing-refusal.mdx'
@@ -22,7 +19,6 @@ export interface RichPost {
 // import it above, add one entry here.
 export const richPosts: RichPost[] = [
   { meta: tracingRefusalMeta, Component: TracingRefusal },
-  { meta: insideTheMediumMeta, Component: InsideTheMedium },
 ]
 
 export function getRichPost(slug: string): RichPost | undefined {
