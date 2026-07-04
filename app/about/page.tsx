@@ -13,6 +13,12 @@ const currently = [
   {
     title: 'SCL · Synthetic Consumer Lab',
     desc: 'AI Engineer building synthetic consumer systems for realistic behavior simulation and market research workflows',
+    href: 'https://synthetic-consumers.com/',
+  },
+  {
+    title: 'SoundBoost',
+    desc: 'AI Engineer on an ai audio mastering platform, a virtual mastering engineer for musicians',
+    href: 'https://soundboost.ai/about',
   },
   {
     title: 'MSc Data Science, Sabancı University',
@@ -78,7 +84,18 @@ export default function About() {
               </span>
               <div>
                 <h2 className="font-mono text-base font-medium text-heading">
-                  {item.title}
+                  {item.href ? (
+                    <a
+                      href={item.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="u-link hover:text-accent"
+                    >
+                      {item.title} →
+                    </a>
+                  ) : (
+                    item.title
+                  )}
                 </h2>
                 <p className="text-sm text-muted leading-relaxed mt-1.5 max-w-xl">
                   {item.desc}

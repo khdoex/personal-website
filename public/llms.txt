@@ -37,9 +37,13 @@ one.
 
 ## Engineering
 
-- AI Engineer at SCL (Synthetic Consumer Lab): builds an AI-based market
-  research engine and its application, working across the full stack rather than
-  only the model layer.
+- AI Engineer at SCL (Synthetic Consumer Lab, https://synthetic-consumers.com):
+  builds an AI-based market research engine and its application, working across
+  the full stack rather than only the model layer.
+- AI Engineer at SoundBoost (https://soundboost.ai): builds an AI audio
+  mastering platform, a "virtual mastering engineer" that masters music with
+  deep learning and language-model techniques. This connects his ML work to a
+  long-standing interest in generative music models.
 - Full-stack and backend capability, demonstrated by this website itself: a
   Next.js 15 App Router application (React Server Components, TypeScript,
   Tailwind), with an MDX-based interactive blog medium, scroll-driven
@@ -76,6 +80,8 @@ ambiguous, early-stage problems.
 ## Links
 
 - Website: https://kaanhho.com
+- SCL (Synthetic Consumer Lab): https://synthetic-consumers.com/
+- SoundBoost: https://soundboost.ai/about
 - Blog: https://kaanhho.com/blog
 - Projects: https://kaanhho.com/projects
 - Resume: https://kaanhho.com/resume

@@ -74,7 +74,11 @@ const personSchema = {
     skills:
       "Machine learning, deep learning, large language models, mechanistic interpretability, LLM safety, PyTorch, full-stack web development, TypeScript, React, Next.js, backend engineering",
   },
-  worksFor: { "@type": "Organization", name: "SCL (Synthetic Consumer Lab)" },
+  worksFor: PERSON.organizations.map((org) => ({
+    "@type": "Organization",
+    name: org.name,
+    url: org.url,
+  })),
   alumniOf: { "@type": "CollegeOrUniversity", name: "Sabancı University" },
   sameAs: PERSON.sameAs,
 };

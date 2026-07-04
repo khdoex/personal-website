@@ -14,6 +14,14 @@ export const PERSON = {
     'Machine Learning',
     'Large Language Models',
   ],
+  // Organizations he engineers for (used in the Person schema worksFor).
+  organizations: [
+    {
+      name: 'SCL (Synthetic Consumer Lab)',
+      url: 'https://synthetic-consumers.com/',
+    },
+    { name: 'SoundBoost', url: 'https://soundboost.ai' },
+  ],
   // Profile URLs. sameAs is the strongest structured signal linking the
   // handles above to one identity.
   sameAs: [
