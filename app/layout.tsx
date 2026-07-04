@@ -3,6 +3,7 @@ import { JetBrains_Mono, IBM_Plex_Sans } from "next/font/google";
 import "./globals.css";
 import Navigation from '@/components/Navigation'
 import Footer from '@/components/Footer'
+import { SITE_URL, PERSON } from '@/lib/site'
 
 const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin", "latin-ext"],
@@ -21,22 +22,30 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "Kaan Hacihaliloglu | AI Engineer & Researcher",
-  description: "Researching mechanistic interpretability and refusal behavior in LLMs. Building synthetic consumer AI at SCL. MSc Data Science at Sabancı University.",
-  keywords: ["AI engineer", "mechanistic interpretability", "LLM safety", "refusal behavior", "machine learning", "data science", "Sabancı University"],
-  authors: [{ name: "Kaan Hacihaliloglu" }],
+  metadataBase: new URL(SITE_URL),
+  title: "Kaan Hacihaliloglu (kaanhho) | AI Engineer & Interpretability Researcher",
+  description: "Kaan Hacihaliloglu — physicist turned AI engineer. Researching mechanistic interpretability and refusal behavior in LLMs, building synthetic consumer AI at SCL. Also known as kaanhho and khdoex.",
+  keywords: ["Kaan Hacihaliloglu", "kaanhho", "khdoex", "AI engineer", "mechanistic interpretability", "LLM safety", "refusal behavior", "machine learning", "Sabancı University"],
+  authors: [{ name: "Kaan Hacihaliloglu", url: SITE_URL }],
   creator: "Kaan Hacihaliloglu",
+  alternates: {
+    canonical: "/",
+  },
   openGraph: {
-    title: "Kaan Hacihaliloglu | AI Engineer & Researcher",
-    description: "Researching mechanistic interpretability and refusal behavior in LLMs. Building synthetic consumer AI at SCL.",
+    title: "Kaan Hacihaliloglu (kaanhho) | AI Engineer & Interpretability Researcher",
+    description: "Physicist turned AI engineer. Mechanistic interpretability and refusal behavior in LLMs, building synthetic consumer AI at SCL.",
+    url: SITE_URL,
+    siteName: "Kaan Hacihaliloglu",
     type: "website",
     locale: "en_US",
+    images: [{ url: "/images/kaan.png", width: 1086, height: 1448, alt: "Kaan Hacihaliloglu" }],
   },
   twitter: {
     card: "summary",
-    title: "Kaan Hacihaliloglu | AI Engineer & Researcher",
-    description: "Researching mechanistic interpretability and refusal behavior in LLMs.",
+    title: "Kaan Hacihaliloglu (kaanhho) | AI Engineer & Interpretability Researcher",
+    description: "Physicist turned AI engineer. Mechanistic interpretability and refusal behavior in LLMs.",
     creator: "@kaanhho",
+    images: ["/images/kaan.png"],
   },
   robots: {
     index: true,
@@ -45,6 +54,20 @@ export const metadata: Metadata = {
   icons: {
     icon: '/favicon-4.svg',
   },
+};
+
+const personSchema = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: PERSON.name,
+  alternateName: PERSON.handles,
+  url: SITE_URL,
+  image: `${SITE_URL}/images/kaan.png`,
+  jobTitle: PERSON.jobTitle,
+  knowsAbout: PERSON.knowsAbout,
+  worksFor: { "@type": "Organization", name: "SCL (Synthetic Consumer Lab)" },
+  alumniOf: { "@type": "CollegeOrUniversity", name: "Sabancı University" },
+  sameAs: PERSON.sameAs,
 };
 
 export default function RootLayout({
@@ -57,6 +80,10 @@ export default function RootLayout({
       <body
         className={`${jetbrainsMono.variable} ${plexSans.variable} antialiased`}
       >
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(personSchema) }}
+        />
         <Navigation />
         <main className="min-h-screen pt-16">
           {children}

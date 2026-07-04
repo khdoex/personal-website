@@ -87,6 +87,14 @@ export default function About() {
             </Reveal>
           ))}
         </div>
+
+        <Reveal className="mt-10">
+          <p className="text-sm text-muted leading-relaxed max-w-xl">
+            online i am khdoex on github, and kaanhho most other places (x,
+            huggingface). same person, i just could not keep one handle
+            straight.
+          </p>
+        </Reveal>
       </section>
     </div>
   )
