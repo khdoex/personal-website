@@ -6,6 +6,7 @@ import {
   IMAGES,
   IMAGES_PER_LENS,
   LensKey,
+  MAX_PER_AUTHOR,
   QUESTIONS,
   Rating,
 } from '@/lib/lens-test/game'
@@ -38,10 +39,30 @@ function shuffle<T>(arr: T[]): T[] {
   return a
 }
 
+// "Trougnouf (Benoit Brummer)" and "trougnouf" are the same person
+const normAuthor = (a: string) => a.toLowerCase().replace(/[^a-z]/g, '').slice(0, 9)
+
+function sampleLens(lens: LensKey): GameImage[] {
+  const pool = shuffle(IMAGES.filter((i) => i.lens === lens))
+  const byAuthor: Record<string, number> = {}
+  const picked: GameImage[] = []
+  for (const img of pool) {
+    const a = normAuthor(img.author || '?')
+    if ((byAuthor[a] ?? 0) >= MAX_PER_AUTHOR) continue
+    byAuthor[a] = (byAuthor[a] ?? 0) + 1
+    picked.push(img)
+    if (picked.length === IMAGES_PER_LENS) return picked
+  }
+  // author cap starved the sample (few-shooter pool): top up randomly
+  for (const img of pool) {
+    if (picked.length === IMAGES_PER_LENS) break
+    if (!picked.includes(img)) picked.push(img)
+  }
+  return picked
+}
+
 function sampleImages(): GameImage[] {
-  const byLens = (lens: LensKey) =>
-    shuffle(IMAGES.filter((i) => i.lens === lens)).slice(0, IMAGES_PER_LENS)
-  return shuffle([...byLens('sigma'), ...byLens('fuji')])
+  return shuffle([...sampleLens('sigma'), ...sampleLens('fuji')])
 }
 
 export default function LensGame() {

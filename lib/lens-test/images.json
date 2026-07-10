@@ -190,5 +190,405 @@
   "author": "Dillan Payne",
   "license": "CC BY-SA 4.0",
   "page": "https://commons.wikimedia.org/wiki/File:Cineplex_Cinemas_at_Pickering_City_Centre,_January_17_2026.jpg"
+ },
+ {
+  "id": "p25",
+  "src": "/lens-test/p25.jpg",
+  "lens": "sigma",
+  "author": "Marie-Lan Nguyen",
+  "license": "CC BY 2.5",
+  "page": "https://commons.wikimedia.org/wiki/File:Golden_tabby_and_white_kitten_n01.jpg"
+ },
+ {
+  "id": "p26",
+  "src": "/lens-test/p26.jpg",
+  "lens": "fuji",
+  "author": "trougnouf (Benoit Brummer)",
+  "license": "CC BY 4.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Neotamias_minimus_on_Stawamus_Chief_(DSCF7729).jpg"
+ },
+ {
+  "id": "p27",
+  "src": "/lens-test/p27.jpg",
+  "lens": "sigma",
+  "author": "Marie-Lan Nguyen",
+  "license": "CC BY 2.5",
+  "page": "https://commons.wikimedia.org/wiki/File:Hyakinthos_MGEt_Inv34624.jpg"
+ },
+ {
+  "id": "p28",
+  "src": "/lens-test/p28.jpg",
+  "lens": "sigma",
+  "author": "Dillan Payne",
+  "license": "CC BY-SA 4.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Subway_Platform_at_Forest_Avenue_station,_June_11_2026.jpg"
+ },
+ {
+  "id": "p29",
+  "src": "/lens-test/p29.jpg",
+  "lens": "sigma",
+  "author": "Esquilo",
+  "license": "CC BY-SA 3.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Beatelund.jpg"
+ },
+ {
+  "id": "p30",
+  "src": "/lens-test/p30.jpg",
+  "lens": "sigma",
+  "author": "Esquilo",
+  "license": "CC BY-SA 3.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Kvarnen_p%C3%A5_Waldemarsudde.jpg"
+ },
+ {
+  "id": "p31",
+  "src": "/lens-test/p31.jpg",
+  "lens": "sigma",
+  "author": "Dillan Payne",
+  "license": "CC BY-SA 4.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Toronto_Rocket_Train_at_St_Andrew_Station,_March_25_2026.jpg"
+ },
+ {
+  "id": "p32",
+  "src": "/lens-test/p32.jpg",
+  "lens": "fuji",
+  "author": "trougnouf (Benoit Brummer)",
+  "license": "CC BY 4.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Boulder_along_the_chief_hike_in_Stawamus_Chief_Provincial_Park,_BC_(DSCF7553).jpg"
+ },
+ {
+  "id": "p33",
+  "src": "/lens-test/p33.jpg",
+  "lens": "sigma",
+  "author": "Dillan Payne",
+  "license": "CC BY-SA 4.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Line_5_Flexity_Freedom_LRT_at_Forest_Hill_Station,_February_8_2026_(02).jpg"
+ },
+ {
+  "id": "p34",
+  "src": "/lens-test/p34.jpg",
+  "lens": "sigma",
+  "author": "Marie-Lan Nguyen",
+  "license": "Public domain",
+  "page": "https://commons.wikimedia.org/wiki/File:Julia_MBA_Rennes_D.1863.1.83_n01.jpg"
+ },
+ {
+  "id": "p35",
+  "src": "/lens-test/p35.jpg",
+  "lens": "fuji",
+  "author": "Trougnouf",
+  "license": "CC BY 4.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Water_treatment_plant_in_an_abandoned_steel_factory_in_Oupeye,_Belgium_(DSCF3285).jpg"
+ },
+ {
+  "id": "p36",
+  "src": "/lens-test/p36.jpg",
+  "lens": "sigma",
+  "author": "Esquilo",
+  "license": "CC BY-SA 3.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Rosella02.jpg"
+ },
+ {
+  "id": "p37",
+  "src": "/lens-test/p37.jpg",
+  "lens": "sigma",
+  "author": "Dillan Payne",
+  "license": "CC BY-SA 4.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Line_5_Flexity_Freedom_LRT_at_Mount_Dennis_Station,_February_8_2026_(01).jpg"
+ },
+ {
+  "id": "p38",
+  "src": "/lens-test/p38.jpg",
+  "lens": "fuji",
+  "author": "trougnouf (Benoit Brummer)",
+  "license": "CC BY 4.0",
+  "page": "https://commons.wikimedia.org/wiki/File:View_under_the_Cambie_Street_bridge_from_Spyglass_Dock_in_Vancouver,_BC_(DSCF7459).jpg"
+ },
+ {
+  "id": "p39",
+  "src": "/lens-test/p39.jpg",
+  "lens": "sigma",
+  "author": "Esquilo",
+  "license": "CC BY-SA 3.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Sollenkroka_brygga.jpg"
+ },
+ {
+  "id": "p40",
+  "src": "/lens-test/p40.jpg",
+  "lens": "sigma",
+  "author": "Esquilo",
+  "license": "CC BY-SA 3.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Str%C3%B6mma_kanal3.jpg"
+ },
+ {
+  "id": "p41",
+  "src": "/lens-test/p41.jpg",
+  "lens": "sigma",
+  "author": "Dillan Payne",
+  "license": "CC BY-SA 4.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Mount_Dennis_Station_Line_5_Platform,_February_8_2026.jpg"
+ },
+ {
+  "id": "p42",
+  "src": "/lens-test/p42.jpg",
+  "lens": "sigma",
+  "author": "Dillan Payne",
+  "license": "CC BY-SA 4.0",
+  "page": "https://commons.wikimedia.org/wiki/File:R160_E_Train_at_23rd_Street_station_(8th_Ave),_June_12_2026_(01).jpg"
+ },
+ {
+  "id": "p43",
+  "src": "/lens-test/p43.jpg",
+  "lens": "sigma",
+  "author": "Esquilo",
+  "license": "CC BY-SA 3.0",
+  "page": "https://commons.wikimedia.org/wiki/File:V%C3%A4rmd%C3%B6-Garpen.jpg"
+ },
+ {
+  "id": "p44",
+  "src": "/lens-test/p44.jpg",
+  "lens": "sigma",
+  "author": "Marie-Lan Nguyen",
+  "license": "CC BY 2.5",
+  "page": "https://commons.wikimedia.org/wiki/File:Golden_tabby_and_white_kitten_n02.jpg"
+ },
+ {
+  "id": "p45",
+  "src": "/lens-test/p45.jpg",
+  "lens": "sigma",
+  "author": "Esquilo",
+  "license": "CC BY-SA 3.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Sm%C3%B6rasken.jpg"
+ },
+ {
+  "id": "p46",
+  "src": "/lens-test/p46.jpg",
+  "lens": "fuji",
+  "author": "Trougnouf (Benoit Brummer)",
+  "license": "CC BY 4.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Scottish_Highland_cow_in_Westduinpark,_The_Hague_(DSCF1446).jpg"
+ },
+ {
+  "id": "p47",
+  "src": "/lens-test/p47.jpg",
+  "lens": "fuji",
+  "author": "Trougnouf",
+  "license": "CC BY 4.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Partial_view_of_the_front_of_Sanatorium_du_Basil,_Stoumont,_Belgium_(DSCF3497).jpg"
+ },
+ {
+  "id": "p48",
+  "src": "/lens-test/p48.jpg",
+  "lens": "fuji",
+  "author": "Trougnouf",
+  "license": "CC BY 4.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Abandoned_Chertal_steel_factory_in_Oupeye,_Belgium_(DSCF3314).jpg"
+ },
+ {
+  "id": "p49",
+  "src": "/lens-test/p49.jpg",
+  "lens": "fuji",
+  "author": "Trougnouf (Benoit Brummer)",
+  "license": "CC BY 4.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Sint-Bartholomeuskerk,_Pollinkhove_(DSCF9534).jpg"
+ },
+ {
+  "id": "p50",
+  "src": "/lens-test/p50.jpg",
+  "lens": "fuji",
+  "author": "Trougnouf (Benoit Brummer)",
+  "license": "CC BY 4.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Kazandmolen_in_Roeselare_(DSCF0018).jpg"
+ },
+ {
+  "id": "p51",
+  "src": "/lens-test/p51.jpg",
+  "lens": "sigma",
+  "author": "Dillan Payne",
+  "license": "CC BY-SA 4.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Entrance_to_St._George_station,_April_3_2026.jpg"
+ },
+ {
+  "id": "p52",
+  "src": "/lens-test/p52.jpg",
+  "lens": "fuji",
+  "author": "Trougnouf",
+  "license": "CC BY 4.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Tour_de_Villers_with_art_installation_%22Impasse%22_by_Juliane_Lavis_and_Bernard_Declercq_in_Brussels_(DSCF4342).jpg"
+ },
+ {
+  "id": "p53",
+  "src": "/lens-test/p53.jpg",
+  "lens": "fuji",
+  "author": "Trougnouf",
+  "license": "CC BY 4.0",
+  "page": "https://commons.wikimedia.org/wiki/File:View_from_a_tent_in_the_woods_by_Route_de_l%27Ancienne_Douane_in_Stavelot,_Belgium_(sensor_is_fogged,_DSCF3615).jpg"
+ },
+ {
+  "id": "p54",
+  "src": "/lens-test/p54.jpg",
+  "lens": "sigma",
+  "author": "Marie-Lan Nguyen",
+  "license": "Public domain",
+  "page": "https://commons.wikimedia.org/wiki/File:Satyr_mask_MBA_Rennes_D.1863.1.87.jpg"
+ },
+ {
+  "id": "p55",
+  "src": "/lens-test/p55.jpg",
+  "lens": "fuji",
+  "author": "Trougnouf",
+  "license": "CC BY 4.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Pont_Atlas_at_night_in_Liege,_Belgium_(DSCF3325).jpg"
+ },
+ {
+  "id": "p56",
+  "src": "/lens-test/p56.jpg",
+  "lens": "fuji",
+  "author": "Trougnouf (Benoit Brummer)",
+  "license": "CC BY 4.0",
+  "page": "https://commons.wikimedia.org/wiki/File:SE-JJF_Airbus_EC_120B_Colibri_helicopter_operated_by_Fiskflyg_in_Sarek_National_Park_(DSCF1087).jpg"
+ },
+ {
+  "id": "p57",
+  "src": "/lens-test/p57.jpg",
+  "lens": "fuji",
+  "author": "trougnouf (Benoit Brummer)",
+  "license": "CC BY 4.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Hydrangea_in_Vancouver,_BC_(DSCF7966).jpg"
+ },
+ {
+  "id": "p58",
+  "src": "/lens-test/p58.jpg",
+  "lens": "sigma",
+  "author": "Esquilo",
+  "license": "CC BY-SA 3.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Silja_Galaxy.jpg"
+ },
+ {
+  "id": "p59",
+  "src": "/lens-test/p59.jpg",
+  "lens": "sigma",
+  "author": "Dillan Payne",
+  "license": "CC BY-SA 4.0",
+  "page": "https://commons.wikimedia.org/wiki/File:CPKC_Rail_Bridge_along_Willow_Beach_Road,_July_2_2026_(02).jpg"
+ },
+ {
+  "id": "p60",
+  "src": "/lens-test/p60.jpg",
+  "lens": "fuji",
+  "author": "Trougnouf (Benoit Brummer)",
+  "license": "CC BY 4.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Ice_trapped_plant_along_the_GR_16_in_Vresse-sur-Semois_(DSCF5039).jpg"
+ },
+ {
+  "id": "p61",
+  "src": "/lens-test/p61.jpg",
+  "lens": "sigma",
+  "author": "Dillan Payne",
+  "license": "CC BY-SA 4.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Site_of_Future_Caledonia_GO_Station,_February_13_2026_(01).jpg"
+ },
+ {
+  "id": "p62",
+  "src": "/lens-test/p62.jpg",
+  "lens": "fuji",
+  "author": "Trougnouf",
+  "license": "CC BY 4.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Intersection_of_Rue_Franciscus_Vandevelde_and_Rue_Jean_Ekelmans,_looking_towards_Rue_Jean_Ekelmans,_December_evening_(civil_twilight)_in_Auderghem,_Belgium.jpg"
+ },
+ {
+  "id": "p63",
+  "src": "/lens-test/p63.jpg",
+  "lens": "sigma",
+  "author": "Esquilo",
+  "license": "CC BY-SA 3.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Rankar%C3%B6.jpg"
+ },
+ {
+  "id": "p64",
+  "src": "/lens-test/p64.jpg",
+  "lens": "fuji",
+  "author": "Trougnouf",
+  "license": "CC BY 4.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Pink_human_looking_left_(DSCF3775).jpg"
+ },
+ {
+  "id": "p65",
+  "src": "/lens-test/p65.jpg",
+  "lens": "sigma",
+  "author": "Esquilo",
+  "license": "CC BY-SA 3.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Mans%C3%B6ren.jpg"
+ },
+ {
+  "id": "p66",
+  "src": "/lens-test/p66.jpg",
+  "lens": "fuji",
+  "author": "trougnouf (Benoit Brummer)",
+  "license": "CC BY 4.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Stawamus_Chief_Provincial_Park_(DSCF7799).jpg"
+ },
+ {
+  "id": "p67",
+  "src": "/lens-test/p67.jpg",
+  "lens": "fuji",
+  "author": "Trougnouf",
+  "license": "CC BY 4.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Boogie_Belgique_concert_at_De_Roma_(2018-03-03,_DSCF4735).jpg"
+ },
+ {
+  "id": "p68",
+  "src": "/lens-test/p68.jpg",
+  "lens": "fuji",
+  "author": "Trougnouf (Benoit Brummer)",
+  "license": "CC BY 4.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Sunrise_over_a_valley_in_Capileira,_Sierra_Nevada_National_Park_(DSCF5388).jpg"
+ },
+ {
+  "id": "p69",
+  "src": "/lens-test/p69.jpg",
+  "lens": "fuji",
+  "author": "Trougnouf (Benoit Brummer)",
+  "license": "CC BY 4.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Ch%C3%A2teau_Sainte-Anne_(DSCF7140).jpg"
+ },
+ {
+  "id": "p70",
+  "src": "/lens-test/p70.jpg",
+  "lens": "sigma",
+  "author": "Esquilo",
+  "license": "CC BY-SA 3.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Genb%C3%B6te2.jpg"
+ },
+ {
+  "id": "p71",
+  "src": "/lens-test/p71.jpg",
+  "lens": "sigma",
+  "author": "Esquilo",
+  "license": "CC BY-SA 3.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Dalar%C3%B6_Skans4.jpg"
+ },
+ {
+  "id": "p72",
+  "src": "/lens-test/p72.jpg",
+  "lens": "fuji",
+  "author": "Trougnouf (Benoit Brummer)",
+  "license": "CC BY 4.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Bridge_over_the_Rio_Veleta_stream_along_Sendero_Acequias_del_Poqueira,_Sierra_Nevada_National_Park_(DSCF5490).jpg"
+ },
+ {
+  "id": "p73",
+  "src": "/lens-test/p73.jpg",
+  "lens": "fuji",
+  "author": "Trougnouf (Benoit Brummer)",
+  "license": "CC BY 4.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Head_of_chicken_(DSCF6317)_(cropped).jpg"
+ },
+ {
+  "id": "p74",
+  "src": "/lens-test/p74.jpg",
+  "lens": "sigma",
+  "author": "Esquilo",
+  "license": "CC BY-SA 3.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Strindbergsg%C3%A5rden2.jpg"
  }
 ]

@@ -22,7 +22,11 @@ export const IMAGES = imagesJson as GameImage[]
 // (verbal answers give 0-2 points each, 8 questions ≈ 16 points max).
 // Bump this up if her eye should count more than her stated habits.
 export const IMAGE_WEIGHT = 8
-export const IMAGES_PER_LENS = 8 // shown per playthrough (of 12 in the pool)
+export const IMAGES_PER_LENS = 10 // shown per playthrough, sampled from the pool
+// Sampling tries to avoid over-representing one photographer, but the Commons
+// pools are inherently few-shooter (fuji is mostly Benoit Brummer), so this is
+// a soft cap with top-up rather than a guarantee.
+export const MAX_PER_AUTHOR = 3
 
 export type Option = {
   label: string
