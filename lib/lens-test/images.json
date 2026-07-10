@@ -5,7 +5,9 @@
   "lens": "sigma",
   "author": "Esquilo",
   "license": "CC BY-SA 3.0",
-  "page": "https://commons.wikimedia.org/wiki/File:Stridsb%C3%A5t_90_Polis.jpg"
+  "page": "https://commons.wikimedia.org/wiki/File:Stridsb%C3%A5t_90_Polis.jpg",
+  "theme": "harbor-boats",
+  "quality": 4
  },
  {
   "id": "p02",
@@ -13,7 +15,9 @@
   "lens": "fuji",
   "author": "Trougnouf",
   "license": "CC BY 4.0",
-  "page": "https://commons.wikimedia.org/wiki/File:Produces_covered_in_snow_at_March%C3%A9_de_Boitsfort_(Belgium).jpg"
+  "page": "https://commons.wikimedia.org/wiki/File:Produces_covered_in_snow_at_March%C3%A9_de_Boitsfort_(Belgium).jpg",
+  "theme": "city-street",
+  "quality": 3
  },
  {
   "id": "p03",
@@ -21,15 +25,9 @@
   "lens": "fuji",
   "author": "Shiro_KUROGI",
   "license": "CC BY 4.0",
-  "page": "https://commons.wikimedia.org/wiki/File:Matsuo_Nieuwe_Brug_over_de_Mimi,_gezien_naar_het_oostzuidoosten,_-28_mei_2019.jpg"
- },
- {
-  "id": "p04",
-  "src": "/lens-test/p04.jpg",
-  "lens": "fuji",
-  "author": "Trougnouf",
-  "license": "CC BY 4.0",
-  "page": "https://commons.wikimedia.org/wiki/File:Abandonned_fireless_steam_locomotive_attached_to_the_SNCB_B22490_type-K3_carriage_with_a_pink_human_in_As,_Belgium_(V03.0006_3541_16_DSCF3132).jpg"
+  "page": "https://commons.wikimedia.org/wiki/File:Matsuo_Nieuwe_Brug_over_de_Mimi,_gezien_naar_het_oostzuidoosten,_-28_mei_2019.jpg",
+  "theme": "nature-landscape",
+  "quality": 5
  },
  {
   "id": "p05",
@@ -37,15 +35,9 @@
   "lens": "sigma",
   "author": "Marie-Lan Nguyen",
   "license": "Public domain",
-  "page": "https://commons.wikimedia.org/wiki/File:Ploughman_Louvre_CA352.jpg"
- },
- {
-  "id": "p06",
-  "src": "/lens-test/p06.jpg",
-  "lens": "fuji",
-  "author": "Trougnouf (Benoit Brummer)",
-  "license": "CC BY 4.0",
-  "page": "https://commons.wikimedia.org/wiki/File:Three_people_posing_in_front_of_the_Brussels_City_Museum_while_Grand_Place_is_unusually_empty_because_of_the_COVID-19_pandemic_(DSCF7223).jpg"
+  "page": "https://commons.wikimedia.org/wiki/File:Ploughman_Louvre_CA352.jpg",
+  "theme": "museum-art",
+  "quality": 3
  },
  {
   "id": "p07",
@@ -53,7 +45,9 @@
   "lens": "fuji",
   "author": "trougnouf (Benoit Brummer)",
   "license": "CC BY 4.0",
-  "page": "https://commons.wikimedia.org/wiki/File:View_of_False_Creek_from_the_Cambie_Street_Bridge_during_civil_twilight_in_Vancouver,_BC_(DSCF7477).jpg"
+  "page": "https://commons.wikimedia.org/wiki/File:View_of_False_Creek_from_the_Cambie_Street_Bridge_during_civil_twilight_in_Vancouver,_BC_(DSCF7477).jpg",
+  "theme": "water-landscape",
+  "quality": 5
  },
  {
   "id": "p08",
@@ -61,15 +55,9 @@
   "lens": "fuji",
   "author": "trougnouf (Benoit Brummer)",
   "license": "CC BY 4.0",
-  "page": "https://commons.wikimedia.org/wiki/File:Neotamias_minimus_on_the_first_peak_of_Stawamus_Chief_(DSCF7696).jpg"
- },
- {
-  "id": "p09",
-  "src": "/lens-test/p09.jpg",
-  "lens": "sigma",
-  "author": "Esquilo",
-  "license": "CC BY-SA 3.0",
-  "page": "https://commons.wikimedia.org/wiki/File:Ingar%C3%B6_varv.jpg"
+  "page": "https://commons.wikimedia.org/wiki/File:Neotamias_minimus_on_the_first_peak_of_Stawamus_Chief_(DSCF7696).jpg",
+  "theme": "animal",
+  "quality": 4
  },
  {
   "id": "p10",
@@ -77,7 +65,9 @@
   "lens": "fuji",
   "author": "RaiyaniM",
   "license": "CC BY-SA 4.0",
-  "page": "https://commons.wikimedia.org/wiki/File:Raiyani_Muharramah_Pakaian_anak_badui_dalamDSCF2604.jpg"
+  "page": "https://commons.wikimedia.org/wiki/File:Raiyani_Muharramah_Pakaian_anak_badui_dalamDSCF2604.jpg",
+  "theme": "people",
+  "quality": 4
  },
  {
   "id": "p11",
@@ -85,7 +75,9 @@
   "lens": "fuji",
   "author": "Trougnouf",
   "license": "CC BY 4.0",
-  "page": "https://commons.wikimedia.org/wiki/File:Rock_dove_(Columba_livia)_standing_on_place_de_la_Bourse,_Brussels,_Belgium_(DSCF4427).jpg"
+  "page": "https://commons.wikimedia.org/wiki/File:Rock_dove_(Columba_livia)_standing_on_place_de_la_Bourse,_Brussels,_Belgium_(DSCF4427).jpg",
+  "theme": "animal",
+  "quality": 3
  },
  {
   "id": "p12",
@@ -93,7 +85,9 @@
   "lens": "fuji",
   "author": "Trougnouf",
   "license": "CC BY 4.0",
-  "page": "https://commons.wikimedia.org/wiki/File:Boogie_Belgique_concert_at_De_Roma_(2018-03-03,_DSCF4569).jpg"
+  "page": "https://commons.wikimedia.org/wiki/File:Boogie_Belgique_concert_at_De_Roma_(2018-03-03,_DSCF4569).jpg",
+  "theme": "people",
+  "quality": 4
  },
  {
   "id": "p13",
@@ -101,7 +95,9 @@
   "lens": "sigma",
   "author": "Marie-Lan Nguyen",
   "license": "CC BY 2.5",
-  "page": "https://commons.wikimedia.org/wiki/File:Golden_tabby_and_white_kitten_n03.jpg"
+  "page": "https://commons.wikimedia.org/wiki/File:Golden_tabby_and_white_kitten_n03.jpg",
+  "theme": "animal",
+  "quality": 5
  },
  {
   "id": "p14",
@@ -109,15 +105,9 @@
   "lens": "sigma",
   "author": "Esquilo",
   "license": "CC BY-SA 3.0",
-  "page": "https://commons.wikimedia.org/wiki/File:M%C3%A5sknuv1.jpg"
- },
- {
-  "id": "p15",
-  "src": "/lens-test/p15.jpg",
-  "lens": "sigma",
-  "author": "Dillan Payne",
-  "license": "CC BY-SA 4.0",
-  "page": "https://commons.wikimedia.org/wiki/File:Eglinton_Avenue_at_Yonge_Street,_April_11_2026.jpg"
+  "page": "https://commons.wikimedia.org/wiki/File:M%C3%A5sknuv1.jpg",
+  "theme": "water-landscape",
+  "quality": 3
  },
  {
   "id": "p16",
@@ -125,7 +115,9 @@
   "lens": "sigma",
   "author": "Dillan Payne",
   "license": "CC BY-SA 4.0",
-  "page": "https://commons.wikimedia.org/wiki/File:Times_Square,_June_11_2026_(01).jpg"
+  "page": "https://commons.wikimedia.org/wiki/File:Times_Square,_June_11_2026_(01).jpg",
+  "theme": "night",
+  "quality": 4
  },
  {
   "id": "p17",
@@ -133,7 +125,9 @@
   "lens": "sigma",
   "author": "Esquilo",
   "license": "CC BY-SA 3.0",
-  "page": "https://commons.wikimedia.org/wiki/File:Sandhamns_bageri.jpg"
+  "page": "https://commons.wikimedia.org/wiki/File:Sandhamns_bageri.jpg",
+  "theme": "architecture",
+  "quality": 3
  },
  {
   "id": "p18",
@@ -141,7 +135,9 @@
   "lens": "fuji",
   "author": "Trougnouf",
   "license": "CC BY 4.0",
-  "page": "https://commons.wikimedia.org/wiki/File:Jacques_Brel_memorial_bronze_statue_by_Tom_Frantzen_on_place_de_la_Vieille_Halle_aux_Bl%C3%A9s_during_the_evening_civil_twilight_in_Brussels,_Belgium_(DSCF4319).jpg"
+  "page": "https://commons.wikimedia.org/wiki/File:Jacques_Brel_memorial_bronze_statue_by_Tom_Frantzen_on_place_de_la_Vieille_Halle_aux_Bl%C3%A9s_during_the_evening_civil_twilight_in_Brussels,_Belgium_(DSCF4319).jpg",
+  "theme": "city-street",
+  "quality": 4
  },
  {
   "id": "p19",
@@ -149,7 +145,9 @@
   "lens": "sigma",
   "author": "Esquilo",
   "license": "CC BY-SA 3.0",
-  "page": "https://commons.wikimedia.org/wiki/File:Dalar%C3%B6_Skans2.jpg"
+  "page": "https://commons.wikimedia.org/wiki/File:Dalar%C3%B6_Skans2.jpg",
+  "theme": "water-landscape",
+  "quality": 4
  },
  {
   "id": "p20",
@@ -157,7 +155,9 @@
   "lens": "sigma",
   "author": "Marie-Lan Nguyen",
   "license": "Public domain",
-  "page": "https://commons.wikimedia.org/wiki/File:Julia_MBA_Rennes_D.1863.1.83_n02.jpg"
+  "page": "https://commons.wikimedia.org/wiki/File:Julia_MBA_Rennes_D.1863.1.83_n02.jpg",
+  "theme": "museum-art",
+  "quality": 4
  },
  {
   "id": "p21",
@@ -165,7 +165,9 @@
   "lens": "fuji",
   "author": "trougnouf (Benoit Brummer)",
   "license": "CC BY 4.0",
-  "page": "https://commons.wikimedia.org/wiki/File:Spyglass_Dock_with_a_pianist_during_golden_hour_(DSCF7418).jpg"
+  "page": "https://commons.wikimedia.org/wiki/File:Spyglass_Dock_with_a_pianist_during_golden_hour_(DSCF7418).jpg",
+  "theme": "city-street",
+  "quality": 5
  },
  {
   "id": "p22",
@@ -173,7 +175,9 @@
   "lens": "fuji",
   "author": "Trougnouf (Benoit Brummer)",
   "license": "CC BY 4.0",
-  "page": "https://commons.wikimedia.org/wiki/File:Miell%C3%A4tno_river_from_a_bridge_along_the_Padjelantaleden_(DSCF1610).jpg"
+  "page": "https://commons.wikimedia.org/wiki/File:Miell%C3%A4tno_river_from_a_bridge_along_the_Padjelantaleden_(DSCF1610).jpg",
+  "theme": "water-landscape",
+  "quality": 4
  },
  {
   "id": "p23",
@@ -181,15 +185,9 @@
   "lens": "sigma",
   "author": "Esquilo",
   "license": "CC BY-SA 3.0",
-  "page": "https://commons.wikimedia.org/wiki/File:Sk%C3%B6tkobben.jpg"
- },
- {
-  "id": "p24",
-  "src": "/lens-test/p24.jpg",
-  "lens": "sigma",
-  "author": "Dillan Payne",
-  "license": "CC BY-SA 4.0",
-  "page": "https://commons.wikimedia.org/wiki/File:Cineplex_Cinemas_at_Pickering_City_Centre,_January_17_2026.jpg"
+  "page": "https://commons.wikimedia.org/wiki/File:Sk%C3%B6tkobben.jpg",
+  "theme": "water-landscape",
+  "quality": 3
  },
  {
   "id": "p25",
@@ -197,7 +195,9 @@
   "lens": "sigma",
   "author": "Marie-Lan Nguyen",
   "license": "CC BY 2.5",
-  "page": "https://commons.wikimedia.org/wiki/File:Golden_tabby_and_white_kitten_n01.jpg"
+  "page": "https://commons.wikimedia.org/wiki/File:Golden_tabby_and_white_kitten_n01.jpg",
+  "theme": "animal",
+  "quality": 5
  },
  {
   "id": "p26",
@@ -205,7 +205,9 @@
   "lens": "fuji",
   "author": "trougnouf (Benoit Brummer)",
   "license": "CC BY 4.0",
-  "page": "https://commons.wikimedia.org/wiki/File:Neotamias_minimus_on_Stawamus_Chief_(DSCF7729).jpg"
+  "page": "https://commons.wikimedia.org/wiki/File:Neotamias_minimus_on_Stawamus_Chief_(DSCF7729).jpg",
+  "theme": "animal",
+  "quality": 4
  },
  {
   "id": "p27",
@@ -213,15 +215,9 @@
   "lens": "sigma",
   "author": "Marie-Lan Nguyen",
   "license": "CC BY 2.5",
-  "page": "https://commons.wikimedia.org/wiki/File:Hyakinthos_MGEt_Inv34624.jpg"
- },
- {
-  "id": "p28",
-  "src": "/lens-test/p28.jpg",
-  "lens": "sigma",
-  "author": "Dillan Payne",
-  "license": "CC BY-SA 4.0",
-  "page": "https://commons.wikimedia.org/wiki/File:Subway_Platform_at_Forest_Avenue_station,_June_11_2026.jpg"
+  "page": "https://commons.wikimedia.org/wiki/File:Hyakinthos_MGEt_Inv34624.jpg",
+  "theme": "museum-art",
+  "quality": 3
  },
  {
   "id": "p29",
@@ -229,7 +225,9 @@
   "lens": "sigma",
   "author": "Esquilo",
   "license": "CC BY-SA 3.0",
-  "page": "https://commons.wikimedia.org/wiki/File:Beatelund.jpg"
+  "page": "https://commons.wikimedia.org/wiki/File:Beatelund.jpg",
+  "theme": "water-landscape",
+  "quality": 3
  },
  {
   "id": "p30",
@@ -237,15 +235,9 @@
   "lens": "sigma",
   "author": "Esquilo",
   "license": "CC BY-SA 3.0",
-  "page": "https://commons.wikimedia.org/wiki/File:Kvarnen_p%C3%A5_Waldemarsudde.jpg"
- },
- {
-  "id": "p31",
-  "src": "/lens-test/p31.jpg",
-  "lens": "sigma",
-  "author": "Dillan Payne",
-  "license": "CC BY-SA 4.0",
-  "page": "https://commons.wikimedia.org/wiki/File:Toronto_Rocket_Train_at_St_Andrew_Station,_March_25_2026.jpg"
+  "page": "https://commons.wikimedia.org/wiki/File:Kvarnen_p%C3%A5_Waldemarsudde.jpg",
+  "theme": "water-landscape",
+  "quality": 4
  },
  {
   "id": "p32",
@@ -253,7 +245,9 @@
   "lens": "fuji",
   "author": "trougnouf (Benoit Brummer)",
   "license": "CC BY 4.0",
-  "page": "https://commons.wikimedia.org/wiki/File:Boulder_along_the_chief_hike_in_Stawamus_Chief_Provincial_Park,_BC_(DSCF7553).jpg"
+  "page": "https://commons.wikimedia.org/wiki/File:Boulder_along_the_chief_hike_in_Stawamus_Chief_Provincial_Park,_BC_(DSCF7553).jpg",
+  "theme": "nature-landscape",
+  "quality": 3
  },
  {
   "id": "p33",
@@ -261,7 +255,9 @@
   "lens": "sigma",
   "author": "Dillan Payne",
   "license": "CC BY-SA 4.0",
-  "page": "https://commons.wikimedia.org/wiki/File:Line_5_Flexity_Freedom_LRT_at_Forest_Hill_Station,_February_8_2026_(02).jpg"
+  "page": "https://commons.wikimedia.org/wiki/File:Line_5_Flexity_Freedom_LRT_at_Forest_Hill_Station,_February_8_2026_(02).jpg",
+  "theme": "transit",
+  "quality": 3
  },
  {
   "id": "p34",
@@ -269,7 +265,9 @@
   "lens": "sigma",
   "author": "Marie-Lan Nguyen",
   "license": "Public domain",
-  "page": "https://commons.wikimedia.org/wiki/File:Julia_MBA_Rennes_D.1863.1.83_n01.jpg"
+  "page": "https://commons.wikimedia.org/wiki/File:Julia_MBA_Rennes_D.1863.1.83_n01.jpg",
+  "theme": "museum-art",
+  "quality": 4
  },
  {
   "id": "p35",
@@ -277,7 +275,9 @@
   "lens": "fuji",
   "author": "Trougnouf",
   "license": "CC BY 4.0",
-  "page": "https://commons.wikimedia.org/wiki/File:Water_treatment_plant_in_an_abandoned_steel_factory_in_Oupeye,_Belgium_(DSCF3285).jpg"
+  "page": "https://commons.wikimedia.org/wiki/File:Water_treatment_plant_in_an_abandoned_steel_factory_in_Oupeye,_Belgium_(DSCF3285).jpg",
+  "theme": "architecture",
+  "quality": 3
  },
  {
   "id": "p36",
@@ -285,15 +285,9 @@
   "lens": "sigma",
   "author": "Esquilo",
   "license": "CC BY-SA 3.0",
-  "page": "https://commons.wikimedia.org/wiki/File:Rosella02.jpg"
- },
- {
-  "id": "p37",
-  "src": "/lens-test/p37.jpg",
-  "lens": "sigma",
-  "author": "Dillan Payne",
-  "license": "CC BY-SA 4.0",
-  "page": "https://commons.wikimedia.org/wiki/File:Line_5_Flexity_Freedom_LRT_at_Mount_Dennis_Station,_February_8_2026_(01).jpg"
+  "page": "https://commons.wikimedia.org/wiki/File:Rosella02.jpg",
+  "theme": "harbor-boats",
+  "quality": 3
  },
  {
   "id": "p38",
@@ -301,7 +295,9 @@
   "lens": "fuji",
   "author": "trougnouf (Benoit Brummer)",
   "license": "CC BY 4.0",
-  "page": "https://commons.wikimedia.org/wiki/File:View_under_the_Cambie_Street_bridge_from_Spyglass_Dock_in_Vancouver,_BC_(DSCF7459).jpg"
+  "page": "https://commons.wikimedia.org/wiki/File:View_under_the_Cambie_Street_bridge_from_Spyglass_Dock_in_Vancouver,_BC_(DSCF7459).jpg",
+  "theme": "water-landscape",
+  "quality": 4
  },
  {
   "id": "p39",
@@ -309,7 +305,9 @@
   "lens": "sigma",
   "author": "Esquilo",
   "license": "CC BY-SA 3.0",
-  "page": "https://commons.wikimedia.org/wiki/File:Sollenkroka_brygga.jpg"
+  "page": "https://commons.wikimedia.org/wiki/File:Sollenkroka_brygga.jpg",
+  "theme": "harbor-boats",
+  "quality": 3
  },
  {
   "id": "p40",
@@ -317,23 +315,9 @@
   "lens": "sigma",
   "author": "Esquilo",
   "license": "CC BY-SA 3.0",
-  "page": "https://commons.wikimedia.org/wiki/File:Str%C3%B6mma_kanal3.jpg"
- },
- {
-  "id": "p41",
-  "src": "/lens-test/p41.jpg",
-  "lens": "sigma",
-  "author": "Dillan Payne",
-  "license": "CC BY-SA 4.0",
-  "page": "https://commons.wikimedia.org/wiki/File:Mount_Dennis_Station_Line_5_Platform,_February_8_2026.jpg"
- },
- {
-  "id": "p42",
-  "src": "/lens-test/p42.jpg",
-  "lens": "sigma",
-  "author": "Dillan Payne",
-  "license": "CC BY-SA 4.0",
-  "page": "https://commons.wikimedia.org/wiki/File:R160_E_Train_at_23rd_Street_station_(8th_Ave),_June_12_2026_(01).jpg"
+  "page": "https://commons.wikimedia.org/wiki/File:Str%C3%B6mma_kanal3.jpg",
+  "theme": "harbor-boats",
+  "quality": 3
  },
  {
   "id": "p43",
@@ -341,7 +325,9 @@
   "lens": "sigma",
   "author": "Esquilo",
   "license": "CC BY-SA 3.0",
-  "page": "https://commons.wikimedia.org/wiki/File:V%C3%A4rmd%C3%B6-Garpen.jpg"
+  "page": "https://commons.wikimedia.org/wiki/File:V%C3%A4rmd%C3%B6-Garpen.jpg",
+  "theme": "water-landscape",
+  "quality": 3
  },
  {
   "id": "p44",
@@ -349,7 +335,9 @@
   "lens": "sigma",
   "author": "Marie-Lan Nguyen",
   "license": "CC BY 2.5",
-  "page": "https://commons.wikimedia.org/wiki/File:Golden_tabby_and_white_kitten_n02.jpg"
+  "page": "https://commons.wikimedia.org/wiki/File:Golden_tabby_and_white_kitten_n02.jpg",
+  "theme": "animal",
+  "quality": 5
  },
  {
   "id": "p45",
@@ -357,7 +345,9 @@
   "lens": "sigma",
   "author": "Esquilo",
   "license": "CC BY-SA 3.0",
-  "page": "https://commons.wikimedia.org/wiki/File:Sm%C3%B6rasken.jpg"
+  "page": "https://commons.wikimedia.org/wiki/File:Sm%C3%B6rasken.jpg",
+  "theme": "water-landscape",
+  "quality": 3
  },
  {
   "id": "p46",
@@ -365,7 +355,9 @@
   "lens": "fuji",
   "author": "Trougnouf (Benoit Brummer)",
   "license": "CC BY 4.0",
-  "page": "https://commons.wikimedia.org/wiki/File:Scottish_Highland_cow_in_Westduinpark,_The_Hague_(DSCF1446).jpg"
+  "page": "https://commons.wikimedia.org/wiki/File:Scottish_Highland_cow_in_Westduinpark,_The_Hague_(DSCF1446).jpg",
+  "theme": "animal",
+  "quality": 4
  },
  {
   "id": "p47",
@@ -373,15 +365,9 @@
   "lens": "fuji",
   "author": "Trougnouf",
   "license": "CC BY 4.0",
-  "page": "https://commons.wikimedia.org/wiki/File:Partial_view_of_the_front_of_Sanatorium_du_Basil,_Stoumont,_Belgium_(DSCF3497).jpg"
- },
- {
-  "id": "p48",
-  "src": "/lens-test/p48.jpg",
-  "lens": "fuji",
-  "author": "Trougnouf",
-  "license": "CC BY 4.0",
-  "page": "https://commons.wikimedia.org/wiki/File:Abandoned_Chertal_steel_factory_in_Oupeye,_Belgium_(DSCF3314).jpg"
+  "page": "https://commons.wikimedia.org/wiki/File:Partial_view_of_the_front_of_Sanatorium_du_Basil,_Stoumont,_Belgium_(DSCF3497).jpg",
+  "theme": "architecture",
+  "quality": 3
  },
  {
   "id": "p49",
@@ -389,23 +375,9 @@
   "lens": "fuji",
   "author": "Trougnouf (Benoit Brummer)",
   "license": "CC BY 4.0",
-  "page": "https://commons.wikimedia.org/wiki/File:Sint-Bartholomeuskerk,_Pollinkhove_(DSCF9534).jpg"
- },
- {
-  "id": "p50",
-  "src": "/lens-test/p50.jpg",
-  "lens": "fuji",
-  "author": "Trougnouf (Benoit Brummer)",
-  "license": "CC BY 4.0",
-  "page": "https://commons.wikimedia.org/wiki/File:Kazandmolen_in_Roeselare_(DSCF0018).jpg"
- },
- {
-  "id": "p51",
-  "src": "/lens-test/p51.jpg",
-  "lens": "sigma",
-  "author": "Dillan Payne",
-  "license": "CC BY-SA 4.0",
-  "page": "https://commons.wikimedia.org/wiki/File:Entrance_to_St._George_station,_April_3_2026.jpg"
+  "page": "https://commons.wikimedia.org/wiki/File:Sint-Bartholomeuskerk,_Pollinkhove_(DSCF9534).jpg",
+  "theme": "architecture",
+  "quality": 3
  },
  {
   "id": "p52",
@@ -413,7 +385,9 @@
   "lens": "fuji",
   "author": "Trougnouf",
   "license": "CC BY 4.0",
-  "page": "https://commons.wikimedia.org/wiki/File:Tour_de_Villers_with_art_installation_%22Impasse%22_by_Juliane_Lavis_and_Bernard_Declercq_in_Brussels_(DSCF4342).jpg"
+  "page": "https://commons.wikimedia.org/wiki/File:Tour_de_Villers_with_art_installation_%22Impasse%22_by_Juliane_Lavis_and_Bernard_Declercq_in_Brussels_(DSCF4342).jpg",
+  "theme": "architecture",
+  "quality": 3
  },
  {
   "id": "p53",
@@ -421,7 +395,9 @@
   "lens": "fuji",
   "author": "Trougnouf",
   "license": "CC BY 4.0",
-  "page": "https://commons.wikimedia.org/wiki/File:View_from_a_tent_in_the_woods_by_Route_de_l%27Ancienne_Douane_in_Stavelot,_Belgium_(sensor_is_fogged,_DSCF3615).jpg"
+  "page": "https://commons.wikimedia.org/wiki/File:View_from_a_tent_in_the_woods_by_Route_de_l%27Ancienne_Douane_in_Stavelot,_Belgium_(sensor_is_fogged,_DSCF3615).jpg",
+  "theme": "nature-landscape",
+  "quality": 4
  },
  {
   "id": "p54",
@@ -429,7 +405,9 @@
   "lens": "sigma",
   "author": "Marie-Lan Nguyen",
   "license": "Public domain",
-  "page": "https://commons.wikimedia.org/wiki/File:Satyr_mask_MBA_Rennes_D.1863.1.87.jpg"
+  "page": "https://commons.wikimedia.org/wiki/File:Satyr_mask_MBA_Rennes_D.1863.1.87.jpg",
+  "theme": "museum-art",
+  "quality": 3
  },
  {
   "id": "p55",
@@ -437,7 +415,9 @@
   "lens": "fuji",
   "author": "Trougnouf",
   "license": "CC BY 4.0",
-  "page": "https://commons.wikimedia.org/wiki/File:Pont_Atlas_at_night_in_Liege,_Belgium_(DSCF3325).jpg"
+  "page": "https://commons.wikimedia.org/wiki/File:Pont_Atlas_at_night_in_Liege,_Belgium_(DSCF3325).jpg",
+  "theme": "night",
+  "quality": 4
  },
  {
   "id": "p56",
@@ -445,7 +425,9 @@
   "lens": "fuji",
   "author": "Trougnouf (Benoit Brummer)",
   "license": "CC BY 4.0",
-  "page": "https://commons.wikimedia.org/wiki/File:SE-JJF_Airbus_EC_120B_Colibri_helicopter_operated_by_Fiskflyg_in_Sarek_National_Park_(DSCF1087).jpg"
+  "page": "https://commons.wikimedia.org/wiki/File:SE-JJF_Airbus_EC_120B_Colibri_helicopter_operated_by_Fiskflyg_in_Sarek_National_Park_(DSCF1087).jpg",
+  "theme": "transit",
+  "quality": 3
  },
  {
   "id": "p57",
@@ -453,7 +435,9 @@
   "lens": "fuji",
   "author": "trougnouf (Benoit Brummer)",
   "license": "CC BY 4.0",
-  "page": "https://commons.wikimedia.org/wiki/File:Hydrangea_in_Vancouver,_BC_(DSCF7966).jpg"
+  "page": "https://commons.wikimedia.org/wiki/File:Hydrangea_in_Vancouver,_BC_(DSCF7966).jpg",
+  "theme": "detail",
+  "quality": 4
  },
  {
   "id": "p58",
@@ -461,15 +445,9 @@
   "lens": "sigma",
   "author": "Esquilo",
   "license": "CC BY-SA 3.0",
-  "page": "https://commons.wikimedia.org/wiki/File:Silja_Galaxy.jpg"
- },
- {
-  "id": "p59",
-  "src": "/lens-test/p59.jpg",
-  "lens": "sigma",
-  "author": "Dillan Payne",
-  "license": "CC BY-SA 4.0",
-  "page": "https://commons.wikimedia.org/wiki/File:CPKC_Rail_Bridge_along_Willow_Beach_Road,_July_2_2026_(02).jpg"
+  "page": "https://commons.wikimedia.org/wiki/File:Silja_Galaxy.jpg",
+  "theme": "harbor-boats",
+  "quality": 3
  },
  {
   "id": "p60",
@@ -477,15 +455,9 @@
   "lens": "fuji",
   "author": "Trougnouf (Benoit Brummer)",
   "license": "CC BY 4.0",
-  "page": "https://commons.wikimedia.org/wiki/File:Ice_trapped_plant_along_the_GR_16_in_Vresse-sur-Semois_(DSCF5039).jpg"
- },
- {
-  "id": "p61",
-  "src": "/lens-test/p61.jpg",
-  "lens": "sigma",
-  "author": "Dillan Payne",
-  "license": "CC BY-SA 4.0",
-  "page": "https://commons.wikimedia.org/wiki/File:Site_of_Future_Caledonia_GO_Station,_February_13_2026_(01).jpg"
+  "page": "https://commons.wikimedia.org/wiki/File:Ice_trapped_plant_along_the_GR_16_in_Vresse-sur-Semois_(DSCF5039).jpg",
+  "theme": "detail",
+  "quality": 4
  },
  {
   "id": "p62",
@@ -493,7 +465,9 @@
   "lens": "fuji",
   "author": "Trougnouf",
   "license": "CC BY 4.0",
-  "page": "https://commons.wikimedia.org/wiki/File:Intersection_of_Rue_Franciscus_Vandevelde_and_Rue_Jean_Ekelmans,_looking_towards_Rue_Jean_Ekelmans,_December_evening_(civil_twilight)_in_Auderghem,_Belgium.jpg"
+  "page": "https://commons.wikimedia.org/wiki/File:Intersection_of_Rue_Franciscus_Vandevelde_and_Rue_Jean_Ekelmans,_looking_towards_Rue_Jean_Ekelmans,_December_evening_(civil_twilight)_in_Auderghem,_Belgium.jpg",
+  "theme": "night",
+  "quality": 4
  },
  {
   "id": "p63",
@@ -501,7 +475,9 @@
   "lens": "sigma",
   "author": "Esquilo",
   "license": "CC BY-SA 3.0",
-  "page": "https://commons.wikimedia.org/wiki/File:Rankar%C3%B6.jpg"
+  "page": "https://commons.wikimedia.org/wiki/File:Rankar%C3%B6.jpg",
+  "theme": "water-landscape",
+  "quality": 3
  },
  {
   "id": "p64",
@@ -509,7 +485,9 @@
   "lens": "fuji",
   "author": "Trougnouf",
   "license": "CC BY 4.0",
-  "page": "https://commons.wikimedia.org/wiki/File:Pink_human_looking_left_(DSCF3775).jpg"
+  "page": "https://commons.wikimedia.org/wiki/File:Pink_human_looking_left_(DSCF3775).jpg",
+  "theme": "people",
+  "quality": 3
  },
  {
   "id": "p65",
@@ -517,7 +495,9 @@
   "lens": "sigma",
   "author": "Esquilo",
   "license": "CC BY-SA 3.0",
-  "page": "https://commons.wikimedia.org/wiki/File:Mans%C3%B6ren.jpg"
+  "page": "https://commons.wikimedia.org/wiki/File:Mans%C3%B6ren.jpg",
+  "theme": "water-landscape",
+  "quality": 3
  },
  {
   "id": "p66",
@@ -525,7 +505,9 @@
   "lens": "fuji",
   "author": "trougnouf (Benoit Brummer)",
   "license": "CC BY 4.0",
-  "page": "https://commons.wikimedia.org/wiki/File:Stawamus_Chief_Provincial_Park_(DSCF7799).jpg"
+  "page": "https://commons.wikimedia.org/wiki/File:Stawamus_Chief_Provincial_Park_(DSCF7799).jpg",
+  "theme": "nature-landscape",
+  "quality": 4
  },
  {
   "id": "p67",
@@ -533,7 +515,9 @@
   "lens": "fuji",
   "author": "Trougnouf",
   "license": "CC BY 4.0",
-  "page": "https://commons.wikimedia.org/wiki/File:Boogie_Belgique_concert_at_De_Roma_(2018-03-03,_DSCF4735).jpg"
+  "page": "https://commons.wikimedia.org/wiki/File:Boogie_Belgique_concert_at_De_Roma_(2018-03-03,_DSCF4735).jpg",
+  "theme": "people",
+  "quality": 3
  },
  {
   "id": "p68",
@@ -541,7 +525,9 @@
   "lens": "fuji",
   "author": "Trougnouf (Benoit Brummer)",
   "license": "CC BY 4.0",
-  "page": "https://commons.wikimedia.org/wiki/File:Sunrise_over_a_valley_in_Capileira,_Sierra_Nevada_National_Park_(DSCF5388).jpg"
+  "page": "https://commons.wikimedia.org/wiki/File:Sunrise_over_a_valley_in_Capileira,_Sierra_Nevada_National_Park_(DSCF5388).jpg",
+  "theme": "nature-landscape",
+  "quality": 5
  },
  {
   "id": "p69",
@@ -549,7 +535,9 @@
   "lens": "fuji",
   "author": "Trougnouf (Benoit Brummer)",
   "license": "CC BY 4.0",
-  "page": "https://commons.wikimedia.org/wiki/File:Ch%C3%A2teau_Sainte-Anne_(DSCF7140).jpg"
+  "page": "https://commons.wikimedia.org/wiki/File:Ch%C3%A2teau_Sainte-Anne_(DSCF7140).jpg",
+  "theme": "architecture",
+  "quality": 4
  },
  {
   "id": "p70",
@@ -557,7 +545,9 @@
   "lens": "sigma",
   "author": "Esquilo",
   "license": "CC BY-SA 3.0",
-  "page": "https://commons.wikimedia.org/wiki/File:Genb%C3%B6te2.jpg"
+  "page": "https://commons.wikimedia.org/wiki/File:Genb%C3%B6te2.jpg",
+  "theme": "water-landscape",
+  "quality": 4
  },
  {
   "id": "p71",
@@ -565,7 +555,9 @@
   "lens": "sigma",
   "author": "Esquilo",
   "license": "CC BY-SA 3.0",
-  "page": "https://commons.wikimedia.org/wiki/File:Dalar%C3%B6_Skans4.jpg"
+  "page": "https://commons.wikimedia.org/wiki/File:Dalar%C3%B6_Skans4.jpg",
+  "theme": "architecture",
+  "quality": 4
  },
  {
   "id": "p72",
@@ -573,7 +565,9 @@
   "lens": "fuji",
   "author": "Trougnouf (Benoit Brummer)",
   "license": "CC BY 4.0",
-  "page": "https://commons.wikimedia.org/wiki/File:Bridge_over_the_Rio_Veleta_stream_along_Sendero_Acequias_del_Poqueira,_Sierra_Nevada_National_Park_(DSCF5490).jpg"
+  "page": "https://commons.wikimedia.org/wiki/File:Bridge_over_the_Rio_Veleta_stream_along_Sendero_Acequias_del_Poqueira,_Sierra_Nevada_National_Park_(DSCF5490).jpg",
+  "theme": "water-landscape",
+  "quality": 4
  },
  {
   "id": "p73",
@@ -581,7 +575,9 @@
   "lens": "fuji",
   "author": "Trougnouf (Benoit Brummer)",
   "license": "CC BY 4.0",
-  "page": "https://commons.wikimedia.org/wiki/File:Head_of_chicken_(DSCF6317)_(cropped).jpg"
+  "page": "https://commons.wikimedia.org/wiki/File:Head_of_chicken_(DSCF6317)_(cropped).jpg",
+  "theme": "animal",
+  "quality": 5
  },
  {
   "id": "p74",
@@ -589,6 +585,8 @@
   "lens": "sigma",
   "author": "Esquilo",
   "license": "CC BY-SA 3.0",
-  "page": "https://commons.wikimedia.org/wiki/File:Strindbergsg%C3%A5rden2.jpg"
+  "page": "https://commons.wikimedia.org/wiki/File:Strindbergsg%C3%A5rden2.jpg",
+  "theme": "architecture",
+  "quality": 4
  }
 ]

@@ -1,0 +1,62 @@
+[
+ {
+  "theme": "animal",
+  "sigma": "p13",
+  "fuji": "p73"
+ },
+ {
+  "theme": "animal",
+  "sigma": "p25",
+  "fuji": "p08"
+ },
+ {
+  "theme": "animal",
+  "sigma": "p44",
+  "fuji": "p26"
+ },
+ {
+  "theme": "architecture",
+  "sigma": "p71",
+  "fuji": "p69"
+ },
+ {
+  "theme": "architecture",
+  "sigma": "p74",
+  "fuji": "p35"
+ },
+ {
+  "theme": "architecture",
+  "sigma": "p17",
+  "fuji": "p47"
+ },
+ {
+  "theme": "night",
+  "sigma": "p16",
+  "fuji": "p55"
+ },
+ {
+  "theme": "transit",
+  "sigma": "p33",
+  "fuji": "p56"
+ },
+ {
+  "theme": "water-landscape",
+  "sigma": "p19",
+  "fuji": "p07"
+ },
+ {
+  "theme": "water-landscape",
+  "sigma": "p30",
+  "fuji": "p22"
+ },
+ {
+  "theme": "water-landscape",
+  "sigma": "p70",
+  "fuji": "p38"
+ },
+ {
+  "theme": "water-landscape",
+  "sigma": "p14",
+  "fuji": "p72"
+ }
+]
