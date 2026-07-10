@@ -429,9 +429,9 @@ export default function LensGame() {
       </div>
 
       <div className="mt-16">
-        <h3 className="font-mono text-sm text-heading mb-1">büyük ifşa</h3>
+        <h3 className="font-mono text-sm text-heading mb-1">perde arkası</h3>
         <p className="text-sm text-muted mb-6">
-          Düellolarda ve karelerde aslında hangisini seçtin?
+          Peki hangisi hangi lensti? Seçimlerin, tek tek:
         </p>
         <div className="space-y-3 mb-10">
           {duelPicks.map((d, i) => {
