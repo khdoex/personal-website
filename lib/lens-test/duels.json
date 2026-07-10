@@ -1,82 +1,67 @@
 [
  {
-  "theme": "animal",
-  "sigma": "p13",
-  "fuji": "p73"
- },
- {
-  "theme": "animal",
-  "sigma": "p25",
-  "fuji": "p08"
- },
- {
-  "theme": "animal",
-  "sigma": "p44",
-  "fuji": "p26"
- },
- {
   "theme": "architecture",
-  "sigma": "p71",
+  "sigma": "p109",
   "fuji": "p69"
  },
  {
   "theme": "architecture",
-  "sigma": "p74",
+  "sigma": "p96",
   "fuji": "p78"
  },
  {
   "theme": "architecture",
-  "sigma": "p17",
+  "sigma": "p102",
   "fuji": "p82"
  },
  {
   "theme": "harbor-boats",
-  "sigma": "p01",
+  "sigma": "p94",
   "fuji": "p79"
  },
  {
-  "theme": "night",
-  "sigma": "p16",
-  "fuji": "p55"
+  "theme": "people",
+  "sigma": "p89",
+  "fuji": "p10"
  },
  {
   "theme": "transit",
-  "sigma": "p33",
+  "sigma": "p101",
   "fuji": "p56"
  },
  {
   "theme": "water-landscape",
-  "sigma": "p19",
+  "sigma": "p97",
   "fuji": "p07"
  },
  {
   "theme": "water-landscape",
-  "sigma": "p30",
+  "sigma": "p100",
   "fuji": "p22"
  },
  {
   "theme": "water-landscape",
-  "sigma": "p70",
+  "sigma": "p105",
   "fuji": "p38"
  },
  {
   "theme": "water-landscape",
-  "sigma": "p14",
+  "sigma": "p108",
   "fuji": "p72"
  },
  {
   "theme": "water-landscape",
-  "sigma": "p23",
+  "sigma": "p91",
   "fuji": "p75"
  },
  {
   "theme": "water-landscape",
-  "sigma": "p29",
+  "sigma": "p92",
   "fuji": "p76"
  },
  {
   "theme": "water-landscape",
-  "sigma": "p43",
+  "sigma": "p93",
   "fuji": "p83"
  }
 ]
