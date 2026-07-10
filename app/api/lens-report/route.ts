@@ -58,7 +58,7 @@ async function deepseekReport(p: GamePayload, s: ReturnType<typeof computeScores
 
   const user = `Karar: Fujifilm X-S20 gövdesi alınacak, iki lens yolu arasında seçim:
 1) "sigma": ${PATH_NAMES.sigma} (sabit f/2.8; loş ışık, eriyen arka plan, video için güçlü; tek seferde alınır)
-2) "fuji": ${PATH_NAMES.fuji} (kit ile ucuz başlangıç + sonradan ikinci el yükseltme; kademeli yol)
+2) "fuji": ${PATH_NAMES.fuji} (kit ile ucuz başlangıç + sonradan XF 16-50 yükseltmesi; kademeli yol)
 
 Kör düello sonuçları (aynı temada iki fotoğraf, hangi lens olduğunu bilmeden seçti):
 - Sigma'nın karesini seçtiği: ${s.duelWins.sigma}
@@ -73,7 +73,7 @@ ${answerLines}
 
 Hesaplanan sonuç: "${s.verdict}" yolu kazandı (skor ${s.sigma.toFixed(1)} - ${s.fuji.toFixed(1)}${s.margin < 0.08 ? ', kıl payı' : ''}).
 
-Somut alışveriş planı (raporda anlat): sigma yolu = gövde + Sigma 18-50 f/2.8 tek seferde; fuji yolu = gövdeyi XC 15-45 kitiyle al, 6-12 ay sonra ikinci el XF 18-55 f/2.8-4 ekle.`
+Somut alışveriş planı (raporda anlat): sigma yolu = gövde + Sigma 18-50 f/2.8 tek seferde; fuji yolu = gövdeyi XC 15-45 kitiyle al, 6-12 ay sonra XF 16-50 f/2.8-4.8 ekle.`
 
   const ctrl = new AbortController()
   const timer = setTimeout(() => ctrl.abort(), 40000)

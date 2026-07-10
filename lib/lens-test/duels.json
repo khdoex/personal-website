@@ -22,12 +22,17 @@
  {
   "theme": "architecture",
   "sigma": "p74",
-  "fuji": "p35"
+  "fuji": "p78"
  },
  {
   "theme": "architecture",
   "sigma": "p17",
-  "fuji": "p47"
+  "fuji": "p82"
+ },
+ {
+  "theme": "harbor-boats",
+  "sigma": "p01",
+  "fuji": "p79"
  },
  {
   "theme": "night",
@@ -58,5 +63,20 @@
   "theme": "water-landscape",
   "sigma": "p14",
   "fuji": "p72"
+ },
+ {
+  "theme": "water-landscape",
+  "sigma": "p23",
+  "fuji": "p75"
+ },
+ {
+  "theme": "water-landscape",
+  "sigma": "p29",
+  "fuji": "p76"
+ },
+ {
+  "theme": "water-landscape",
+  "sigma": "p43",
+  "fuji": "p83"
  }
 ]

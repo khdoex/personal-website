@@ -32,7 +32,7 @@ const RATING_LABELS = ['Bana göre değil', 'Fena değil', 'Bayıldım'] as cons
 
 const LENS_LABELS: Record<LensKey, string> = {
   sigma: 'Sigma 18-50mm f/2.8',
-  fuji: 'Fujifilm XF 18-55mm',
+  fuji: 'Fujifilm XF zoom',
 }
 
 const imageById = new Map(IMAGES.map((i) => [i.id, i]))
@@ -168,7 +168,7 @@ export default function LensGame() {
     if (!result) return
     const lines = [
       'Mercek Testi — sonuçlar',
-      `Sonuç: ${result.verdict === 'sigma' ? 'Sigma 18-50mm f/2.8' : 'Fuji yolu (XC kit → ikinci el XF 18-55)'}`,
+      `Sonuç: ${result.verdict === 'sigma' ? 'Sigma 18-50mm f/2.8' : 'Fuji yolu (XC kit → XF 16-50)'}`,
       `Skor: sigma ${result.scores.sigma} / fuji ${result.scores.fuji}`,
       `Düellolar: sigma ${result.scores.duelWins.sigma} / fuji ${result.scores.duelWins.fuji} / kararsız ${result.scores.duelWins.skipped}`,
       `Tekli puan ortalamaları: sigma ${result.scores.imageAvg.sigma} / fuji ${result.scores.imageAvg.fuji}`,
@@ -177,7 +177,7 @@ export default function LensGame() {
       '',
       ...ratings.map((r) => {
         const img = imageById.get(r.id)
-        return `${r.id} (${img ? LENS_LABELS[img.lens] : '?'}): ${RATING_LABELS[r.rating]}`
+        return `${r.id} (${img?.model ?? (img ? LENS_LABELS[img.lens] : '?')}): ${RATING_LABELS[r.rating]}`
       }),
       '',
       ...QUESTIONS.map((q, i) => `${q.text} -> ${q.options[answers[i]]?.label ?? '-'}`),
@@ -397,7 +397,7 @@ export default function LensGame() {
       <h2 className="text-xl md:text-2xl text-heading font-medium leading-snug max-w-xl">
         {result.verdict === 'sigma'
           ? 'Senin yolun: Sigma 18-50mm f/2.8 — tek seferde, doğrudan.'
-          : 'Senin yolun: önce XC 15-45 kit, sonra ikinci el XF 18-55.'}
+          : 'Senin yolun: önce XC 15-45 kit, sonra XF 16-50.'}
       </h2>
 
       <div className="mt-8 max-w-xl">
@@ -456,7 +456,8 @@ export default function LensGame() {
                     <>
                       seçimin:{' '}
                       <span className={d.chosen === 'sigma' ? 'text-accent' : 'text-amber'}>
-                        {LENS_LABELS[d.chosen as LensKey]}
+                        {imageById.get(d.chosen === 'sigma' ? d.sigma : d.fuji)?.model ??
+                          LENS_LABELS[d.chosen as LensKey]}
                       </span>
                     </>
                   )}
@@ -474,7 +475,7 @@ export default function LensGame() {
                 <img src={img.src} alt="" className="w-full h-24 object-cover" />
                 <figcaption className="p-2 font-mono text-[10px] leading-relaxed">
                   <span className={img.lens === 'sigma' ? 'text-accent' : 'text-amber'}>
-                    {LENS_LABELS[img.lens]}
+                    {img.model ?? LENS_LABELS[img.lens]}
                   </span>
                   <br />
                   <span className="text-muted">{RATING_LABELS[r.rating]}</span>

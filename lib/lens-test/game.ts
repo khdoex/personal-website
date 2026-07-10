@@ -1,7 +1,7 @@
 // Blind lens taste test — shared game data and scoring.
 // Two paths for the X-S20:
 //   sigma -> Sigma 18-50mm f/2.8 DC DN, tek seferde
-//   fuji  -> XC 15-45 kit ile başla, sonra ikinci el XF 18-55 f/2.8-4
+//   fuji  -> XC 15-45 kit ile başla, sonra XF 16-50 f/2.8-4.8
 import imagesJson from './images.json'
 import duelsJson from './duels.json'
 
@@ -16,6 +16,7 @@ export type GameImage = {
   page: string
   theme?: string
   quality?: number
+  model?: string // exact lens shown on the reveal screen
 }
 
 export const IMAGES = imagesJson as GameImage[]
@@ -190,7 +191,7 @@ export function computeScores(p: GamePayload): Scores {
 
 export const PATH_NAMES: Record<LensKey, string> = {
   sigma: 'Sigma 18-50mm f/2.8 DC DN — tek seferde, doğrudan',
-  fuji: 'Fujifilm yolu — önce XC 15-45 kit, sonra ikinci el XF 18-55 f/2.8-4',
+  fuji: 'Fujifilm yolu — önce XC 15-45 kit, sonra XF 16-50 f/2.8-4.8',
 }
 
 export const REPORT_OPENER = 'Canım sevgilim, test sonuçları diyor ki:'
@@ -205,7 +206,7 @@ export function fallbackReport(p: GamePayload, s: Scores): string {
       ? `Karşı karşıya turlarında, hangi fotoğrafın hangi lensten çıktığını bilmeden, ${
           w.sigma > w.fuji
             ? `${w.sigma}-${w.fuji} Sigma f/2.8'in karelerini seçtin`
-            : `${w.fuji}-${w.sigma} Fuji 18-55'in karelerini seçtin`
+            : `${w.fuji}-${w.sigma} Fuji zoom'un karelerini seçtin`
         }${w.skipped ? ` (${w.skipped} turda da ikisini ayıramadın, ki bu da bir cevap)` : ''}.`
       : `Karşı karşıya turlarında ikisi berabere kaldı — gözün iki lensin diline de sıcak bakıyor.`
 
@@ -224,7 +225,7 @@ export function fallbackReport(p: GamePayload, s: Scores): string {
   const plan =
     s.verdict === 'sigma'
       ? `Senin yolun belli: X-S20'nin yanına doğrudan Sigma 18-50mm f/2.8. Sabit f/2.8 diyafram, mum ışığı ve eriyen arka planlar ilk günden seninle olur; tek lensle sade bir çanta, kafanda tek bir soru bile kalmaz.`
-      : `Senin yolun belli: X-S20'yi XC 15-45 kitiyle al — lens neredeyse hediyeye gelir, hafif ve tatlıdır. Kamerayı ve gözünü tanıdıkça, temiz bir ikinci el XF 18-55 f/2.8-4 ile o meşhur Fuji hissine geçersin. Toplamda daha az harcar, iki lense birden sahip olursun.`
+      : `Senin yolun belli: X-S20'yi XC 15-45 kitiyle al — lens neredeyse hediyeye gelir, hafif ve tatlıdır. Kamerayı ve gözünü tanıdıkça, XF 16-50 f/2.8-4.8 ile o meşhur Fuji hissine geçersin. Adım adım gider, sonunda iki lense birden sahip olursun.`
 
   const closer = closeCall
     ? `Ama şunu bil: sonuç kıl payıydı. İki yol da sana yakışıyor — içinden hangisi geliyorsa o, yanlış cevap yok. Seni seviyorum.`

@@ -9,7 +9,9 @@ paths. This game turns the decision into a playful, personal experience on
 kaanhho.com and ends with a written recommendation grounded in her own choices.
 
 - **sigma** path: Sigma 18-50mm f/2.8 DC DN, bought once, directly.
-- **fuji** path: XC 15-45 kit bundle now, used XF 18-55 f/2.8-4 later.
+- **fuji** path: XC 15-45 kit bundle now, XF 16-50 f/2.8-4.8 later.
+  (Blind-test photos mix XF 18-55 and XF 16-50 — same Fujinon variable-aperture
+  family; each photo's exact lens is shown on the reveal screen.)
 
 ## Route & entry
 
