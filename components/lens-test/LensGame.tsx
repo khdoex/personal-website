@@ -56,7 +56,10 @@ export default function LensGame() {
   const [error, setError] = useState(false)
   const [copied, setCopied] = useState(false)
 
+  const toTop = () => window.scrollTo({ top: 0 })
+
   const start = () => {
+    toTop()
     setDeck(sampleImages())
     setImgIndex(0)
     setRatings([])
@@ -73,6 +76,7 @@ export default function LensGame() {
     if (imgIndex + 1 < deck.length) {
       setImgIndex(imgIndex + 1)
     } else {
+      toTop()
       setPhase('questions')
     }
   }
@@ -88,6 +92,7 @@ export default function LensGame() {
   }
 
   const submit = async (finalAnswers: number[]) => {
+    toTop()
     setPhase('loading')
     try {
       const res = await fetch('/api/lens-report', {
@@ -133,6 +138,14 @@ export default function LensGame() {
   if (phase === 'intro') {
     return (
       <div className="reveal max-w-xl">
+        <header className="mb-12">
+          <h1 className="font-mono text-2xl md:text-3xl font-semibold text-heading">
+            mercek testi
+          </h1>
+          <p className="text-muted mt-3 max-w-xl leading-relaxed">
+            bir kör tat testi, ama fotoğraf için. gözün hangi lensi seçiyor?
+          </p>
+        </header>
         <p className="text-foreground leading-relaxed">
           Yeni kameran için iki lens yolu var — ama hangisi{' '}
           <span className="text-heading font-medium">senin</span> yolun?
@@ -162,7 +175,7 @@ export default function LensGame() {
             onChange={(e) => setName(e.target.value)}
             maxLength={40}
             placeholder="…"
-            className="w-full max-w-xs bg-surface border border-border rounded px-3 py-2 text-heading placeholder:text-muted-dark focus:border-accent focus:outline-none"
+            className="w-full max-w-xs bg-surface border border-border rounded px-3 py-2 text-base text-heading placeholder:text-muted-dark focus:border-accent focus:outline-none"
           />
         </div>
         <button
@@ -193,13 +206,14 @@ export default function LensGame() {
             style={{ width: `${(imgIndex / deck.length) * 100}%` }}
           />
         </div>
-        <div className="bg-surface border border-border rounded-lg p-2">
+        {/* fixed height: rating buttons stay put across portrait/landscape photos */}
+        <div className="bg-surface border border-border rounded-lg p-2 h-[46vh] sm:h-[56vh]">
           {/* key forces a fresh fade-in per photo */}
           <img
             key={img.id}
             src={img.src}
             alt="Puanlanacak fotoğraf"
-            className="reveal w-full max-h-[62vh] object-contain rounded"
+            className="reveal w-full h-full object-contain rounded"
           />
         </div>
         {next && <link rel="preload" as="image" href={next.src} />}
@@ -208,7 +222,7 @@ export default function LensGame() {
             <button
               key={label}
               onClick={() => rate(i as 0 | 1 | 2)}
-              className="font-mono text-xs sm:text-sm px-2 py-3 rounded border border-border text-foreground hover:border-accent hover:text-accent transition-colors"
+              className="font-mono text-xs sm:text-sm px-2 py-3 rounded border border-border text-foreground hover:border-accent hover:text-accent transition-colors touch-manipulation select-none"
             >
               {label}
             </button>
@@ -232,7 +246,7 @@ export default function LensGame() {
             <button
               key={opt.label}
               onClick={() => answer(i)}
-              className="text-left px-4 py-3 rounded border border-border text-foreground text-sm hover:border-accent hover:text-heading transition-colors"
+              className="text-left px-4 py-3 rounded border border-border text-foreground text-sm hover:border-accent hover:text-heading transition-colors touch-manipulation"
             >
               {opt.label}
             </button>
