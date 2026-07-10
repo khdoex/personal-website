@@ -8,6 +8,7 @@ const navItems = [
   { href: '/projects', label: 'projects' },
   { href: '/about', label: 'about' },
   { href: '/resume', label: 'resume' },
+  { href: '/lens-test', label: 'lens' },
 ]
 
 export default function Navigation() {
@@ -19,12 +20,12 @@ export default function Navigation() {
         <div className="flex items-center justify-between h-16">
           <Link
             href="/"
-            className="font-mono text-sm font-semibold text-heading hover:text-accent transition-colors"
+            className="font-mono text-sm font-semibold text-heading hover:text-accent transition-colors whitespace-nowrap shrink-0"
           >
             kaan h.<span className="cursor-blink text-accent">▊</span>
           </Link>
 
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-3 sm:gap-6">
             {navItems.map((item) => {
               const isActive = pathname === item.href ||
                 (item.href !== '/' && pathname.startsWith(item.href))

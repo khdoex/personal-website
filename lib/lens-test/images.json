@@ -1,0 +1,194 @@
+[
+ {
+  "id": "p01",
+  "src": "/lens-test/p01.jpg",
+  "lens": "sigma",
+  "author": "Esquilo",
+  "license": "CC BY-SA 3.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Stridsb%C3%A5t_90_Polis.jpg"
+ },
+ {
+  "id": "p02",
+  "src": "/lens-test/p02.jpg",
+  "lens": "fuji",
+  "author": "Trougnouf",
+  "license": "CC BY 4.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Produces_covered_in_snow_at_March%C3%A9_de_Boitsfort_(Belgium).jpg"
+ },
+ {
+  "id": "p03",
+  "src": "/lens-test/p03.jpg",
+  "lens": "fuji",
+  "author": "Shiro_KUROGI",
+  "license": "CC BY 4.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Matsuo_Nieuwe_Brug_over_de_Mimi,_gezien_naar_het_oostzuidoosten,_-28_mei_2019.jpg"
+ },
+ {
+  "id": "p04",
+  "src": "/lens-test/p04.jpg",
+  "lens": "fuji",
+  "author": "Trougnouf",
+  "license": "CC BY 4.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Abandonned_fireless_steam_locomotive_attached_to_the_SNCB_B22490_type-K3_carriage_with_a_pink_human_in_As,_Belgium_(V03.0006_3541_16_DSCF3132).jpg"
+ },
+ {
+  "id": "p05",
+  "src": "/lens-test/p05.jpg",
+  "lens": "sigma",
+  "author": "Marie-Lan Nguyen",
+  "license": "Public domain",
+  "page": "https://commons.wikimedia.org/wiki/File:Ploughman_Louvre_CA352.jpg"
+ },
+ {
+  "id": "p06",
+  "src": "/lens-test/p06.jpg",
+  "lens": "fuji",
+  "author": "Trougnouf (Benoit Brummer)",
+  "license": "CC BY 4.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Three_people_posing_in_front_of_the_Brussels_City_Museum_while_Grand_Place_is_unusually_empty_because_of_the_COVID-19_pandemic_(DSCF7223).jpg"
+ },
+ {
+  "id": "p07",
+  "src": "/lens-test/p07.jpg",
+  "lens": "fuji",
+  "author": "trougnouf (Benoit Brummer)",
+  "license": "CC BY 4.0",
+  "page": "https://commons.wikimedia.org/wiki/File:View_of_False_Creek_from_the_Cambie_Street_Bridge_during_civil_twilight_in_Vancouver,_BC_(DSCF7477).jpg"
+ },
+ {
+  "id": "p08",
+  "src": "/lens-test/p08.jpg",
+  "lens": "fuji",
+  "author": "trougnouf (Benoit Brummer)",
+  "license": "CC BY 4.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Neotamias_minimus_on_the_first_peak_of_Stawamus_Chief_(DSCF7696).jpg"
+ },
+ {
+  "id": "p09",
+  "src": "/lens-test/p09.jpg",
+  "lens": "sigma",
+  "author": "Esquilo",
+  "license": "CC BY-SA 3.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Ingar%C3%B6_varv.jpg"
+ },
+ {
+  "id": "p10",
+  "src": "/lens-test/p10.jpg",
+  "lens": "fuji",
+  "author": "RaiyaniM",
+  "license": "CC BY-SA 4.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Raiyani_Muharramah_Pakaian_anak_badui_dalamDSCF2604.jpg"
+ },
+ {
+  "id": "p11",
+  "src": "/lens-test/p11.jpg",
+  "lens": "fuji",
+  "author": "Trougnouf",
+  "license": "CC BY 4.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Rock_dove_(Columba_livia)_standing_on_place_de_la_Bourse,_Brussels,_Belgium_(DSCF4427).jpg"
+ },
+ {
+  "id": "p12",
+  "src": "/lens-test/p12.jpg",
+  "lens": "fuji",
+  "author": "Trougnouf",
+  "license": "CC BY 4.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Boogie_Belgique_concert_at_De_Roma_(2018-03-03,_DSCF4569).jpg"
+ },
+ {
+  "id": "p13",
+  "src": "/lens-test/p13.jpg",
+  "lens": "sigma",
+  "author": "Marie-Lan Nguyen",
+  "license": "CC BY 2.5",
+  "page": "https://commons.wikimedia.org/wiki/File:Golden_tabby_and_white_kitten_n03.jpg"
+ },
+ {
+  "id": "p14",
+  "src": "/lens-test/p14.jpg",
+  "lens": "sigma",
+  "author": "Esquilo",
+  "license": "CC BY-SA 3.0",
+  "page": "https://commons.wikimedia.org/wiki/File:M%C3%A5sknuv1.jpg"
+ },
+ {
+  "id": "p15",
+  "src": "/lens-test/p15.jpg",
+  "lens": "sigma",
+  "author": "Dillan Payne",
+  "license": "CC BY-SA 4.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Eglinton_Avenue_at_Yonge_Street,_April_11_2026.jpg"
+ },
+ {
+  "id": "p16",
+  "src": "/lens-test/p16.jpg",
+  "lens": "sigma",
+  "author": "Dillan Payne",
+  "license": "CC BY-SA 4.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Times_Square,_June_11_2026_(01).jpg"
+ },
+ {
+  "id": "p17",
+  "src": "/lens-test/p17.jpg",
+  "lens": "sigma",
+  "author": "Esquilo",
+  "license": "CC BY-SA 3.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Sandhamns_bageri.jpg"
+ },
+ {
+  "id": "p18",
+  "src": "/lens-test/p18.jpg",
+  "lens": "fuji",
+  "author": "Trougnouf",
+  "license": "CC BY 4.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Jacques_Brel_memorial_bronze_statue_by_Tom_Frantzen_on_place_de_la_Vieille_Halle_aux_Bl%C3%A9s_during_the_evening_civil_twilight_in_Brussels,_Belgium_(DSCF4319).jpg"
+ },
+ {
+  "id": "p19",
+  "src": "/lens-test/p19.jpg",
+  "lens": "sigma",
+  "author": "Esquilo",
+  "license": "CC BY-SA 3.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Dalar%C3%B6_Skans2.jpg"
+ },
+ {
+  "id": "p20",
+  "src": "/lens-test/p20.jpg",
+  "lens": "sigma",
+  "author": "Marie-Lan Nguyen",
+  "license": "Public domain",
+  "page": "https://commons.wikimedia.org/wiki/File:Julia_MBA_Rennes_D.1863.1.83_n02.jpg"
+ },
+ {
+  "id": "p21",
+  "src": "/lens-test/p21.jpg",
+  "lens": "fuji",
+  "author": "trougnouf (Benoit Brummer)",
+  "license": "CC BY 4.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Spyglass_Dock_with_a_pianist_during_golden_hour_(DSCF7418).jpg"
+ },
+ {
+  "id": "p22",
+  "src": "/lens-test/p22.jpg",
+  "lens": "fuji",
+  "author": "Trougnouf (Benoit Brummer)",
+  "license": "CC BY 4.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Miell%C3%A4tno_river_from_a_bridge_along_the_Padjelantaleden_(DSCF1610).jpg"
+ },
+ {
+  "id": "p23",
+  "src": "/lens-test/p23.jpg",
+  "lens": "sigma",
+  "author": "Esquilo",
+  "license": "CC BY-SA 3.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Sk%C3%B6tkobben.jpg"
+ },
+ {
+  "id": "p24",
+  "src": "/lens-test/p24.jpg",
+  "lens": "sigma",
+  "author": "Dillan Payne",
+  "license": "CC BY-SA 4.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Cineplex_Cinemas_at_Pickering_City_Centre,_January_17_2026.jpg"
+ }
+]
