@@ -14,7 +14,7 @@ export interface SkillGroup {
 }
 
 export const about =
-  'Physicist turned AI engineer and researcher. My research is on mechanistic interpretability, mostly how concepts like refusal are represented geometrically inside language models. I also build applied AI systems, currently in synthetic market research and earlier in audio.'
+  'AI engineer and grad student working on refusal mechanics and safety in llm through interpretability and SCL a new way of doing market research.'
 
 export const experience: ResumeEntry[] = [
   {
@@ -23,11 +23,11 @@ export const experience: ResumeEntry[] = [
     org: 'Synthetic Consumer Lab',
     orgHref: 'https://synthetic-consumers.com/',
     summary:
-      'Sole engineer responsible for the full product stack: backend, frontend, AI systems, and statistical methodology.',
+      'Engineering lead responsible for the full product stack: backend, frontend, AI systems, and statistical methodology.',
     detail: [
       'Architected the platform on a Laravel, Python/FastAPI, and Redis stack',
-      'Built RAG pipelines and synthetic consumer persona systems grounded in real demographic and behavioral data',
-      'Willingness-to-pay experiments and focus group simulations, with AI outputs kept statistically valid and representative for market research',
+      'Built agentic systems and solutions for market research, synthetic consumer persona systems grounded in real demographic and behavioral data',
+      'agnus, the agent of the market research',
     ],
   },
   {
@@ -48,6 +48,7 @@ export const experience: ResumeEntry[] = [
     detail: [
       'End-to-end AI pipelines with Django backends for model serving and JavaScript for real-time inference',
       'Led development of AI agents for complex audio processing workflows',
+      'Created free tools on SoundBoost like Loudness Penalty, LUFS meter, etc.',
     ],
   },
   {
@@ -56,7 +57,7 @@ export const experience: ResumeEntry[] = [
     org: 'Live The World',
     orgHref: 'https://livetheworld.com/',
     summary:
-      'Engineered content generation pipelines using state-of-the-art NLP tools.',
+      'Engineered content generation pipelines using llms and web scraping.',
     detail: [
       'Enhanced web scraping capabilities and developed Python solutions for AI-driven applications',
     ],
@@ -76,10 +77,9 @@ export const experience: ResumeEntry[] = [
     orgHref: 'https://boun.edu.tr/',
     href: 'https://arxiv.org/abs/2407.18402',
     summary:
-      'Developed transformer-based architectures for seismic data analysis and earthquake detection.',
+      'Worked on feature engineering and transformer-based architectures for seismic data analysis and earthquake detection.',
     detail: [
       'Contributed to published research (arXiv:2407.18402)',
-      'Mentored five junior researchers',
     ],
   },
   {
@@ -115,7 +115,7 @@ export const education: ResumeEntry[] = [
     org: 'Boğaziçi University',
     orgHref: 'https://boun.edu.tr/',
     summary:
-      'Specialized in quantum physics and general relativity. Completed machine learning coursework and led the Science Club.',
+      'was part of the EarthML research group, Science Club',
   },
 ]
 
@@ -123,7 +123,7 @@ export const resumeProjects: ResumeEntry[] = [
   {
     period: '',
     title: 'TÜBİTAK 2209-A',
-    summary: 'Developed a high-precision earthquake detection model through innovative feature engineering.',
+    summary: 'Developed a high-precision earthquake detection model through interesting feature engineering methods.',
   },
   {
     period: '',

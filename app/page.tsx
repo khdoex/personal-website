@@ -14,11 +14,9 @@ export default function Home() {
 
         <Reveal delay={0.08}>
           <p className="text-base leading-relaxed max-w-xl mt-6">
-            physicist turned ai engineer. my msc thesis was on the refusal
-            direction in llms: the place inside the model where &quot;i
-            can&apos;t help with that&quot; comes from, and what happens if you
-            move it. these days i am at SCL, building an ai based market
-            research engine (and still poking at model internals when i can).
+            physics grad turned into ai engineer, working on refusal mechanics
+            and safety in llm through interpretability. working on SCL, a new
+            way of doing market research.
           </p>
         </Reveal>
 
