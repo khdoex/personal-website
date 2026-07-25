@@ -4,6 +4,7 @@ export const metadata = {
   title: 'Mercek Testi | Kaan Hacihaliloglu',
   description:
     'Kör lens testi: fotoğraf zevkine göre Fujifilm X-S20 için hangi lens yolunun sana uyduğunu bul.',
+  robots: { index: false, follow: false },
 }
 
 export default function LensTestPage() {
