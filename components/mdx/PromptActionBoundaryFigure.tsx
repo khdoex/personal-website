@@ -6,7 +6,7 @@ const copy = {
     application: 'application',
     applicationResult: 'decides what is allowed',
     layers: [
-      { number: '01', title: 'model defense', question: 'Can the model keep the trusted task ahead of the injected one?', result: 'reduces bad proposals', color: 'rgb(var(--accent))' },
+      { number: '01', title: 'model defense', question: 'Can the model keep the trusted task ahead of the injected one?', result: 'reduces bad proposals', color: 'rgb(var(--accent) / 0.7)' },
       { number: '02', title: 'detector', question: 'Does this input or internal state look suspicious?', result: 'adds a warning signal', color: 'rgb(var(--amber))' },
       { number: '03', title: 'action authorization', question: 'Did the user authorize this tool, recipient, and data flow?', result: 'decides what may happen', color: 'rgb(var(--accent))' },
     ],
@@ -18,7 +18,7 @@ const copy = {
     application: 'uygulama',
     applicationResult: 'neye izin verildiğine karar verir',
     layers: [
-      { number: '01', title: 'model savunması', question: 'Model güvenilir görevi enjekte edilen talimatın önünde tutabiliyor mu?', result: 'kötü önerileri azaltır', color: 'rgb(var(--accent))' },
+      { number: '01', title: 'model savunması', question: 'Model güvenilir görevi enjekte edilen talimatın önünde tutabiliyor mu?', result: 'kötü önerileri azaltır', color: 'rgb(var(--accent) / 0.7)' },
       { number: '02', title: 'detector', question: 'Bu input veya internal state şüpheli görünüyor mu?', result: 'uyarı sinyali ekler', color: 'rgb(var(--amber))' },
       { number: '03', title: 'action authorization', question: "Kullanıcı bu tool'u, alıcıyı ve data flow'u yetkilendirdi mi?", result: 'ne olabileceğine karar verir', color: 'rgb(var(--accent))' },
     ],
