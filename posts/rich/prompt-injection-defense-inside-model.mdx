@@ -1,0 +1,109 @@
+import ScrollFigure from '@/components/mdx/ScrollFigure'
+import MarginNote from '@/components/mdx/MarginNote'
+import PromptDefenseOutcomeFigure from '@/components/mdx/PromptDefenseOutcomeFigure'
+import PromptDetectorControlFigure from '@/components/mdx/PromptDetectorControlFigure'
+import PromptReadoutCausalityFigure from '@/components/mdx/PromptReadoutCausalityFigure'
+import PromptActionBoundaryFigure from '@/components/mdx/PromptActionBoundaryFigure'
+
+export const meta = {
+  title: 'prompt injection savunması modelde bitmemeli',
+  date: '2026-08-01',
+  slug: 'prompt-injection-defense-inside-model',
+  readingTime: 7,
+  language: 'tr',
+  alternateSlug: 'prompt-injection-defense-inside-model-en',
+}
+
+Bu yazıda prompt injection saldırıları ve modelin weight'leri elimizde olsaydı bunları nasıl inceleyebileceğimiz üzerine okuduğum ve denediğim şeyleri paylaşacağım.
+
+Diyelim ki size bir mail geldi. Siz maili okumadan onu bir llm'e yolladınız. Mailin içinde de birinin model için yazdığı başka talimatlar var. Gizli olabilir, açıkça yazılmış olabilir. Belki sizin bir dosyanızı ona mail atmasını istiyor. Böyle bir şey başıma geldiği için değil, olma potansiyeli olduğu için bu örneği veriyorum.
+
+Bu noktada llm'in context'inde iki ayrı talimat seti var. Biri sizin yazdığınız, diğeri karşıdaki kişinin yazdığı. Buna indirect prompt injection deniyor. Saldırganın sizin sisteminize erişimi yok aslında. Talimatını bir mail, webpage, doküman, destek talebi veya tool result olarak bırakması yeterli. Uygulama saldırıyı kendi eliyle modele getiriyor.
+
+Konuyla ilgili bazı makaleleri de buraya bırakıyorum. 2023'te [*Not what you've signed up for*](https://arxiv.org/abs/2302.12173), indirect prompt injection'ın gerçek llm uygulamalarında çalıştığını gösterdi. [AgentDojo](https://arxiv.org/abs/2406.13352) daha sonra email, banking, travel ve tool kullanılan ortamlarda saldırıları test etti. [LLMail-Inject](https://arxiv.org/abs/2506.09956) ise bunu açık bir challenge'a çevirdi ve bir email assistant'a karşı 200 binden fazla saldırı topladı.
+
+Tezimde llm'lerin refusal mekaniklerine çalıştığım için bu konuyu da biraz daha iyi anlamak istedim. Sadece kaç saldırı başarılı oldu diye bakmak yerine, system prompt neyi değiştiriyor, detector neyi görüyor, weight'ler elimizdeyse modelin içinde kalan sinyale bakabilir miyiz diye sordum.
+
+En başta düşündüğüm soru saldırıyı modelde nasıl durdurabileceğimizdi. Deneyler ilerledikçe soru biraz değişti: model saldırıyı durduramazsa uygulama nerede durdurmalı?
+
+## önce modele yardım edelim
+
+Çoğu llm uygulaması talimatlarla veriyi aynı token akışına koyuyor, sonra da modelden aradaki sınırı korumasını bekliyor. [Spotlighting](https://arxiv.org/abs/2403.14720), [StruQ](https://arxiv.org/abs/2402.06363) ve [The Instruction Hierarchy](https://arxiv.org/abs/2404.13208) gibi çalışmalar bu sınırı input transformation, ayrı kanallar veya training ile daha görünür hale getiriyor.
+
+Ben bunun basit bir halini Qwen2.5-7B-Instruct üzerinde denedim. Modelden bir classification görevi yapmasını istedim. Okuması gereken güvensiz metnin içine de ikinci bir görev yerleştirdim. System prompt olmadığında saldırganın görevi 96 cevabın 94'ünde göründü.
+
+Sonra güvensiz metni bir xml bloğunun içine aldım, modele bunun yalnızca data olduğunu söyledim ve güvenilir görevi bloğun sonunda tekrar ettim. Aynı saldırılarda saldırganın görevinin göründüğü cevap sayısı 94'ten 12'ye düştü. Kullanıcının görevinin göründüğü cevap sayısı da 42'den 84'e çıktı.
+
+<MarginNote>Bu 96 cevap için geçici AI annotation kullandım. Birbirinden ayrı üç agent context'i, ortak 84 örneğin tamamında aynı karara vardı. Yine de bunlar bağımsız insan annotator'lar değil, aynı model ailesinden context'ler.</MarginNote>
+
+<ScrollFigure n={1} lang="tr" caption="Aynı 96 saldırıda system-prompt savunmasından önce ve sonra cevapta hangi görevin göründüğü.">
+  <PromptDefenseOutcomeFigure lang="tr" />
+</ScrollFigure>
+
+Bu büyük bir iyileşme. Ama bir 7b model, kontrollü bir task ailesi ve sabit bir saldırı setinden bahsediyoruz. [Adaptive attack'ler](https://arxiv.org/abs/2503.00061), statik benchmark'larda güçlü görünen savunmaları aşabiliyor. Bu prompt yapısını kullanırdım ama geçti sandığım saldırıları da aramaya devam ederdim.
+
+## sonra detector'ı daha zor bir control ile deneyelim
+
+Bir sonraki soru, saldırıyı ayrı bir detector ile yakalayıp yakalayamayacağımızdı. Meta'nın Prompt Guard 2 modelini, değiştirmediğim default threshold ile çalıştırdım. Sıradan temiz metne karşı iyi görünüyordu: 64 örnekte hiç false positive yoktu.
+
+Fakat bu kolay bir control. Temiz metni, saldırılar gibi yazılmış zararsız talimatlarla değiştirdim. Aynı yerdeydiler, aynı wrapper ve stile sahiptiler, uzunlukları da yakındı. Tek farkları kullanıcının görevini başka yere çevirmek yerine onu desteklemeleriydi.
+
+<ScrollFigure n={2} lang="tr" caption="Prompt Guard, gerçek saldırılar ile aynı biçimde yazılmış zararsız talimatları neredeyse aynı oranda işaretledi.">
+  <PromptDetectorControlFigure lang="tr" />
+</ScrollFigure>
+
+Bu sette detector sıradan metni, talimat gibi görünen metinden ayırdı. Fakat görevi başka yere çeviren talimatı, aynı şekle sahip zararsız talimattan ayıramadı.
+
+Detector tarafında benim çıkardığım ders bu oldu. Gerçek uygulamadaki saldırıya en çok benzeyen meşru trafiği bulup testi onunla yapmak gerekiyor. Sonra da uygulamanın gerçekten kaldırabileceği bir false-positive oranı seçmek. Temiz metin benchmark'ı ve tek bir AUROC sayısı bunun için yeterli değil.
+
+## weight'ler elimizdeyse içeri bakalım
+
+Bir API kullanıcısı çoğu zaman hidden state'leri göremez. Open-weight bir modelde ise saldırı güvensiz bir action'a dönüşmeden önce içeride okunabilir bir fark bırakıyor mu diye bakabiliriz.
+
+Bunu Llama 3.1 8B üzerinde denedim. İki koşulda da aynı dış talimat vardı. Birinde güvenilir kullanıcı isteği bu action'a izin veriyordu, diğerinde vermiyordu. Böylece yine talimat benzeri metni temiz metinle karşılaştırmak yerine, güvenlik açısından asıl farkı ölçebildim.
+
+[Meta SecAlign](https://arxiv.org/abs/2507.02735) ile eğitilmiş model-level savunma, izin verilmeyen source'un etkisini yüzde 46 azalttı. İzin verilen action ise korunmaya devam etti. Buna rağmen sekiz pilot örnekle fit ettiğim internal direction, daha önce görmediği 24 örnekte iki koşulu ayırmayı sürdürdü. AUROC savunmadan önce `0.9899`, tam savunmada `0.9823` idi. Grouped-null dağılımının yüzde 95 sınırı ise `0.5902` idi.
+
+Yani elimde kararlı görünen bir internal readout vardı. Action margin ile gözlemsel ilişkisi de held-out sette tekrarlandı. Sonra causal testi önceden kaydettim ve modelin state'ini bu direction boyunca değiştirdim. Tahmin pozitif bir etkiydi. Ana intervention gücünde ölçtüğüm etki ise `−0.0465` oldu.
+
+<ScrollFigure n={3} lang="tr" caption="Savunma dışarıdaki davranışı iyileştirdi ve internal readout kaldı. Fakat direction'a müdahale ettiğimde önceden kaydettiğim causal tahmin doğrulanmadı.">
+  <PromptReadoutCausalityFigure lang="tr" />
+</ScrollFigure>
+
+Buna ters işaretli bir mekanizma da diyemiyorum. Intervention, grouped label-swap control'ü geçmedi ve full-state positive control belirsiz kaldı. Daha dar sonuç benim için yeterli: bir detector içeride kararlı bir sinyal bulabilir ama bu, modelin seçimini o direction'ın yaptığı anlamına gelmez.
+
+Internal monitor yine de alarm olarak işe yarayabilir. Ama skoru, data göndermek, para harcamak veya tool çağırmak için izin yerine geçmemeli.
+
+## son kontrolü action'a yaklaştıralım
+
+Input detector bir metnin saldırıya benzeyip benzemediğini soruyor. Action check ise daha dar bir soru sorabilir: kullanıcı bu recipient'a, tool'a, destination'a ve data flow'a gerçekten izin verdi mi?
+
+[CaMeL](https://arxiv.org/abs/2503.18813) bu fikir etrafında kuruluyor. Control ve data flow'u güvenilir istekten çıkarıyor, sonra tool'ların özel data ile ne yapabileceğini capability'lerle sınırlıyor. Böylece uygulamanın sınırı uygulayabilmesi için modelin her saldırıyı doğru tanımasına güvenmesi gerekmiyor.
+
+Diyelim ki model şunu önerdi:
+
+```text
+send_email(
+  recipient="attacker@example.com",
+  attachment="private-report.pdf"
+)
+```
+
+Normal kod bu recipient'a izin verilip verilmediğini, dosyanın bulunduğu sınırın dışına çıkıp çıkamayacağını, tool'un açık olup olmadığını ve bir insanın onayının gerekip gerekmediğini kontrol edebilir. JSON'ın kusursuz olması yeterli değil. Action'a ayrıca izin verilmesi gerekiyor.
+
+<ScrollFigure n={4} lang="tr" caption="Her katman başka bir soruyu cevaplıyor. Son authorization kontrolü, saldırıyı okuyan modelin dışındaki güvenilir application state'i kullanıyor.">
+  <PromptActionBoundaryFigure lang="tr" />
+</ScrollFigure>
+
+Bir API kullanıcısı olarak bunu kuruyor olsaydım dört şeyi görünür tutardım:
+
+1. **Source.** Hangi metnin kullanıcıdan, uygulamadan, bir dokümandan veya tool'dan geldiğini takip et. Bu sınırı modele de göster.
+2. **Detector'ın sınırı.** Sadece temiz metinle değil, gerçek uygulamadaki talimat benzeri zararsız trafikle de test et.
+3. **Action'ı açık yaz.** Model hangi tool'u, argument'ı, recipient'ı, destination'ı ve datayı kullanmak istediğini söylesin. İzni modelin dışında ver.
+4. **Maliyet.** Data göndermeden, para harcamadan, dosya silmeden veya permission değiştirmeden önce onay iste.
+
+[OpenAI](https://openai.com/index/designing-agents-to-resist-prompt-injection/) ve [Anthropic](https://www.anthropic.com/research/trustworthy-agents) tarafından yayımlanan güncel öneriler de aynı yöne işaret ediyor: permission'ları azalt, tool kullanımını izle ve önemli action'ların önüne confirmation koy.
+
+Ben bu işe model prompt injection'a nasıl direnir diye başladım. Geldiğim yer biraz başka oldu: direnemezse ne olacak?
+
+Model sıradaki action'ı önerebilir. O action'a izin verilip verilmediğine tek başına karar vermesin.
