@@ -118,6 +118,7 @@ export default async function BlogPost({ params }: Props) {
         title={post.data.title}
         date={post.data.date}
         readingTime={post.data.readingTime}
+        language={post.data.language}
       >
         {/* No Reveal here: a body taller than ~4 viewports never reaches the
             viewport-amount threshold and would stay invisible. */}

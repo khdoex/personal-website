@@ -41,6 +41,7 @@ async function parseMarkdownPost(raw: string, slug: string): Promise<PostData> {
     slug,
     content: contentHtml,
     readingTime: readingTimeOf(contentHtml),
+    language: data.language,
     excerpt: data.excerpt,
   }
 }
