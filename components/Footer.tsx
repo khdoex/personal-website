@@ -3,7 +3,7 @@ export default function Footer() {
     <footer className="border-t border-border/70 mt-auto">
       <div className="mx-auto w-full max-w-[1168px] px-6 md:px-8 py-10">
         <div className="flex flex-col md:flex-row justify-between items-center gap-4 font-mono text-xs">
-          <span className="text-muted-dark">
+          <span className="text-muted">
             &copy; {new Date().getFullYear()} kaan hacihaliloglu · istanbul, 41.0°N 28.9°E
           </span>
 
