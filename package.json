@@ -9,7 +9,9 @@
     "lint": "next lint",
     "build:cloudflare": "npx opennextjs-cloudflare build",
     "preview:cloudflare": "npx wrangler dev",
-    "deploy:cloudflare": "npx wrangler deploy"
+    "deploy:cloudflare": "npx wrangler deploy",
+    "contrast": "node scripts/contrast.mjs",
+    "verify": "node scripts/verify.mjs"
   },
   "dependencies": {
     "@mdx-js/loader": "^3.1.0",

@@ -53,3 +53,5 @@ $RECYCLE.BIN/
 
 # Superpowers session scratch (brainstorm mockups, sdd briefs)
 .superpowers/
+
+.verify/
