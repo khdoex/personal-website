@@ -33,7 +33,7 @@ export default function ScrollFigure({
   n?: number
   caption: string
   lang?: 'en' | 'tr'
-  width?: 'reading' | 'wide'
+  width?: 'reading' | 'wide' | 'bleed'
   children: ReactNode
 }) {
   const ref = useRef<HTMLElement>(null)
@@ -59,8 +59,14 @@ export default function ScrollFigure({
     setZoom((current) => Math.min(2, Math.max(0.75, current + amount)))
   }
 
+  const widths = {
+    reading: 'max-w-[54ch]',
+    wide: 'w-full',
+    bleed: 'w-full lg:w-[calc(100%+252px)]',
+  }
+
   return (
-    <figure ref={ref} className={`relative my-16 ${width === 'reading' ? 'max-w-[65ch]' : 'w-full'}`}>
+    <figure ref={ref} className={`relative my-16 ${widths[width]}`}>
       <div className="border-y border-border py-6 md:py-8">
         <FigureProgress.Provider value={reduced ? staticProgress : scrollYProgress}>
           {children}
