@@ -56,18 +56,26 @@ colours; WCAG AA asks for 4.5 on body text.
 **`muted-dark` never carries text, at any size.** At 2.37 it misses AA by a wide
 margin, and it is dark enough that the failure stays invisible on a good monitor
 in a dark room, which is how it spread. Before the rebuild it carried text in 27
-places. Six remain, all inside `components/mdx/`. Its one sanctioned use is the
-1px tick in `components/ui/Rule.tsx`.
+places. None remain. It is for marks a reader looks at rather than reads: the
+1px tick in `components/ui/Rule.tsx`, and inside a figure the neutral bar
+segment, the connecting rule and the shaded band.
 
 What `muted-dark` keeps getting reached for is a third grey between `muted` and
 the ground, for a label meant to sit quieter than a caption. No such grey clears
 AA on this ground. Hierarchy below `muted` comes from typeface and size instead.
 
 **No hex literal in a component.** A literal is a colour nobody rated and nobody
-can change from one place. `components/mdx/` holds 89 of them across 26 distinct
-values, and most are near-duplicates of tokens that already exist: `#8aa0b1`
+can change from one place. `components/mdx/` held 89 of them across 26 distinct
+values, most of them near-duplicates of tokens that already existed: `#8aa0b1`
 beside `muted`, `#e8eef4` beside `heading`. Two greys a reader cannot tell apart
-still cost a maintainer a decision every time.
+still cost a maintainer a decision every time. All 89 are gone. One literal
+stands, the `themeColor` in `app/layout.tsx`, which Next serves as a browser
+meta tag where a CSS variable cannot be read.
+
+The tokens hold bare sRGB channels rather than colours, so `var(--accent)` is
+not a colour anywhere a colour is expected. In an SVG attribute or a JavaScript
+colour constant, write `rgb(var(--accent))`, and `rgb(var(--accent) / 0.6)` for
+a graded step. In a class, write `text-accent` or `bg-amber/5`.
 
 ### Figure poles
 
@@ -83,16 +91,25 @@ exist for other jobs. So the palette holds at two colours rather than growing to
 four. Amber picks up a second meaning beyond dates, and it stays unambiguous
 because a date and a figure mark never sit in the same place.
 
-Decided 2026-09-21. The red and green constants are still in the figure files,
-and the hex rule counts them.
+Decided 2026-09-21, applied the same day. The red and green constants are gone.
+
+Two figures compare four things rather than two, and they grade within the hues
+instead of adding a third. `PromptDefenseBehaviorFigure` splits five answer
+sequences into a target pair and an injected pair: `accent` and `accent` at 55%,
+`amber` and `amber` at 55%, `muted` for the right-censored remainder.
+`PromptGuardResidualRiskFigure` does the same with `amber` and `amber` at 55%
+over a `muted-dark` neutral. Lightness separates the members of a pair, hue
+separates the poles, and nothing in either figure asks a reader to tell red from
+green.
 
 ## Type scale
 
-Eight steps in `tailwind.config.ts`, 18px base, 1.25 ratio.
+Nine steps in `tailwind.config.ts`, 18px base, 1.25 ratio.
 
 | name      | size                      | use                                |
 |-----------|---------------------------|------------------------------------|
-| `meta`    | 13px                      | mono labels, dates, ticks          |
+| `tick`    | 11px                      | figure chrome only                 |
+| `meta`    | 13px                      | mono labels and dates              |
 | `sm`      | 15px                      | small prose, captions              |
 | `base`    | 18px                      | body                               |
 | `lead`    | 22px                      | standfirsts, index titles          |
@@ -105,17 +122,26 @@ Headings inside prose are set in `app/globals.css` rather than through these
 utilities, and they sit one step lower: a post's own `h2` is 28px, because the
 post title above it already holds 36px. The sizes come off the same scale.
 
+`tick` sits below `meta` because the figures needed it. Their legends, axis
+captions and in-figure notes ran at 9, 10 and 11 pixels, and 13px wrapped a
+five-key legend onto another line. Rather than keep three arbitrary sizes the
+scale grew by one step and all 48 uses moved onto it. It is for chrome inside
+`components/mdx/` and nowhere else; text a reader reads in sequence starts at
+`sm`.
+
 Two rules follow from having a scale at all.
 
-**No arbitrary sizes, the `text-[Npx]` form.** 49 stand in the codebase, at 9,
+**No arbitrary sizes, the `text-[Npx]` form.** 49 stood in the codebase, at 9,
 10 and 11 pixels among others. A size picked inside one component answers to
-nothing, so it drifts, and nothing pulls it back.
+nothing, so it drifts, and nothing pulls it back. One stands, the language
+switch in `app/blog/[slug]/page.tsx`.
 
 **No Tailwind default size names**: `text-xs`, `text-lg`, `text-xl`, `text-2xl`,
 `text-3xl`, `text-4xl`. Those resolve to Tailwind's own scale, which then runs
 alongside this one as a second, invisible scale. `text-sm` and `text-base` are
-safe because the config overrides both. 33 default names stand, nearly all
-`text-xs` in figure chrome where `text-meta` is the step that was meant.
+safe because the config overrides both. 33 stood, nearly all `text-xs` in figure
+chrome where `text-meta` was the step that was meant. Three remain, in the
+footer and the post header.
 
 ## Canvas
 
