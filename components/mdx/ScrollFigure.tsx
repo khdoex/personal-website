@@ -84,7 +84,7 @@ export default function ScrollFigure({
           className="u-link shrink-0 text-[11px] text-muted hover:text-heading"
           aria-label={`${copy.open}${n !== undefined ? `, ${copy.figure} ${n}` : ''}`}
         >
-          {copy.open} ↗
+          {copy.open}
         </button>
       </div>
       <dialog

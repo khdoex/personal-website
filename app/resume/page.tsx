@@ -28,7 +28,7 @@ function EntryRow({ entry, delay }: { entry: ResumeEntry; delay: number }) {
       <h3 className="font-serif text-lead font-normal text-heading">
         {entry.href ? (
           <a href={entry.href} target="_blank" rel="noopener noreferrer" className="u-link hover:text-accent">
-            {entry.title} ↗
+            {entry.title}
           </a>
         ) : (
           entry.title
@@ -38,7 +38,7 @@ function EntryRow({ entry, delay }: { entry: ResumeEntry; delay: number }) {
             {' · '}
             {entry.orgHref ? (
               <a href={entry.orgHref} target="_blank" rel="noopener noreferrer" className="u-link hover:text-accent">
-                {entry.org} ↗
+                {entry.org}
               </a>
             ) : (
               entry.org
@@ -101,7 +101,7 @@ export default function Resume() {
               download="KaanHacihaliloglu_Resume.pdf"
               className="u-link shrink-0 font-mono text-meta text-accent hover:text-heading"
             >
-              download pdf ↓
+              download pdf
             </a>
           </div>
         </Reveal>

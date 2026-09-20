@@ -63,7 +63,7 @@ export default async function Home() {
 
       <p className="mt-6 lg:col-start-2">
         <Link href="/blog" className="u-link font-mono text-meta text-accent">
-          all writing →
+          all writing
         </Link>
       </p>
 
@@ -86,7 +86,7 @@ export default async function Home() {
               rel="noopener noreferrer"
               className="u-link font-serif text-lead text-heading hover:text-accent"
             >
-              {item.title} ↗
+              {item.title}
             </a>
           ) : (
             <span className="font-serif text-lead text-heading">{item.title}</span>

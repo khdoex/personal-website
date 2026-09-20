@@ -73,7 +73,7 @@ export default function About() {
                   rel="noopener noreferrer"
                   className="u-link hover:text-accent"
                 >
-                  {item.title} ↗
+                  {item.title}
                 </a>
               ) : (
                 item.title

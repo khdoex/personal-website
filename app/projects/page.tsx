@@ -36,7 +36,7 @@ function ProjectBody({ project }: { project: Project }) {
               rel="noopener noreferrer"
               className="u-link font-mono text-meta text-accent hover:text-heading"
             >
-              source →
+              source
             </Link>
           )}
           {project.demoUrl && (
@@ -46,7 +46,7 @@ function ProjectBody({ project }: { project: Project }) {
               rel="noopener noreferrer"
               className="u-link font-mono text-meta text-accent hover:text-heading"
             >
-              demo →
+              demo
             </Link>
           )}
         </p>

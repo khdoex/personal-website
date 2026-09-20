@@ -53,7 +53,7 @@ function PostShell({
                   href="/blog"
                   className="u-link inline-block font-mono text-xs text-muted hover:text-accent"
                 >
-                  ← {language === 'tr' ? 'yazılar' : 'writing'}
+                  {language === 'tr' ? 'yazılar' : 'writing'}
                 </Link>
                 {language && alternateSlug && (
                   <nav aria-label={language === 'tr' ? 'yazı dili' : 'post language'} className="flex items-center gap-2 font-mono text-[11px]">
