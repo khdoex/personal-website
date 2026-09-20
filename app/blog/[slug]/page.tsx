@@ -60,13 +60,13 @@ function PostShell({
                     {language === 'tr' ? (
                       <>
                         <span className="text-heading" aria-current="page">tr</span>
-                        <span className="text-muted-dark">/</span>
+                        <span className="text-muted">/</span>
                         <Link href={`/blog/${alternateSlug}`} className="u-link text-muted hover:text-accent">en</Link>
                       </>
                     ) : (
                       <>
                         <Link href={`/blog/${alternateSlug}`} className="u-link text-muted hover:text-accent">tr</Link>
-                        <span className="text-muted-dark">/</span>
+                        <span className="text-muted">/</span>
                         <span className="text-heading" aria-current="page">en</span>
                       </>
                     )}
@@ -82,7 +82,7 @@ function PostShell({
             <Reveal delay={0.16}>
               <p className="font-mono text-xs mt-4">
                 <time className="text-amber">{date}</time>
-                <span className="text-muted-dark"> · {readingTime} {language === 'tr' ? 'dk okuma' : 'min read'}</span>
+                <span className="text-muted"> · {readingTime} {language === 'tr' ? 'dk okuma' : 'min read'}</span>
               </p>
             </Reveal>
           </header>
