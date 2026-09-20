@@ -60,7 +60,7 @@ export default function ScrollFigure({
   }
 
   const widths = {
-    reading: 'max-w-[54ch]',
+    reading: 'max-w-[660px]',
     wide: 'w-full',
     bleed: 'w-full lg:w-[calc(100%+252px)]',
   }
