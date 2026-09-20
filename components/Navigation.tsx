@@ -22,7 +22,7 @@ export default function Navigation() {
             href="/"
             className="font-serif text-lead font-medium text-heading hover:text-accent transition-colors whitespace-nowrap shrink-0"
           >
-            kaan h.<span className="cursor-blink text-accent">▊</span>
+            kaan h.
           </Link>
 
           <div className="flex items-center gap-3 sm:gap-6">
