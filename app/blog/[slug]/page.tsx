@@ -46,7 +46,7 @@ function PostShell({
       <ReadingProgress />
       <article>
         <Canvas className="pb-28 pt-16 md:pt-24">
-          <header className="mb-12 lg:col-start-2">
+          <header className="mb-12 max-w-[65ch] lg:col-start-2">
             <Reveal>
               <div className="flex items-center justify-between gap-5">
                 <Link

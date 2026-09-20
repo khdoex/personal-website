@@ -178,7 +178,10 @@ details[open] > summary .if-closed {
   max-width: 65ch;
 }
 
-/* Rich essays: prose holds the reading measure, margin notes hang in the
+/* Rich essays: the line is capped at 65 characters or the column width,
+   whichever is smaller. Above the collapse the 660px canvas track is the
+   smaller of the two and governs; below it, where the canvas is a single
+   column, the 65ch cap is what holds the measure. Margin notes hang in the
    canvas's right track, figures may bleed across all three. */
 .rich-prose {
   position: relative;
@@ -196,7 +199,7 @@ details[open] > summary .if-closed {
 .rich-prose > pre,
 .rich-prose > table,
 .rich-prose > hr {
-  max-width: 100%;
+  max-width: min(100%, 65ch);
 }
 
 .prose p {
