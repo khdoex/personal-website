@@ -61,7 +61,7 @@ export default async function Blog() {
                         </p>
                       )}
                       <p className="mt-3">
-                        <Meta tone="date">{post.data.date}</Meta>
+                        <Meta as="time" tone="date">{post.data.date}</Meta>
                         <Meta className="ml-3">
                           {post.data.readingTime}{' '}
                           {post.data.language === 'tr' ? 'dk' : 'min'}

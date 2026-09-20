@@ -44,9 +44,9 @@ export default async function Home() {
       {posts.map((post, i) => (
         <Entry
           key={post.data.slug}
-          className="border-b border-border"
+          className="border-t border-border"
           delay={i * 0.08}
-          gutter={<Meta tone="date">{post.data.date}</Meta>}
+          gutter={<Meta as="time" tone="date">{post.data.date}</Meta>}
         >
           <Link href={`/blog/${post.data.slug}`} className="group block">
             <span className="font-serif text-lead text-heading transition-colors group-hover:text-accent">

@@ -18,16 +18,19 @@ export default function Meta({
   children,
   tone = 'muted',
   className = '',
+  as = 'span',
 }: {
   children: ReactNode
   tone?: keyof typeof tones
   className?: string
+  as?: 'span' | 'time'
 }) {
+  const Tag = as
   return (
-    <span
+    <Tag
       className={`font-mono text-meta tabular-nums tracking-[0.04em] ${tones[tone]} ${className}`}
     >
       {children}
-    </span>
+    </Tag>
   )
 }
