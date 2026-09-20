@@ -49,9 +49,9 @@ export default function AboutHero({ children }: { children: React.ReactNode }) {
         />
       </motion.div>
 
-      <div className="relative max-w-3xl mx-auto px-6 md:px-8 pt-24 md:pt-32 pb-16">
+      <div className="relative mx-auto w-full max-w-[1168px] px-6 md:px-8 pt-24 md:pt-32 pb-16">
         <Reveal>
-          <h1 className="font-mono text-lg font-semibold text-heading">
+          <h1 className="font-serif text-h2 font-normal text-heading">
             about
           </h1>
         </Reveal>

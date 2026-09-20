@@ -1,30 +1,15 @@
 import AboutHero from '@/components/AboutHero'
+import { currently } from '@/lib/currently'
+import Canvas from '@/components/layout/Canvas'
+import Gutter from '@/components/layout/Gutter'
+import Rule from '@/components/ui/Rule'
+import Meta from '@/components/ui/Meta'
+import Entry from '@/components/ui/Entry'
 import Reveal from '@/components/motion/Reveal'
 
 export const metadata = {
   title: 'About | Kaan Hacihaliloglu',
 }
-
-const currently = [
-  {
-    title: 'Mechanistic Interpretability',
-    desc: 'Investigating how refusal behavior and safety representations are encoded inside large language models',
-  },
-  {
-    title: 'SCL · Synthetic Consumer Lab',
-    desc: 'AI Engineer building synthetic consumer systems for realistic behavior simulation and market research workflows',
-    href: 'https://synthetic-consumers.com/',
-  },
-  {
-    title: 'SoundBoost',
-    desc: 'AI Engineer on an ai audio mastering platform, a virtual mastering engineer for musicians',
-    href: 'https://soundboost.ai/about',
-  },
-  {
-    title: 'MSc Data Science, Sabancı University',
-    desc: 'Thesis on refusal direction analysis in large language models',
-  },
-]
 
 const story = [
   <>
@@ -58,61 +43,47 @@ export default function About() {
   return (
     <div className="pb-28">
       <AboutHero>
-        <div className="space-y-5 mt-8">
+        <div className="mt-8 space-y-6">
           {story.map((paragraph, i) => (
             <Reveal key={i} delay={i === 0 ? 0.08 : 0}>
-              <p className="text-base leading-relaxed">{paragraph}</p>
+              <p className="font-serif text-base text-foreground">{paragraph}</p>
             </Reveal>
           ))}
         </div>
       </AboutHero>
 
-      {/* Currently — moved here from the homepage */}
-      <section className="max-w-3xl mx-auto px-6 md:px-8 pt-8">
-        <Reveal>
-          <p className="font-mono text-xs text-muted-dark mb-2">currently</p>
-        </Reveal>
+      <Canvas className="pt-8">
+        <Rule className="col-span-full" />
 
-        <div className="divide-y divide-border border-y border-border">
-          {currently.map((item, i) => (
-            <Reveal
-              key={item.title}
-              className="group grid grid-cols-[3rem_1fr] gap-4 py-6"
-            >
-              <span className="font-mono text-xs text-muted-dark pt-0.5 group-hover:text-accent transition-colors">
-                {String(i + 1).padStart(2, '0')}
-              </span>
-              <div>
-                <h2 className="font-mono text-base font-medium text-heading">
-                  {item.href ? (
-                    <a
-                      href={item.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="u-link hover:text-accent"
-                    >
-                      {item.title} →
-                    </a>
-                  ) : (
-                    item.title
-                  )}
-                </h2>
-                <p className="text-sm text-muted leading-relaxed mt-1.5 max-w-xl">
-                  {item.desc}
-                </p>
-              </div>
-            </Reveal>
-          ))}
-        </div>
+        <Gutter className="mt-8">
+          <Meta>currently</Meta>
+        </Gutter>
 
-        <Reveal className="mt-10">
-          <p className="text-sm text-muted leading-relaxed max-w-xl">
-            online i am khdoex on github, and kaanhho most other places (x,
-            huggingface). same person, i just could not keep one handle
-            straight.
-          </p>
-        </Reveal>
-      </section>
+        {currently.map((item) => (
+          <Entry key={item.title} gutter={<Meta tone="date">{item.since}</Meta>}>
+            <h2 className="font-serif text-lead font-normal text-heading">
+              {item.href ? (
+                <a
+                  href={item.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="u-link hover:text-accent"
+                >
+                  {item.title} ↗
+                </a>
+              ) : (
+                item.title
+              )}
+            </h2>
+            <p className="mt-2 font-serif text-sm text-muted">{item.desc}</p>
+          </Entry>
+        ))}
+
+        <p className="mt-10 max-w-[54ch] font-serif text-sm text-muted lg:col-start-2">
+          online i am khdoex on github, and kaanhho most other places (x,
+          huggingface). same person, i just could not keep one handle straight.
+        </p>
+      </Canvas>
     </div>
   )
 }
