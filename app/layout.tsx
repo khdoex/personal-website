@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { JetBrains_Mono, IBM_Plex_Sans } from "next/font/google";
+import { JetBrains_Mono, Newsreader } from "next/font/google";
 import "./globals.css";
 import Navigation from '@/components/Navigation'
 import Footer from '@/components/Footer'
@@ -9,16 +9,17 @@ const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin", "latin-ext"],
   variable: "--font-mono",
 });
-const plexSans = IBM_Plex_Sans({
+const newsreader = Newsreader({
   subsets: ["latin", "latin-ext"],
-  weight: ["400", "500", "600"],
-  variable: "--font-sans",
+  axes: ["opsz"],
+  style: ["normal", "italic"],
+  variable: "--font-serif",
 });
 
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  themeColor: '#1d252c',
+  themeColor: '#10151a',
 };
 
 export const metadata: Metadata = {
@@ -91,7 +92,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${jetbrainsMono.variable} ${plexSans.variable} antialiased`}
+        className={`${jetbrainsMono.variable} ${newsreader.variable} antialiased`}
       >
         <script
           type="application/ld+json"

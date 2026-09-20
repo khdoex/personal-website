@@ -3,14 +3,14 @@
 @tailwind utilities;
 
 :root {
-  /* City Lights — blue-charcoal, one cold accent */
-  --background: #1d252c;
-  --surface: #232d36;
-  --border: #2f3b47;
-  --foreground: #a0b3c5;
-  --heading: #e8eef4;
-  --muted: #718ca1;
-  --muted-dark: #4a5866;
+  /* Editorial + Instrument: near-black ground, one cold signal, amber for dates */
+  --background: #10151a;
+  --surface: #161c22;
+  --border: #232c34;
+  --foreground: #b8c4cf;
+  --heading: #eef3f7;
+  --muted: #7b8a97;
+  --muted-dark: #48545f;
   --accent: #5ec4ff;
   --amber: #d98e48;
 }
@@ -24,7 +24,7 @@ html {
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: var(--font-serif), Georgia, serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -168,10 +168,12 @@ details[open] > summary .if-closed {
   display: none;
 }
 
-/* Prose — sans for reading, mono for structure */
+/* Prose — serif for reading, mono for structure */
 .prose {
-  font-size: 1.0625rem;
-  line-height: 1.75;
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: 1.125rem;
+  line-height: 1.65;
+  font-weight: 350;
   color: var(--foreground);
   max-width: 65ch;
 }
