@@ -26,6 +26,7 @@ const config: Config = {
         serif: ["var(--font-serif)", "Georgia", "serif"],
       },
       fontSize: {
+        tick: ["0.6875rem", { lineHeight: "1.4" }],
         meta: ["0.8125rem", { lineHeight: "1.4" }],
         sm: ["0.9375rem", { lineHeight: "1.6" }],
         base: ["1.125rem", { lineHeight: "1.65" }],
