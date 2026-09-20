@@ -40,7 +40,7 @@ export default async function Blog() {
                   {post.data.title}
                 </span>
                 <span className="font-mono text-xs text-muted-dark md:ml-auto shrink-0">
-                  {post.data.readingTime} min
+                  {post.data.readingTime} {post.data.language === 'tr' ? 'dk' : 'min'}
                 </span>
               </Link>
             </Reveal>

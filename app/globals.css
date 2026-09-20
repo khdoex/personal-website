@@ -17,6 +17,7 @@
 
 html {
   background: var(--background);
+  position: relative;
   scroll-behavior: smooth;
 }
 
@@ -75,6 +76,32 @@ main {
 
 a {
   transition: color 0.2s ease;
+}
+
+.figure-dialog::backdrop {
+  background: rgba(10, 14, 18, 0.86);
+  backdrop-filter: blur(4px);
+}
+
+.figure-dialog[open] {
+  animation: figure-dialog-in 160ms ease-out;
+}
+
+@keyframes figure-dialog-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .figure-dialog[open] {
+    animation: none;
+  }
 }
 
 /* Underline draws in from the left */
@@ -146,6 +173,26 @@ details[open] > summary .if-closed {
   font-size: 1.0625rem;
   line-height: 1.75;
   color: var(--foreground);
+  max-width: 65ch;
+}
+
+/* Rich essays use one editorial grid: prose keeps its reading measure while
+   figures extend to the right from the same left edge. */
+.rich-prose {
+  max-width: none;
+}
+
+.rich-prose > p,
+.rich-prose > h1,
+.rich-prose > h2,
+.rich-prose > h3,
+.rich-prose > h4,
+.rich-prose > ul,
+.rich-prose > ol,
+.rich-prose > blockquote,
+.rich-prose > pre,
+.rich-prose > table,
+.rich-prose > hr {
   max-width: 65ch;
 }
 
@@ -294,6 +341,20 @@ details[open] > summary .if-closed {
   font-family: var(--font-mono), monospace;
   font-size: 0.85em;
   font-weight: 600;
+}
+
+/* Math — KaTeX defaults to 1.21em, too loud next to 1.0625rem body text.
+   Display equations scroll inside the column instead of widening it. */
+.prose .katex {
+  font-size: 1.05em;
+  color: var(--heading);
+}
+
+.prose .katex-display {
+  margin: 2em 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.25em 0;
 }
 
 /* Reduced motion */

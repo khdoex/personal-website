@@ -13,6 +13,7 @@ export interface PostData {
   slug: string
   content: string
   readingTime: number
+  language?: 'en' | 'tr'
 }
 
 export interface Post {
@@ -98,7 +99,7 @@ export async function getAllPosts(): Promise<Post[]> {
     ? await Promise.all(fs.readdirSync(postsDirectory).map(loadPost))
     : []
 
-  const richAsPosts: Post[] = richPosts.map(({ meta }) => ({
+  const richAsPosts: Post[] = richPosts.filter(({ meta }) => meta.listed !== false).map(({ meta }) => ({
     data: { ...meta, content: '' },
   }))
   const richSlugs = new Set(richAsPosts.map((post) => post.data.slug))

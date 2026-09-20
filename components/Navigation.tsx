@@ -12,9 +12,10 @@ const navItems = [
 
 export default function Navigation() {
   const pathname = usePathname()
+  const isReading = pathname.startsWith('/blog/')
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 border-b border-border/70 bg-background/85 backdrop-blur-md">
+    <nav className={`${isReading ? 'absolute' : 'fixed'} top-0 left-0 right-0 z-50 border-b border-border/70 bg-background/85 backdrop-blur-md`}>
       <div className="max-w-3xl mx-auto px-6 md:px-8">
         <div className="flex items-center justify-between h-16">
           <Link

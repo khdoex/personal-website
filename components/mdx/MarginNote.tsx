@@ -7,7 +7,7 @@ import type { ReactNode } from 'react'
  */
 export default function MarginNote({ children }: { children: ReactNode }) {
   return (
-    <span className="block my-4 rounded border border-border bg-surface/60 px-4 py-3 font-mono text-xs text-muted leading-relaxed not-italic xl:float-right xl:clear-right xl:-mr-[17rem] xl:ml-6 xl:my-0 xl:w-56 xl:border-0 xl:bg-transparent xl:px-0 xl:py-0">
+    <span className="block my-4 rounded border border-border bg-surface/60 px-4 py-3 font-mono text-xs text-muted leading-relaxed not-italic xl:absolute xl:left-[calc(65ch+2rem)] xl:my-0 xl:w-56 xl:border-0 xl:bg-transparent xl:px-0 xl:py-0">
       <span aria-hidden className="text-accent">
         *{' '}
       </span>

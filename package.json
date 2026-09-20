@@ -18,11 +18,14 @@
     "@opennextjs/cloudflare": "^1.17.1",
     "framer-motion": "^11.11.11",
     "gray-matter": "^4.0.3",
+    "katex": "^0.16.47",
     "next": "^15.0.8",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "rehype-katex": "^7.0.1",
     "remark": "^15.0.1",
-    "remark-html": "^16.0.1"
+    "remark-html": "^16.0.1",
+    "remark-math": "^6.0.0"
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.15",

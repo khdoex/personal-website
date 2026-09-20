@@ -1,3 +1,5 @@
+// Scoped to this route so pages without math never pay for the stylesheet.
+import 'katex/dist/katex.min.css'
 import { getPostBySlug } from '@/lib/posts'
 import { getRichPost } from '@/lib/rich-posts'
 import { notFound } from 'next/navigation'
@@ -27,25 +29,48 @@ function PostShell({
   title,
   date,
   readingTime,
+  language,
+  alternateSlug,
   children,
 }: {
   title: string
   date: string
   readingTime: number
+  language?: 'en' | 'tr'
+  alternateSlug?: string
   children: React.ReactNode
 }) {
   return (
     <>
       <ReadingProgress />
-      <article className="max-w-2xl mx-auto px-6 md:px-8 pt-16 md:pt-24 pb-28">
-        <header className="mb-12">
+      <article className="blog-article mx-auto max-w-5xl px-6 pb-28 pt-16 md:px-8 md:pt-24">
+        <header className="mb-12 max-w-[65ch]">
           <Reveal>
-            <Link
-              href="/blog"
-              className="u-link inline-block font-mono text-xs text-muted hover:text-accent"
-            >
-              ← writing
-            </Link>
+            <div className="flex items-center justify-between gap-5">
+              <Link
+                href="/blog"
+                className="u-link inline-block font-mono text-xs text-muted hover:text-accent"
+              >
+                ← {language === 'tr' ? 'yazılar' : 'writing'}
+              </Link>
+              {language && alternateSlug && (
+                <nav aria-label={language === 'tr' ? 'yazı dili' : 'post language'} className="flex items-center gap-2 font-mono text-[11px]">
+                  {language === 'tr' ? (
+                    <>
+                      <span className="text-heading" aria-current="page">tr</span>
+                      <span className="text-muted-dark">/</span>
+                      <Link href={`/blog/${alternateSlug}`} className="u-link text-muted hover:text-accent">en</Link>
+                    </>
+                  ) : (
+                    <>
+                      <Link href={`/blog/${alternateSlug}`} className="u-link text-muted hover:text-accent">tr</Link>
+                      <span className="text-muted-dark">/</span>
+                      <span className="text-heading" aria-current="page">en</span>
+                    </>
+                  )}
+                </nav>
+              )}
+            </div>
           </Reveal>
           <Reveal delay={0.08}>
             <h1 className="font-mono text-xl md:text-2xl font-semibold leading-snug text-heading mt-8">
@@ -55,7 +80,7 @@ function PostShell({
           <Reveal delay={0.16}>
             <p className="font-mono text-xs mt-4">
               <time className="text-amber">{date}</time>
-              <span className="text-muted-dark"> · {readingTime} min read</span>
+              <span className="text-muted-dark"> · {readingTime} {language === 'tr' ? 'dk okuma' : 'min read'}</span>
             </p>
           </Reveal>
         </header>
@@ -72,8 +97,14 @@ export default async function BlogPost({ params }: Props) {
   if (rich) {
     const { Component, meta } = rich
     return (
-      <PostShell title={meta.title} date={meta.date} readingTime={meta.readingTime}>
-        <div className="prose xl:relative">
+      <PostShell
+        title={meta.title}
+        date={meta.date}
+        readingTime={meta.readingTime}
+        language={meta.language}
+        alternateSlug={meta.alternateSlug}
+      >
+        <div className="prose rich-prose xl:relative">
           <Component />
         </div>
       </PostShell>
