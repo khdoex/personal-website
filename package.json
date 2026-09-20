@@ -11,6 +11,7 @@
     "preview:cloudflare": "npx wrangler dev",
     "deploy:cloudflare": "npx wrangler deploy",
     "contrast": "node scripts/contrast.mjs",
+    "lint:design": "node scripts/design-lint.mjs",
     "verify": "node scripts/verify.mjs"
   },
   "dependencies": {
