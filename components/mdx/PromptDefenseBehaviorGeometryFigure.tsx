@@ -5,7 +5,7 @@ import { useFigureProgress } from './ScrollFigure'
 import { behaviorGeometryJoin } from './prompt-injection-defense-data'
 
 const RED = 'rgb(var(--amber))'
-const GRID = 'rgb(var(--border))'
+const ZERO = 'rgb(var(--muted-dark))'
 const TEXT = 'rgb(var(--muted))'
 const HEADING = 'rgb(var(--heading))'
 
@@ -27,7 +27,7 @@ export default function PromptDefenseBehaviorGeometryFigure() {
         return <div key={metric.label} className="rounded-md border border-border bg-surface/30 px-2 pt-3">
           <h3 className="min-h-10 text-center font-mono text-meta text-heading">{metric.label}</h3>
           <svg viewBox="0 0 320 180" className="w-full" role="img" aria-label={`${metric.label}: successful minus suppressed is ${signed(metric.value, metric.digits)}, with interval ${signed(metric.lo, metric.digits)} to ${signed(metric.hi, metric.digits)}.`}>
-            <line x1={sx(0)} x2={sx(0)} y1="25" y2="122" stroke={GRID} strokeWidth="2" />
+            <line x1={sx(0)} x2={sx(0)} y1="25" y2="122" stroke={ZERO} strokeWidth="2" />
             <motion.line x1={sx(metric.lo)} x2={sx(metric.hi)} y1="78" y2="78" stroke={RED} strokeWidth="3" style={{ opacity: reveal }} />
             <line x1={sx(metric.lo)} x2={sx(metric.lo)} y1="68" y2="88" stroke={RED} strokeWidth="2" />
             <line x1={sx(metric.hi)} x2={sx(metric.hi)} y1="68" y2="88" stroke={RED} strokeWidth="2" />
