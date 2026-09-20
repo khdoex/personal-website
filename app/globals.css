@@ -353,6 +353,18 @@ details[open] > summary .if-closed {
   font-weight: 600;
 }
 
+/* Figures are instrument, not prose. SVG <text> inherits font-family and
+   font-weight like any other element, so the serif set on body and .prose
+   reaches every axis tick and numeric label unless it is put back. Mono with
+   tabular numerals so a column of tick values keeps one straight edge. The
+   figure components that already set fontFamily themselves land on the same
+   stack, so this only adds the cases they miss. */
+.prose svg text {
+  font-family: var(--font-mono), monospace;
+  font-variant-numeric: tabular-nums;
+  font-weight: 400;
+}
+
 /* Math — KaTeX defaults to 1.21em, too loud next to 1.0625rem body text.
    Display equations scroll inside the column instead of widening it. */
 .prose .katex {
