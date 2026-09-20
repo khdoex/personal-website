@@ -44,26 +44,32 @@ export default async function Blog() {
           <div className="lg:col-start-2">
             {posts
               .filter((post) => post.data.date.startsWith(year))
-              .map((post) => (
-                <article key={post.data.slug} className="border-t border-border py-7">
-                  <Link href={`/blog/${post.data.slug}`} className="group block">
-                    <span className="font-serif text-lead text-heading transition-colors group-hover:text-accent">
-                      {post.data.title}
-                    </span>
-                    {post.data.excerpt && (
-                      <p className="mt-2 max-w-[54ch] font-serif text-sm text-muted">
-                        {post.data.excerpt}
+              .map((post, i) => (
+                <Reveal
+                  key={post.data.slug}
+                  delay={i * 0.08}
+                  className="border-t border-border py-7"
+                >
+                  <article>
+                    <Link href={`/blog/${post.data.slug}`} className="group block">
+                      <span className="font-serif text-lead text-heading transition-colors group-hover:text-accent">
+                        {post.data.title}
+                      </span>
+                      {post.data.excerpt && (
+                        <p className="mt-2 max-w-[54ch] font-serif text-sm text-muted">
+                          {post.data.excerpt}
+                        </p>
+                      )}
+                      <p className="mt-3">
+                        <Meta tone="date">{post.data.date}</Meta>
+                        <Meta className="ml-3">
+                          {post.data.readingTime}{' '}
+                          {post.data.language === 'tr' ? 'dk' : 'min'}
+                        </Meta>
                       </p>
-                    )}
-                    <p className="mt-3">
-                      <Meta tone="date">{post.data.date}</Meta>
-                      <Meta className="ml-3">
-                        {post.data.readingTime}{' '}
-                        {post.data.language === 'tr' ? 'dk' : 'min'}
-                      </Meta>
-                    </p>
-                  </Link>
-                </article>
+                    </Link>
+                  </article>
+                </Reveal>
               ))}
           </div>
         </div>

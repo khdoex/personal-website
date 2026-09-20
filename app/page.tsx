@@ -41,10 +41,11 @@ export default async function Home() {
         <Meta>writing</Meta>
       </Gutter>
 
-      {posts.map((post) => (
+      {posts.map((post, i) => (
         <Entry
           key={post.data.slug}
           className="border-b border-border"
+          delay={i * 0.08}
           gutter={<Meta tone="date">{post.data.date}</Meta>}
         >
           <Link href={`/blog/${post.data.slug}`} className="group block">
@@ -72,8 +73,12 @@ export default async function Home() {
         <Meta>currently</Meta>
       </Gutter>
 
-      {currently.map((item) => (
-        <Entry key={item.title} gutter={<Meta tone="date">{item.since}</Meta>}>
+      {currently.map((item, i) => (
+        <Entry
+          key={item.title}
+          delay={i * 0.08}
+          gutter={<Meta tone="date">{item.since}</Meta>}
+        >
           {item.href ? (
             <a
               href={item.href}

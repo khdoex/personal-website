@@ -18,9 +18,13 @@ export const metadata = {
   title: 'Resume | Kaan Hacihaliloglu',
 }
 
-function EntryRow({ entry }: { entry: ResumeEntry }) {
+function EntryRow({ entry, delay }: { entry: ResumeEntry; delay: number }) {
   return (
-    <Entry className="border-t border-border" gutter={<Meta tone="date">{entry.period}</Meta>}>
+    <Entry
+      className="border-t border-border"
+      delay={delay}
+      gutter={<Meta tone="date">{entry.period}</Meta>}
+    >
       <h3 className="font-serif text-lead font-normal text-heading">
         {entry.href ? (
           <a href={entry.href} target="_blank" rel="noopener noreferrer" className="u-link hover:text-accent">
@@ -64,19 +68,19 @@ function EntryRow({ entry }: { entry: ResumeEntry }) {
   )
 }
 
+// The label leads its own rows. Both arrive on their own viewport entry, so
+// the section no longer needs a hand-tuned place in a page-wide cascade.
 function Section({
   label,
-  delay,
   children,
 }: {
   label: string
-  delay: number
   children: React.ReactNode
 }) {
   return (
     <>
       <Gutter className="mt-14">
-        <Reveal delay={delay}>
+        <Reveal>
           <Meta>{label}</Meta>
         </Reveal>
       </Gutter>
@@ -106,51 +110,53 @@ export default function Resume() {
         </Reveal>
       </header>
 
-      <Section label="experience" delay={0.16}>
-        {experience.map((entry) => (
-          <EntryRow key={entry.title + entry.period} entry={entry} />
+      <Section label="experience">
+        {experience.map((entry, i) => (
+          <EntryRow key={entry.title + entry.period} entry={entry} delay={i * 0.08} />
         ))}
       </Section>
 
-      <Section label="education" delay={0.24}>
-        {education.map((entry) => (
-          <EntryRow key={entry.title} entry={entry} />
+      <Section label="education">
+        {education.map((entry, i) => (
+          <EntryRow key={entry.title} entry={entry} delay={i * 0.08} />
         ))}
       </Section>
 
-      <Section label="projects" delay={0.32}>
-        {resumeProjects.map((entry) => (
-          <EntryRow key={entry.title} entry={entry} />
+      <Section label="projects">
+        {resumeProjects.map((entry, i) => (
+          <EntryRow key={entry.title} entry={entry} delay={i * 0.08} />
         ))}
       </Section>
 
-      <Gutter className="mt-14">
-        <Meta>skills</Meta>
-      </Gutter>
-      {skills.map((group) => (
-        <Entry key={group.label} className="border-t border-border" gutter={<Meta>{group.label}</Meta>}>
-          <span className="font-serif text-sm text-foreground">{group.items}</span>
+      <Section label="skills">
+        {skills.map((group, i) => (
+          <Entry
+            key={group.label}
+            className="border-t border-border"
+            delay={i * 0.08}
+            gutter={<Meta>{group.label}</Meta>}
+          >
+            <span className="font-serif text-sm text-foreground">{group.items}</span>
+          </Entry>
+        ))}
+      </Section>
+
+      <Section label="certifications">
+        {certifications.map((entry, i) => (
+          <Entry key={entry.title} className="border-t border-border" delay={i * 0.08}>
+            <span className="font-serif text-sm text-heading">{entry.title}</span>
+            <Meta className="ml-3">
+              {entry.org}
+            </Meta>
+          </Entry>
+        ))}
+      </Section>
+
+      <Section label="languages">
+        <Entry className="border-t border-border" delay={0}>
+          <span className="font-serif text-sm text-foreground">{languages}</span>
         </Entry>
-      ))}
-
-      <Gutter className="mt-14">
-        <Meta>certifications</Meta>
-      </Gutter>
-      {certifications.map((entry) => (
-        <Entry key={entry.title} className="border-t border-border">
-          <span className="font-serif text-sm text-heading">{entry.title}</span>
-          <Meta className="ml-3">
-            {entry.org}
-          </Meta>
-        </Entry>
-      ))}
-
-      <Gutter className="mt-14">
-        <Meta>languages</Meta>
-      </Gutter>
-      <Entry className="border-t border-border">
-        <span className="font-serif text-sm text-foreground">{languages}</span>
-      </Entry>
+      </Section>
     </Canvas>
   )
 }

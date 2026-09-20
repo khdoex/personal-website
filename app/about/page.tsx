@@ -59,8 +59,12 @@ export default function About() {
           <Meta>currently</Meta>
         </Gutter>
 
-        {currently.map((item) => (
-          <Entry key={item.title} gutter={<Meta tone="date">{item.since}</Meta>}>
+        {currently.map((item, i) => (
+          <Entry
+            key={item.title}
+            delay={i * 0.08}
+            gutter={<Meta tone="date">{item.since}</Meta>}
+          >
             <h2 className="font-serif text-lead font-normal text-heading">
               {item.href ? (
                 <a

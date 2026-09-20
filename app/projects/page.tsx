@@ -55,9 +55,9 @@ function ProjectBody({ project }: { project: Project }) {
   )
 }
 
-function ProjectEntry({ project }: { project: Project }) {
+function ProjectEntry({ project, delay }: { project: Project; delay: number }) {
   return (
-    <Entry className="border-t border-border" gutter={<Meta>active</Meta>}>
+    <Entry className="border-t border-border" delay={delay} gutter={<Meta>active</Meta>}>
       <ProjectBody project={project} />
     </Entry>
   )
@@ -81,8 +81,8 @@ export default function Projects() {
         </Reveal>
       </header>
 
-      {current.map((project) => (
-        <ProjectEntry key={project.title} project={project} />
+      {current.map((project, i) => (
+        <ProjectEntry key={project.title} project={project} delay={i * 0.08} />
       ))}
 
       <Rule className="col-span-full mt-16" />
@@ -93,10 +93,14 @@ export default function Projects() {
         </Gutter>
 
         <div className="lg:col-start-2">
-          {earlier.map((project) => (
-            <div key={project.title} className="border-t border-border py-7">
+          {earlier.map((project, i) => (
+            <Reveal
+              key={project.title}
+              delay={i * 0.08}
+              className="border-t border-border py-7"
+            >
               <ProjectBody project={project} />
-            </div>
+            </Reveal>
           ))}
         </div>
       </div>
