@@ -118,7 +118,9 @@ a {
   background-size: 100% 1px;
 }
 
-/* Fade-up — slow, no bounce. Set --d per element for the cascade. */
+/* Fade-up — slow, no bounce. Set --d per element for the cascade.
+   Still consumed by components/lens-test/LensGame.tsx; not part of
+   this pass's page conversions, so the class stays live. */
 @keyframes rise {
   from {
     opacity: 0;
