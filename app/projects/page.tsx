@@ -11,21 +11,22 @@ export const metadata = {
   title: 'Projects | Kaan Hacihaliloglu',
 }
 
-function ProjectEntry({ project }: { project: Project }) {
+// Shared body for a project: title, description, tags, links. The wrapper
+// around it differs by section — the current project sits in an Entry with
+// its own gutter cell, the earlier ones sit under one shared sticky label —
+// so the wrapper is not this component's concern.
+function ProjectBody({ project }: { project: Project }) {
   return (
-    <Entry
-      className="border-t border-border"
-      gutter={
-        <Meta>{project.status === 'current' ? 'active' : 'earlier'}</Meta>
-      }
-    >
+    <>
       <h2 className="font-serif text-h3 font-normal text-heading">{project.title}</h2>
       <p className="mt-3 font-serif text-base text-foreground">{project.description}</p>
-      <p className="mt-4 flex flex-wrap gap-x-4 gap-y-1">
+      <ul className="mt-4 flex flex-wrap gap-x-4 gap-y-1">
         {project.tags.map((tag) => (
-          <Meta key={tag}>{tag}</Meta>
+          <li key={tag}>
+            <Meta>{tag}</Meta>
+          </li>
         ))}
-      </p>
+      </ul>
       {(project.githubUrl || project.demoUrl) && (
         <p className="mt-4 flex gap-5">
           {project.githubUrl && (
@@ -43,13 +44,21 @@ function ProjectEntry({ project }: { project: Project }) {
               href={project.demoUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="u-link font-mono text-meta text-muted hover:text-accent"
+              className="u-link font-mono text-meta text-accent hover:text-heading"
             >
               demo →
             </Link>
           )}
         </p>
       )}
+    </>
+  )
+}
+
+function ProjectEntry({ project }: { project: Project }) {
+  return (
+    <Entry className="border-t border-border" gutter={<Meta>active</Meta>}>
+      <ProjectBody project={project} />
     </Entry>
   )
 }
@@ -78,13 +87,19 @@ export default function Projects() {
 
       <Rule className="col-span-full mt-16" />
 
-      <Gutter className="mt-8">
-        <Meta>earlier work</Meta>
-      </Gutter>
+      <div className="col-span-full mt-8 grid grid-cols-1 lg:grid-cols-subgrid">
+        <Gutter sticky>
+          <Meta>earlier work</Meta>
+        </Gutter>
 
-      {earlier.map((project) => (
-        <ProjectEntry key={project.title} project={project} />
-      ))}
+        <div className="lg:col-start-2">
+          {earlier.map((project) => (
+            <div key={project.title} className="border-t border-border py-7">
+              <ProjectBody project={project} />
+            </div>
+          ))}
+        </div>
+      </div>
     </Canvas>
   )
 }
