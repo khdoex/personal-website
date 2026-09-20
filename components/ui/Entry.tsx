@@ -1,12 +1,12 @@
 import type { ReactNode } from 'react'
 import Reveal from '@/components/motion/Reveal'
 
-const row = 'col-span-full grid grid-cols-1 gap-x-8 gap-y-2 py-7 lg:grid-cols-subgrid'
+const row = 'col-span-full grid grid-cols-1 gap-y-2 py-7 lg:grid-cols-subgrid'
 
 /**
- * One row of a list, inheriting Canvas's tracks through subgrid rather than
- * redeclaring them. Replaces the four hand-copied [3rem_1fr] grids.
- * Must be rendered as a direct child of Canvas.
+ * One row of a list, inheriting Canvas's tracks and their column gap through
+ * subgrid rather than redeclaring either. Replaces the four hand-copied
+ * [3rem_1fr] grids. Must be rendered as a direct child of Canvas.
  *
  * With a delay the row arrives on scroll. Reveal's motion.div carries the
  * subgrid classes itself rather than sitting between Canvas and the row,
