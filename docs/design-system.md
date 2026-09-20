@@ -56,9 +56,16 @@ colours; WCAG AA asks for 4.5 on body text.
 **`muted-dark` never carries text, at any size.** At 2.37 it misses AA by a wide
 margin, and it is dark enough that the failure stays invisible on a good monitor
 in a dark room, which is how it spread. Before the rebuild it carried text in 27
-places. None remain. It is for marks a reader looks at rather than reads: the
-1px tick in `components/ui/Rule.tsx`, and inside a figure the neutral bar
-segment, the connecting rule and the shaded band.
+places. None remain.
+
+The bar is on text, and on nothing else. What the token is for is a mark a
+reader looks at rather than reads, and that covers more than a hairline: the 1px
+tick in `components/ui/Rule.tsx`, and inside a figure the neutral bar segment,
+the connecting rule, the shaded band and the axis zero. The zero reference in
+`PromptDefenseBehaviorGeometryFigure` is the case that settled the wording. That
+line carries the figure's whole claim, that all three intervals cross zero, so
+`border` at 1.29 was too quiet for it. `muted-dark` is the step meant for a mark
+that has to be seen without being read.
 
 What `muted-dark` keeps getting reached for is a third grey between `muted` and
 the ground, for a label meant to sit quieter than a caption. No such grey clears
@@ -101,6 +108,18 @@ sequences into a target pair and an injected pair: `accent` and `accent` at 55%,
 over a `muted-dark` neutral. Lightness separates the members of a pair, hue
 separates the poles, and nothing in either figure asks a reader to tell red from
 green.
+
+`PromptActionBoundaryFigure` grades for a different reason. Its three layers are
+an ordering rather than a pair: the model defense the post argues is not
+sufficient, the detector between them, and the action boundary outside the model
+that decides. Painting the first and the third the same cyan said the opposite
+of the argument, so layer 01 takes `accent` at 70%, layer 02 `amber`, layer 03
+`accent` at full, and the figure now runs in the direction the prose does.
+
+A graded step that carries text has a floor the fill grades do not. `accent` at
+55% rates 3.65 against the ground and misses AA; at 70% it rates 5.19 and clears
+it. Grade a fill, a bar or a rule as far as it still reads. Grade text only as
+far as 4.5.
 
 ## Type scale
 
