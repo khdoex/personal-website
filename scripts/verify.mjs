@@ -11,7 +11,7 @@ const ROUTES = {
   projects: '/projects',
   resume: '/resume',
 }
-const WIDTHS = [1440, 768, 375]
+const WIDTHS = [1440, 1024, 900, 768, 375]
 
 mkdirSync(OUT, { recursive: true })
 const browser = await chromium.launch()
