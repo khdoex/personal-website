@@ -10,6 +10,7 @@ export interface RichPostMeta {
   language?: 'en' | 'tr'
   alternateSlug?: string
   listed?: boolean
+  excerpt?: string
 }
 
 export interface RichPost {

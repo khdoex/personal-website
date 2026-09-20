@@ -1,6 +1,7 @@
 ---
 title: "Master"
 date: "2024-03-21"
+excerpt: "yüksek lisansı bıraktım, çünkü tatmin olamadım ve istemediğim bir şeyi daha fazla yapamadım."
 ---
 
 

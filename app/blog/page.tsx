@@ -1,5 +1,8 @@
 import { getAllPosts } from '@/lib/posts'
 import Link from 'next/link'
+import Canvas from '@/components/layout/Canvas'
+import Gutter from '@/components/layout/Gutter'
+import Meta from '@/components/ui/Meta'
 import Reveal from '@/components/motion/Reveal'
 
 export const metadata = {
@@ -9,48 +12,62 @@ export const metadata = {
 export default async function Blog() {
   const posts = await getAllPosts()
 
+  // Newest year first; posts inside a year keep the order getAllPosts gives.
+  const years = [...new Set(posts.map((p) => p.data.date.slice(0, 4)))].sort().reverse()
+
   return (
-    <div className="max-w-3xl mx-auto px-6 md:px-8 pt-16 md:pt-24 pb-28">
-      <header className="mb-12">
+    <Canvas className="pb-28 pt-16 md:pt-24">
+      <header className="mb-16 lg:col-start-2">
         <Reveal>
-          <h1 className="font-mono text-lg font-semibold text-heading">
-            writing
-          </h1>
+          <h1 className="font-serif text-h2 font-normal text-heading">writing</h1>
         </Reveal>
         <Reveal delay={0.08}>
-          <p className="text-muted mt-3 max-w-xl leading-relaxed">
-            Notes on machine learning, interpretability research, and the
-            occasional detour through life.
+          <p className="mt-4 font-serif text-lead text-muted">
+            notes on interpretability, machine learning, and the occasional
+            detour through life.
           </p>
         </Reveal>
       </header>
 
-      {posts.length > 0 ? (
-        <div className="divide-y divide-border border-y border-border">
-          {posts.map((post) => (
-            <Reveal key={post.data.slug}>
-              <Link
-                href={`/blog/${post.data.slug}`}
-                className="group flex flex-col md:flex-row md:items-baseline gap-1.5 md:gap-6 py-5"
-              >
-                <time className="font-mono text-xs text-amber md:w-28 shrink-0">
-                  {post.data.date}
-                </time>
-                <span className="text-base font-medium text-heading group-hover:text-accent transition-colors">
-                  {post.data.title}
-                </span>
-                <span className="font-mono text-xs text-muted-dark md:ml-auto shrink-0">
-                  {post.data.readingTime} {post.data.language === 'tr' ? 'dk' : 'min'}
-                </span>
-              </Link>
-            </Reveal>
-          ))}
-        </div>
-      ) : (
-        <Reveal>
-          <p className="font-mono text-sm text-muted">nothing here yet.</p>
-        </Reveal>
+      {posts.length === 0 && (
+        <p className="lg:col-start-2">
+          <Meta>nothing here yet.</Meta>
+        </p>
       )}
-    </div>
+
+      {years.map((year) => (
+        <div key={year} className="col-span-full grid grid-cols-1 lg:grid-cols-subgrid">
+          <Gutter sticky>
+            <Meta>{year}</Meta>
+          </Gutter>
+
+          <div className="lg:col-start-2">
+            {posts
+              .filter((post) => post.data.date.startsWith(year))
+              .map((post) => (
+                <article key={post.data.slug} className="border-t border-border py-7">
+                  <Link href={`/blog/${post.data.slug}`} className="group block">
+                    <span className="font-serif text-lead text-heading transition-colors group-hover:text-accent">
+                      {post.data.title}
+                    </span>
+                    {post.data.excerpt && (
+                      <p className="mt-2 max-w-[54ch] font-serif text-sm text-muted">
+                        {post.data.excerpt}
+                      </p>
+                    )}
+                    <p className="mt-3">
+                      <Meta tone="date">{post.data.date}</Meta>
+                      <Meta className="ml-3">
+                        {post.data.readingTime}{' '}
+                        {post.data.language === 'tr' ? 'dk' : 'min'}
+                      </Meta>
+                    </p>
+                  </Link>
+                </article>
+              ))}
+          </div>
+        </div>
+      ))}
+    </Canvas>
   )
 }

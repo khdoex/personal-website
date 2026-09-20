@@ -14,6 +14,7 @@ export interface PostData {
   content: string
   readingTime: number
   language?: 'en' | 'tr'
+  excerpt?: string
 }
 
 export interface Post {
@@ -40,6 +41,7 @@ async function parseMarkdownPost(raw: string, slug: string): Promise<PostData> {
     slug,
     content: contentHtml,
     readingTime: readingTimeOf(contentHtml),
+    excerpt: data.excerpt,
   }
 }
 
