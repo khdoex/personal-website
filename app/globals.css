@@ -213,33 +213,37 @@ details[open] > summary .if-closed {
 /* Headings are read in sequence, so they take the serif like every other
    heading on the site. Sizes come from the shared scale: the post title is
    text-h2 at 2.25rem, a body section head sits one step under it at
-   text-h3, and the levels below step down from there. */
-.prose h1,
-.prose h2,
-.prose h3,
-.prose h4 {
+   text-h3, and the levels below step down from there.
+
+   Direct children only, the same scoping .rich-prose uses for the measure.
+   A figure's panel title is chrome, not document structure, and this rule
+   outweighs the utility classes the figures set on themselves. */
+.prose > h1,
+.prose > h2,
+.prose > h3,
+.prose > h4 {
   font-family: var(--font-serif), Georgia, serif;
   color: var(--heading);
   font-weight: 400;
   line-height: 1.25;
 }
 
-.prose h1 {
+.prose > h1 {
   font-size: 2.25rem;
   margin: 2em 0 0.6em;
 }
 
-.prose h2 {
+.prose > h2 {
   font-size: 1.75rem;
   margin: 2em 0 0.6em;
 }
 
-.prose h3 {
+.prose > h3 {
   font-size: 1.375rem;
   margin: 1.8em 0 0.5em;
 }
 
-.prose h4 {
+.prose > h4 {
   font-size: 1.125rem;
   margin: 1.6em 0 0.5em;
 }
