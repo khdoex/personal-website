@@ -402,4 +402,13 @@ details[open] > summary .if-closed {
   .reveal {
     opacity: 1;
   }
+
+  /* Reveal ships its from-state in the server markup and relies on the
+     viewport animation to clear it. That animation never runs here, and
+     hydration keeps the server's inline style, so every revealed block
+     would stay invisible. */
+  .reveal-root {
+    opacity: 1 !important;
+    transform: none !important;
+  }
 }
