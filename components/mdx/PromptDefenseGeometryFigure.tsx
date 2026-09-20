@@ -4,10 +4,10 @@ import { motion, useTransform } from 'framer-motion'
 import { useFigureProgress } from './ScrollFigure'
 import { displacementRetention } from './prompt-injection-defense-data'
 
-const RED = '#dc645c'
-const BLUE = '#5ec4ff'
-const GRID = '#2f3b47'
-const TEXT = '#8aa0b1'
+const RED = 'rgb(var(--amber))'
+const BLUE = 'rgb(var(--accent))'
+const GRID = 'rgb(var(--border))'
+const TEXT = 'rgb(var(--muted))'
 
 function linePath(values: readonly number[], sx: (layer: number) => number, sy: (value: number) => number) {
   return values.slice(1).map((value, index) => `${index === 0 ? 'M' : 'L'}${sx(index + 1).toFixed(1)},${sy(value).toFixed(1)}`).join(' ')
@@ -33,8 +33,8 @@ function Plot({ compact = false }: { compact?: boolean }) {
   const font = compact ? 10 : 11
 
   return <svg viewBox={`0 0 ${width} ${height}`} className="w-full" role="img" aria-label="Residual displacement magnitude retained by layer. XML plus reminder remains near sixty percent of baseline in the registered late-layer window.">
-    <rect x={sx(18)} y={y} width={sx(27) - sx(18)} height={h} fill="#d98e48" opacity="0.07" />
-    <text x={(sx(18) + sx(27)) / 2} y={y + 13} textAnchor="middle" fill="#a68262" fontSize={font - 1}>registered measurement window</text>
+    <rect x={sx(18)} y={y} width={sx(27) - sx(18)} height={h} fill="rgb(var(--amber))" opacity="0.07" />
+    <text x={(sx(18) + sx(27)) / 2} y={y + 13} textAnchor="middle" fill="rgb(var(--muted))" fontSize={font - 1}>registered measurement window</text>
     <text x={(sx(18) + sx(27)) / 2} y={y + 29} textAnchor="middle" fill={RED} fontSize={font}>average: 62.5% of baseline</text>
     {[0, 0.5, 1].map((tick) => <g key={tick}>
       <line x1={x} x2={x + w} y1={sy(tick)} y2={sy(tick)} stroke={GRID} />
@@ -44,8 +44,8 @@ function Plot({ compact = false }: { compact?: boolean }) {
       <line x1={sx(tick)} x2={sx(tick)} y1={y} y2={y + h} stroke={GRID} opacity="0.45" />
       <text x={sx(tick)} y={y + h + 18} textAnchor="middle" fill={TEXT} fontSize={font}>{tick}</text>
     </g>)}
-    <line x1={x} x2={x + w} y1={sy(1)} y2={sy(1)} stroke="#b8c1ca" strokeDasharray="5 5" />
-    <text x={x + 5} y={sy(1) + 13} fill="#b8c1ca" fontSize={font - 1}>no-defense baseline = 100%</text>
+    <line x1={x} x2={x + w} y1={sy(1)} y2={sy(1)} stroke="rgb(var(--foreground))" strokeDasharray="5 5" />
+    <text x={x + 5} y={sy(1) + 13} fill="rgb(var(--foreground))" fontSize={font - 1}>no-defense baseline = 100%</text>
     <motion.path d={bandPath(displacementRetention.otherLo, displacementRetention.otherHi, sx, sy)} fill={BLUE} style={{ opacity: bandOpacity }} />
     <motion.path d={linePath(displacementRetention.primary, sx, sy)} fill="none" stroke={RED} strokeWidth={compact ? 2.6 : 3.4} strokeLinejoin="round" style={{ pathLength: progress }} />
     <circle cx={sx(27)} cy={sy(displacementRetention.primary[27])} r={compact ? 4 : 5} fill={RED} />

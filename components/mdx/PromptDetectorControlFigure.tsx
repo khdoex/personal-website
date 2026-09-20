@@ -3,8 +3,8 @@
 import { motion, useTransform } from 'framer-motion'
 import { useFigureProgress } from './ScrollFigure'
 
-const FLAGGED = '#d98e48'
-const ALLOWED = '#657787'
+const FLAGGED = 'rgb(var(--amber))'
+const ALLOWED = 'rgb(var(--muted-dark))'
 
 const copy = {
   en: {
@@ -54,7 +54,7 @@ export default function PromptDetectorControlFigure({ lang = 'en' }: { lang?: 'e
     <div>
       <div className="border-b border-border pb-4 font-mono">
         <div className="text-sm text-heading">{text.title}</div>
-        <div className="mt-1 text-[10px] text-muted">{text.subtitle}</div>
+        <div className="mt-1 text-tick text-muted">{text.subtitle}</div>
       </div>
 
       <div className="divide-y divide-border">
@@ -66,17 +66,17 @@ export default function PromptDetectorControlFigure({ lang = 'en' }: { lang?: 'e
               <div className="mb-4 flex flex-wrap items-start justify-between gap-x-5 gap-y-2">
                 <div>
                   <div className="font-mono text-sm text-heading">{row.label}</div>
-                  <div className="mt-1 font-mono text-[10px] text-muted">{row.explanation}</div>
+                  <div className="mt-1 font-mono text-tick text-muted">{row.explanation}</div>
                 </div>
                 <div className="font-mono text-right">
-                  <div className="text-lg text-heading">{rate.toFixed(rate === 0 ? 0 : 1)}%</div>
-                  <div className="text-[9px] text-muted">{text.flagged}</div>
+                  <div className="text-base text-heading">{rate.toFixed(rate === 0 ? 0 : 1)}%</div>
+                  <div className="text-tick text-muted">{text.flagged}</div>
                 </div>
               </div>
 
               <OutcomeBar flagged={row.flagged} total={row.total} delay={0.05 + index * 0.1} />
 
-              <div className="mt-3 flex flex-wrap justify-between gap-x-5 gap-y-1 font-mono text-[10px]">
+              <div className="mt-3 flex flex-wrap justify-between gap-x-5 gap-y-1 font-mono text-tick">
                 <span style={{ color: FLAGGED }}>{row.flagged} {row.flaggedLabel}</span>
                 <span className="text-muted">{allowed} {row.allowedLabel}</span>
               </div>
@@ -86,7 +86,7 @@ export default function PromptDetectorControlFigure({ lang = 'en' }: { lang?: 'e
       </div>
 
       <div className="border-t border-border pt-5">
-        <div className="rounded-md bg-amber/5 px-4 py-4 font-mono text-xs leading-relaxed text-muted sm:text-sm">
+        <div className="rounded-md bg-amber/5 px-4 py-4 font-mono text-meta leading-relaxed text-muted sm:text-sm">
           {text.conclusionStart} <span className="text-amber">{text.conclusionStrong}</span> {text.conclusionEnd}
         </div>
       </div>

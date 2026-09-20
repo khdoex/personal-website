@@ -72,7 +72,7 @@ export default function ScrollFigure({
           {children}
         </FigureProgress.Provider>
       </div>
-      <div className="mt-3 flex items-start justify-between gap-5 font-mono text-xs">
+      <div className="mt-3 flex items-start justify-between gap-5 font-mono text-meta">
         <figcaption className="max-w-3xl text-muted">
           {n !== undefined && <span className="text-accent">{copy.figure} {n}</span>}
           {n !== undefined && ' · '}
@@ -81,7 +81,7 @@ export default function ScrollFigure({
         <button
           type="button"
           onClick={openDialog}
-          className="u-link shrink-0 text-[11px] text-muted hover:text-heading"
+          className="u-link shrink-0 text-tick text-muted hover:text-heading"
           aria-label={`${copy.open}${n !== undefined ? `, ${copy.figure} ${n}` : ''}`}
         >
           {copy.open}
@@ -98,11 +98,11 @@ export default function ScrollFigure({
       >
         <div className="flex h-full min-h-0 flex-col">
           <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border bg-surface px-4 py-3">
-            <p className="m-0 font-mono text-xs text-muted">
+            <p className="m-0 font-mono text-meta text-muted">
               {n !== undefined && <span className="text-accent">{copy.figure} {n} · </span>}
               {caption}
             </p>
-            <div className="ml-auto flex shrink-0 items-center gap-2 font-mono text-xs">
+            <div className="ml-auto flex shrink-0 items-center gap-2 font-mono text-meta">
               <button
                 type="button"
                 onClick={() => changeZoom(-0.25)}

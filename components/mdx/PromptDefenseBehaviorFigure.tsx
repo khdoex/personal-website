@@ -4,14 +4,14 @@ import { motion, useTransform } from 'framer-motion'
 import { useFigureProgress } from './ScrollFigure'
 import { defenseBehavior } from './prompt-injection-defense-data'
 
-const BLUE = '#5ec4ff'
-const AMBER = '#d98e48'
-const TARGET_THEN = '#4a9bc2'
-const INJECTED_THEN = '#ce674c'
-const UNKNOWN = '#8396a6'
-const GRID = '#2f3b47'
-const TEXT = '#8aa0b1'
-const HEADING = '#e8eef4'
+const BLUE = 'rgb(var(--accent))'
+const AMBER = 'rgb(var(--amber))'
+const TARGET_THEN = 'rgb(var(--accent) / 0.55)'
+const INJECTED_THEN = 'rgb(var(--amber) / 0.55)'
+const UNKNOWN = 'rgb(var(--muted))'
+const GRID = 'rgb(var(--border))'
+const TEXT = 'rgb(var(--muted))'
+const HEADING = 'rgb(var(--heading))'
 
 const sequenceColors = [BLUE, TARGET_THEN, INJECTED_THEN, AMBER, UNKNOWN]
 const sequenceLabels = ['target only', 'target → injected', 'injected → target', 'injected only', 'right-censored']
@@ -25,7 +25,7 @@ export default function PromptDefenseBehaviorFigure() {
       <div>
         <h3 className="mb-3 font-mono text-sm text-heading">which task appeared anywhere?</h3>
         <svg viewBox="0 0 560 430" className="w-full" role="img" aria-label="Target and injected task addressing rates across seven system-prompt defenses.">
-          <rect x="0" y="226" width="548" height="36" rx="4" fill="#5ec4ff" opacity="0.045" />
+          <rect x="0" y="226" width="548" height="36" rx="4" fill="rgb(var(--accent))" opacity="0.045" />
           {[0, 0.5, 1].map((tick) => {
             const x = 178 + tick * 350
             return <g key={tick}>
@@ -39,7 +39,7 @@ export default function PromptDefenseBehaviorFigure() {
             const injectedX = 178 + row.injected * 350
             return <g key={row.key}>
               <text x="164" y={y + 4} textAnchor="end" fill={row.key.includes('reminder') ? HEADING : TEXT} fontSize="14">{row.label}</text>
-              <motion.line x1={targetX} x2={injectedX} y1={y} y2={y} stroke="#52616e" strokeWidth="2" style={{ opacity: reveal }} />
+              <motion.line x1={targetX} x2={injectedX} y1={y} y2={y} stroke="rgb(var(--muted-dark))" strokeWidth="2" style={{ opacity: reveal }} />
               <motion.circle cx={targetX} cy={y} r="6" fill={BLUE} style={{ opacity: reveal }} />
               <motion.rect x={injectedX - 5.5} y={y - 5.5} width="11" height="11" rx="1" fill={AMBER} style={{ opacity: reveal }} />
             </g>
@@ -54,7 +54,7 @@ export default function PromptDefenseBehaviorFigure() {
       <div>
         <h3 className="mb-3 font-mono text-sm text-heading">what did each answer contain?</h3>
         <svg viewBox="0 0 560 430" className="w-full" role="img" aria-label="First-answer sequence composition across seven system-prompt defenses.">
-          <rect x="0" y="225" width="548" height="36" rx="4" fill="#5ec4ff" opacity="0.045" />
+          <rect x="0" y="225" width="548" height="36" rx="4" fill="rgb(var(--accent))" opacity="0.045" />
           {[0, 0.5, 1].map((tick) => {
             const x = 154 + tick * 374
             return <g key={tick}>
@@ -76,7 +76,7 @@ export default function PromptDefenseBehaviorFigure() {
             </g>
           })}
         </svg>
-        <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 font-mono text-[10px] text-muted">
+        <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 font-mono text-tick text-muted">
           {sequenceLabels.map((label, index) => <span key={label}><span className="mr-1.5 inline-block h-2 w-2" style={{ background: sequenceColors[index] }} />{label}</span>)}
         </div>
       </div>

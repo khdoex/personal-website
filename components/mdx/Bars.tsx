@@ -28,12 +28,12 @@ function Bar({
 
   return (
     <div>
-      <span className="font-mono text-[11px] text-muted">{datum.label}</span>
+      <span className="font-mono text-tick text-muted">{datum.label}</span>
       <motion.div
         className="h-2.5 rounded-sm mt-1"
         style={{
           width,
-          background: 'linear-gradient(90deg, #5ec4ff, #2b6d94)',
+          background: 'linear-gradient(90deg, rgb(var(--accent)), rgb(var(--accent) / 0.35))',
         }}
       />
     </div>

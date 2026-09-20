@@ -3,11 +3,11 @@
 import { motion } from 'framer-motion'
 import { useFigureProgress } from './ScrollFigure'
 
-const BLUE = '#5ec4ff'
-const RED = '#dc645c'
-const GRID = '#2f3b47'
-const TEXT = '#8aa0b1'
-const HEADING = '#e8eef4'
+const BLUE = 'rgb(var(--accent))'
+const RED = 'rgb(var(--amber))'
+const GRID = 'rgb(var(--border))'
+const TEXT = 'rgb(var(--muted))'
+const HEADING = 'rgb(var(--heading))'
 
 const alpha = [0, 0.5, 1, 2]
 const effects = [0, -0.0187, -0.0465, -0.0915]
@@ -86,44 +86,44 @@ export default function PromptReadoutCausalityFigure({ lang = 'en' }: { lang?: '
     <div>
       <div className="mb-8 grid gap-px overflow-hidden rounded-lg border border-border bg-border sm:grid-cols-2">
         <div className="bg-background p-5 font-mono">
-          <div className="text-[10px] uppercase tracking-[0.13em] text-muted">{text.defense}</div>
+          <div className="text-tick uppercase tracking-[0.13em] text-muted">{text.defense}</div>
           <div className="mt-3 flex items-baseline justify-between gap-4">
-            <span className="text-xs text-muted">{text.sourceEffect}</span>
-            <span className="text-lg text-amber">2.733 → 1.475</span>
+            <span className="text-meta text-muted">{text.sourceEffect}</span>
+            <span className="text-base text-amber">2.733 → 1.475</span>
           </div>
-          <div className="mt-2 text-right text-[10px] text-amber">{text.smaller}</div>
+          <div className="mt-2 text-right text-tick text-amber">{text.smaller}</div>
         </div>
         <div className="bg-background p-5 font-mono">
-          <div className="text-[10px] uppercase tracking-[0.13em] text-muted">{text.readout}</div>
+          <div className="text-tick uppercase tracking-[0.13em] text-muted">{text.readout}</div>
           <div className="mt-3 flex items-baseline justify-between gap-4">
-            <span className="text-xs text-muted">{text.baseToFull}</span>
-            <span className="text-lg text-accent">0.990 → 0.982</span>
+            <span className="text-meta text-muted">{text.baseToFull}</span>
+            <span className="text-base text-accent">0.990 → 0.982</span>
           </div>
-          <div className="mt-2 text-right text-[10px] text-muted">{text.null}</div>
+          <div className="mt-2 text-right text-tick text-muted">{text.null}</div>
         </div>
       </div>
 
       <div className="grid gap-8 lg:grid-cols-[0.82fr_1.18fr] lg:gap-10">
         <div className="flex flex-col">
           <div className="font-mono text-sm text-heading">{text.repeated}</div>
-          <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.14em] text-muted">{text.scoreToMargin}</div>
+          <div className="mt-2 font-mono text-tick uppercase tracking-[0.14em] text-muted">{text.scoreToMargin}</div>
 
           <div className="mt-7 rounded-lg border border-accent/25 bg-accent/5 p-5">
             <div className="grid grid-cols-2 gap-5 font-mono">
               <div>
-                <div className="text-[10px] text-muted">{text.pilot}</div>
-                <div className="mt-2 text-xl text-accent">+0.205</div>
+                <div className="text-tick text-muted">{text.pilot}</div>
+                <div className="mt-2 text-lead text-accent">+0.205</div>
               </div>
               <div className="border-l border-accent/20 pl-5">
-                <div className="text-[10px] text-muted">{text.unseen}</div>
-                <div className="mt-2 text-xl text-accent">+0.215</div>
+                <div className="text-tick text-muted">{text.unseen}</div>
+                <div className="mt-2 text-lead text-accent">+0.215</div>
               </div>
             </div>
             <div className="mt-4 h-px bg-gradient-to-r from-transparent via-accent to-accent" />
-            <div className="mt-2 text-right font-mono text-[10px] text-muted">{text.sameSlope}</div>
+            <div className="mt-2 text-right font-mono text-tick text-muted">{text.sameSlope}</div>
           </div>
 
-          <div className="mt-5 rounded-md border border-border px-4 py-3 font-mono text-xs leading-relaxed text-muted">
+          <div className="mt-5 rounded-md border border-border px-4 py-3 font-mono text-meta leading-relaxed text-muted">
             {text.prediction} <span className="text-accent">{text.aboveZero}</span>
           </div>
         </div>
@@ -134,7 +134,7 @@ export default function PromptReadoutCausalityFigure({ lang = 'en' }: { lang?: '
             <rect x={x} y={y} width={w} height={sy(0) - y} fill={BLUE} opacity="0.045" />
             <text x={x + w - 5} y={sy(0) - 9} textAnchor="end" fill={BLUE} fontSize="10">{text.positiveSide}</text>
             {[0, -0.05, -0.1].map((tick) => <g key={tick}>
-              <line x1={x} x2={x + w} y1={sy(tick)} y2={sy(tick)} stroke={tick === 0 ? '#aeb8c1' : GRID} strokeWidth={tick === 0 ? 1.5 : 1} />
+              <line x1={x} x2={x + w} y1={sy(tick)} y2={sy(tick)} stroke={tick === 0 ? 'rgb(var(--foreground))' : GRID} strokeWidth={tick === 0 ? 1.5 : 1} />
               <text x={x - 10} y={sy(tick) + 4} textAnchor="end" fill={TEXT} fontSize="11">{tick.toFixed(2)}</text>
             </g>)}
             {alpha.map((value) => <g key={value}>
@@ -155,27 +155,27 @@ export default function PromptReadoutCausalityFigure({ lang = 'en' }: { lang?: '
 
           <div className="sm:hidden">
             <div className="font-mono text-sm text-heading">{text.changed}</div>
-            <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.13em] text-muted">{text.zeroBoundary}</div>
+            <div className="mt-2 font-mono text-tick uppercase tracking-[0.13em] text-muted">{text.zeroBoundary}</div>
             <div className="mt-6 space-y-5">
               {alpha.slice(1).map((value, index) => {
                 const effect = effects[index + 1]
                 return (
                   <div key={value}>
                     <div className="flex items-baseline justify-between gap-4 font-mono">
-                      <span className="text-xs text-muted">α {value}</span>
-                      <span className="text-base text-[#e58a81]">{effect.toFixed(4)}</span>
+                      <span className="text-meta text-muted">α {value}</span>
+                      <span className="text-base text-amber">{effect.toFixed(4)}</span>
                     </div>
                     <div className="mt-2 h-2 overflow-hidden rounded-full bg-border/60">
-                      <div className="h-full rounded-full bg-[#dc645c]" style={{ width: `${Math.abs(effect) / 0.1 * 100}%` }} />
+                      <div className="h-full rounded-full bg-amber" style={{ width: `${Math.abs(effect) / 0.1 * 100}%` }} />
                     </div>
-                    {value === 1 && <div className="mt-2 font-mono text-[10px] text-muted">95% interval [−0.0749, −0.0203]</div>}
+                    {value === 1 && <div className="mt-2 font-mono text-tick text-muted">95% interval [−0.0749, −0.0203]</div>}
                   </div>
                 )
               })}
             </div>
           </div>
 
-          <div className="rounded-md border border-[#dc645c]/30 bg-[#dc645c]/5 px-4 py-3 font-mono text-xs text-[#e58a81]">
+          <div className="rounded-md border border-amber/30 bg-amber/5 px-4 py-3 font-mono text-meta text-amber">
             {text.failed}
           </div>
         </div>
@@ -183,20 +183,20 @@ export default function PromptReadoutCausalityFigure({ lang = 'en' }: { lang?: '
 
       <div className="mt-8 grid gap-px overflow-hidden rounded-lg border border-border bg-border sm:grid-cols-3">
         <div className="bg-background p-4">
-          <div className="font-mono text-[10px] uppercase tracking-[0.13em] text-muted">{text.random}</div>
-          <div className="mt-2 font-mono text-xs leading-relaxed text-heading">{text.randomResult}</div>
+          <div className="font-mono text-tick uppercase tracking-[0.13em] text-muted">{text.random}</div>
+          <div className="mt-2 font-mono text-meta leading-relaxed text-heading">{text.randomResult}</div>
         </div>
         <div className="bg-background p-4">
-          <div className="font-mono text-[10px] uppercase tracking-[0.13em] text-muted">{text.swap}</div>
-          <div className="mt-2 font-mono text-xs leading-relaxed text-[#e58a81]">{text.swapResult}</div>
+          <div className="font-mono text-tick uppercase tracking-[0.13em] text-muted">{text.swap}</div>
+          <div className="mt-2 font-mono text-meta leading-relaxed text-amber">{text.swapResult}</div>
         </div>
         <div className="bg-background p-4">
-          <div className="font-mono text-[10px] uppercase tracking-[0.13em] text-muted">{text.fullState}</div>
-          <div className="mt-2 font-mono text-xs leading-relaxed text-[#e58a81]">{text.fullStateResult}</div>
+          <div className="font-mono text-tick uppercase tracking-[0.13em] text-muted">{text.fullState}</div>
+          <div className="mt-2 font-mono text-meta leading-relaxed text-amber">{text.fullStateResult}</div>
         </div>
       </div>
 
-      <div className="mt-4 text-center font-mono text-[10px] leading-relaxed text-muted">
+      <div className="mt-4 text-center font-mono text-tick leading-relaxed text-muted">
         {text.boundary}
       </div>
     </div>

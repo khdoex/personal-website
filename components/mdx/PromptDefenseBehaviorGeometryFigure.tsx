@@ -4,10 +4,10 @@ import { motion, useTransform } from 'framer-motion'
 import { useFigureProgress } from './ScrollFigure'
 import { behaviorGeometryJoin } from './prompt-injection-defense-data'
 
-const RED = '#dc645c'
-const GRID = '#2f3b47'
-const TEXT = '#8aa0b1'
-const HEADING = '#e8eef4'
+const RED = 'rgb(var(--amber))'
+const GRID = 'rgb(var(--border))'
+const TEXT = 'rgb(var(--muted))'
+const HEADING = 'rgb(var(--heading))'
 
 function signed(value: number, digits: number) {
   const rounded = Math.abs(value) < 0.5 * 10 ** -digits ? 0 : value
@@ -19,13 +19,13 @@ export default function PromptDefenseBehaviorGeometryFigure() {
   const reveal = useTransform(progress, [0.05, 0.55], [0.12, 1])
   return <div>
     <div className="mb-1 text-center font-mono text-sm text-heading">all three intervals cross zero</div>
-    <div className="mb-6 text-center font-mono text-[10px] text-muted">successful minus suppressed, centered within task direction</div>
+    <div className="mb-6 text-center font-mono text-tick text-muted">successful minus suppressed, centered within task direction</div>
     <div className="grid gap-5 md:grid-cols-3">
       {behaviorGeometryJoin.map((metric) => {
         const span = Math.max(Math.abs(metric.lo), Math.abs(metric.hi)) * 1.12
         const sx = (value: number) => 30 + (value + span) / (2 * span) * 260
         return <div key={metric.label} className="rounded-md border border-border bg-surface/30 px-2 pt-3">
-          <h3 className="min-h-10 text-center font-mono text-xs text-heading">{metric.label}</h3>
+          <h3 className="min-h-10 text-center font-mono text-meta text-heading">{metric.label}</h3>
           <svg viewBox="0 0 320 180" className="w-full" role="img" aria-label={`${metric.label}: successful minus suppressed is ${signed(metric.value, metric.digits)}, with interval ${signed(metric.lo, metric.digits)} to ${signed(metric.hi, metric.digits)}.`}>
             <line x1={sx(0)} x2={sx(0)} y1="25" y2="122" stroke={GRID} strokeWidth="2" />
             <motion.line x1={sx(metric.lo)} x2={sx(metric.hi)} y1="78" y2="78" stroke={RED} strokeWidth="3" style={{ opacity: reveal }} />
@@ -40,6 +40,6 @@ export default function PromptDefenseBehaviorGeometryFigure() {
         </div>
       })}
     </div>
-    <div className="mt-4 text-center font-mono text-[10px] text-muted">12 successful, 84 suppressed · 2,000 base-cluster bootstrap passes · panel widths are not comparable across metrics</div>
+    <div className="mt-4 text-center font-mono text-tick text-muted">12 successful, 84 suppressed · 2,000 base-cluster bootstrap passes · panel widths are not comparable across metrics</div>
   </div>
 }

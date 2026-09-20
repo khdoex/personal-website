@@ -4,11 +4,11 @@ import { motion } from 'framer-motion'
 import { useFigureProgress } from './ScrollFigure'
 import { defenseTransfer } from './prompt-injection-defense-data'
 
-const TASK = '#d98e48'
-const WRAPPER = '#5ec4ff'
-const GRID = '#2f3b47'
-const TEXT = '#8aa0b1'
-const HEADING = '#e8eef4'
+const TASK = 'rgb(var(--amber))'
+const WRAPPER = 'rgb(var(--accent))'
+const GRID = 'rgb(var(--border))'
+const TEXT = 'rgb(var(--muted))'
+const HEADING = 'rgb(var(--heading))'
 
 interface Arm {
   label: string
@@ -45,8 +45,8 @@ function Panel({ data }: { data: Arm }) {
       <line x1={sx(tick)} x2={sx(tick)} y1={y} y2={y + h} stroke={GRID} opacity="0.45" />
       <text x={sx(tick)} y={y + h + 18} textAnchor="middle" fill={TEXT} fontSize="11">{tick}</text>
     </g>)}
-    <line x1={x} x2={x + w} y1={sy(0)} y2={sy(0)} stroke="#aeb8c1" strokeWidth="1.5" />
-    <text x={x + w - 4} y={sy(0) - 7} textAnchor="end" fill="#aeb8c1" fontSize="10">zero = grouped-null boundary</text>
+    <line x1={x} x2={x + w} y1={sy(0)} y2={sy(0)} stroke="rgb(var(--foreground))" strokeWidth="1.5" />
+    <text x={x + w - 4} y={sy(0) - 7} textAnchor="end" fill="rgb(var(--foreground))" fontSize="10">zero = grouped-null boundary</text>
     <motion.path d={path(taskMargin, sx, sy)} fill="none" stroke={TASK} strokeWidth="2.8" strokeLinejoin="round" style={{ pathLength: progress }} />
     <motion.path d={path(wrapperMargin, sx, sy)} fill="none" stroke={WRAPPER} strokeWidth="2.8" strokeLinejoin="round" style={{ pathLength: progress }} />
     <line x1={sx(data.taskCrossover)} x2={sx(data.taskCrossover)} y1={y} y2={y + h} stroke={TASK} strokeDasharray="2 4" opacity="0.7" />
@@ -64,7 +64,7 @@ export default function PromptDefenseTransferFigure() {
       <Panel data={defenseTransfer.baseline} />
       <Panel data={defenseTransfer.primary} />
     </div>
-    <div className="flex flex-wrap justify-center gap-x-6 gap-y-1 font-mono text-[10px] text-muted">
+    <div className="flex flex-wrap justify-center gap-x-6 gap-y-1 font-mono text-tick text-muted">
       <span><span className="mr-1.5 inline-block h-0.5 w-6 align-middle" style={{ background: WRAPPER }} />new attack wording</span>
       <span><span className="mr-1.5 inline-block h-0.5 w-6 align-middle" style={{ background: TASK }} />new task direction</span>
       <span><span className="mr-1.5 inline-block w-6 border-t border-muted-dark align-middle" />above zero beats grouped-null 95th percentile</span>

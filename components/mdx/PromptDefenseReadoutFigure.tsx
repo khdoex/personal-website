@@ -3,11 +3,11 @@
 import { motion } from 'framer-motion'
 import { useFigureProgress } from './ScrollFigure'
 
-const BLUE = '#5ec4ff'
-const AMBER = '#d98e48'
-const GRID = '#2f3b47'
-const TEXT = '#8aa0b1'
-const HEADING = '#e8eef4'
+const BLUE = 'rgb(var(--accent))'
+const AMBER = 'rgb(var(--amber))'
+const GRID = 'rgb(var(--border))'
+const TEXT = 'rgb(var(--muted))'
+const HEADING = 'rgb(var(--heading))'
 
 const scales = [0, 0.5, 1]
 const unauthorized = [2.733, 1.654, 1.475]
@@ -62,7 +62,7 @@ function ReadoutPanel() {
   return (
     <svg viewBox="0 0 480 335" className="w-full" role="img" aria-label="Frozen readout AUROC remains between 0.9823 and 0.9899 across SecAlign strengths, above the grouped-null 95th percentile of 0.5902.">
       <text x={x} y="17" fill={HEADING} fontSize="14" fontFamily="var(--font-mono), monospace">can the frozen direction still read the difference?</text>
-      <rect x={x} y={sy(0.5902)} width={w} height={sy(0.5) - sy(0.5902)} fill="#657787" opacity="0.14" />
+      <rect x={x} y={sy(0.5902)} width={w} height={sy(0.5) - sy(0.5902)} fill="rgb(var(--muted-dark))" opacity="0.14" />
       {[0.5, 0.75, 1].map((tick) => <g key={tick}>
         <line x1={x} x2={x + w} y1={sy(tick)} y2={sy(tick)} stroke={GRID} />
         <text x={x - 10} y={sy(tick) + 4} textAnchor="end" fill={TEXT} fontSize="11">{tick.toFixed(2)}</text>
@@ -71,7 +71,7 @@ function ReadoutPanel() {
         <line x1={sx(index)} x2={sx(index)} y1={y} y2={y + h} stroke={GRID} opacity="0.45" />
         <text x={sx(index)} y={y + h + 22} textAnchor="middle" fill={TEXT} fontSize="11">{scale === 0 ? 'base' : scale === 0.5 ? 'half' : 'full'}</text>
       </g>)}
-      <line x1={x} x2={x + w} y1={sy(0.5902)} y2={sy(0.5902)} stroke="#8396a6" strokeDasharray="4 4" />
+      <line x1={x} x2={x + w} y1={sy(0.5902)} y2={sy(0.5902)} stroke="rgb(var(--muted))" strokeDasharray="4 4" />
       <text x={x + 6} y={sy(0.5902) - 8} fill={TEXT} fontSize="10">grouped-null 95th percentile: 0.590</text>
       <motion.path d={path(auc, sx, sy)} fill="none" stroke={BLUE} strokeWidth="3.5" strokeLinejoin="round" style={{ pathLength: progress }} />
       {auc.map((value, index) => <circle key={index} cx={sx(index)} cy={sy(value)} r="5.5" fill={BLUE} />)}
@@ -96,17 +96,17 @@ export default function PromptDefenseReadoutFigure() {
           <div className="mt-4 grid grid-cols-3 gap-2">
             {scales.map((scale, index) => (
               <div key={scale} className="rounded-md border border-border bg-surface/25 p-3 text-center font-mono">
-                <div className="text-[10px] uppercase tracking-[0.1em] text-muted">{scale === 0 ? 'base' : scale === 0.5 ? 'half' : 'full'}</div>
+                <div className="text-tick uppercase tracking-[0.1em] text-muted">{scale === 0 ? 'base' : scale === 0.5 ? 'half' : 'full'}</div>
                 <div className="mt-3 text-base text-amber">+{unauthorized[index].toFixed(3)}</div>
-                <div className="mt-1 text-xs text-accent">+{authorized[index].toFixed(3)}</div>
+                <div className="mt-1 text-meta text-accent">+{authorized[index].toFixed(3)}</div>
               </div>
             ))}
           </div>
-          <div className="mt-3 grid grid-cols-2 gap-3 font-mono text-[10px] text-muted">
+          <div className="mt-3 grid grid-cols-2 gap-3 font-mono text-tick text-muted">
             <span><span className="mr-1.5 inline-block h-2 w-2 rounded-full bg-amber" />unauthorized</span>
             <span><span className="mr-1.5 inline-block h-2 w-2 rounded-full bg-accent" />authorized</span>
           </div>
-          <div className="mt-4 rounded-md bg-amber/5 px-4 py-3 font-mono text-xs leading-relaxed text-muted">
+          <div className="mt-4 rounded-md bg-amber/5 px-4 py-3 font-mono text-meta leading-relaxed text-muted">
             unauthorized shift: <span className="text-amber">+2.733 → +1.475</span> at full defense
           </div>
         </div>
@@ -116,18 +116,18 @@ export default function PromptDefenseReadoutFigure() {
           <div className="mt-4 grid grid-cols-3 gap-2">
             {scales.map((scale, index) => (
               <div key={scale} className="rounded-md border border-accent/25 bg-accent/5 p-3 text-center font-mono">
-                <div className="text-[10px] uppercase tracking-[0.1em] text-muted">{scale === 0 ? 'base' : scale === 0.5 ? 'half' : 'full'}</div>
+                <div className="text-tick uppercase tracking-[0.1em] text-muted">{scale === 0 ? 'base' : scale === 0.5 ? 'half' : 'full'}</div>
                 <div className="mt-3 text-base text-accent">{auc[index].toFixed(3)}</div>
               </div>
             ))}
           </div>
-          <div className="mt-4 rounded-md border border-border px-4 py-3 font-mono text-xs leading-relaxed text-muted">
+          <div className="mt-4 rounded-md border border-border px-4 py-3 font-mono text-meta leading-relaxed text-muted">
             grouped-null 95th percentile: <span className="text-heading">0.590</span>
           </div>
         </div>
       </div>
 
-      <div className="mt-5 flex flex-wrap justify-center gap-x-6 gap-y-2 font-mono text-[10px] text-muted sm:mt-2">
+      <div className="mt-5 flex flex-wrap justify-center gap-x-6 gap-y-2 font-mono text-tick text-muted sm:mt-2">
         <span><span className="mr-1.5 inline-block h-0.5 w-6 align-middle" style={{ background: AMBER }} />unauthorized source shift</span>
         <span><span className="mr-1.5 inline-block h-0.5 w-6 align-middle" style={{ background: BLUE }} />authorized shift / frozen readout</span>
         <span className="text-heading">unauthorized shift falls 46%; readout remains</span>

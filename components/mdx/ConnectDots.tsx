@@ -10,7 +10,7 @@ interface Dot {
   label?: string
 }
 
-const COLORS = { accent: '#5ec4ff', amber: '#d98e48' }
+const COLORS = { accent: 'rgb(var(--accent))', amber: 'rgb(var(--amber))' }
 
 function Edge({
   from,
@@ -80,7 +80,7 @@ export default function ConnectDots({
             <text
               x={dot.x}
               y={dot.y - 10}
-              fill="#718ca1"
+              fill="rgb(var(--muted))"
               fontSize={9}
               fontFamily="var(--font-mono), monospace"
               textAnchor="middle"

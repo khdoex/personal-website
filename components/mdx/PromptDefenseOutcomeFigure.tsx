@@ -14,8 +14,8 @@ const copy = {
     summaryAttack: "attacker's task",
     summaryUser: "user's task",
     rows: [
-      { label: "attacker's task appeared", baseline: 94, defense: 12, change: '82 fewer answers', color: '#d98e48' },
-      { label: "user's task appeared", baseline: 42, defense: 84, change: '42 more answers', color: '#5ec4ff' },
+      { label: "attacker's task appeared", baseline: 94, defense: 12, change: '82 fewer answers', color: 'rgb(var(--amber))' },
+      { label: "user's task appeared", baseline: 42, defense: 84, change: '42 more answers', color: 'rgb(var(--accent))' },
     ],
   },
   tr: {
@@ -28,8 +28,8 @@ const copy = {
     summaryAttack: 'saldırganın görevi',
     summaryUser: 'kullanıcının görevi',
     rows: [
-      { label: 'saldırganın görevi cevapta göründü', baseline: 94, defense: 12, change: '82 cevap daha az', color: '#d98e48' },
-      { label: 'kullanıcının görevi cevapta göründü', baseline: 42, defense: 84, change: '42 cevap daha fazla', color: '#5ec4ff' },
+      { label: 'saldırganın görevi cevapta göründü', baseline: 94, defense: 12, change: '82 cevap daha az', color: 'rgb(var(--amber))' },
+      { label: 'kullanıcının görevi cevapta göründü', baseline: 42, defense: 84, change: '42 cevap daha fazla', color: 'rgb(var(--accent))' },
     ],
   },
 } as const
@@ -59,7 +59,7 @@ export default function PromptDefenseOutcomeFigure({ lang = 'en' }: { lang?: 'en
     <div>
       <div className="border-b border-border pb-4 font-mono">
         <div className="text-sm text-heading">{text.title}</div>
-        <div className="mt-1 text-[10px] text-muted">{text.subtitle}</div>
+        <div className="mt-1 text-tick text-muted">{text.subtitle}</div>
       </div>
 
       <div className="divide-y divide-border">
@@ -67,33 +67,33 @@ export default function PromptDefenseOutcomeFigure({ lang = 'en' }: { lang?: 'en
           <div key={row.label} className="py-7 first:pt-6 last:pb-6">
             <div className="mb-5 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 font-mono">
               <div className="text-sm text-heading">{row.label}</div>
-              <div className="text-xs" style={{ color: row.color }}>{row.change}</div>
+              <div className="text-meta" style={{ color: row.color }}>{row.change}</div>
             </div>
 
             <div className="space-y-4">
               <div className="grid grid-cols-[6.5rem_minmax(0,1fr)_3.75rem] items-center gap-3 sm:grid-cols-[9rem_minmax(0,1fr)_4.5rem] sm:gap-4">
                 <div className="font-mono">
-                  <div className="text-xs text-muted">{text.before}</div>
-                  <div className="mt-1 text-[9px] text-muted-dark">{text.beforeNote}</div>
+                  <div className="text-meta text-muted">{text.before}</div>
+                  <div className="mt-1 text-tick text-muted">{text.beforeNote}</div>
                 </div>
                 <ResultBar value={row.baseline} color={row.color} delay={0.05 + rowIndex * 0.08} />
-                <span className="text-right font-mono text-sm text-muted">{row.baseline}<span className="text-[9px] text-muted-dark"> / 96</span></span>
+                <span className="text-right font-mono text-sm text-muted">{row.baseline}<span className="text-tick text-muted"> / 96</span></span>
               </div>
 
               <div className="grid grid-cols-[6.5rem_minmax(0,1fr)_3.75rem] items-center gap-3 sm:grid-cols-[9rem_minmax(0,1fr)_4.5rem] sm:gap-4">
                 <div className="font-mono">
-                  <div className="text-xs text-heading">{text.after}</div>
-                  <div className="mt-1 text-[9px] text-muted">{text.afterNote}</div>
+                  <div className="text-meta text-heading">{text.after}</div>
+                  <div className="mt-1 text-tick text-muted">{text.afterNote}</div>
                 </div>
                 <ResultBar value={row.defense} color={row.color} delay={0.2 + rowIndex * 0.08} />
-                <span className="text-right font-mono text-lg text-heading">{row.defense}<span className="text-[9px] text-muted"> / 96</span></span>
+                <span className="text-right font-mono text-base text-heading">{row.defense}<span className="text-tick text-muted"> / 96</span></span>
               </div>
             </div>
           </div>
         ))}
       </div>
 
-      <div className="grid gap-3 border-t border-border pt-5 font-mono text-xs sm:grid-cols-2">
+      <div className="grid gap-3 border-t border-border pt-5 font-mono text-meta sm:grid-cols-2">
         <div className="rounded-md bg-amber/5 px-4 py-3 text-muted">
           {text.summaryAttack}: <span className="text-amber">94 → 12</span>
         </div>
