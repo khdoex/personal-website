@@ -3,8 +3,15 @@ import { readFileSync } from 'node:fs'
 const css = readFileSync(new URL('../app/globals.css', import.meta.url), 'utf8')
 const open = css.indexOf(':root')
 const root = css.slice(open, css.indexOf('}', open))
+// Tokens are stored as sRGB channels so Tailwind's opacity modifiers compile.
+// The table below is read by a person, so channels are folded back to hex here.
+const hex = (ch) =>
+  '#' + ch.split(/\s+/).map((c) => Number(c).toString(16).padStart(2, '0')).join('')
 const tokens = Object.fromEntries(
-  [...root.matchAll(/--([\w-]+):\s*(#[0-9a-fA-F]{6})/g)].map((m) => [m[1], m[2]])
+  [...root.matchAll(/--([\w-]+):\s*(\d{1,3}\s+\d{1,3}\s+\d{1,3})\s*;/g)].map((m) => [
+    m[1],
+    hex(m[2]),
+  ])
 )
 
 const lin = (c) => (c /= 255) <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4

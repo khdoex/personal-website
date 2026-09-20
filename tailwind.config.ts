@@ -9,16 +9,16 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
-        surface: "var(--surface)",
-        border: "var(--border)",
-        heading: "var(--heading)",
-        accent: "var(--accent)",
-        amber: "var(--amber)",
+        background: "rgb(var(--background) / <alpha-value>)",
+        foreground: "rgb(var(--foreground) / <alpha-value>)",
+        surface: "rgb(var(--surface) / <alpha-value>)",
+        border: "rgb(var(--border) / <alpha-value>)",
+        heading: "rgb(var(--heading) / <alpha-value>)",
+        accent: "rgb(var(--accent) / <alpha-value>)",
+        amber: "rgb(var(--amber) / <alpha-value>)",
         muted: {
-          DEFAULT: "var(--muted)",
-          dark: "var(--muted-dark)",
+          DEFAULT: "rgb(var(--muted) / <alpha-value>)",
+          dark: "rgb(var(--muted-dark) / <alpha-value>)",
         },
       },
       fontFamily: {
