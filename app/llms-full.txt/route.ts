@@ -1,6 +1,5 @@
-import fs from 'fs'
-import path from 'path'
 import { getAllPosts } from '@/lib/posts'
+import { llmsSummary } from '@/lib/llms-summary.generated'
 import { projects } from '@/lib/projects'
 import {
   about,
@@ -41,10 +40,7 @@ function entry(e: ResumeEntry): string {
 }
 
 export async function GET() {
-  const summary = fs.readFileSync(
-    path.join(process.cwd(), 'public', 'llms.txt'),
-    'utf8'
-  )
+  const summary = llmsSummary
   const posts = await getAllPosts()
 
   const sections = [

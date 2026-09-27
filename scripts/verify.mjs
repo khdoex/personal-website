@@ -5,6 +5,7 @@ const BASE = process.env.BASE_URL ?? 'http://localhost:3000'
 const OUT = process.env.OUT_DIR ?? '.verify/current'
 const ROUTES = {
   home: '/',
+  tr: '/tr',
   about: '/about',
   blog: '/blog',
   // The rich essay is an unlisted draft and 404s, so the sweep would have
