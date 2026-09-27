@@ -12,17 +12,20 @@ interface Props {
   params: Promise<{ slug: string }>
 }
 
+/**
+ * An unlisted rich post is a draft. The route treats it as if it does not
+ * exist, so it 404s rather than staying readable to anyone holding the link.
+ */
+function publishedRichPost(slug: string) {
+  const rich = getRichPost(slug)
+  return rich && rich.meta.listed !== false ? rich : undefined
+}
+
 export async function generateMetadata({ params }: Props) {
   const { slug } = await params
-  const rich = getRichPost(slug)
+  const rich = publishedRichPost(slug)
   if (rich) {
-    return {
-      title: `${rich.meta.title} | Kaan Hacihaliloglu`,
-      // An unlisted post is a draft: off every index, and out of search.
-      ...(rich.meta.listed === false
-        ? { robots: { index: false, follow: false } }
-        : {}),
-    }
+    return { title: `${rich.meta.title} | Kaan Hacihaliloglu` }
   }
   try {
     const post = await getPostBySlug(slug)
@@ -102,7 +105,7 @@ function PostShell({
 export default async function BlogPost({ params }: Props) {
   const { slug } = await params
 
-  const rich = getRichPost(slug)
+  const rich = publishedRichPost(slug)
   if (rich) {
     const { Component, meta } = rich
     return (
