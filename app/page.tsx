@@ -7,12 +7,28 @@ import Meta from '@/components/ui/Meta'
 import Entry from '@/components/ui/Entry'
 import Reveal from '@/components/motion/Reveal'
 import { currently } from '@/lib/currently'
+import JsonLd from '@/components/JsonLd'
+import { PERSON } from '@/lib/site'
+import { graph, pageMetadata, profilePageNode } from '@/lib/seo'
+
+export const metadata = pageMetadata({
+  absoluteTitle:
+    'Kaan Hacihaliloglu (kaanhho) · AI Engineer & LLM Interpretability Researcher',
+  description:
+    'Kaan Hacihaliloglu (Hacıhaliloğlu, kaanhho): physicist turned AI engineer in Istanbul. Researches refusal and safety in LLMs through mechanistic interpretability, builds an AI market research engine at SCL.',
+  path: '/',
+  type: 'profile',
+  languages: { en: '/', tr: '/tr', 'x-default': '/' },
+})
 
 export default async function Home() {
   const posts = (await getAllPosts()).slice(0, 4)
 
   return (
     <Canvas className="pb-28 pt-24 md:pt-32">
+      <JsonLd
+        data={graph(profilePageNode({ path: '/', name: `${PERSON.name} (kaanhho)` }))}
+      />
       <header className="lg:col-start-2">
         <Reveal>
           <h1 className="font-serif text-display font-normal text-heading">
@@ -112,6 +128,13 @@ export default async function Home() {
         >
           email
         </a>
+        <Link
+          href="/tr"
+          hrefLang="tr"
+          className="u-link font-mono text-meta text-muted hover:text-accent"
+        >
+          türkçe
+        </Link>
       </div>
     </Canvas>
   )

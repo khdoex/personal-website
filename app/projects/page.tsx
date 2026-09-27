@@ -6,10 +6,15 @@ import Rule from '@/components/ui/Rule'
 import Meta from '@/components/ui/Meta'
 import Entry from '@/components/ui/Entry'
 import Reveal from '@/components/motion/Reveal'
+import JsonLd from '@/components/JsonLd'
+import { breadcrumbNode, graph, pageMetadata } from '@/lib/seo'
 
-export const metadata = {
-  title: 'Projects | Kaan Hacihaliloglu',
-}
+export const metadata = pageMetadata({
+  title: 'Projects',
+  description:
+    'Projects by Kaan Hacihaliloglu (kaanhho): refusal geometry in LLMs (MSc thesis, mechanistic interpretability), BART vs T5 news summarization, and XGBoost multi-label recommendation work.',
+  path: '/projects',
+})
 
 // Shared body for a project: title, description, tags, links. The wrapper
 // around it differs by section — the current project sits in an Entry with
@@ -69,6 +74,7 @@ export default function Projects() {
 
   return (
     <Canvas className="pb-28 pt-16 md:pt-24">
+      <JsonLd data={graph(breadcrumbNode([{ name: 'Projects', path: '/projects' }]))} />
       <header className="mb-16 lg:col-start-2">
         <Reveal>
           <h1 className="font-serif text-h2 font-normal text-heading">projects</h1>

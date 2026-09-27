@@ -13,10 +13,15 @@ import Gutter from '@/components/layout/Gutter'
 import Meta from '@/components/ui/Meta'
 import Entry from '@/components/ui/Entry'
 import Reveal from '@/components/motion/Reveal'
+import JsonLd from '@/components/JsonLd'
+import { breadcrumbNode, graph, pageMetadata } from '@/lib/seo'
 
-export const metadata = {
-  title: 'Resume | Kaan Hacihaliloglu',
-}
+export const metadata = pageMetadata({
+  absoluteTitle: 'Resume · Kaan Hacihaliloglu, AI Engineer (CV)',
+  description:
+    'Resume of Kaan Hacihaliloglu: AI Engineer at Synthetic Consumer Lab, with SoundBoost, Live The World and Allianz TR along the way. MSc Data Science at Sabancı, BSc Physics at Boğaziçi. PDF download.',
+  path: '/resume',
+})
 
 function EntryRow({ entry, delay }: { entry: ResumeEntry; delay: number }) {
   return (
@@ -92,6 +97,7 @@ function Section({
 export default function Resume() {
   return (
     <Canvas className="pb-28 pt-16 md:pt-24">
+      <JsonLd data={graph(breadcrumbNode([{ name: 'Resume', path: '/resume' }]))} />
       <header className="mb-10 lg:col-start-2">
         <Reveal>
           <div className="flex items-baseline justify-between gap-6">

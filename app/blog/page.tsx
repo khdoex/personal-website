@@ -4,19 +4,44 @@ import Canvas from '@/components/layout/Canvas'
 import Gutter from '@/components/layout/Gutter'
 import Meta from '@/components/ui/Meta'
 import Reveal from '@/components/motion/Reveal'
+import JsonLd from '@/components/JsonLd'
+import { SITE_URL } from '@/lib/site'
+import { PERSON_ID, breadcrumbNode, graph, pageMetadata } from '@/lib/seo'
 
-export const metadata = {
-  title: 'Writing | Kaan Hacihaliloglu',
-}
+export const metadata = pageMetadata({
+  title: 'Writing',
+  description:
+    'Blog of Kaan Hacihaliloglu (kaanhho): notes on LLM interpretability, machine learning, and the occasional detour through life, in English and Turkish.',
+  path: '/blog',
+})
 
 export default async function Blog() {
   const posts = await getAllPosts()
+  const blogNode = {
+    '@type': 'Blog',
+    '@id': `${SITE_URL}/blog#blog`,
+    url: `${SITE_URL}/blog`,
+    name: 'Kaan Hacihaliloglu · writing',
+    author: { '@id': PERSON_ID },
+    publisher: { '@id': PERSON_ID },
+    blogPost: posts.map((post) => ({
+      '@type': 'BlogPosting',
+      '@id': `${SITE_URL}/blog/${post.data.slug}#article`,
+      headline: post.data.title,
+      url: `${SITE_URL}/blog/${post.data.slug}`,
+      datePublished: post.data.date,
+      inLanguage: post.data.language ?? 'en',
+    })),
+  }
 
   // Newest year first; posts inside a year keep the order getAllPosts gives.
   const years = [...new Set(posts.map((p) => p.data.date.slice(0, 4)))].sort().reverse()
 
   return (
     <Canvas className="pb-28 pt-16 md:pt-24">
+      <JsonLd
+        data={graph(blogNode, breadcrumbNode([{ name: 'Writing', path: '/blog' }]))}
+      />
       <header className="mb-16 lg:col-start-2">
         <Reveal>
           <h1 className="font-serif text-h2 font-normal text-heading">writing</h1>

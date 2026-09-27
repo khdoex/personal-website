@@ -36,7 +36,7 @@ export default function AboutHero({ children }: { children: React.ReactNode }) {
         className="pointer-events-none absolute right-0 top-0 h-full w-[78%] sm:w-[52%] max-w-xl opacity-90"
       >
         <Image
-          src="/images/kaan.png"
+          src="/images/kaan-hacihaliloglu.png"
           alt=""
           width={1086}
           height={1448}

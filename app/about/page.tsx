@@ -6,10 +6,17 @@ import Rule from '@/components/ui/Rule'
 import Meta from '@/components/ui/Meta'
 import Entry from '@/components/ui/Entry'
 import Reveal from '@/components/motion/Reveal'
+import JsonLd from '@/components/JsonLd'
+import { PERSON } from '@/lib/site'
+import { breadcrumbNode, graph, pageMetadata, profilePageNode } from '@/lib/seo'
 
-export const metadata = {
-  title: 'About | Kaan Hacihaliloglu',
-}
+export const metadata = pageMetadata({
+  absoluteTitle: 'About Kaan Hacihaliloglu (kaanhho) · AI Engineer, Physicist',
+  description:
+    'About Kaan Hacihaliloglu (Hacıhaliloğlu), known as kaanhho and khdoex: physics at Boğaziçi, MSc thesis at Sabancı on the refusal direction in LLMs, AI engineer at SCL and SoundBoost.',
+  path: '/about',
+  type: 'profile',
+})
 
 const story = [
   <>
@@ -42,6 +49,12 @@ const story = [
 export default function About() {
   return (
     <div className="pb-28">
+      <JsonLd
+        data={graph(
+          profilePageNode({ path: '/about', name: `About ${PERSON.name}` }),
+          breadcrumbNode([{ name: 'About', path: '/about' }])
+        )}
+      />
       <AboutHero>
         <div className="mt-8 space-y-6">
           {story.map((paragraph, i) => (
@@ -85,7 +98,9 @@ export default function About() {
 
         <p className="mt-10 max-w-[54ch] font-serif text-sm text-muted lg:col-start-2">
           online i am khdoex on github, and kaanhho most other places (x,
-          huggingface). same person, i just could not keep one handle straight.
+          huggingface, linkedin). same person, i just could not keep one
+          handle straight. the name is kaan hacıhaliloğlu in turkish,
+          hacihaliloglu when the keyboard does not cooperate.
         </p>
       </Canvas>
     </div>
