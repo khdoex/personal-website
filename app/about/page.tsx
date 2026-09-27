@@ -1,9 +1,16 @@
 import AboutHero from '@/components/AboutHero'
 import Reveal from '@/components/motion/Reveal'
+import JsonLd from '@/components/JsonLd'
+import { PERSON } from '@/lib/site'
+import { breadcrumbNode, graph, pageMetadata, profilePageNode } from '@/lib/seo'
 
-export const metadata = {
-  title: 'About | Kaan Hacihaliloglu',
-}
+export const metadata = pageMetadata({
+  absoluteTitle: 'About Kaan Hacihaliloglu (kaanhho) · AI Engineer, Physicist',
+  description:
+    'About Kaan Hacihaliloglu (Hacıhaliloğlu), known as kaanhho and khdoex: physics at Boğaziçi, MSc thesis at Sabancı on the refusal direction in LLMs, AI engineer at SCL and SoundBoost.',
+  path: '/about',
+  type: 'profile',
+})
 
 const currently = [
   {
@@ -57,6 +64,12 @@ const story = [
 export default function About() {
   return (
     <div className="pb-28">
+      <JsonLd
+        data={graph(
+          profilePageNode({ path: '/about', name: `About ${PERSON.name}` }),
+          breadcrumbNode([{ name: 'About', path: '/about' }])
+        )}
+      />
       <AboutHero>
         <div className="space-y-5 mt-8">
           {story.map((paragraph, i) => (
@@ -108,8 +121,9 @@ export default function About() {
         <Reveal className="mt-10">
           <p className="text-sm text-muted leading-relaxed max-w-xl">
             online i am khdoex on github, and kaanhho most other places (x,
-            huggingface). same person, i just could not keep one handle
-            straight.
+            huggingface, linkedin). same person, i just could not keep one
+            handle straight. the name is kaan hacıhaliloğlu in turkish,
+            hacihaliloglu when the keyboard does not cooperate.
           </p>
         </Reveal>
       </section>

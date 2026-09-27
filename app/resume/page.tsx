@@ -8,10 +8,15 @@ import {
   languages,
   type ResumeEntry,
 } from '@/lib/resume'
+import JsonLd from '@/components/JsonLd'
+import { breadcrumbNode, graph, pageMetadata } from '@/lib/seo'
 
-export const metadata = {
-  title: 'Resume | Kaan Hacihaliloglu',
-}
+export const metadata = pageMetadata({
+  absoluteTitle: 'Resume · Kaan Hacihaliloglu, AI Engineer (CV)',
+  description:
+    'Resume of Kaan Hacihaliloglu: AI Engineer at Synthetic Consumer Lab, with SoundBoost, Live The World and Allianz TR along the way. MSc Data Science at Sabancı, BSc Physics at Boğaziçi. PDF download.',
+  path: '/resume',
+})
 
 function EntryRow({ entry }: { entry: ResumeEntry }) {
   return (
@@ -88,6 +93,7 @@ function Section({ label, children, delay }: { label: string; children: React.Re
 export default function Resume() {
   return (
     <div className="max-w-3xl mx-auto px-6 md:px-8 pt-16 md:pt-24 pb-28">
+      <JsonLd data={graph(breadcrumbNode([{ name: 'Resume', path: '/resume' }]))} />
       <header className="mb-10">
         <div className="reveal flex items-baseline justify-between gap-6" style={{ '--d': 0 } as React.CSSProperties}>
           <h1 className="font-mono text-lg font-semibold text-heading">resume</h1>

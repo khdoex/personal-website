@@ -5,6 +5,8 @@ export interface RichPostMeta {
   date: string
   slug: string
   readingTime: number
+  description?: string
+  lang?: string
 }
 
 export interface RichPost {

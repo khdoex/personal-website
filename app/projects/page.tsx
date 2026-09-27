@@ -1,10 +1,15 @@
 import { Project, projects } from '@/lib/projects'
 import Link from 'next/link'
 import Reveal from '@/components/motion/Reveal'
+import JsonLd from '@/components/JsonLd'
+import { breadcrumbNode, graph, pageMetadata } from '@/lib/seo'
 
-export const metadata = {
-  title: 'Projects | Kaan Hacihaliloglu',
-}
+export const metadata = pageMetadata({
+  title: 'Projects',
+  description:
+    'Projects by Kaan Hacihaliloglu (kaanhho): refusal geometry in LLMs (MSc thesis, mechanistic interpretability), BART vs T5 news summarization, and XGBoost multi-label recommendation work.',
+  path: '/projects',
+})
 
 function ProjectRow({ project, number }: { project: Project; number: number }) {
   return (
@@ -59,6 +64,7 @@ export default function Projects() {
 
   return (
     <div className="max-w-3xl mx-auto px-6 md:px-8 pt-16 md:pt-24 pb-28">
+      <JsonLd data={graph(breadcrumbNode([{ name: 'Projects', path: '/projects' }]))} />
       <header className="mb-12">
         <Reveal>
           <h1 className="font-mono text-lg font-semibold text-heading">

@@ -1,16 +1,40 @@
 import { getAllPosts } from '@/lib/posts'
 import Link from 'next/link'
 import Reveal from '@/components/motion/Reveal'
+import JsonLd from '@/components/JsonLd'
+import { SITE_URL } from '@/lib/site'
+import { PERSON_ID, breadcrumbNode, graph, pageMetadata } from '@/lib/seo'
 
-export const metadata = {
-  title: 'Writing | Kaan Hacihaliloglu',
-}
+export const metadata = pageMetadata({
+  title: 'Writing',
+  description:
+    'Blog of Kaan Hacihaliloglu (kaanhho): notes on machine learning, LLM interpretability research, and the occasional detour through life, in English and Turkish.',
+  path: '/blog',
+})
 
 export default async function Blog() {
   const posts = await getAllPosts()
+  const blogNode = {
+    '@type': 'Blog',
+    '@id': `${SITE_URL}/blog#blog`,
+    url: `${SITE_URL}/blog`,
+    name: 'Kaan Hacihaliloglu · writing',
+    author: { '@id': PERSON_ID },
+    publisher: { '@id': PERSON_ID },
+    blogPost: posts.map((post) => ({
+      '@type': 'BlogPosting',
+      '@id': `${SITE_URL}/blog/${post.data.slug}#article`,
+      headline: post.data.title,
+      url: `${SITE_URL}/blog/${post.data.slug}`,
+      datePublished: post.data.date,
+    })),
+  }
 
   return (
     <div className="max-w-3xl mx-auto px-6 md:px-8 pt-16 md:pt-24 pb-28">
+      <JsonLd
+        data={graph(blogNode, breadcrumbNode([{ name: 'Writing', path: '/blog' }]))}
+      />
       <header className="mb-12">
         <Reveal>
           <h1 className="font-mono text-lg font-semibold text-heading">

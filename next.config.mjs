@@ -9,6 +9,16 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  async redirects() {
+    return [
+      // Portrait was renamed so the filename carries the name (image search).
+      {
+        source: '/images/kaan.png',
+        destination: '/images/kaan-hacihaliloglu.png',
+        permanent: true,
+      },
+    ]
+  },
 }
 
 const withMDX = createMDX({})

@@ -3,7 +3,9 @@ import { JetBrains_Mono, IBM_Plex_Sans } from "next/font/google";
 import "./globals.css";
 import Navigation from '@/components/Navigation'
 import Footer from '@/components/Footer'
-import { SITE_URL, PERSON } from '@/lib/site'
+import JsonLd from '@/components/JsonLd'
+import { SITE_URL, SITE_NAME, PERSON } from '@/lib/site'
+import { OG_IMAGE, graph, personNode, websiteNode } from '@/lib/seo'
 
 const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin", "latin-ext"],
@@ -21,66 +23,79 @@ export const viewport: Viewport = {
   themeColor: '#1d252c',
 };
 
+const DEFAULT_TITLE =
+  'Kaan Hacihaliloglu (kaanhho) · AI Engineer & LLM Interpretability Researcher'
+const DEFAULT_DESCRIPTION =
+  'Kaan Hacihaliloglu (Hacıhaliloğlu, kaanhho): physicist turned AI engineer in Istanbul. Researches refusal and safety in LLMs through mechanistic interpretability, builds an AI market research engine at SCL.'
+
+// Canonical URLs are set per page (see pageMetadata in lib/seo.ts). Setting
+// one here would leak into every route that forgets to override it.
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: "Kaan Hacihaliloglu (kaanhho) | AI Engineer & Interpretability Researcher",
-  description: "Kaan Hacihaliloglu — physicist turned AI engineer. Researching mechanistic interpretability and refusal behavior in LLMs, building synthetic consumer AI at SCL. Also known as kaanhho and khdoex.",
-  keywords: ["Kaan Hacihaliloglu", "kaanhho", "khdoex", "AI engineer", "mechanistic interpretability", "LLM safety", "refusal behavior", "machine learning", "Sabancı University"],
-  authors: [{ name: "Kaan Hacihaliloglu", url: SITE_URL }],
-  creator: "Kaan Hacihaliloglu",
+  title: {
+    default: DEFAULT_TITLE,
+    template: `%s | ${SITE_NAME}`,
+  },
+  description: DEFAULT_DESCRIPTION,
+  applicationName: SITE_NAME,
+  // Google ignores meta keywords; Bing and Yandex still read them a little.
+  keywords: [
+    'Kaan Hacihaliloglu',
+    'Kaan Hacıhaliloğlu',
+    'Hacihaliloglu',
+    'Hacıhaliloğlu',
+    'kaanhho',
+    'khdoex',
+    'Kaan AI engineer',
+    'Kaan yapay zeka',
+    'yapay zeka mühendisi',
+    'AI engineer Istanbul',
+    'mechanistic interpretability',
+    'LLM safety',
+    'refusal direction',
+    'Synthetic Consumer Lab',
+    'Sabancı University',
+  ],
+  authors: [{ name: PERSON.name, url: SITE_URL }],
+  creator: PERSON.name,
+  publisher: PERSON.name,
   alternates: {
-    canonical: "/",
+    types: {
+      'application/rss+xml': [{ url: '/feed.xml', title: `${SITE_NAME} · writing` }],
+    },
   },
   openGraph: {
-    title: "Kaan Hacihaliloglu (kaanhho) | AI Engineer & Interpretability Researcher",
-    description: "Physicist turned AI engineer. Mechanistic interpretability and refusal behavior in LLMs, building synthetic consumer AI at SCL.",
+    title: DEFAULT_TITLE,
+    description: DEFAULT_DESCRIPTION,
     url: SITE_URL,
-    siteName: "Kaan Hacihaliloglu",
-    type: "website",
-    locale: "en_US",
-    images: [{ url: "/images/kaan.png", width: 1086, height: 1448, alt: "Kaan Hacihaliloglu" }],
+    siteName: SITE_NAME,
+    type: 'website',
+    locale: 'en_US',
+    alternateLocale: ['tr_TR'],
+    images: [OG_IMAGE],
   },
   twitter: {
-    card: "summary",
-    title: "Kaan Hacihaliloglu (kaanhho) | AI Engineer & Interpretability Researcher",
-    description: "Physicist turned AI engineer. Mechanistic interpretability and refusal behavior in LLMs.",
-    creator: "@kaanhho",
-    images: ["/images/kaan.png"],
+    card: 'summary_large_image',
+    title: DEFAULT_TITLE,
+    description: DEFAULT_DESCRIPTION,
+    creator: '@kaanhho',
+    site: '@kaanhho',
+    images: [OG_IMAGE],
   },
   robots: {
     index: true,
     follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+      'max-video-preview': -1,
+    },
   },
   icons: {
     icon: '/favicon-4.svg',
   },
-};
-
-const personSchema = {
-  "@context": "https://schema.org",
-  "@type": "Person",
-  name: PERSON.name,
-  alternateName: PERSON.handles,
-  url: SITE_URL,
-  image: `${SITE_URL}/images/kaan.png`,
-  jobTitle: PERSON.jobTitle,
-  description:
-    "Physicist turned AI engineer and interpretability researcher. Builds production AI systems at SCL and researches mechanistic interpretability and refusal behavior in large language models.",
-  knowsAbout: PERSON.knowsAbout,
-  knowsLanguage: ["English", "Turkish"],
-  hasOccupation: {
-    "@type": "Occupation",
-    name: "AI Engineer",
-    skills:
-      "Machine learning, deep learning, large language models, mechanistic interpretability, LLM safety, PyTorch, full-stack web development, TypeScript, React, Next.js, backend engineering",
-  },
-  worksFor: PERSON.organizations.map((org) => ({
-    "@type": "Organization",
-    name: org.name,
-    url: org.url,
-  })),
-  alumniOf: { "@type": "CollegeOrUniversity", name: "Sabancı University" },
-  sameAs: PERSON.sameAs,
 };
 
 export default function RootLayout({
@@ -90,13 +105,15 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        {/* Pointers for LLM agents: the plain-text profile and full dump. */}
+        <link rel="alternate" type="text/markdown" href="/llms.txt" title="llms.txt" />
+        <link rel="alternate" type="text/markdown" href="/llms-full.txt" title="llms-full.txt" />
+      </head>
       <body
         className={`${jetbrainsMono.variable} ${plexSans.variable} antialiased`}
       >
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(personSchema) }}
-        />
+        <JsonLd data={graph(websiteNode(), personNode())} />
         <Navigation />
         <main className="min-h-screen pt-16">
           {children}

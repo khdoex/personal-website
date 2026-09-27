@@ -13,6 +13,12 @@ export interface PostData {
   slug: string
   content: string
   readingTime: number
+  // Meta description / feed summary. Frontmatter `description`, else the
+  // opening of the body.
+  description: string
+  // BCP 47 tag. Frontmatter `lang`, else guessed from the text.
+  lang: string
+  wordCount: number
 }
 
 export interface Post {
@@ -23,9 +29,27 @@ function stripTags(htmlString: string): string {
   return htmlString.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()
 }
 
+function wordCountOf(contentHtml: string): number {
+  return stripTags(contentHtml).split(' ').filter(Boolean).length
+}
+
 function readingTimeOf(contentHtml: string): number {
-  const words = stripTags(contentHtml).split(' ').filter(Boolean).length
-  return Math.max(1, Math.round(words / 200))
+  return Math.max(1, Math.round(wordCountOf(contentHtml) / 200))
+}
+
+function excerptOf(contentHtml: string, max = 155): string {
+  const text = stripTags(contentHtml)
+  if (text.length <= max) return text
+  const cut = text.slice(0, max)
+  return `${cut.slice(0, cut.lastIndexOf(' '))}…`
+}
+
+// Turkish-only letters are a reliable enough signal for this blog's two
+// languages; frontmatter `lang` overrides it.
+function guessLang(contentHtml: string): string {
+  const text = stripTags(contentHtml)
+  const turkish = (text.match(/[ığşİĞŞ]/g) || []).length
+  return turkish > text.length / 200 ? 'tr' : 'en'
 }
 
 async function parseMarkdownPost(raw: string, slug: string): Promise<PostData> {
@@ -39,6 +63,9 @@ async function parseMarkdownPost(raw: string, slug: string): Promise<PostData> {
     slug,
     content: contentHtml,
     readingTime: readingTimeOf(contentHtml),
+    description: data.description || excerptOf(contentHtml),
+    lang: data.lang || guessLang(contentHtml),
+    wordCount: wordCountOf(contentHtml),
   }
 }
 
@@ -67,6 +94,8 @@ function parseHtmlPost(raw: string, slug: string, mtime: Date): PostData {
 
   const metaDate = raw.match(/<meta\s+name=["']date["']\s+content=["']([^"']+)["']/i)
   const date = metaDate ? metaDate[1] : mtime.toISOString().slice(0, 10)
+  const metaDescription = raw.match(/<meta\s+name=["']description["']\s+content=["']([^"']+)["']/i)
+  const htmlLang = raw.match(/<html[^>]*\slang=["']([^"']+)["']/i)
 
   return {
     title,
@@ -74,6 +103,9 @@ function parseHtmlPost(raw: string, slug: string, mtime: Date): PostData {
     slug,
     content: content.trim(),
     readingTime: readingTimeOf(content),
+    description: metaDescription ? metaDescription[1] : excerptOf(content),
+    lang: htmlLang ? htmlLang[1] : guessLang(content),
+    wordCount: wordCountOf(content),
   }
 }
 
@@ -99,7 +131,7 @@ export async function getAllPosts(): Promise<Post[]> {
     : []
 
   const richAsPosts: Post[] = richPosts.map(({ meta }) => ({
-    data: { ...meta, content: '' },
+    data: { description: '', lang: 'en', wordCount: 0, ...meta, content: '' },
   }))
   const richSlugs = new Set(richAsPosts.map((post) => post.data.slug))
 
