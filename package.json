@@ -7,12 +7,15 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "build:cloudflare": "npx opennextjs-cloudflare build",
+    "build:cloudflare": "npm run posts && npx opennextjs-cloudflare build",
     "preview:cloudflare": "npx wrangler dev",
     "deploy:cloudflare": "npx wrangler deploy",
     "contrast": "node scripts/contrast.mjs",
     "lint:design": "node scripts/design-lint.mjs",
-    "verify": "node scripts/verify.mjs"
+    "verify": "node scripts/verify.mjs",
+    "posts": "node scripts/build-posts.mjs",
+    "predev": "npm run posts",
+    "prebuild": "npm run posts"
   },
   "dependencies": {
     "@mdx-js/loader": "^3.1.0",

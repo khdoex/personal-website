@@ -1,11 +1,12 @@
-import fs from 'fs'
-import path from 'path'
 import matter from 'gray-matter'
 import { remark } from 'remark'
 import html from 'remark-html'
 import { richPosts } from './rich-posts'
+import { rawPosts, type RawPost } from './markdown-posts.generated'
 
-const postsDirectory = path.join(process.cwd(), 'posts')
+// Posts arrive as a bundled module rather than from disk. The Cloudflare
+// Workers runtime has no filesystem, so a request-time read always failed
+// there. scripts/build-posts.mjs does the reading at build time.
 
 export interface PostData {
   title: string
@@ -81,26 +82,18 @@ function parseHtmlPost(raw: string, slug: string, mtime: Date): PostData {
   }
 }
 
-async function loadPost(fileName: string): Promise<Post | null> {
-  // Skip anything that isn't a post file (e.g. the rich/ mdx directory).
-  if (!fileName.endsWith('.md') && !fileName.endsWith('.html')) {
-    return null
-  }
-
-  const fullPath = path.join(postsDirectory, fileName)
-  const raw = fs.readFileSync(fullPath, 'utf8')
-
+async function loadPost({ fileName, raw, mtime }: RawPost): Promise<Post | null> {
   if (fileName.endsWith('.md')) {
     return { data: await parseMarkdownPost(raw, fileName.replace(/\.md$/, '')) }
   }
-  const mtime = fs.statSync(fullPath).mtime
-  return { data: parseHtmlPost(raw, fileName.replace(/\.html$/, ''), mtime) }
+  if (fileName.endsWith('.html')) {
+    return { data: parseHtmlPost(raw, fileName.replace(/\.html$/, ''), new Date(mtime)) }
+  }
+  return null
 }
 
 export async function getAllPosts(): Promise<Post[]> {
-  const filePosts = fs.existsSync(postsDirectory)
-    ? await Promise.all(fs.readdirSync(postsDirectory).map(loadPost))
-    : []
+  const filePosts = await Promise.all(rawPosts.map(loadPost))
 
   const richAsPosts: Post[] = richPosts.filter(({ meta }) => meta.listed !== false).map(({ meta }) => ({
     data: { ...meta, content: '' },
@@ -121,9 +114,9 @@ export async function getPostBySlug(slug: string): Promise<Post> {
   }
 
   for (const ext of ['md', 'html']) {
-    const fileName = `${slug}.${ext}`
-    if (fs.existsSync(path.join(postsDirectory, fileName))) {
-      const post = await loadPost(fileName)
+    const entry = rawPosts.find((post) => post.fileName === `${slug}.${ext}`)
+    if (entry) {
+      const post = await loadPost(entry)
       if (post) return post
     }
   }
