@@ -14,6 +14,15 @@ interface Props {
   params: Promise<{ slug: string }>
 }
 
+/**
+ * An unlisted rich post is a draft. The route treats it as if it does not
+ * exist, so it 404s rather than staying readable to anyone holding the link.
+ */
+function publishedRichPost(slug: string) {
+  const rich = getRichPost(slug)
+  return rich && rich.meta.listed !== false ? rich : undefined
+}
+
 interface PostSeo {
   title: string
   slug: string
@@ -21,18 +30,16 @@ interface PostSeo {
   description: string
   language: 'en' | 'tr'
   alternateSlug?: string
-  listed: boolean
 }
 
-// Prerender every listed post at build time; unlisted drafts and unknown
-// slugs still resolve on demand (drafts render, unknown slugs 404).
+// Prerender every published post at build time; anything else 404s.
 export async function generateStaticParams() {
   const posts = await getAllPosts()
   return posts.map((post) => ({ slug: post.data.slug }))
 }
 
 async function seoFor(slug: string): Promise<PostSeo | null> {
-  const rich = getRichPost(slug)
+  const rich = publishedRichPost(slug)
   if (rich) {
     const { meta } = rich
     return {
@@ -41,8 +48,11 @@ async function seoFor(slug: string): Promise<PostSeo | null> {
       date: meta.date,
       description: meta.excerpt ?? meta.title,
       language: meta.language ?? 'en',
-      alternateSlug: meta.alternateSlug,
-      listed: meta.listed !== false,
+      // Only point at a translation that is itself published.
+      alternateSlug:
+        meta.alternateSlug && publishedRichPost(meta.alternateSlug)
+          ? meta.alternateSlug
+          : undefined,
     }
   }
   try {
@@ -53,7 +63,6 @@ async function seoFor(slug: string): Promise<PostSeo | null> {
       date: data.date,
       description: data.excerpt ?? plainExcerpt(data.content),
       language: data.language ?? 'en',
-      listed: true,
     }
   } catch {
     return null
@@ -71,24 +80,20 @@ export async function generateMetadata({ params }: Props) {
         [post.language === 'tr' ? 'en' : 'tr']: `/blog/${post.alternateSlug}`,
       }
     : undefined
-  return {
-    ...pageMetadata({
-      title: post.title,
-      description: post.description,
-      path: `/blog/${post.slug}`,
-      type: 'article',
-      locale: post.language === 'tr' ? 'tr_TR' : 'en_US',
-      languages,
-      publishedTime: post.date,
-    }),
-    // An unlisted post is a draft: off every index, and out of search.
-    ...(post.listed ? {} : { robots: { index: false, follow: false } }),
-  }
+  return pageMetadata({
+    title: post.title,
+    description: post.description,
+    path: `/blog/${post.slug}`,
+    type: 'article',
+    locale: post.language === 'tr' ? 'tr_TR' : 'en_US',
+    languages,
+    publishedTime: post.date,
+  })
 }
 
 async function PostJsonLd({ slug }: { slug: string }) {
   const post = await seoFor(slug)
-  if (!post || !post.listed) return null
+  if (!post) return null
   return (
     <JsonLd
       data={graph(
@@ -175,7 +180,7 @@ function PostShell({
 export default async function BlogPost({ params }: Props) {
   const { slug } = await params
 
-  const rich = getRichPost(slug)
+  const rich = publishedRichPost(slug)
   if (rich) {
     const { Component, meta } = rich
     return (

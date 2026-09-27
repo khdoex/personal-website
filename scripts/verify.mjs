@@ -7,7 +7,10 @@ const ROUTES = {
   home: '/',
   about: '/about',
   blog: '/blog',
-  post: '/blog/prompt-injection-defense-inside-model',
+  // The rich essay is an unlisted draft and 404s, so the sweep would have
+  // been measuring a 404 page. master is the only post that still renders;
+  // it exercises the markdown branch of the template, not the rich one.
+  post: '/blog/master',
   projects: '/projects',
   resume: '/resume',
 }
