@@ -35,13 +35,13 @@ export default function RefusalToy() {
     <div>
       <svg viewBox="0 0 300 140" className="w-full" role="img" aria-label="toy activation space with a refusal direction">
         {/* decision boundary, perpendicular-ish to the direction */}
-        <line x1={148} y1={0} x2={110} y2={140} stroke="#2f3b47" strokeWidth={1} strokeDasharray="4 4" />
-        <text x={122} y={132} fill="#4a5866" fontSize={8} fontFamily="var(--font-mono), monospace">boundary</text>
+        <line x1={148} y1={0} x2={110} y2={140} stroke="rgb(var(--border))" strokeWidth={1} strokeDasharray="4 4" />
+        <text x={122} y={132} fill="rgb(var(--muted))" fontSize={8} fontFamily="var(--font-mono), monospace">boundary</text>
 
         {/* refusal direction arrow */}
         <defs>
           <marker id="arrow" viewBox="0 0 8 8" refX={7} refY={4} markerWidth={6} markerHeight={6} orient="auto-start-reverse">
-            <path d="M0,0 L8,4 L0,8 z" fill="#5ec4ff" />
+            <path d="M0,0 L8,4 L0,8 z" fill="rgb(var(--accent))" />
           </marker>
         </defs>
         <line
@@ -49,17 +49,17 @@ export default function RefusalToy() {
           y1={90}
           x2={150 + DIR.x * 52}
           y2={90 + DIR.y * 52}
-          stroke="#5ec4ff"
+          stroke="rgb(var(--accent))"
           strokeWidth={1.5}
           markerEnd="url(#arrow)"
           opacity={Math.max(0.25, 1 - strength)}
         />
-        <text x={186} y={92} fill="#5ec4ff" fontSize={8} fontFamily="var(--font-mono), monospace" opacity={Math.max(0.25, 1 - strength)}>
+        <text x={186} y={92} fill="rgb(var(--accent))" fontSize={8} fontFamily="var(--font-mono), monospace" opacity={Math.max(0.25, 1 - strength)}>
           refusal dir
         </text>
 
         {HARMLESS.map(([x, y], i) => (
-          <circle key={`h${i}`} cx={x} cy={y} r={4} fill="#5ec4ff" opacity={0.85} />
+          <circle key={`h${i}`} cx={x} cy={y} r={4} fill="rgb(var(--accent))" opacity={0.85} />
         ))}
         {shifted.map(([x, y], i) => (
           <circle
@@ -67,7 +67,7 @@ export default function RefusalToy() {
             cx={x}
             cy={y}
             r={4}
-            fill="#d98e48"
+            fill="rgb(var(--amber))"
             opacity={0.9}
             style={{ transition: 'cx 0.2s ease-out, cy 0.2s ease-out' }}
           />
@@ -75,7 +75,7 @@ export default function RefusalToy() {
       </svg>
 
       <div className="mt-4 flex items-center gap-4">
-        <span className="font-mono text-[11px] text-muted shrink-0">ablation</span>
+        <span className="font-mono text-tick text-muted shrink-0">ablation</span>
         <input
           type="range"
           min={0}
@@ -85,13 +85,13 @@ export default function RefusalToy() {
           className="w-full accent-accent"
           aria-label="ablation strength"
         />
-        <span className="font-mono text-[11px] text-muted-dark w-10 text-right shrink-0">
+        <span className="font-mono text-tick text-muted w-10 text-right shrink-0">
           {Math.round(strength * 100)}%
         </span>
       </div>
 
-      <div className="mt-4 font-mono text-xs border-t border-border pt-3" aria-live="polite">
-        <span className="text-muted-dark">model output: </span>
+      <div className="mt-4 font-mono text-meta border-t border-border pt-3" aria-live="polite">
+        <span className="text-muted">model output: </span>
         <span className={refusing ? 'text-accent' : 'text-amber'}>
           {refusing
             ? '"i can\'t help with that"'
@@ -99,7 +99,7 @@ export default function RefusalToy() {
         </span>
       </div>
 
-      <p className="mt-3 font-mono text-[11px] text-muted-dark leading-relaxed">
+      <p className="mt-3 font-mono text-tick text-muted leading-relaxed">
         drag the slider: removing the refusal component moves harmful
         activations across the boundary, and the model stops refusing.
       </p>

@@ -8,6 +8,11 @@ import {
   languages,
   type ResumeEntry,
 } from '@/lib/resume'
+import Canvas from '@/components/layout/Canvas'
+import Gutter from '@/components/layout/Gutter'
+import Meta from '@/components/ui/Meta'
+import Entry from '@/components/ui/Entry'
+import Reveal from '@/components/motion/Reveal'
 import JsonLd from '@/components/JsonLd'
 import { breadcrumbNode, graph, pageMetadata } from '@/lib/seo'
 
@@ -18,141 +23,146 @@ export const metadata = pageMetadata({
   path: '/resume',
 })
 
-function EntryRow({ entry }: { entry: ResumeEntry }) {
+function EntryRow({ entry, delay }: { entry: ResumeEntry; delay: number }) {
   return (
-    <div className="grid md:grid-cols-[7rem_1fr] gap-x-6 gap-y-1 py-5">
-      <span className="font-mono text-xs text-amber pt-0.5">{entry.period}</span>
-      <div>
-        <h3 className="font-mono text-sm font-medium text-heading">
-          {entry.href ? (
-            <a
-              href={entry.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="u-link hover:text-accent"
-            >
-              {entry.title} ↗
-            </a>
-          ) : (
-            entry.title
-          )}
-          {entry.org && (
-            <span className="text-muted font-normal">
-              {' · '}
-              {entry.orgHref ? (
-                <a
-                  href={entry.orgHref}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="u-link hover:text-accent"
-                >
-                  {entry.org} ↗
-                </a>
-              ) : (
-                entry.org
-              )}
-            </span>
-          )}
-        </h3>
-        {entry.summary && (
-          <p className="text-sm text-muted leading-relaxed mt-1.5 max-w-xl">
-            {entry.summary}
-          </p>
+    <Entry
+      className="border-t border-border"
+      delay={delay}
+      gutter={<Meta tone="date">{entry.period}</Meta>}
+    >
+      <h3 className="font-serif text-lead font-normal text-heading">
+        {entry.href ? (
+          <a href={entry.href} target="_blank" rel="noopener noreferrer" className="u-link hover:text-accent">
+            {entry.title}
+          </a>
+        ) : (
+          entry.title
         )}
-        {entry.detail && (
-          <details className="mt-2">
-            <summary className="font-mono text-xs text-muted-dark hover:text-accent transition-colors inline-block">
-              <span className="if-closed">+ detail</span>
-              <span className="if-open">− detail</span>
-            </summary>
-            <ul className="mt-2 space-y-1.5">
-              {entry.detail.map((line) => (
-                <li key={line} className="text-sm text-muted leading-relaxed max-w-xl pl-4 border-l border-border">
-                  {line}
-                </li>
-              ))}
-            </ul>
-          </details>
+        {entry.org && (
+          <span className="text-muted">
+            {' · '}
+            {entry.orgHref ? (
+              <a href={entry.orgHref} target="_blank" rel="noopener noreferrer" className="u-link hover:text-accent">
+                {entry.org}
+              </a>
+            ) : (
+              entry.org
+            )}
+          </span>
         )}
-      </div>
-    </div>
+      </h3>
+      {entry.summary && (
+        <p className="mt-2 font-serif text-sm text-muted">{entry.summary}</p>
+      )}
+      {entry.detail && (
+        <details className="mt-3">
+          <summary className="inline-block font-mono text-meta text-muted transition-colors hover:text-accent">
+            <span className="if-closed">+ detail</span>
+            <span className="if-open">− detail</span>
+          </summary>
+          <ul className="mt-2 space-y-1.5">
+            {entry.detail.map((line) => (
+              <li key={line} className="border-l border-border pl-4 font-serif text-sm text-muted">
+                {line}
+              </li>
+            ))}
+          </ul>
+        </details>
+      )}
+    </Entry>
   )
 }
 
-function Section({ label, children, delay }: { label: string; children: React.ReactNode; delay: number }) {
+// The label leads its own rows. Both arrive on their own viewport entry, so
+// the section no longer needs a hand-tuned place in a page-wide cascade.
+function Section({
+  label,
+  children,
+}: {
+  label: string
+  children: React.ReactNode
+}) {
   return (
-    <section className="reveal mb-12" style={{ '--d': delay } as React.CSSProperties}>
-      <p className="font-mono text-xs text-muted-dark mb-2">{label}</p>
-      <div className="divide-y divide-border border-y border-border">
-        {children}
-      </div>
-    </section>
+    <>
+      <Gutter className="mt-14">
+        <Reveal>
+          <Meta>{label}</Meta>
+        </Reveal>
+      </Gutter>
+      {children}
+    </>
   )
 }
 
 export default function Resume() {
   return (
-    <div className="max-w-3xl mx-auto px-6 md:px-8 pt-16 md:pt-24 pb-28">
+    <Canvas className="pb-28 pt-16 md:pt-24">
       <JsonLd data={graph(breadcrumbNode([{ name: 'Resume', path: '/resume' }]))} />
-      <header className="mb-10">
-        <div className="reveal flex items-baseline justify-between gap-6" style={{ '--d': 0 } as React.CSSProperties}>
-          <h1 className="font-mono text-lg font-semibold text-heading">resume</h1>
-          <a
-            href="/documents/resume.pdf"
-            download="KaanHacihaliloglu_Resume.pdf"
-            className="u-link font-mono text-xs text-accent hover:text-heading shrink-0"
-          >
-            download pdf ↓
-          </a>
-        </div>
-        <p className="reveal text-muted mt-4 max-w-xl leading-relaxed" style={{ '--d': 1 } as React.CSSProperties}>
-          {about}
-        </p>
+      <header className="mb-10 lg:col-start-2">
+        <Reveal>
+          <div className="flex items-baseline justify-between gap-6">
+            <h1 className="font-serif text-h2 font-normal text-heading">resume</h1>
+            <a
+              href="/documents/resume.pdf"
+              download="KaanHacihaliloglu_Resume.pdf"
+              className="u-link shrink-0 font-mono text-meta text-accent hover:text-heading"
+            >
+              download pdf
+            </a>
+          </div>
+        </Reveal>
+        <Reveal delay={0.08}>
+          <p className="mt-4 font-serif text-lead text-muted">{about}</p>
+        </Reveal>
       </header>
 
-      <Section label="experience" delay={2}>
-        {experience.map((entry) => (
-          <EntryRow key={entry.title + entry.period} entry={entry} />
+      <Section label="experience">
+        {experience.map((entry, i) => (
+          <EntryRow key={entry.title + entry.period} entry={entry} delay={i * 0.08} />
         ))}
       </Section>
 
-      <Section label="education" delay={3}>
-        {education.map((entry) => (
-          <EntryRow key={entry.title} entry={entry} />
+      <Section label="education">
+        {education.map((entry, i) => (
+          <EntryRow key={entry.title} entry={entry} delay={i * 0.08} />
         ))}
       </Section>
 
-      <Section label="projects" delay={4}>
-        {resumeProjects.map((entry) => (
-          <EntryRow key={entry.title} entry={entry} />
+      <Section label="projects">
+        {resumeProjects.map((entry, i) => (
+          <EntryRow key={entry.title} entry={entry} delay={i * 0.08} />
         ))}
       </Section>
 
-      <section className="reveal mb-12" style={{ '--d': 5 } as React.CSSProperties}>
-        <p className="font-mono text-xs text-muted-dark mb-2">skills</p>
-        <div className="border-y border-border divide-y divide-border">
-          {skills.map((group) => (
-            <div key={group.label} className="grid md:grid-cols-[10rem_1fr] gap-x-6 gap-y-1 py-3">
-              <span className="font-mono text-xs text-muted-dark pt-0.5">{group.label}</span>
-              <span className="text-sm text-foreground">{group.items}</span>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <Section label="certifications" delay={6}>
-        {certifications.map((entry) => (
-          <div key={entry.title} className="py-3 font-mono text-xs">
-            <span className="text-heading">{entry.title}</span>
-            <span className="text-muted-dark"> · {entry.org}</span>
-          </div>
+      <Section label="skills">
+        {skills.map((group, i) => (
+          <Entry
+            key={group.label}
+            className="border-t border-border"
+            delay={i * 0.08}
+            gutter={<Meta>{group.label}</Meta>}
+          >
+            <span className="font-serif text-sm text-foreground">{group.items}</span>
+          </Entry>
         ))}
       </Section>
 
-      <section className="reveal" style={{ '--d': 7 } as React.CSSProperties}>
-        <p className="font-mono text-xs text-muted-dark mb-2">languages</p>
-        <p className="text-sm text-foreground border-y border-border py-3">{languages}</p>
-      </section>
-    </div>
+      <Section label="certifications">
+        {certifications.map((entry, i) => (
+          <Entry key={entry.title} className="border-t border-border" delay={i * 0.08}>
+            <span className="font-serif text-sm text-heading">{entry.title}</span>
+            <Meta className="ml-3">
+              {entry.org}
+            </Meta>
+          </Entry>
+        ))}
+      </Section>
+
+      <Section label="languages">
+        <Entry className="border-t border-border" delay={0}>
+          <span className="font-serif text-sm text-foreground">{languages}</span>
+        </Entry>
+      </Section>
+    </Canvas>
   )
 }

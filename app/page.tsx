@@ -1,5 +1,12 @@
 import Link from 'next/link'
+import { getAllPosts } from '@/lib/posts'
+import Canvas from '@/components/layout/Canvas'
+import Gutter from '@/components/layout/Gutter'
+import Rule from '@/components/ui/Rule'
+import Meta from '@/components/ui/Meta'
+import Entry from '@/components/ui/Entry'
 import Reveal from '@/components/motion/Reveal'
+import { currently } from '@/lib/currently'
 import JsonLd from '@/components/JsonLd'
 import { PERSON } from '@/lib/site'
 import { graph, pageMetadata, profilePageNode } from '@/lib/seo'
@@ -14,54 +21,121 @@ export const metadata = pageMetadata({
   languages: { en: '/', tr: '/tr', 'x-default': '/' },
 })
 
-export default function Home() {
+export default async function Home() {
+  const posts = (await getAllPosts()).slice(0, 4)
+
   return (
-    <div>
+    <Canvas className="pb-28 pt-24 md:pt-32">
       <JsonLd
         data={graph(profilePageNode({ path: '/', name: `${PERSON.name} (kaanhho)` }))}
       />
-      {/* Hero — the currently list moved to /about; the landing stays quiet */}
-      <section className="max-w-3xl mx-auto px-6 md:px-8 pt-24 md:pt-32 pb-28">
+      <header className="lg:col-start-2">
         <Reveal>
-          <h1 className="font-mono text-lg font-semibold text-heading">
+          <h1 className="font-serif text-display font-normal text-heading">
             kaan hacihaliloglu
           </h1>
-          <p className="font-mono text-xs text-muted-dark mt-2">
-            ai engineer · istanbul · kaanhho
-          </p>
         </Reveal>
-
         <Reveal delay={0.08}>
-          <p className="text-base leading-relaxed max-w-xl mt-6">
-            physics grad turned into ai engineer, working on refusal mechanics
-            and safety in llm through interpretability. working on SCL, a new
-            way of doing market research.
+          <p className="mt-6 font-serif text-lead text-foreground">
+            physics grad turned ai engineer, working on refusal mechanics and
+            safety in llms through interpretability. building SCL, a new way
+            of doing market research.
           </p>
         </Reveal>
-
         <Reveal delay={0.16}>
-          <div className="flex flex-wrap items-center gap-x-7 gap-y-3 mt-10 font-mono text-[13px]">
-            <Link href="/blog" className="u-link text-heading hover:text-accent">
-              blog →
-            </Link>
-            <Link href="/projects" className="u-link text-muted hover:text-accent">
-              projects
-            </Link>
-            <Link href="/about" className="u-link text-muted hover:text-accent">
-              about
-            </Link>
-            <Link href="/resume" className="u-link text-muted hover:text-accent">
-              resume
-            </Link>
-            <a href="mailto:kaanhacihaliloglu@gmail.com" className="u-link text-muted hover:text-accent">
-              email
-            </a>
-            <Link href="/tr" hrefLang="tr" className="u-link text-muted hover:text-accent">
-              türkçe
-            </Link>
-          </div>
+          <p className="mt-6">
+            <Meta>
+              ai engineer · interpretability · istanbul 41.0°N 28.9°E
+            </Meta>
+          </p>
         </Reveal>
-      </section>
-    </div>
+      </header>
+
+      <Rule className="col-span-full mt-16" />
+
+      <Gutter className="mt-8">
+        <Meta>writing</Meta>
+      </Gutter>
+
+      {posts.map((post, i) => (
+        <Entry
+          key={post.data.slug}
+          className="border-t border-border"
+          delay={i * 0.08}
+          gutter={<Meta as="time" tone="date">{post.data.date}</Meta>}
+        >
+          <Link href={`/blog/${post.data.slug}`} className="group block">
+            <span className="font-serif text-lead text-heading transition-colors group-hover:text-accent">
+              {post.data.title}
+            </span>
+            <span className="ml-3">
+              <Meta>
+                {post.data.readingTime} {post.data.language === 'tr' ? 'dk' : 'min'}
+              </Meta>
+            </span>
+          </Link>
+        </Entry>
+      ))}
+
+      <p className="mt-6 lg:col-start-2">
+        <Link href="/blog" className="u-link font-mono text-meta text-accent">
+          all writing
+        </Link>
+      </p>
+
+      <Rule className="col-span-full mt-16" />
+
+      <Gutter className="mt-8">
+        <Meta>currently</Meta>
+      </Gutter>
+
+      {currently.map((item, i) => (
+        <Entry
+          key={item.title}
+          delay={i * 0.08}
+          gutter={<Meta tone="date">{item.since}</Meta>}
+        >
+          {item.href ? (
+            <a
+              href={item.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="u-link font-serif text-lead text-heading hover:text-accent"
+            >
+              {item.title}
+            </a>
+          ) : (
+            <span className="font-serif text-lead text-heading">{item.title}</span>
+          )}
+        </Entry>
+      ))}
+
+      <Rule className="col-span-full mt-16" />
+
+      <div className="mt-8 flex flex-wrap gap-x-7 gap-y-3 lg:col-start-2">
+        <Link href="/projects" className="u-link font-mono text-meta text-muted hover:text-accent">
+          projects
+        </Link>
+        <Link href="/about" className="u-link font-mono text-meta text-muted hover:text-accent">
+          about
+        </Link>
+        <Link href="/resume" className="u-link font-mono text-meta text-muted hover:text-accent">
+          resume
+        </Link>
+        <a
+          href="mailto:kaanhacihaliloglu@gmail.com"
+          className="u-link font-mono text-meta text-muted hover:text-accent"
+        >
+          email
+        </a>
+        <Link
+          href="/tr"
+          hrefLang="tr"
+          className="u-link font-mono text-meta text-muted hover:text-accent"
+        >
+          türkçe
+        </Link>
+      </div>
+    </Canvas>
   )
 }

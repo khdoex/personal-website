@@ -1,4 +1,9 @@
 import Link from 'next/link'
+import Canvas from '@/components/layout/Canvas'
+import Gutter from '@/components/layout/Gutter'
+import Rule from '@/components/ui/Rule'
+import Meta from '@/components/ui/Meta'
+import Entry from '@/components/ui/Entry'
 import Reveal from '@/components/motion/Reveal'
 import JsonLd from '@/components/JsonLd'
 import { PERSON } from '@/lib/site'
@@ -43,7 +48,7 @@ const story = [
     lisansı boğaziçi&apos;nde fizikte bitirdim, EarthML grubunda transformer
     modelleriyle deprem tespiti üzerine çalıştık. arada padova&apos;da
     bilgisayar bilimleri yüksek lisansına başladım, olmadı. neden olmadığını{' '}
-    <Link href="/blog/master" className="u-link text-heading hover:text-accent">
+    <Link href="/blog/master" className="u-link text-accent">
       blogda yazdım
     </Link>
     .
@@ -72,61 +77,72 @@ export default function Turkish() {
           breadcrumbNode([{ name: 'Türkçe', path: '/tr' }])
         )}
       />
-      <section className="max-w-3xl mx-auto px-6 md:px-8 pt-24 md:pt-32 pb-28">
-        <Reveal>
-          <h1 className="font-mono text-lg font-semibold text-heading">
-            kaan hacıhaliloğlu
-          </h1>
-          <p className="font-mono text-xs text-muted-dark mt-2">
-            yapay zeka mühendisi · istanbul · kaanhho
-          </p>
-        </Reveal>
+      <Canvas className="pb-28 pt-24 md:pt-32">
+        <header className="lg:col-start-2">
+          <Reveal>
+            <h1 className="font-serif text-display font-normal text-heading">
+              kaan hacıhaliloğlu
+            </h1>
+          </Reveal>
+          <Reveal delay={0.08}>
+            <p className="mt-6">
+              <Meta>yapay zeka mühendisi · yorumlanabilirlik · istanbul</Meta>
+            </p>
+          </Reveal>
+        </header>
 
-        <div className="space-y-5 mt-8 max-w-xl">
+        <div className="mt-10 space-y-6 lg:col-start-2">
           {story.map((paragraph, i) => (
-            <Reveal key={i} delay={i === 0 ? 0.08 : 0}>
-              <p className="text-base leading-relaxed">{paragraph}</p>
+            <Reveal key={i} delay={i === 0 ? 0.16 : 0}>
+              <p className="font-serif text-base text-foreground">{paragraph}</p>
             </Reveal>
           ))}
         </div>
 
-        <Reveal className="mt-14">
-          <p className="font-mono text-xs text-muted-dark mb-2">kısaca</p>
-          <dl className="border-y border-border divide-y divide-border">
-            {facts.map((fact) => (
-              <div
-                key={fact.label}
-                className="grid md:grid-cols-[8rem_1fr] gap-x-6 gap-y-1 py-3"
-              >
-                <dt className="font-mono text-xs text-muted-dark pt-0.5">
-                  {fact.label}
-                </dt>
-                <dd className="text-sm text-foreground">{fact.value}</dd>
-              </div>
-            ))}
-          </dl>
-        </Reveal>
+        <Rule className="col-span-full mt-16" />
 
-        <Reveal>
-          <div className="flex flex-wrap items-center gap-x-7 gap-y-3 mt-10 font-mono text-[13px]">
-            <Link href="/blog" className="u-link text-heading hover:text-accent">
-              yazılar →
-            </Link>
-            <Link href="/projects" className="u-link text-muted hover:text-accent">
-              projeler
-            </Link>
-            <Link href="/resume" className="u-link text-muted hover:text-accent">
-              cv
-            </Link>
-            <a href={`mailto:${PERSON.email}`} className="u-link text-muted hover:text-accent">
-              e-posta
-            </a>
-            <Link href="/" hrefLang="en" className="u-link text-muted hover:text-accent">
-              english
-            </Link>
-          </div>
-        </Reveal>
-      </section>
+        <Gutter className="mt-8">
+          <Meta>kısaca</Meta>
+        </Gutter>
+
+        {facts.map((fact, i) => (
+          <Entry
+            key={fact.label}
+            className={i === 0 ? '' : 'border-t border-border'}
+            delay={i * 0.05}
+            gutter={<Meta tone="date">{fact.label}</Meta>}
+          >
+            <p className="font-serif text-base text-foreground">{fact.value}</p>
+          </Entry>
+        ))}
+
+        <Rule className="col-span-full mt-16" />
+
+        <div className="mt-8 flex flex-wrap gap-x-7 gap-y-3 lg:col-start-2">
+          <Link href="/blog" className="u-link font-mono text-meta text-accent">
+            yazılar
+          </Link>
+          <Link href="/projects" className="u-link font-mono text-meta text-muted hover:text-accent">
+            projeler
+          </Link>
+          <Link href="/resume" className="u-link font-mono text-meta text-muted hover:text-accent">
+            cv
+          </Link>
+          <a
+            href={`mailto:${PERSON.email}`}
+            className="u-link font-mono text-meta text-muted hover:text-accent"
+          >
+            e-posta
+          </a>
+          <Link
+            href="/"
+            hrefLang="en"
+            className="u-link font-mono text-meta text-muted hover:text-accent"
+          >
+            english
+          </Link>
+        </div>
+      </Canvas>
     </div>
   )
 }

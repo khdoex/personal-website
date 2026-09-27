@@ -1,5 +1,10 @@
 import { Project, projects } from '@/lib/projects'
 import Link from 'next/link'
+import Canvas from '@/components/layout/Canvas'
+import Gutter from '@/components/layout/Gutter'
+import Rule from '@/components/ui/Rule'
+import Meta from '@/components/ui/Meta'
+import Entry from '@/components/ui/Entry'
 import Reveal from '@/components/motion/Reveal'
 import JsonLd from '@/components/JsonLd'
 import { breadcrumbNode, graph, pageMetadata } from '@/lib/seo'
@@ -11,50 +16,55 @@ export const metadata = pageMetadata({
   path: '/projects',
 })
 
-function ProjectRow({ project, number }: { project: Project; number: number }) {
+// Shared body for a project: title, description, tags, links. The wrapper
+// around it differs by section — the current project sits in an Entry with
+// its own gutter cell, the earlier ones sit under one shared sticky label —
+// so the wrapper is not this component's concern.
+function ProjectBody({ project }: { project: Project }) {
   return (
-    <Reveal className="group grid md:grid-cols-[3rem_1fr] gap-4 py-7">
-      <span className="font-mono text-xs text-muted-dark pt-0.5 group-hover:text-accent transition-colors">
-        {String(number).padStart(2, '0')}
-      </span>
-      <div>
-        <h2 className="font-mono text-base font-medium text-heading">
-          {project.title}
-        </h2>
-        <p className="text-sm text-muted leading-relaxed mt-2 max-w-xl">
-          {project.description}
+    <>
+      <h2 className="font-serif text-h3 font-normal text-heading">{project.title}</h2>
+      <p className="mt-3 font-serif text-base text-foreground">{project.description}</p>
+      <ul className="mt-4 flex flex-wrap gap-x-4 gap-y-1">
+        {project.tags.map((tag) => (
+          <li key={tag}>
+            <Meta>{tag}</Meta>
+          </li>
+        ))}
+      </ul>
+      {(project.githubUrl || project.demoUrl) && (
+        <p className="mt-4 flex gap-5">
+          {project.githubUrl && (
+            <Link
+              href={project.githubUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="u-link font-mono text-meta text-accent hover:text-heading"
+            >
+              source
+            </Link>
+          )}
+          {project.demoUrl && (
+            <Link
+              href={project.demoUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="u-link font-mono text-meta text-accent hover:text-heading"
+            >
+              demo
+            </Link>
+          )}
         </p>
-        <div className="flex flex-wrap gap-x-3 gap-y-1 mt-3 font-mono text-[11px] text-muted-dark">
-          {project.tags.map((tag) => (
-            <span key={tag}>{tag}</span>
-          ))}
-        </div>
-        {(project.githubUrl || project.demoUrl) && (
-          <div className="flex gap-5 mt-4 font-mono text-xs">
-            {project.githubUrl && (
-              <Link
-                href={project.githubUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="u-link text-accent hover:text-heading"
-              >
-                source →
-              </Link>
-            )}
-            {project.demoUrl && (
-              <Link
-                href={project.demoUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="u-link text-muted hover:text-accent"
-              >
-                demo →
-              </Link>
-            )}
-          </div>
-        )}
-      </div>
-    </Reveal>
+      )}
+    </>
+  )
+}
+
+function ProjectEntry({ project, delay }: { project: Project; delay: number }) {
+  return (
+    <Entry className="border-t border-border" delay={delay} gutter={<Meta>active</Meta>}>
+      <ProjectBody project={project} />
+    </Entry>
   )
 }
 
@@ -63,40 +73,43 @@ export default function Projects() {
   const earlier = projects.filter((p) => p.status === 'earlier')
 
   return (
-    <div className="max-w-3xl mx-auto px-6 md:px-8 pt-16 md:pt-24 pb-28">
+    <Canvas className="pb-28 pt-16 md:pt-24">
       <JsonLd data={graph(breadcrumbNode([{ name: 'Projects', path: '/projects' }]))} />
-      <header className="mb-12">
+      <header className="mb-16 lg:col-start-2">
         <Reveal>
-          <h1 className="font-mono text-lg font-semibold text-heading">
-            projects
-          </h1>
+          <h1 className="font-serif text-h2 font-normal text-heading">projects</h1>
         </Reveal>
         <Reveal delay={0.08}>
-          <p className="text-muted mt-3 max-w-xl leading-relaxed">
+          <p className="mt-4 font-serif text-lead text-muted">
             mostly the thesis these days: where refusal lives inside llms. the
             older ml projects moved down to earlier work, they had their time.
           </p>
         </Reveal>
       </header>
 
-      <div className="divide-y divide-border border-y border-border">
-        {current.map((project, i) => (
-          <ProjectRow key={project.title} project={project} number={i + 1} />
-        ))}
-      </div>
+      {current.map((project, i) => (
+        <ProjectEntry key={project.title} project={project} delay={i * 0.08} />
+      ))}
 
-      <Reveal className="mt-14 mb-2">
-        <p className="font-mono text-xs text-muted-dark">earlier work</p>
-      </Reveal>
-      <div className="divide-y divide-border border-y border-border">
-        {earlier.map((project, i) => (
-          <ProjectRow
-            key={project.title}
-            project={project}
-            number={current.length + i + 1}
-          />
-        ))}
+      <Rule className="col-span-full mt-16" />
+
+      <div className="col-span-full mt-8 grid grid-cols-1 lg:grid-cols-subgrid">
+        <Gutter sticky>
+          <Meta>earlier work</Meta>
+        </Gutter>
+
+        <div className="lg:col-start-2">
+          {earlier.map((project, i) => (
+            <Reveal
+              key={project.title}
+              delay={i * 0.08}
+              className="border-t border-border py-7"
+            >
+              <ProjectBody project={project} />
+            </Reveal>
+          ))}
+        </div>
       </div>
-    </div>
+    </Canvas>
   )
 }

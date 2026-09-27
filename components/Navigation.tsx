@@ -12,16 +12,17 @@ const navItems = [
 
 export default function Navigation() {
   const pathname = usePathname()
+  const isReading = pathname.startsWith('/blog/')
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 border-b border-border/70 bg-background/85 backdrop-blur-md">
-      <div className="max-w-3xl mx-auto px-6 md:px-8">
+    <nav className={`${isReading ? 'absolute' : 'fixed'} top-0 left-0 right-0 z-50 border-b border-border/70 bg-background/85 backdrop-blur-md`}>
+      <div className="mx-auto w-full max-w-[1168px] px-6 md:px-8">
         <div className="flex items-center justify-between h-16">
           <Link
             href="/"
-            className="font-mono text-sm font-semibold text-heading hover:text-accent transition-colors whitespace-nowrap shrink-0"
+            className="font-serif text-lead font-medium text-heading hover:text-accent transition-colors whitespace-nowrap shrink-0"
           >
-            kaan h.<span className="cursor-blink text-accent">▊</span>
+            kaan h.
           </Link>
 
           <div className="flex items-center gap-3 sm:gap-6">
@@ -33,14 +34,15 @@ export default function Navigation() {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`relative font-mono text-[13px] transition-colors ${
+                  className={`relative font-mono text-meta transition-colors ${
                     isActive ? 'text-accent' : 'text-muted hover:text-heading'
                   }`}
                 >
                   {item.label}
                   <span
-                    className={`absolute -bottom-1.5 left-0 h-px bg-accent transition-all duration-200 ${
-                      isActive ? 'w-full' : 'w-0'
+                    aria-hidden
+                    className={`absolute -top-2 left-0 h-1.5 w-px bg-accent transition-opacity duration-200 ${
+                      isActive ? 'opacity-100' : 'opacity-0'
                     }`}
                   />
                 </Link>

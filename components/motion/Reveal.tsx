@@ -20,11 +20,13 @@ export default function Reveal({
 
   // Always render motion.div: swapping element types on the reduced-motion
   // branch causes an SSR hydration mismatch that strands content at
-  // opacity 0. With initial={false} framer renders the resting state and
-  // imperatively syncs styles on mount.
+  // opacity 0. The from-state is serialised into the SSR markup, and a
+  // client that prefers reduced motion never runs the animation that would
+  // clear it, so the reveal-root class hands that case to CSS, which the
+  // browser resolves without waiting for hydration.
   return (
     <motion.div
-      className={className}
+      className={className ? `reveal-root ${className}` : 'reveal-root'}
       initial={reduced ? false : { opacity: 0, y: 14 }}
       whileInView={reduced ? undefined : { opacity: 1, y: 0 }}
       viewport={{ once: false, amount: 0.25 }}

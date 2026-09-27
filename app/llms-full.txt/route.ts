@@ -84,9 +84,9 @@ export async function GET() {
       [
         `### ${data.title}`,
         `URL: ${SITE_URL}/blog/${data.slug}`,
-        `Date: ${data.date} · Language: ${data.lang}`,
+        `Date: ${data.date} · Language: ${data.language ?? 'en'}`,
         '',
-        data.content ? stripHtml(data.content) : data.description,
+        data.content ? stripHtml(data.content) : (data.excerpt ?? ''),
       ].join('\n')
     ),
   ]

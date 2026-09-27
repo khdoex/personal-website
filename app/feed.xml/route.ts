@@ -1,4 +1,4 @@
-import { getAllPosts } from '@/lib/posts'
+import { getAllPosts, plainExcerpt } from '@/lib/posts'
 import { SITE_URL, SITE_NAME, PERSON } from '@/lib/site'
 
 export const dynamic = 'force-static'
@@ -21,8 +21,8 @@ export async function GET() {
       <guid isPermaLink="true">${url}</guid>
       <pubDate>${new Date(data.date).toUTCString()}</pubDate>
       <dc:creator>${escape(PERSON.name)}</dc:creator>
-      <dc:language>${data.lang}</dc:language>
-      <description>${escape(data.description)}</description>
+      <dc:language>${data.language ?? 'en'}</dc:language>
+      <description>${escape(data.excerpt ?? plainExcerpt(data.content))}</description>
     </item>`
     })
     .join('\n')

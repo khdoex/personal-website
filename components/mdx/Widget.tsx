@@ -10,7 +10,7 @@ export default function Widget({
 }) {
   return (
     <div className="my-10 rounded-lg border border-border bg-surface overflow-hidden">
-      <div className="font-mono text-[11px] text-muted-dark px-4 py-2 border-b border-border">
+      <div className="font-mono text-tick text-muted px-4 py-2 border-b border-border">
         ~/{title}
       </div>
       <div className="p-5">{children}</div>

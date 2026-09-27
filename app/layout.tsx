@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { JetBrains_Mono, IBM_Plex_Sans } from "next/font/google";
+import { JetBrains_Mono, Newsreader } from "next/font/google";
 import "./globals.css";
 import Navigation from '@/components/Navigation'
 import Footer from '@/components/Footer'
@@ -11,16 +11,17 @@ const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin", "latin-ext"],
   variable: "--font-mono",
 });
-const plexSans = IBM_Plex_Sans({
+const newsreader = Newsreader({
   subsets: ["latin", "latin-ext"],
-  weight: ["400", "500", "600"],
-  variable: "--font-sans",
+  axes: ["opsz"],
+  style: ["normal", "italic"],
+  variable: "--font-serif",
 });
 
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  themeColor: '#1d252c',
+  themeColor: '#10151a',
 };
 
 const DEFAULT_TITLE =
@@ -111,7 +112,7 @@ export default function RootLayout({
         <link rel="alternate" type="text/markdown" href="/llms-full.txt" title="llms-full.txt" />
       </head>
       <body
-        className={`${jetbrainsMono.variable} ${plexSans.variable} antialiased`}
+        className={`${jetbrainsMono.variable} ${newsreader.variable} antialiased`}
       >
         <JsonLd data={graph(websiteNode(), personNode())} />
         <Navigation />

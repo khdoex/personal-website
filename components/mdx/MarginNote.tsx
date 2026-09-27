@@ -1,16 +1,14 @@
 import type { ReactNode } from 'react'
 
 /**
- * A parenthetical thought, typeset properly. On wide screens it floats out
- * into the right gutter beside the paragraph; on smaller screens it renders
+ * A parenthetical thought. On wide screens it sits in the canvas's right
+ * track, aligned to the paragraph it follows. Below the collapse it renders
  * as a quiet inline aside.
  */
 export default function MarginNote({ children }: { children: ReactNode }) {
   return (
-    <span className="block my-4 rounded border border-border bg-surface/60 px-4 py-3 font-mono text-xs text-muted leading-relaxed not-italic xl:float-right xl:clear-right xl:-mr-[17rem] xl:ml-6 xl:my-0 xl:w-56 xl:border-0 xl:bg-transparent xl:px-0 xl:py-0">
-      <span aria-hidden className="text-accent">
-        *{' '}
-      </span>
+    <span className="block my-4 rounded border border-border bg-surface/60 px-4 py-3 font-mono text-meta text-muted not-italic lg:absolute lg:left-[calc(100%+2rem)] lg:my-0 lg:w-[220px] lg:border-0 lg:bg-transparent lg:px-0 lg:py-0">
+      <span aria-hidden className="text-accent">* </span>
       {children}
     </span>
   )

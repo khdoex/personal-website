@@ -1,8 +1,8 @@
 ---
 title: "Master"
 date: "2024-03-21"
-lang: "tr"
-description: "Padova'daki bilgisayar bilimleri yüksek lisansını neden bıraktığım: ezbere dayalı sınavlar, tatminsizlik, yalnızlık ve bundan sonra ne yapacağım üzerine."
+language: "tr"
+excerpt: "yüksek lisansı bıraktım, çünkü tatmin olamadım ve istemediğim bir şeyi daha fazla yapamadım."
 ---
 
 

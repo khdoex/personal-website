@@ -9,6 +9,7 @@ import {
   useTransform,
 } from 'framer-motion'
 import Reveal from '@/components/motion/Reveal'
+import Canvas from '@/components/layout/Canvas'
 
 /**
  * Blended portrait scene: the photo dissolves into the page background on
@@ -49,14 +50,16 @@ export default function AboutHero({ children }: { children: React.ReactNode }) {
         />
       </motion.div>
 
-      <div className="relative max-w-3xl mx-auto px-6 md:px-8 pt-24 md:pt-32 pb-16">
-        <Reveal>
-          <h1 className="font-mono text-lg font-semibold text-heading">
-            about
-          </h1>
-        </Reveal>
-        <div className="max-w-md sm:max-w-lg">{children}</div>
-      </div>
+      <Canvas className="relative pt-24 md:pt-32 pb-16">
+        <div className="col-span-full xl:[grid-column:2/3] max-w-md sm:max-w-lg">
+          <Reveal>
+            <h1 className="font-serif text-h2 font-normal text-heading">
+              about
+            </h1>
+          </Reveal>
+          {children}
+        </div>
+      </Canvas>
     </section>
   )
 }
