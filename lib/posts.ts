@@ -25,6 +25,14 @@ function stripTags(htmlString: string): string {
   return htmlString.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()
 }
 
+/** Plain-text opening of a post, for meta descriptions and feeds. */
+export function plainExcerpt(contentHtml: string, max = 155): string {
+  const text = stripTags(contentHtml)
+  if (text.length <= max) return text
+  const cut = text.slice(0, max)
+  return `${cut.slice(0, cut.lastIndexOf(' '))}…`
+}
+
 function readingTimeOf(contentHtml: string): number {
   const words = stripTags(contentHtml).split(' ').filter(Boolean).length
   return Math.max(1, Math.round(words / 200))

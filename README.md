@@ -52,6 +52,14 @@ This site presents:
 - `posts/` — markdown blog content
 - `public/` — static assets (images, videos, resume PDF)
 
+## SEO and AI discoverability
+
+- `lib/site.ts` holds identity data (name spellings, handles, profiles); `lib/seo.ts` builds per-page metadata (`pageMetadata`, one canonical per page) and the JSON-LD graph (WebSite, Person, ProfilePage, BreadcrumbList, BlogPosting).
+- `/tr` is the Turkish landing page, linked to `/` with hreflang.
+- `public/llms.txt` is the hand-written profile for LLM agents; `/llms-full.txt` appends the full resume, projects and post text, generated at build time from the same data files.
+- `/feed.xml` is the RSS feed; `/robots.txt` explicitly allows AI crawlers.
+- Blog posts accept `description` and `lang` frontmatter (`lang` is otherwise guessed).
+
 ## Deployment
 
 Configured for Cloudflare deployment via OpenNext and Wrangler.

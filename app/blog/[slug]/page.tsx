@@ -1,12 +1,14 @@
 // Scoped to this route so pages without math never pay for the stylesheet.
 import 'katex/dist/katex.min.css'
-import { getPostBySlug } from '@/lib/posts'
+import { getAllPosts, getPostBySlug, plainExcerpt } from '@/lib/posts'
 import { getRichPost } from '@/lib/rich-posts'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import ReadingProgress from '@/components/ReadingProgress'
 import Reveal from '@/components/motion/Reveal'
 import Canvas from '@/components/layout/Canvas'
+import JsonLd from '@/components/JsonLd'
+import { blogPostingNode, breadcrumbNode, graph, pageMetadata } from '@/lib/seo'
 
 interface Props {
   params: Promise<{ slug: string }>
@@ -21,21 +23,92 @@ function publishedRichPost(slug: string) {
   return rich && rich.meta.listed !== false ? rich : undefined
 }
 
-export async function generateMetadata({ params }: Props) {
-  const { slug } = await params
+interface PostSeo {
+  title: string
+  slug: string
+  date: string
+  description: string
+  language: 'en' | 'tr'
+  alternateSlug?: string
+}
+
+// Prerender every published post at build time; anything else 404s.
+export async function generateStaticParams() {
+  const posts = await getAllPosts()
+  return posts.map((post) => ({ slug: post.data.slug }))
+}
+
+async function seoFor(slug: string): Promise<PostSeo | null> {
   const rich = publishedRichPost(slug)
   if (rich) {
-    return { title: `${rich.meta.title} | Kaan Hacihaliloglu` }
+    const { meta } = rich
+    return {
+      title: meta.title,
+      slug: meta.slug,
+      date: meta.date,
+      description: meta.excerpt ?? meta.title,
+      language: meta.language ?? 'en',
+      // Only point at a translation that is itself published.
+      alternateSlug:
+        meta.alternateSlug && publishedRichPost(meta.alternateSlug)
+          ? meta.alternateSlug
+          : undefined,
+    }
   }
   try {
-    const post = await getPostBySlug(slug)
-    return { title: `${post.data.title} | Kaan Hacihaliloglu` }
+    const { data } = await getPostBySlug(slug)
+    return {
+      title: data.title,
+      slug: data.slug,
+      date: data.date,
+      description: data.excerpt ?? plainExcerpt(data.content),
+      language: data.language ?? 'en',
+    }
   } catch {
-    return {}
+    return null
   }
 }
 
+export async function generateMetadata({ params }: Props) {
+  const { slug } = await params
+  const post = await seoFor(slug)
+  if (!post) return {}
+  // A bilingual post points search engines at its translation.
+  const languages = post.alternateSlug
+    ? {
+        [post.language]: `/blog/${post.slug}`,
+        [post.language === 'tr' ? 'en' : 'tr']: `/blog/${post.alternateSlug}`,
+      }
+    : undefined
+  return pageMetadata({
+    title: post.title,
+    description: post.description,
+    path: `/blog/${post.slug}`,
+    type: 'article',
+    locale: post.language === 'tr' ? 'tr_TR' : 'en_US',
+    languages,
+    publishedTime: post.date,
+  })
+}
+
+async function PostJsonLd({ slug }: { slug: string }) {
+  const post = await seoFor(slug)
+  if (!post) return null
+  return (
+    <JsonLd
+      data={graph(
+        blogPostingNode({ ...post, inLanguage: post.language }),
+        breadcrumbNode([
+          { name: 'Writing', path: '/blog' },
+          { name: post.title, path: `/blog/${post.slug}` },
+        ])
+      )}
+    />
+  )
+}
+
 function PostShell({
+  slug,
   title,
   date,
   readingTime,
@@ -43,6 +116,7 @@ function PostShell({
   alternateSlug,
   children,
 }: {
+  slug: string
   title: string
   date: string
   readingTime: number
@@ -52,8 +126,9 @@ function PostShell({
 }) {
   return (
     <>
+      <PostJsonLd slug={slug} />
       <ReadingProgress />
-      <article>
+      <article lang={language}>
         <Canvas className="pb-28 pt-16 md:pt-24">
           <header className="mb-12 max-w-[660px] lg:col-start-2">
             <Reveal>
@@ -110,6 +185,7 @@ export default async function BlogPost({ params }: Props) {
     const { Component, meta } = rich
     return (
       <PostShell
+        slug={slug}
         title={meta.title}
         date={meta.date}
         readingTime={meta.readingTime}
@@ -127,6 +203,7 @@ export default async function BlogPost({ params }: Props) {
     const post = await getPostBySlug(slug)
     return (
       <PostShell
+        slug={slug}
         title={post.data.title}
         date={post.data.date}
         readingTime={post.data.readingTime}
