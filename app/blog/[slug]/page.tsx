@@ -16,7 +16,13 @@ export async function generateMetadata({ params }: Props) {
   const { slug } = await params
   const rich = getRichPost(slug)
   if (rich) {
-    return { title: `${rich.meta.title} | Kaan Hacihaliloglu` }
+    return {
+      title: `${rich.meta.title} | Kaan Hacihaliloglu`,
+      // An unlisted post is a draft: off every index, and out of search.
+      ...(rich.meta.listed === false
+        ? { robots: { index: false, follow: false } }
+        : {}),
+    }
   }
   try {
     const post = await getPostBySlug(slug)
