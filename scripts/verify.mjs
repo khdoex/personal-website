@@ -14,6 +14,7 @@ const ROUTES = {
   post: '/blog/master',
   projects: '/projects',
   resume: '/resume',
+  notFound: '/this-route-does-not-exist',
 }
 const WIDTHS = [1440, 1024, 900, 768, 375]
 

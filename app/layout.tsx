@@ -94,9 +94,6 @@ export const metadata: Metadata = {
       'max-video-preview': -1,
     },
   },
-  icons: {
-    icon: '/favicon-4.svg',
-  },
 };
 
 export default function RootLayout({
