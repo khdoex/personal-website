@@ -48,7 +48,7 @@ const RULES = [
   {
     id: 'hex-literal',
     what: 'six-digit hex literal',
-    why: 'colour is nine tokens defined once in globals.css; a literal escapes the palette',
+    why: 'colour is the tokens defined once in globals.css; a literal escapes the palette',
     baseline: 1,
     pattern: /#[0-9a-fA-F]{6}\b/g,
     skip: (file) => file === 'app/globals.css',
@@ -73,8 +73,8 @@ const RULES = [
   {
     id: 'off-scale-size',
     what: "Tailwind's own size names",
-    why: 'the scale is tick, meta, sm, base, lead, h3, h2, h1, display; the default names are a second scale',
-    baseline: 3,
+    why: 'the scale is tick, meta, sm, base, lead, h3, h2, h1, display, hero; the default names are a second scale',
+    baseline: 2,
     pattern: /\btext-(?:xs|lg|xl|2xl|3xl|4xl)\b/g,
   },
 ]

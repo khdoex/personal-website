@@ -6,7 +6,10 @@ import Meta from '@/components/ui/Meta'
 import Entry from '@/components/ui/Entry'
 import Reveal from '@/components/motion/Reveal'
 import JsonLd from '@/components/JsonLd'
+import Scrim from '@/components/layout/Scrim'
 import { PERSON } from '@/lib/site'
+import { content } from '@/lib/content.generated'
+import Inline from '@/components/ui/Inline'
 import { breadcrumbNode, graph, pageMetadata, profilePageNode } from '@/lib/seo'
 
 // Turkish landing. Exists so Turkish queries ("kaan yapay zeka",
@@ -22,51 +25,12 @@ export const metadata = pageMetadata({
   languages: { en: '/', tr: '/tr', 'x-default': '/' },
 })
 
-const story = [
-  <>
-    fizik okudum, bana kapatamadığım bir alışkanlık bıraktı: altta gerçekte ne
-    oluyor diye sormak. bugün yapay zekanın çoğu, kimsenin tam olarak açıp
-    okuyamadığı modellerin üstünde çalışıyor. bu ya korkutucu ya da ilginç, ben
-    ilginç olanı seçtim.
-  </>,
-  <>
-    şu an sabancı üniversitesi&apos;nde veri bilimi yüksek lisansı yapıyorum,
-    tezim büyük dil modellerinde (llm) reddetme yönü üzerine. bir model
-    &quot;bu konuda yardımcı olamam&quot; dediğinde içeride belirli bir şey
-    oluyor ve bu, aktivasyon uzayında bir yön olarak gösterilebiliyor.
-    jailbreak&apos;lerin modeli bu yönden nasıl uzaklaştırdığını ve bunun
-    savunma (ya da saldırı) için ne anlama geldiğini haritalıyorum.
-  </>,
-  <>
-    SCL&apos;de (synthetic consumer lab) yapay zeka mühendisiyim: yapay zeka
-    tabanlı bir pazar araştırması motoru kuruyorum, gerçek tüketiciler gibi
-    davranan sentetik tüketiciler. yazması bile garip bir cümle. backend,
-    frontend, ajanlar, istatistik, hepsi bende. SoundBoost&apos;ta da derin
-    öğrenmeyle çalışan bir ses mastering platformunun yapay zeka tarafındayım.
-  </>,
-  <>
-    lisansı boğaziçi&apos;nde fizikte bitirdim, EarthML grubunda transformer
-    modelleriyle deprem tespiti üzerine çalıştık. arada padova&apos;da
-    bilgisayar bilimleri yüksek lisansına başladım, olmadı. neden olmadığını{' '}
-    <Link href="/blog/master" className="u-link text-accent">
-      blogda yazdım
-    </Link>
-    .
-  </>,
-]
-
-const facts = [
-  { label: 'şu an', value: 'yapay zeka mühendisi, SCL (synthetic consumer lab) ve SoundBoost' },
-  { label: 'araştırma', value: 'mekanistik yorumlanabilirlik, llm güvenliği, reddetme yönü' },
-  { label: 'eğitim', value: 'sabancı üniversitesi (veri bilimi yl), boğaziçi üniversitesi (fizik lisans)' },
-  { label: 'araçlar', value: 'python, pytorch, transformerlens, nnsight, fastapi, laravel, typescript' },
-  { label: 'diller', value: 'türkçe (ana dil), ingilizce' },
-  { label: 'kullanıcı adı', value: 'kaanhho (x, hugging face, linkedin), khdoex (github)' },
-]
-
 export default function Turkish() {
+  const tr = content.tr
+
   return (
     <div lang="tr">
+      <Scrim />
       <JsonLd
         data={graph(
           profilePageNode({
@@ -81,20 +45,22 @@ export default function Turkish() {
         <header className="lg:col-start-2">
           <Reveal>
             <h1 className="font-serif text-display font-normal text-heading">
-              kaan hacıhaliloğlu
+              {tr.name}
             </h1>
           </Reveal>
           <Reveal delay={0.08}>
             <p className="mt-6">
-              <Meta>yapay zeka mühendisi · yorumlanabilirlik · istanbul</Meta>
+              <Meta>{tr.tagline}</Meta>
             </p>
           </Reveal>
         </header>
 
         <div className="mt-10 space-y-6 lg:col-start-2">
-          {story.map((paragraph, i) => (
+          {tr.story.map((paragraph, i) => (
             <Reveal key={i} delay={i === 0 ? 0.16 : 0}>
-              <p className="font-serif text-base text-foreground">{paragraph}</p>
+              <p className="font-serif text-base text-foreground">
+                <Inline text={paragraph} />
+              </p>
             </Reveal>
           ))}
         </div>
@@ -102,10 +68,10 @@ export default function Turkish() {
         <Rule className="col-span-full mt-16" />
 
         <Gutter className="mt-8">
-          <Meta>kısaca</Meta>
+          <Meta>{tr.factsLabel}</Meta>
         </Gutter>
 
-        {facts.map((fact, i) => (
+        {tr.facts.map((fact, i) => (
           <Entry
             key={fact.label}
             className={i === 0 ? '' : 'border-t border-border'}
@@ -120,26 +86,26 @@ export default function Turkish() {
 
         <div className="mt-8 flex flex-wrap gap-x-7 gap-y-3 lg:col-start-2">
           <Link href="/blog" className="u-link font-mono text-meta text-accent">
-            yazılar
+            {tr.links.blog}
           </Link>
           <Link href="/projects" className="u-link font-mono text-meta text-muted hover:text-accent">
-            projeler
+            {tr.links.projects}
           </Link>
           <Link href="/resume" className="u-link font-mono text-meta text-muted hover:text-accent">
-            cv
+            {tr.links.resume}
           </Link>
           <a
             href={`mailto:${PERSON.email}`}
             className="u-link font-mono text-meta text-muted hover:text-accent"
           >
-            e-posta
+            {tr.links.email}
           </a>
           <Link
             href="/"
             hrefLang="en"
             className="u-link font-mono text-meta text-muted hover:text-accent"
           >
-            english
+            {tr.links.english}
           </Link>
         </div>
       </Canvas>

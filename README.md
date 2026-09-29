@@ -7,9 +7,15 @@ Personal portfolio website built with Next.js, TypeScript, and Tailwind CSS.
 This site presents:
 - Professional profile and current research focus
 - Projects and technical work
-- Blog posts (Markdown-based)
-- Generative media experiments
+- Blog posts (Markdown and MDX)
 - Resume viewer and PDF download
+
+Behind the pages is one 3D world (three.js). The first visit to the home page
+opens with a ride in from deep space through a tube that doubles as the loading
+bar, landing on a planet painted in the site's palette. Every page after that is
+a camera position around it, and the resume flies through a scene per entry:
+Istanbul, Padova, the physics years (Saturn and a pair of black holes), the
+interpretability years (a transformer and the refusal direction).
 
 ## Tech Stack
 
@@ -17,6 +23,7 @@ This site presents:
 - React 18
 - TypeScript
 - Tailwind CSS
+- three.js for the world, loaded as its own chunk after hydration
 - MD/Markdown parsing via remark + gray-matter
 
 ## Run locally
@@ -35,8 +42,9 @@ This site presents:
 
 ## Scripts
 
-- `npm run dev` — run local dev server
+- `npm run dev` — run local dev server (regenerates the copy when `content/site.md` is saved)
 - `npm run build` — production build
+- `npm run content` — check `content/site.md` and regenerate `lib/content.generated.ts`
 - `npm run start` — run production server
 - `npm run lint` — run lint checks
 - `npm run build:cloudflare` — build for OpenNext/Cloudflare
@@ -45,12 +53,23 @@ This site presents:
 
 ## Content structure
 
+- `content/site.md` — every word a visitor reads: home page, about, projects,
+  resume, the Turkish page, the ride's lines and the 3D captions. Edit it and
+  run `npm run content`; a mistake is reported with its line number.
 - `app/` — routes and page components
 - `components/` — shared UI (navigation, footer)
-- `lib/projects.ts` — projects data source
+- `components/world/` — the 3D world: `World.tsx` (mounted once in the layout),
+  `gate.ts` (decides before first paint whether the ride plays), and the engine
+  in `engine/` (planet, sky, tube, scenes, camera shots)
 - `lib/posts.ts` — blog loading/parsing utilities
+- `lib/resume.ts`, `lib/projects.ts`, `lib/currently.ts` — typed views of `content/site.md`
 - `posts/` — markdown blog content
-- `public/` — static assets (images, videos, resume PDF)
+- `public/` — static assets (images, resume PDF)
+- `public/world/` — the planet's data textures, baked by `scripts/world-textures.py`
+
+Useful query strings: `?intro=1` plays the ride again, `?intro=0` skips it,
+`?quality=high|medium|low` forces a rendering tier, `?debug` exposes
+`window.__world`.
 
 ## SEO and AI discoverability
 
@@ -66,4 +85,8 @@ Configured for Cloudflare deployment via OpenNext and Wrangler.
 
 ## Notes
 
-The site uses a dark, terminal-inspired visual language with a clean and professional content tone.
+The visual language is the Earth at night seen from orbit: a dark blue ground,
+leaf green for what is alive, sun gold for time and city lights, sky blue for
+figures. `docs/design-system.md` records every rule and the reason for it,
+including how the world stays out of the way of reading: blog posts have no
+world at all, and every page works without JavaScript or WebGL.

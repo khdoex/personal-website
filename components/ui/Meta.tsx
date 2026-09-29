@@ -2,7 +2,7 @@ import type { ReactNode } from 'react'
 
 const tones = {
   muted: 'text-muted',
-  date: 'text-amber',
+  date: 'text-sun',
 } as const
 
 // Two tones, no third. --muted-dark sits at 2.37 against the ground and

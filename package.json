@@ -7,15 +7,16 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "build:cloudflare": "npm run posts && npx opennextjs-cloudflare build",
+    "build:cloudflare": "npm run posts && npm run content && npx opennextjs-cloudflare build",
     "preview:cloudflare": "npx wrangler dev",
     "deploy:cloudflare": "npx wrangler deploy",
     "contrast": "node scripts/contrast.mjs",
     "lint:design": "node scripts/design-lint.mjs",
     "verify": "node scripts/verify.mjs",
     "posts": "node scripts/build-posts.mjs",
-    "predev": "npm run posts",
-    "prebuild": "npm run posts"
+    "content": "node scripts/build-content.mjs",
+    "predev": "npm run posts && npm run content",
+    "prebuild": "npm run posts && npm run content"
   },
   "dependencies": {
     "@mdx-js/loader": "^3.1.0",
@@ -31,13 +32,15 @@
     "rehype-katex": "^7.0.1",
     "remark": "^15.0.1",
     "remark-html": "^16.0.1",
-    "remark-math": "^6.0.0"
+    "remark-math": "^6.0.0",
+    "three": "^0.186.1"
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.15",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "@types/three": "^0.186.0",
     "eslint": "^8",
     "eslint-config-next": "15.0.2",
     "playwright": "^1.58.2",

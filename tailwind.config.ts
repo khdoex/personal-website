@@ -15,7 +15,8 @@ const config: Config = {
         border: "rgb(var(--border) / <alpha-value>)",
         heading: "rgb(var(--heading) / <alpha-value>)",
         accent: "rgb(var(--accent) / <alpha-value>)",
-        amber: "rgb(var(--amber) / <alpha-value>)",
+        sun: "rgb(var(--sun) / <alpha-value>)",
+        sky: "rgb(var(--sky) / <alpha-value>)",
         muted: {
           DEFAULT: "rgb(var(--muted) / <alpha-value>)",
           dark: "rgb(var(--muted-dark) / <alpha-value>)",
@@ -35,6 +36,7 @@ const config: Config = {
         h2: ["2.25rem", { lineHeight: "1.2" }],
         h1: ["3rem", { lineHeight: "1.1" }],
         display: ["clamp(2.5rem, 6vw, 4rem)", { lineHeight: "1.05" }],
+        hero: ["clamp(2.75rem, 7.5vw, 5.75rem)", { lineHeight: "1" }],
       },
     },
   },

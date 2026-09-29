@@ -14,8 +14,8 @@ const copy = {
     summaryAttack: "attacker's task",
     summaryUser: "user's task",
     rows: [
-      { label: "attacker's task appeared", baseline: 94, defense: 12, change: '82 fewer answers', color: 'rgb(var(--amber))' },
-      { label: "user's task appeared", baseline: 42, defense: 84, change: '42 more answers', color: 'rgb(var(--accent))' },
+      { label: "attacker's task appeared", baseline: 94, defense: 12, change: '82 fewer answers', color: 'rgb(var(--sun))' },
+      { label: "user's task appeared", baseline: 42, defense: 84, change: '42 more answers', color: 'rgb(var(--sky))' },
     ],
   },
   tr: {
@@ -28,8 +28,8 @@ const copy = {
     summaryAttack: 'saldırganın görevi',
     summaryUser: 'kullanıcının görevi',
     rows: [
-      { label: 'saldırganın görevi cevapta göründü', baseline: 94, defense: 12, change: '82 cevap daha az', color: 'rgb(var(--amber))' },
-      { label: 'kullanıcının görevi cevapta göründü', baseline: 42, defense: 84, change: '42 cevap daha fazla', color: 'rgb(var(--accent))' },
+      { label: 'saldırganın görevi cevapta göründü', baseline: 94, defense: 12, change: '82 cevap daha az', color: 'rgb(var(--sun))' },
+      { label: 'kullanıcının görevi cevapta göründü', baseline: 42, defense: 84, change: '42 cevap daha fazla', color: 'rgb(var(--sky))' },
     ],
   },
 } as const
@@ -94,11 +94,11 @@ export default function PromptDefenseOutcomeFigure({ lang = 'en' }: { lang?: 'en
       </div>
 
       <div className="grid gap-3 border-t border-border pt-5 font-mono text-meta sm:grid-cols-2">
-        <div className="rounded-md bg-amber/5 px-4 py-3 text-muted">
-          {text.summaryAttack}: <span className="text-amber">94 → 12</span>
+        <div className="rounded-md bg-sun/5 px-4 py-3 text-muted">
+          {text.summaryAttack}: <span className="text-sun">94 → 12</span>
         </div>
-        <div className="rounded-md bg-accent/5 px-4 py-3 text-muted">
-          {text.summaryUser}: <span className="text-accent">42 → 84</span>
+        <div className="rounded-md bg-sky/5 px-4 py-3 text-muted">
+          {text.summaryUser}: <span className="text-sky">42 → 84</span>
         </div>
       </div>
     </div>

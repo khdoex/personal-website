@@ -4,10 +4,10 @@ import { motion, useTransform } from 'framer-motion'
 import { useFigureProgress } from './ScrollFigure'
 import { defenseBehavior } from './prompt-injection-defense-data'
 
-const BLUE = 'rgb(var(--accent))'
-const AMBER = 'rgb(var(--amber))'
-const TARGET_THEN = 'rgb(var(--accent) / 0.55)'
-const INJECTED_THEN = 'rgb(var(--amber) / 0.55)'
+const BLUE = 'rgb(var(--sky))'
+const AMBER = 'rgb(var(--sun))'
+const TARGET_THEN = 'rgb(var(--sky) / 0.55)'
+const INJECTED_THEN = 'rgb(var(--sun) / 0.55)'
 const UNKNOWN = 'rgb(var(--muted))'
 const GRID = 'rgb(var(--border))'
 const TEXT = 'rgb(var(--muted))'
@@ -25,7 +25,7 @@ export default function PromptDefenseBehaviorFigure() {
       <div>
         <h3 className="mb-3 font-mono text-sm text-heading">which task appeared anywhere?</h3>
         <svg viewBox="0 0 560 430" className="w-full" role="img" aria-label="Target and injected task addressing rates across seven system-prompt defenses.">
-          <rect x="0" y="226" width="548" height="36" rx="4" fill="rgb(var(--accent))" opacity="0.045" />
+          <rect x="0" y="226" width="548" height="36" rx="4" fill="rgb(var(--sky))" opacity="0.045" />
           {[0, 0.5, 1].map((tick) => {
             const x = 178 + tick * 350
             return <g key={tick}>
@@ -54,7 +54,7 @@ export default function PromptDefenseBehaviorFigure() {
       <div>
         <h3 className="mb-3 font-mono text-sm text-heading">what did each answer contain?</h3>
         <svg viewBox="0 0 560 430" className="w-full" role="img" aria-label="First-answer sequence composition across seven system-prompt defenses.">
-          <rect x="0" y="225" width="548" height="36" rx="4" fill="rgb(var(--accent))" opacity="0.045" />
+          <rect x="0" y="225" width="548" height="36" rx="4" fill="rgb(var(--sky))" opacity="0.045" />
           {[0, 0.5, 1].map((tick) => {
             const x = 154 + tick * 374
             return <g key={tick}>

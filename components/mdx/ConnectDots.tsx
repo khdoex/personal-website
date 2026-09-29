@@ -6,11 +6,11 @@ import { useFigureProgress } from './ScrollFigure'
 interface Dot {
   x: number
   y: number
-  color?: 'accent' | 'amber'
+  color?: 'sky' | 'sun'
   label?: string
 }
 
-const COLORS = { accent: 'rgb(var(--accent))', amber: 'rgb(var(--amber))' }
+const COLORS = { sky: 'rgb(var(--sky))', sun: 'rgb(var(--sun))' }
 
 function Edge({
   from,
@@ -34,7 +34,7 @@ function Edge({
       y1={from.y}
       x2={to.x}
       y2={to.y}
-      stroke={COLORS[from.color ?? 'accent']}
+      stroke={COLORS[from.color ?? 'sky']}
       strokeWidth={1.5}
       opacity={0.7}
       style={{ pathLength }}
@@ -75,7 +75,7 @@ export default function ConnectDots({
       ))}
       {dots.map((dot, i) => (
         <motion.g key={i} style={{ opacity: dotsOpacity }}>
-          <circle cx={dot.x} cy={dot.y} r={4} fill={COLORS[dot.color ?? 'accent']} />
+          <circle cx={dot.x} cy={dot.y} r={4} fill={COLORS[dot.color ?? 'sky']} />
           {dot.label && (
             <text
               x={dot.x}

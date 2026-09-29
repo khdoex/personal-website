@@ -4,6 +4,8 @@ import Gutter from '@/components/layout/Gutter'
 import Rule from '@/components/ui/Rule'
 import Meta from '@/components/ui/Meta'
 import Reveal from '@/components/motion/Reveal'
+import Inline from '@/components/ui/Inline'
+import { content } from '@/lib/content.generated'
 
 // The root layout sets a `%s | Kaan Hacihaliloglu` template, so the suffix
 // belongs there and not here.
@@ -23,14 +25,16 @@ export default function NotFound() {
       <div className="lg:col-start-2">
         <Reveal>
           <h1 className="font-serif text-h2 font-normal text-heading">
-            nothing here
+            {content.notFound.title}
           </h1>
         </Reveal>
-        <Reveal delay={0.08}>
-          <p className="mt-4 font-serif text-lead text-muted">
-            this page does not exist, or it did once and does not any more.
-          </p>
-        </Reveal>
+        {content.notFound.body.map((paragraph, i) => (
+          <Reveal key={i} delay={0.08}>
+            <p className="mt-4 font-serif text-lead text-muted">
+              <Inline text={paragraph} />
+            </p>
+          </Reveal>
+        ))}
       </div>
 
       <Rule className="col-span-full mt-16" />

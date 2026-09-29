@@ -41,7 +41,7 @@ export default function RefusalToy() {
         {/* refusal direction arrow */}
         <defs>
           <marker id="arrow" viewBox="0 0 8 8" refX={7} refY={4} markerWidth={6} markerHeight={6} orient="auto-start-reverse">
-            <path d="M0,0 L8,4 L0,8 z" fill="rgb(var(--accent))" />
+            <path d="M0,0 L8,4 L0,8 z" fill="rgb(var(--sky))" />
           </marker>
         </defs>
         <line
@@ -49,17 +49,17 @@ export default function RefusalToy() {
           y1={90}
           x2={150 + DIR.x * 52}
           y2={90 + DIR.y * 52}
-          stroke="rgb(var(--accent))"
+          stroke="rgb(var(--sky))"
           strokeWidth={1.5}
           markerEnd="url(#arrow)"
           opacity={Math.max(0.25, 1 - strength)}
         />
-        <text x={186} y={92} fill="rgb(var(--accent))" fontSize={8} fontFamily="var(--font-mono), monospace" opacity={Math.max(0.25, 1 - strength)}>
+        <text x={186} y={92} fill="rgb(var(--sky))" fontSize={8} fontFamily="var(--font-mono), monospace" opacity={Math.max(0.25, 1 - strength)}>
           refusal dir
         </text>
 
         {HARMLESS.map(([x, y], i) => (
-          <circle key={`h${i}`} cx={x} cy={y} r={4} fill="rgb(var(--accent))" opacity={0.85} />
+          <circle key={`h${i}`} cx={x} cy={y} r={4} fill="rgb(var(--sky))" opacity={0.85} />
         ))}
         {shifted.map(([x, y], i) => (
           <circle
@@ -67,7 +67,7 @@ export default function RefusalToy() {
             cx={x}
             cy={y}
             r={4}
-            fill="rgb(var(--amber))"
+            fill="rgb(var(--sun))"
             opacity={0.9}
             style={{ transition: 'cx 0.2s ease-out, cy 0.2s ease-out' }}
           />
@@ -92,7 +92,7 @@ export default function RefusalToy() {
 
       <div className="mt-4 font-mono text-meta border-t border-border pt-3" aria-live="polite">
         <span className="text-muted">model output: </span>
-        <span className={refusing ? 'text-accent' : 'text-amber'}>
+        <span className={refusing ? 'text-sky' : 'text-sun'}>
           {refusing
             ? '"i can\'t help with that"'
             : '"sure, here is how you would..."'}

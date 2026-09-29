@@ -165,7 +165,7 @@ function PostShell({
             </Reveal>
             <Reveal delay={0.16}>
               <p className="font-mono text-xs mt-4">
-                <time className="text-amber">{date}</time>
+                <time className="text-sun">{date}</time>
                 <span className="text-muted"> · {readingTime} {language === 'tr' ? 'dk okuma' : 'min read'}</span>
               </p>
             </Reveal>

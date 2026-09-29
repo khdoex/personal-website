@@ -3,7 +3,7 @@
 import { motion, useTransform } from 'framer-motion'
 import { useFigureProgress } from './ScrollFigure'
 
-const FLAGGED = 'rgb(var(--amber))'
+const FLAGGED = 'rgb(var(--sun))'
 const ALLOWED = 'rgb(var(--muted-dark))'
 
 const copy = {
@@ -86,8 +86,8 @@ export default function PromptDetectorControlFigure({ lang = 'en' }: { lang?: 'e
       </div>
 
       <div className="border-t border-border pt-5">
-        <div className="rounded-md bg-amber/5 px-4 py-4 font-mono text-meta leading-relaxed text-muted sm:text-sm">
-          {text.conclusionStart} <span className="text-amber">{text.conclusionStrong}</span> {text.conclusionEnd}
+        <div className="rounded-md bg-sun/5 px-4 py-4 font-mono text-meta leading-relaxed text-muted sm:text-sm">
+          {text.conclusionStart} <span className="text-sun">{text.conclusionStrong}</span> {text.conclusionEnd}
         </div>
       </div>
     </div>

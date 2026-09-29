@@ -4,8 +4,8 @@ import { motion, useTransform } from 'framer-motion'
 import { useFigureProgress } from './ScrollFigure'
 import { detectorRates, detectorResidualRisk } from './prompt-injection-defense-data'
 
-const MISSED = 'rgb(var(--amber))'
-const CAUGHT = 'rgb(var(--amber) / 0.55)'
+const MISSED = 'rgb(var(--sun))'
+const CAUGHT = 'rgb(var(--sun) / 0.55)'
 const SUPPRESSED = 'rgb(var(--muted-dark))'
 const GRID = 'rgb(var(--border))'
 const TEXT = 'rgb(var(--muted))'
@@ -40,7 +40,7 @@ function ResidualRiskPlot({ compact = false }: { compact?: boolean }) {
         <motion.rect x={x} y={y} width={missedWidth} height={barHeight} fill={MISSED} style={{ opacity: reveal }} />
         <motion.rect x={x + missedWidth} y={y} width={caughtWidth} height={barHeight} fill={CAUGHT} style={{ opacity: reveal }} />
         <motion.rect x={x + missedWidth + caughtWidth} y={y} width={suppressedWidth} height={barHeight} fill={SUPPRESSED} style={{ opacity: reveal }} />
-        <text x={compact ? x + barWidth - 5 : Math.min(158 + missedWidth + caughtWidth, 555)} y={y + 17} textAnchor={compact ? 'end' : 'start'} fill="rgb(var(--amber))" fontSize={compact ? 9 : 10}>{row.missed}/{successes} missed</text>
+        <text x={compact ? x + barWidth - 5 : Math.min(158 + missedWidth + caughtWidth, 555)} y={y + 17} textAnchor={compact ? 'end' : 'start'} fill="rgb(var(--sun))" fontSize={compact ? 9 : 10}>{row.missed}/{successes} missed</text>
       </g>
     })}
     <text x={x + barWidth / 2} y="387" textAnchor="middle" fill={TEXT} fontSize={font}>annotated outputs</text>

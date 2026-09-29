@@ -14,7 +14,9 @@ import Meta from '@/components/ui/Meta'
 import Entry from '@/components/ui/Entry'
 import Reveal from '@/components/motion/Reveal'
 import JsonLd from '@/components/JsonLd'
+import Scrim from '@/components/layout/Scrim'
 import { breadcrumbNode, graph, pageMetadata } from '@/lib/seo'
+import { content } from '@/lib/content.generated'
 
 export const metadata = pageMetadata({
   absoluteTitle: 'Resume · Kaan Hacihaliloglu, AI Engineer (CV)',
@@ -30,6 +32,8 @@ function EntryRow({ entry, delay }: { entry: ResumeEntry; delay: number }) {
       delay={delay}
       gutter={<Meta tone="date">{entry.period}</Meta>}
     >
+      {/* The world flies to this entry's scene while it is being read. */}
+      <div data-station={entry.scene ?? 'istanbul'}>
       <h3 className="font-serif text-lead font-normal text-heading">
         {entry.href ? (
           <a href={entry.href} target="_blank" rel="noopener noreferrer" className="u-link hover:text-accent">
@@ -69,6 +73,7 @@ function EntryRow({ entry, delay }: { entry: ResumeEntry; delay: number }) {
           </ul>
         </details>
       )}
+      </div>
     </Entry>
   )
 }
@@ -77,16 +82,21 @@ function EntryRow({ entry, delay }: { entry: ResumeEntry; delay: number }) {
 // the section no longer needs a hand-tuned place in a page-wide cascade.
 function Section({
   label,
+  scene,
   children,
 }: {
   label: string
+  /** For sections whose rows carry no scene of their own. */
+  scene?: string
   children: React.ReactNode
 }) {
   return (
     <>
       <Gutter className="mt-14">
         <Reveal>
-          <Meta>{label}</Meta>
+          <div data-station={scene}>
+            <Meta>{label}</Meta>
+          </div>
         </Reveal>
       </Gutter>
       {children}
@@ -97,8 +107,9 @@ function Section({
 export default function Resume() {
   return (
     <Canvas className="pb-28 pt-16 md:pt-24">
+      <Scrim window />
       <JsonLd data={graph(breadcrumbNode([{ name: 'Resume', path: '/resume' }]))} />
-      <header className="mb-10 lg:col-start-2">
+      <header data-station="istanbul" className="mb-10 lg:col-start-2">
         <Reveal>
           <div className="flex items-baseline justify-between gap-6">
             <h1 className="font-serif text-h2 font-normal text-heading">resume</h1>
@@ -107,7 +118,7 @@ export default function Resume() {
               download="KaanHacihaliloglu_Resume.pdf"
               className="u-link shrink-0 font-mono text-meta text-accent hover:text-heading"
             >
-              download pdf
+              {content.resume.pdf}
             </a>
           </div>
         </Reveal>
@@ -134,7 +145,7 @@ export default function Resume() {
         ))}
       </Section>
 
-      <Section label="skills">
+      <Section label="skills" scene="istanbul">
         {skills.map((group, i) => (
           <Entry
             key={group.label}

@@ -24,8 +24,10 @@ const ratio = (a, b) => {
   return (hi + 0.05) / (lo + 0.05)
 }
 
-// Tokens that carry text must clear WCAG AA. The rest are reported only.
-const TEXT = ['heading', 'foreground', 'muted', 'accent', 'amber']
+// Tokens that carry text must clear WCAG AA. The rest are reported only. The
+// --world-* paint is read by the WebGL globe and never set as text, so it is
+// not rated here.
+const TEXT = ['heading', 'foreground', 'muted', 'accent', 'sun', 'sky']
 const DECORATIVE = ['surface', 'border', 'muted-dark']
 const MIN = 4.5
 

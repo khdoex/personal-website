@@ -7,6 +7,8 @@ import Reveal from '@/components/motion/Reveal'
 import JsonLd from '@/components/JsonLd'
 import { SITE_URL } from '@/lib/site'
 import { PERSON_ID, breadcrumbNode, graph, pageMetadata } from '@/lib/seo'
+import { content } from '@/lib/content.generated'
+import Inline from '@/components/ui/Inline'
 
 export const metadata = pageMetadata({
   title: 'Writing',
@@ -46,12 +48,13 @@ export default async function Blog() {
         <Reveal>
           <h1 className="font-serif text-h2 font-normal text-heading">writing</h1>
         </Reveal>
-        <Reveal delay={0.08}>
-          <p className="mt-4 font-serif text-lead text-muted">
-            notes on interpretability, machine learning, and the occasional
-            detour through life.
-          </p>
-        </Reveal>
+        {content.writing.intro.map((paragraph, i) => (
+          <Reveal key={i} delay={0.08}>
+            <p className="mt-4 font-serif text-lead text-muted">
+              <Inline text={paragraph} />
+            </p>
+          </Reveal>
+        ))}
       </header>
 
       {posts.length === 0 && (

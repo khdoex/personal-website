@@ -407,7 +407,7 @@ export default function LensGame() {
         </div>
         <div className="w-full h-2 bg-surface rounded overflow-hidden flex">
           <div className="h-full bg-accent" style={{ width: `${sigmaPct}%` }} />
-          <div className="h-full bg-amber" style={{ width: `${100 - sigmaPct}%` }} />
+          <div className="h-full bg-sun" style={{ width: `${100 - sigmaPct}%` }} />
         </div>
       </div>
 
@@ -455,7 +455,7 @@ export default function LensGame() {
                   ) : (
                     <>
                       seçimin:{' '}
-                      <span className={d.chosen === 'sigma' ? 'text-accent' : 'text-amber'}>
+                      <span className={d.chosen === 'sigma' ? 'text-accent' : 'text-sun'}>
                         {imageById.get(d.chosen === 'sigma' ? d.sigma : d.fuji)?.model ??
                           LENS_LABELS[d.chosen as LensKey]}
                       </span>
@@ -474,7 +474,7 @@ export default function LensGame() {
               <figure key={r.id} className="bg-surface border border-border rounded overflow-hidden">
                 <img src={img.src} alt="" className="w-full h-24 object-cover" />
                 <figcaption className="p-2 font-mono text-[10px] leading-relaxed">
-                  <span className={img.lens === 'sigma' ? 'text-accent' : 'text-amber'}>
+                  <span className={img.lens === 'sigma' ? 'text-accent' : 'text-sun'}>
                     {img.model ?? LENS_LABELS[img.lens]}
                   </span>
                   <br />

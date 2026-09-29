@@ -3,16 +3,38 @@
 @tailwind utilities;
 
 :root {
-  /* Editorial + Instrument: near-black ground, one cold signal, amber for dates */
-  --background: 16 21 26; /* #10151a */
-  --surface: 22 28 34; /* #161c22 */
-  --border: 35 44 52; /* #232c34 */
-  --foreground: 184 196 207; /* #b8c4cf */
-  --heading: 238 243 247; /* #eef3f7 */
-  --muted: 123 138 151; /* #7b8a97 */
-  --muted-dark: 72 84 95; /* #48545f */
-  --accent: 94 196 255; /* #5ec4ff */
-  --amber: 217 142 72; /* #d98e48 */
+  /* Earth at night, seen from orbit: a dark blue ground, leaf green for
+     anything alive (links, active state), sun gold for time (dates), sky
+     blue for the cool pole of a figure. */
+  --background: 10 20 40; /* #0a1428 */
+  --surface: 15 27 49; /* #0f1b31 */
+  --border: 27 42 68; /* #1b2a44 */
+  --foreground: 197 207 219; /* #c5cfdb */
+  --heading: 244 239 227; /* #f4efe3 */
+  --muted: 135 151 173; /* #8797ad */
+  --muted-dark: 59 77 104; /* #3b4d68 */
+  --accent: 134 214 164; /* #86d6a4 */
+  --sun: 244 205 94; /* #f4cd5e */
+  --sky: 127 184 245; /* #7fb8f5 */
+
+  /* World paint. Read once by the WebGL globe (components/world), never by a
+     class and never for text: the planet is painted from the same file as
+     the page, so the two cannot drift. */
+  --world-space: 4 9 20; /* #040914 */
+  --world-ocean-deep: 5 16 38; /* #051026 */
+  --world-ocean: 14 42 84; /* #0e2a54 */
+  --world-ocean-shallow: 30 92 128; /* #1e5c80 */
+  --world-forest: 38 96 62; /* #26603e */
+  --world-meadow: 108 160 88; /* #6ca058 */
+  --world-arid: 204 164 86; /* #cca456 */
+  --world-ice: 226 232 236; /* #e2e8ec */
+  --world-city: 255 204 110; /* #ffcc6e */
+  --world-atmosphere: 96 170 255; /* #60aaff */
+  --world-dusk: 255 170 90; /* #ffaa5a */
+  --world-aurora: 110 240 168; /* #6ef0a8 */
+
+  /* One breath, shared by the canvas and the CSS. */
+  --breath: 7s;
 }
 
 html {
@@ -43,6 +65,391 @@ body::before {
 main {
   z-index: 1;
   position: relative;
+}
+
+/* ------------------------------------------------------------------ world */
+
+/* The planet behind every page (components/world). The gradients are the
+   sky without WebGL: no script, no GPU, Save-Data. The canvas covers them
+   once it has drawn. Height is the large viewport so a phone's URL bar
+   sliding away does not resize the scene. */
+.world {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100vh;
+  height: 100lvh;
+  pointer-events: none;
+  background:
+    radial-gradient(55% 45% at 80% 60%, rgb(var(--world-atmosphere) / 0.1), transparent 70%),
+    radial-gradient(40% 35% at 15% 10%, rgb(var(--world-aurora) / 0.06), transparent 70%),
+    radial-gradient(30% 30% at 88% 92%, rgb(var(--sun) / 0.05), transparent 70%),
+    rgb(var(--background));
+}
+
+/* Starts invisible; the engine fades it in on its own clock. */
+.world-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+}
+
+/* Reading pages get the plain ground: the essays' figures need it. */
+.world[data-route='hidden'] {
+  background: rgb(var(--background));
+}
+
+.world[data-route='hidden'] .world-canvas {
+  visibility: hidden;
+}
+
+/* Labels pinned to points in the scene by the engine, every frame: the
+   light on the planet, and the captions in the resume's scenes. */
+.world-labels {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.world-label {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 0;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+
+.world-label-tick {
+  position: absolute;
+  left: 6px;
+  top: -6px;
+  width: 44px;
+  height: 1px;
+  background: linear-gradient(90deg, rgb(var(--sun) / 0.9), rgb(var(--sun) / 0.15));
+  transform: rotate(-35deg);
+  transform-origin: 0 0;
+}
+
+.world-label--left .world-label-tick {
+  left: -6px;
+  transform: rotate(-145deg);
+}
+
+.world-label--left .world-label-text {
+  left: auto;
+  right: 44px;
+}
+
+.world-label-text {
+  position: absolute;
+  left: 44px;
+  top: -44px;
+  white-space: nowrap;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.8125rem;
+  letter-spacing: 0.04em;
+  color: rgb(var(--heading));
+  text-shadow: 0 0 12px rgb(var(--background));
+}
+
+/* Captions read quieter than the light's label: a figure's annotation. */
+.world-caption .world-label-tick {
+  background: linear-gradient(90deg, rgb(var(--muted) / 0.9), rgb(var(--muted) / 0.1));
+}
+
+.world-caption .world-label-text {
+  color: rgb(var(--muted));
+}
+
+.world-answer .world-label-tick {
+  background: linear-gradient(90deg, rgb(var(--accent) / 0.9), rgb(var(--accent) / 0.1));
+}
+
+.world-answer .world-label-text {
+  color: rgb(var(--accent));
+}
+
+/* Centred on their point, no tick: the annotations inside the model scene. */
+.world-center .world-label-tick {
+  display: none;
+}
+
+.world-center .world-label-text {
+  left: 0;
+  top: 0;
+  transform: translate(-50%, -50%);
+}
+
+/* The words of the prompt, centred under their residual streams. */
+.world-token {
+  position: fixed;
+  left: 0;
+  top: 0;
+  will-change: transform, opacity;
+}
+
+.world-token > span {
+  position: absolute;
+  transform: translate(-50%, 0);
+  white-space: nowrap;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.8125rem;
+  color: rgb(var(--sky));
+  text-shadow: 0 0 10px rgb(var(--background));
+}
+
+/* --------------------------------------------------------------- the ride */
+
+/* While <html data-intro="play"> (set by components/world/gate.ts) the page
+   waits, invisible, for the ride to land. Opacity rather than display, so it
+   is laid out, measured and readable by assistive tech the whole time. */
+.site-nav,
+main,
+.site-footer {
+  transition: opacity 0.9s ease;
+}
+
+html[data-intro='play'] body {
+  overflow: hidden;
+}
+
+html[data-intro='play'] .site-nav,
+html[data-intro='play'] main,
+html[data-intro='play'] .site-footer {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.intro-hud {
+  display: none;
+}
+
+html[data-intro='play'] .intro-hud {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 24px;
+  pointer-events: none;
+  /* A scrim at the top and bottom edges, so the instruments stay legible
+     when the tube lights up behind them. */
+  background:
+    linear-gradient(to bottom, rgb(var(--world-space) / 0.7), transparent 18%),
+    linear-gradient(to top, rgb(var(--world-space) / 0.85), transparent 32%);
+}
+
+@media (min-width: 768px) {
+  html[data-intro='play'] .intro-hud {
+    padding: 32px 40px;
+  }
+}
+
+.intro-top,
+.intro-bottom {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.intro-top {
+  align-items: center;
+}
+
+.intro-bottom {
+  align-items: flex-end;
+}
+
+.intro-meter {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+
+.intro-percent {
+  font-size: clamp(2.75rem, 7.5vw, 5.75rem);
+  line-height: 1;
+  font-weight: 300;
+  letter-spacing: -0.02em;
+}
+
+.intro-bar {
+  position: relative;
+  display: block;
+  width: min(320px, 58vw);
+  height: 1px;
+  overflow: hidden;
+  background: rgb(var(--border));
+}
+
+.intro-bar > span {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgb(var(--sky)), rgb(var(--accent)), rgb(var(--sun)));
+  transform-origin: left;
+  transition: transform 0.15s linear;
+}
+
+.intro-line {
+  animation: line-in 0.5s ease both;
+}
+
+@keyframes line-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.intro-skip {
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.intro-kbd {
+  border: 1px solid rgb(var(--border));
+  border-radius: 4px;
+  padding: 0 6px;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.6875rem;
+  line-height: 1.6;
+  color: rgb(var(--muted));
+}
+
+/* Whatever carries .arrive rises in once the ride has landed, or at once on
+   any visit without one. --i staggers siblings. */
+@keyframes arrive {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: blur(0);
+  }
+}
+
+html:not([data-intro='play']) .arrive {
+  animation: arrive 1.1s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  animation-delay: calc(var(--i, 0) * 110ms + 120ms);
+}
+
+html[data-intro='play'] .arrive {
+  opacity: 0;
+}
+
+/* ------------------------------------------------------------ the breath */
+
+/* Seven seconds, in and out: the same period the globe's lights and air
+   breathe on. Only small marks breathe; text never does. */
+@keyframes breathe {
+  0%,
+  100% {
+    transform: scale(0.78);
+    opacity: 0.55;
+  }
+  50% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.breathe {
+  animation: breathe var(--breath) ease-in-out infinite;
+}
+
+.dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  flex: none;
+  border-radius: 9999px;
+  background: currentColor;
+  box-shadow: 0 0 12px currentColor;
+}
+
+@keyframes scroll-line {
+  0% {
+    transform: scaleY(0);
+    opacity: 0;
+  }
+  45% {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scaleY(1) translateY(24px);
+    opacity: 0;
+  }
+}
+
+.scroll-line {
+  display: block;
+  width: 1px;
+  height: 44px;
+  transform-origin: top;
+  background: linear-gradient(rgb(var(--heading) / 0), rgb(var(--heading) / 0.75));
+  animation: scroll-line var(--breath) ease-in-out infinite;
+}
+
+/* components/layout/Scrim.tsx. Fixed under the page's text, over the world. */
+.scrim {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: rgb(var(--background) / 0.64);
+}
+
+.scrim--window {
+  background: linear-gradient(
+    180deg,
+    rgb(var(--background) / 0.15) 0%,
+    rgb(var(--background) / 0.15) 36%,
+    rgb(var(--background) / 0.8) 52%,
+    rgb(var(--background) / 0.84) 100%
+  );
+}
+
+@media (min-width: 1024px) {
+  .scrim,
+  .scrim--window {
+    background: linear-gradient(
+      90deg,
+      rgb(var(--background) / 0.9) 0%,
+      rgb(var(--background) / 0.78) 48%,
+      rgb(var(--background) / 0) 74%
+    );
+  }
+}
+
+/* A panel that lets the planet through, for text that has to sit over it.
+   In the components layer so a variant applies it: max-lg:glass puts the
+   panel under a section on small screens only, where the planet and the
+   text have to share the width. */
+@layer components {
+  .glass {
+    background: rgb(var(--background) / 0.58);
+    border: 1px solid rgb(var(--border) / 0.85);
+    -webkit-backdrop-filter: blur(14px) saturate(1.15);
+    backdrop-filter: blur(14px) saturate(1.15);
+  }
 }
 
 /* Scrollbar */
@@ -405,6 +812,17 @@ details[open] > summary .if-closed {
 
   .reveal {
     opacity: 1;
+  }
+
+  .breathe,
+  .scroll-line,
+  .arrive {
+    animation: none !important;
+    opacity: 1;
+  }
+
+  .replay {
+    display: none;
   }
 
   /* Reveal ships its from-state in the server markup and relies on the

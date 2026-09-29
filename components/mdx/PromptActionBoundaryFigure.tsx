@@ -6,9 +6,9 @@ const copy = {
     application: 'application',
     applicationResult: 'decides what is allowed',
     layers: [
-      { number: '01', title: 'model defense', question: 'Can the model keep the trusted task ahead of the injected one?', result: 'reduces bad proposals', color: 'rgb(var(--accent) / 0.7)' },
-      { number: '02', title: 'detector', question: 'Does this input or internal state look suspicious?', result: 'adds a warning signal', color: 'rgb(var(--amber))' },
-      { number: '03', title: 'action authorization', question: 'Did the user authorize this tool, recipient, and data flow?', result: 'decides what may happen', color: 'rgb(var(--accent))' },
+      { number: '01', title: 'model defense', question: 'Can the model keep the trusted task ahead of the injected one?', result: 'reduces bad proposals', color: 'rgb(var(--sky) / 0.7)' },
+      { number: '02', title: 'detector', question: 'Does this input or internal state look suspicious?', result: 'adds a warning signal', color: 'rgb(var(--sun))' },
+      { number: '03', title: 'action authorization', question: 'Did the user authorize this tool, recipient, and data flow?', result: 'decides what may happen', color: 'rgb(var(--sky))' },
     ],
   },
   tr: {
@@ -18,9 +18,9 @@ const copy = {
     application: 'uygulama',
     applicationResult: 'neye izin verildiğine karar verir',
     layers: [
-      { number: '01', title: 'model savunması', question: 'Model güvenilir görevi enjekte edilen talimatın önünde tutabiliyor mu?', result: 'kötü önerileri azaltır', color: 'rgb(var(--accent) / 0.7)' },
-      { number: '02', title: 'detector', question: 'Bu input veya internal state şüpheli görünüyor mu?', result: 'uyarı sinyali ekler', color: 'rgb(var(--amber))' },
-      { number: '03', title: 'action authorization', question: "Kullanıcı bu tool'u, alıcıyı ve data flow'u yetkilendirdi mi?", result: 'ne olabileceğine karar verir', color: 'rgb(var(--accent))' },
+      { number: '01', title: 'model savunması', question: 'Model güvenilir görevi enjekte edilen talimatın önünde tutabiliyor mu?', result: 'kötü önerileri azaltır', color: 'rgb(var(--sky) / 0.7)' },
+      { number: '02', title: 'detector', question: 'Bu input veya internal state şüpheli görünüyor mu?', result: 'uyarı sinyali ekler', color: 'rgb(var(--sun))' },
+      { number: '03', title: 'action authorization', question: "Kullanıcı bu tool'u, alıcıyı ve data flow'u yetkilendirdi mi?", result: 'ne olabileceğine karar verir', color: 'rgb(var(--sky))' },
     ],
   },
 } as const
@@ -51,8 +51,8 @@ export default function PromptActionBoundaryFigure({ lang = 'en' }: { lang?: 'en
           <div className="font-mono text-tick uppercase tracking-[0.14em] text-muted">{text.model}</div>
           <div className="mt-2 font-mono text-base text-heading">{text.modelResult}</div>
         </div>
-        <div className="bg-accent/5 p-5">
-          <div className="font-mono text-tick uppercase tracking-[0.14em] text-accent">{text.application}</div>
+        <div className="bg-sky/5 p-5">
+          <div className="font-mono text-tick uppercase tracking-[0.14em] text-sky">{text.application}</div>
           <div className="mt-2 font-mono text-base text-heading">{text.applicationResult}</div>
         </div>
       </div>

@@ -7,7 +7,10 @@ import Meta from '@/components/ui/Meta'
 import Entry from '@/components/ui/Entry'
 import Reveal from '@/components/motion/Reveal'
 import JsonLd from '@/components/JsonLd'
+import Scrim from '@/components/layout/Scrim'
 import { breadcrumbNode, graph, pageMetadata } from '@/lib/seo'
+import { content } from '@/lib/content.generated'
+import Inline from '@/components/ui/Inline'
 
 export const metadata = pageMetadata({
   title: 'Projects',
@@ -24,7 +27,9 @@ function ProjectBody({ project }: { project: Project }) {
   return (
     <>
       <h2 className="font-serif text-h3 font-normal text-heading">{project.title}</h2>
-      <p className="mt-3 font-serif text-base text-foreground">{project.description}</p>
+      <p className="mt-3 font-serif text-base text-foreground">
+        <Inline text={project.description} />
+      </p>
       <ul className="mt-4 flex flex-wrap gap-x-4 gap-y-1">
         {project.tags.map((tag) => (
           <li key={tag}>
@@ -74,17 +79,19 @@ export default function Projects() {
 
   return (
     <Canvas className="pb-28 pt-16 md:pt-24">
+      <Scrim />
       <JsonLd data={graph(breadcrumbNode([{ name: 'Projects', path: '/projects' }]))} />
       <header className="mb-16 lg:col-start-2">
         <Reveal>
           <h1 className="font-serif text-h2 font-normal text-heading">projects</h1>
         </Reveal>
-        <Reveal delay={0.08}>
-          <p className="mt-4 font-serif text-lead text-muted">
-            mostly the thesis these days: where refusal lives inside llms. the
-            older ml projects moved down to earlier work, they had their time.
-          </p>
-        </Reveal>
+        {content.projects.intro.map((paragraph, i) => (
+          <Reveal key={i} delay={0.08}>
+            <p className="mt-4 font-serif text-lead text-muted">
+              <Inline text={paragraph} />
+            </p>
+          </Reveal>
+        ))}
       </header>
 
       {current.map((project, i) => (

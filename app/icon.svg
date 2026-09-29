@@ -1,8 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <!-- kh set in JetBrains Mono, outlines converted to paths so the mark never
-       depends on a font being available. One colour: the accent on the ground. -->
-  <rect width="64" height="64" rx="12" fill="#10151a"/>
-  <g fill="#5ec4ff" transform="translate(5.1183 48.2852) scale(0.04462 -0.04462)">
+       depends on a font being available. One colour: the sun on the ground, the
+       way a city reads from orbit at night. -->
+  <rect width="64" height="64" rx="12" fill="#0a1428"/>
+  <g fill="#f4cd5e" transform="translate(5.1183 48.2852) scale(0.04462 -0.04462)">
     <path transform="translate(0 0)" d="M87 0V730H195V329H292L438 550H560L385 286L563 0H439L292 236H195V0Z"/>
     <path transform="translate(600 0)" d="M84 0V730H192V550L191 445H217L191 420Q191 486 230.0 523.0Q269 560 338 560Q420 560 469.0 507.5Q518 455 518 366V0H410V354Q410 408 381.0 438.0Q352 468 302 468Q251 468 221.5 436.5Q192 405 192 347V0Z"/>
   </g>

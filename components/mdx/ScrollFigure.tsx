@@ -74,7 +74,7 @@ export default function ScrollFigure({
       </div>
       <div className="mt-3 flex items-start justify-between gap-5 font-mono text-meta">
         <figcaption className="max-w-3xl text-muted">
-          {n !== undefined && <span className="text-accent">{copy.figure} {n}</span>}
+          {n !== undefined && <span className="text-sky">{copy.figure} {n}</span>}
           {n !== undefined && ' · '}
           {caption}
         </figcaption>
@@ -99,7 +99,7 @@ export default function ScrollFigure({
         <div className="flex h-full min-h-0 flex-col">
           <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border bg-surface px-4 py-3">
             <p className="m-0 font-mono text-meta text-muted">
-              {n !== undefined && <span className="text-accent">{copy.figure} {n} · </span>}
+              {n !== undefined && <span className="text-sky">{copy.figure} {n} · </span>}
               {caption}
             </p>
             <div className="ml-auto flex shrink-0 items-center gap-2 font-mono text-meta">

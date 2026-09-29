@@ -4,7 +4,7 @@ import { motion, useTransform } from 'framer-motion'
 import { useFigureProgress } from './ScrollFigure'
 import { behaviorGeometryJoin } from './prompt-injection-defense-data'
 
-const RED = 'rgb(var(--amber))'
+const RED = 'rgb(var(--sun))'
 const ZERO = 'rgb(var(--muted-dark))'
 const TEXT = 'rgb(var(--muted))'
 const HEADING = 'rgb(var(--heading))'

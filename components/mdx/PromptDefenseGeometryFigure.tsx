@@ -4,8 +4,8 @@ import { motion, useTransform } from 'framer-motion'
 import { useFigureProgress } from './ScrollFigure'
 import { displacementRetention } from './prompt-injection-defense-data'
 
-const RED = 'rgb(var(--amber))'
-const BLUE = 'rgb(var(--accent))'
+const RED = 'rgb(var(--sun))'
+const BLUE = 'rgb(var(--sky))'
 const GRID = 'rgb(var(--border))'
 const TEXT = 'rgb(var(--muted))'
 
@@ -33,7 +33,7 @@ function Plot({ compact = false }: { compact?: boolean }) {
   const font = compact ? 10 : 11
 
   return <svg viewBox={`0 0 ${width} ${height}`} className="w-full" role="img" aria-label="Residual displacement magnitude retained by layer. XML plus reminder remains near sixty percent of baseline in the registered late-layer window.">
-    <rect x={sx(18)} y={y} width={sx(27) - sx(18)} height={h} fill="rgb(var(--amber))" opacity="0.07" />
+    <rect x={sx(18)} y={y} width={sx(27) - sx(18)} height={h} fill="rgb(var(--sun))" opacity="0.07" />
     <text x={(sx(18) + sx(27)) / 2} y={y + 13} textAnchor="middle" fill="rgb(var(--muted))" fontSize={font - 1}>registered measurement window</text>
     <text x={(sx(18) + sx(27)) / 2} y={y + 29} textAnchor="middle" fill={RED} fontSize={font}>average: 62.5% of baseline</text>
     {[0, 0.5, 1].map((tick) => <g key={tick}>

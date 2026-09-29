@@ -3,8 +3,8 @@
 import { motion } from 'framer-motion'
 import { useFigureProgress } from './ScrollFigure'
 
-const BLUE = 'rgb(var(--accent))'
-const RED = 'rgb(var(--amber))'
+const BLUE = 'rgb(var(--sky))'
+const RED = 'rgb(var(--sun))'
 const GRID = 'rgb(var(--border))'
 const TEXT = 'rgb(var(--muted))'
 const HEADING = 'rgb(var(--heading))'
@@ -89,15 +89,15 @@ export default function PromptReadoutCausalityFigure({ lang = 'en' }: { lang?: '
           <div className="text-tick uppercase tracking-[0.13em] text-muted">{text.defense}</div>
           <div className="mt-3 flex items-baseline justify-between gap-4">
             <span className="text-meta text-muted">{text.sourceEffect}</span>
-            <span className="text-base text-amber">2.733 → 1.475</span>
+            <span className="text-base text-sun">2.733 → 1.475</span>
           </div>
-          <div className="mt-2 text-right text-tick text-amber">{text.smaller}</div>
+          <div className="mt-2 text-right text-tick text-sun">{text.smaller}</div>
         </div>
         <div className="bg-background p-5 font-mono">
           <div className="text-tick uppercase tracking-[0.13em] text-muted">{text.readout}</div>
           <div className="mt-3 flex items-baseline justify-between gap-4">
             <span className="text-meta text-muted">{text.baseToFull}</span>
-            <span className="text-base text-accent">0.990 → 0.982</span>
+            <span className="text-base text-sky">0.990 → 0.982</span>
           </div>
           <div className="mt-2 text-right text-tick text-muted">{text.null}</div>
         </div>
@@ -108,23 +108,23 @@ export default function PromptReadoutCausalityFigure({ lang = 'en' }: { lang?: '
           <div className="font-mono text-sm text-heading">{text.repeated}</div>
           <div className="mt-2 font-mono text-tick uppercase tracking-[0.14em] text-muted">{text.scoreToMargin}</div>
 
-          <div className="mt-7 rounded-lg border border-accent/25 bg-accent/5 p-5">
+          <div className="mt-7 rounded-lg border border-sky/25 bg-sky/5 p-5">
             <div className="grid grid-cols-2 gap-5 font-mono">
               <div>
                 <div className="text-tick text-muted">{text.pilot}</div>
-                <div className="mt-2 text-lead text-accent">+0.205</div>
+                <div className="mt-2 text-lead text-sky">+0.205</div>
               </div>
-              <div className="border-l border-accent/20 pl-5">
+              <div className="border-l border-sky/20 pl-5">
                 <div className="text-tick text-muted">{text.unseen}</div>
-                <div className="mt-2 text-lead text-accent">+0.215</div>
+                <div className="mt-2 text-lead text-sky">+0.215</div>
               </div>
             </div>
-            <div className="mt-4 h-px bg-gradient-to-r from-transparent via-accent to-accent" />
+            <div className="mt-4 h-px bg-gradient-to-r from-transparent via-sky to-sky" />
             <div className="mt-2 text-right font-mono text-tick text-muted">{text.sameSlope}</div>
           </div>
 
           <div className="mt-5 rounded-md border border-border px-4 py-3 font-mono text-meta leading-relaxed text-muted">
-            {text.prediction} <span className="text-accent">{text.aboveZero}</span>
+            {text.prediction} <span className="text-sky">{text.aboveZero}</span>
           </div>
         </div>
 
@@ -163,10 +163,10 @@ export default function PromptReadoutCausalityFigure({ lang = 'en' }: { lang?: '
                   <div key={value}>
                     <div className="flex items-baseline justify-between gap-4 font-mono">
                       <span className="text-meta text-muted">α {value}</span>
-                      <span className="text-base text-amber">{effect.toFixed(4)}</span>
+                      <span className="text-base text-sun">{effect.toFixed(4)}</span>
                     </div>
                     <div className="mt-2 h-2 overflow-hidden rounded-full bg-border/60">
-                      <div className="h-full rounded-full bg-amber" style={{ width: `${Math.abs(effect) / 0.1 * 100}%` }} />
+                      <div className="h-full rounded-full bg-sun" style={{ width: `${Math.abs(effect) / 0.1 * 100}%` }} />
                     </div>
                     {value === 1 && <div className="mt-2 font-mono text-tick text-muted">95% interval [−0.0749, −0.0203]</div>}
                   </div>
@@ -175,7 +175,7 @@ export default function PromptReadoutCausalityFigure({ lang = 'en' }: { lang?: '
             </div>
           </div>
 
-          <div className="rounded-md border border-amber/30 bg-amber/5 px-4 py-3 font-mono text-meta text-amber">
+          <div className="rounded-md border border-sun/30 bg-sun/5 px-4 py-3 font-mono text-meta text-sun">
             {text.failed}
           </div>
         </div>
@@ -188,11 +188,11 @@ export default function PromptReadoutCausalityFigure({ lang = 'en' }: { lang?: '
         </div>
         <div className="bg-background p-4">
           <div className="font-mono text-tick uppercase tracking-[0.13em] text-muted">{text.swap}</div>
-          <div className="mt-2 font-mono text-meta leading-relaxed text-amber">{text.swapResult}</div>
+          <div className="mt-2 font-mono text-meta leading-relaxed text-sun">{text.swapResult}</div>
         </div>
         <div className="bg-background p-4">
           <div className="font-mono text-tick uppercase tracking-[0.13em] text-muted">{text.fullState}</div>
-          <div className="mt-2 font-mono text-meta leading-relaxed text-amber">{text.fullStateResult}</div>
+          <div className="mt-2 font-mono text-meta leading-relaxed text-sun">{text.fullStateResult}</div>
         </div>
       </div>
 

@@ -3,8 +3,8 @@
 import { motion } from 'framer-motion'
 import { useFigureProgress } from './ScrollFigure'
 
-const BLUE = 'rgb(var(--accent))'
-const AMBER = 'rgb(var(--amber))'
+const BLUE = 'rgb(var(--sky))'
+const AMBER = 'rgb(var(--sun))'
 const GRID = 'rgb(var(--border))'
 const TEXT = 'rgb(var(--muted))'
 const HEADING = 'rgb(var(--heading))'
@@ -97,17 +97,17 @@ export default function PromptDefenseReadoutFigure() {
             {scales.map((scale, index) => (
               <div key={scale} className="rounded-md border border-border bg-surface/25 p-3 text-center font-mono">
                 <div className="text-tick uppercase tracking-[0.1em] text-muted">{scale === 0 ? 'base' : scale === 0.5 ? 'half' : 'full'}</div>
-                <div className="mt-3 text-base text-amber">+{unauthorized[index].toFixed(3)}</div>
-                <div className="mt-1 text-meta text-accent">+{authorized[index].toFixed(3)}</div>
+                <div className="mt-3 text-base text-sun">+{unauthorized[index].toFixed(3)}</div>
+                <div className="mt-1 text-meta text-sky">+{authorized[index].toFixed(3)}</div>
               </div>
             ))}
           </div>
           <div className="mt-3 grid grid-cols-2 gap-3 font-mono text-tick text-muted">
-            <span><span className="mr-1.5 inline-block h-2 w-2 rounded-full bg-amber" />unauthorized</span>
-            <span><span className="mr-1.5 inline-block h-2 w-2 rounded-full bg-accent" />authorized</span>
+            <span><span className="mr-1.5 inline-block h-2 w-2 rounded-full bg-sun" />unauthorized</span>
+            <span><span className="mr-1.5 inline-block h-2 w-2 rounded-full bg-sky" />authorized</span>
           </div>
-          <div className="mt-4 rounded-md bg-amber/5 px-4 py-3 font-mono text-meta leading-relaxed text-muted">
-            unauthorized shift: <span className="text-amber">+2.733 → +1.475</span> at full defense
+          <div className="mt-4 rounded-md bg-sun/5 px-4 py-3 font-mono text-meta leading-relaxed text-muted">
+            unauthorized shift: <span className="text-sun">+2.733 → +1.475</span> at full defense
           </div>
         </div>
 
@@ -115,9 +115,9 @@ export default function PromptDefenseReadoutFigure() {
           <div className="font-mono text-sm text-heading">can the frozen direction still read the difference?</div>
           <div className="mt-4 grid grid-cols-3 gap-2">
             {scales.map((scale, index) => (
-              <div key={scale} className="rounded-md border border-accent/25 bg-accent/5 p-3 text-center font-mono">
+              <div key={scale} className="rounded-md border border-sky/25 bg-sky/5 p-3 text-center font-mono">
                 <div className="text-tick uppercase tracking-[0.1em] text-muted">{scale === 0 ? 'base' : scale === 0.5 ? 'half' : 'full'}</div>
-                <div className="mt-3 text-base text-accent">{auc[index].toFixed(3)}</div>
+                <div className="mt-3 text-base text-sky">{auc[index].toFixed(3)}</div>
               </div>
             ))}
           </div>

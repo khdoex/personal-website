@@ -33,7 +33,7 @@ function Bar({
         className="h-2.5 rounded-sm mt-1"
         style={{
           width,
-          background: 'linear-gradient(90deg, rgb(var(--accent)), rgb(var(--accent) / 0.35))',
+          background: 'linear-gradient(90deg, rgb(var(--sky)), rgb(var(--sky) / 0.35))',
         }}
       />
     </div>

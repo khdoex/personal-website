@@ -19,7 +19,11 @@ const ROUTES = {
 const WIDTHS = [1440, 1024, 900, 768, 375]
 
 mkdirSync(OUT, { recursive: true })
-const browser = await chromium.launch()
+// CHROMIUM_PATH points at a system Chromium where Playwright's own download
+// is unavailable (sandboxed CI, cloud sessions).
+const browser = await chromium.launch(
+  process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {}
+)
 let failed = false
 
 for (const [name, path] of Object.entries(ROUTES)) {
