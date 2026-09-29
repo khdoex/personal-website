@@ -10,12 +10,14 @@ This site presents:
 - Blog posts (Markdown and MDX)
 - Resume viewer and PDF download
 
-Behind the pages is one 3D world (three.js). The first visit to the home page
-opens with a ride in from deep space through a tube that doubles as the loading
-bar, landing on a planet painted in the site's palette. Every page after that is
-a camera position around it, and the resume flies through a scene per entry:
-Istanbul, Padova, the physics years (Saturn and a pair of black holes), the
-interpretability years (a transformer and the refusal direction).
+Behind the pages is one 3D world (three.js): Istanbul at night. The first visit
+to the home page opens with a ride in from deep space through a tube that
+doubles as the loading bar, past the planet, and down through the clouds into
+the city. Every page after that is a view of it (the old city's skyline at
+dusk, the Bosphorus Bridge, Galata, the Maiden's Tower, dawn over Asia), and
+the resume flies to a scene per entry: Istanbul, Padova's Prato della Valle,
+and up above the city the physics years (Saturn and a pair of black holes) and
+the interpretability years (a transformer and the refusal direction).
 
 ## Tech Stack
 
@@ -60,7 +62,8 @@ interpretability years (a transformer and the refusal direction).
 - `components/` — shared UI (navigation, footer)
 - `components/world/` — the 3D world: `World.tsx` (mounted once in the layout),
   `gate.ts` (decides before first paint whether the ride plays), and the engine
-  in `engine/` (planet, sky, tube, scenes, camera shots)
+  in `engine/` (the ride's tube and planet, the city in `engine/city/`, the
+  resume's scenes in space, camera shots)
 - `lib/posts.ts` — blog loading/parsing utilities
 - `lib/resume.ts`, `lib/projects.ts`, `lib/currently.ts` — typed views of `content/site.md`
 - `posts/` — markdown blog content
@@ -85,8 +88,7 @@ Configured for Cloudflare deployment via OpenNext and Wrangler.
 
 ## Notes
 
-The visual language is the Earth at night seen from orbit: a dark blue ground,
-leaf green for what is alive, sun gold for time and city lights, sky blue for
-figures. `docs/design-system.md` records every rule and the reason for it,
+The visual language is Istanbul at night: a dark blue ground, leaf green for
+what is alive, sun gold for time and city lights, sky blue for figures. `docs/design-system.md` records every rule and the reason for it,
 including how the world stays out of the way of reading: blog posts have no
 world at all, and every page works without JavaScript or WebGL.

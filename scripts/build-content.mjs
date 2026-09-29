@@ -46,7 +46,7 @@ const SCHEMA = {
   },
   'not-found': { keys: ['title'], body: true },
   world: {
-    keys: ['istanbul', 'padova', 'saturn', 'black-hole', 'transformer', 'refusal', 'harmful', 'harmless', 'prompt', 'answer'],
+    keys: ['saturn', 'black-hole', 'transformer', 'refusal', 'harmful', 'harmless', 'prompt', 'answer'],
     body: false,
   },
   navigation: { keys: ['home', 'blog', 'projects', 'about', 'resume'], body: false },
@@ -365,7 +365,6 @@ function build(sections) {
     },
     notFound: { title: need(notFound, 'title'), body: paras(notFound) },
     world: {
-      places: { istanbul: need(get('world'), 'istanbul'), padova: need(get('world'), 'padova') },
       captions: {
         saturn: need(get('world'), 'saturn'),
         blackHole: need(get('world'), 'black-hole'),

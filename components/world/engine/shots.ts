@@ -1,41 +1,38 @@
+import { ISTANBUL_AT, PADOVA_AT } from './city/common'
+
 // Where the camera stands for each part of the site. A shot is a handful of
 // numbers; the director blends between them as the page scrolls or the route
-// changes, so moving through the site reads as flying around one planet.
+// changes, so moving through the site reads as one flight around Istanbul,
+// from dusk over the old city to dawn over Asia.
 //
-// Units: the planet has radius 1. Angles are degrees. The sun sits at
-// azimuth -138, latitude 16 (see earth.ts), so a camera at azimuth -63 sees
-// the day side on its left and the night side, with the cities lit, on its
-// right.
+// Units: about ten metres. The city's frame has +x east, +z south, y up,
+// and its ground at ISTANBUL_AT. The camera circles a centre: at lon 0 it
+// stands east of it looking west, at lon -90 south of it looking north.
 
 export interface Shot {
-  /** What the camera circles: the planet at the origin, or a scene out in space. */
+  /** What the camera looks at, in world space. */
   cx: number
   cy: number
   cz: number
   /** Distance from that centre. */
   dist: number
-  /** Camera latitude and azimuth around the planet. */
+  /** Camera elevation and azimuth around the centre, in degrees. */
   lat: number
   lon: number
-  /** Turns the view off the planet's centre: up, sideways, and around. */
+  /** Turns the view off the centre: up, sideways, and around. */
   pitch: number
   yaw: number
   roll: number
   fov: number
-  /** Lens shift as a fraction of the viewport; +x moves the planet right, +y up. */
+  /** Lens shift as a fraction of the viewport; +x moves the scene right, +y up. */
   shiftX: number
   shiftY: number
-  /** 0 lets the planet turn on its own; 1 turns Istanbul to face the camera... */
-  face: number
-  /** ...this many degrees east of the camera's meridian. */
-  faceOffset: number
-  orbits: number
-  sun: number
-  beacon: number
-  aurora: number
-  /** Where the light on the planet is: 0 Istanbul, 1 Padova, in between on the way. */
-  place: number
-  /** How present the resume's two scenes out in space are, 0..1. */
+  /** The hour: a sunset glowing in the west, and a sunrise in the east with the lights going out. */
+  dusk: number
+  dawn: number
+  /** How thick the air is, 1 as usual. Views from high up want less. */
+  haze: number
+  /** How present the resume's two scenes up in space are, 0..1. */
   physics: number
   llm: number
   /** Opacity of the whole canvas, for pages where text sits over it. */
@@ -44,26 +41,28 @@ export interface Shot {
 
 export type ShotSpec = Shot & { portrait?: Partial<Shot> }
 
+const I = ISTANBUL_AT
+const P = PADOVA_AT
+
+/** A point in Istanbul, in the city's own frame. */
+const city = (x: number, y: number, z: number) => ({ cx: I.x + x, cy: I.y + y, cz: I.z + z })
+/** A point in Padova, in its own frame. */
+const padova = (x: number, y: number, z: number) => ({ cx: P.x + x, cy: P.y + y, cz: P.z + z })
+
 const base: Shot = {
-  cx: 0,
-  cy: 0,
-  cz: 0,
-  dist: 4.75,
-  lat: 14,
-  lon: -63,
+  ...city(0, 0, 0),
+  dist: 110,
+  lat: 4,
+  lon: 0,
   pitch: 0,
   yaw: 0,
-  roll: -8,
-  fov: 34,
-  shiftX: 0.22,
+  roll: 0,
+  fov: 40,
+  shiftX: 0,
   shiftY: 0,
-  face: 1,
-  faceOffset: 22,
-  orbits: 0.25,
-  sun: 0,
-  beacon: 1,
-  aurora: 1,
-  place: 0,
+  dusk: 0,
+  dawn: 0,
+  haze: 1,
   physics: 0,
   llm: 0,
   canvas: 1,
@@ -71,95 +70,92 @@ const base: Shot = {
 
 const shot = (s: Partial<Shot>, portrait?: Partial<Shot>): ShotSpec => ({ ...base, ...s, portrait })
 
-/** The home page, one shot per section, top to bottom. */
-export const HOME: Record<string, ShotSpec> = {
-  hero: shot({}, { dist: 5.4, fov: 40, shiftX: 0, shiftY: -0.42, roll: -4 }),
-  currently: shot(
-    { dist: 5.6, lat: 30, lon: -20, roll: 6, shiftX: -0.23, shiftY: 0.02, face: 0, orbits: 1, beacon: 0.6 },
-    { dist: 6.4, fov: 40, shiftX: 0, shiftY: 0.3 }
-  ),
-  about: shot(
-    // Down to the horizon over Istanbul at night, the sun just behind the edge.
-    { dist: 1.75, lat: 10, lon: 22, pitch: 42, roll: -3, fov: 42, shiftX: 0, face: 1, faceOffset: 4, orbits: 0 },
-    { pitch: 46, fov: 50 }
-  ),
-  resume: shot(
-    // The other side of the world in daylight: the Americas, green and gold.
-    { dist: 4.5, lat: 6, lon: -100, roll: 9, shiftX: -0.26, face: 1, faceOffset: 104, orbits: 0.2, beacon: 0 },
-    { dist: 4.4, fov: 40, shiftX: 0, shiftY: 0.3 }
-  ),
-  writing: shot(
-    { dist: 8.5, lat: 6, lon: 140, roll: -14, shiftX: 0.3, shiftY: 0.2, face: 0, orbits: 0.15, beacon: 0.3 },
-    { dist: 10, fov: 40, shiftX: 0.2, shiftY: 0.32 }
-  ),
-  contact: shot(
-    // Straight across from the sun (azimuth -138 + 180). From 1.8 radii the
-    // planet's edge is 34 degrees off its centre; the sun is 16 degrees up,
-    // so with the camera 18 degrees up the sun sits right on the edge. The
-    // pitch then puts that edge below the text.
-    { dist: 1.8, lat: 18, lon: 41.7, pitch: 39, roll: 0, fov: 44, shiftX: 0, face: 0, orbits: 0, sun: 1, beacon: 0.5 },
-    { pitch: 42, fov: 52 }
-  ),
+// The views, named so pages can share them.
+const V = {
+  /** From the water off Salacak, west over the old city: Topkapı, Hagia Sophia, the Blue Mosque, Süleymaniye. */
+  skyline: { ...city(-34, 8, -8), dist: 120, lat: -1.8, lon: 4, fov: 30 },
+  /** Low over the water, north up the Bosphorus to the bridge and its lights. */
+  bridge: { ...city(62, 6, -250), dist: 160, lat: -1, lon: -97, fov: 28 },
+  /** From the Golden Horn up to Galata, the tower above the roofs. */
+  galata: { ...city(-28, 12, -96), dist: 60, lat: -5, lon: -76, fov: 36 },
+  /** Close by the Maiden's Tower on its rock, the lamp turning. */
+  maiden: { ...city(80, 3.5, 10), dist: 34, lat: 3, lon: 196, fov: 36 },
+  /** From the gallery of the Galata Tower, over the Golden Horn to Süleymaniye on its hill. */
+  horn: { ...city(-92, 6, -22), dist: 97, lat: 8.3, lon: 45, fov: 40, haze: 0.8 },
+  /** From the shore of the Sea of Marmara up to the Blue Mosque's six minarets, Hagia Sophia behind. */
+  mosque: { ...city(-30, 9, 12), dist: 80, lat: 1, lon: -76, fov: 34 },
+  /** From the mouth of the Golden Horn, east to Üsküdar and Çamlıca as the sun comes up. */
+  sunrise: { ...city(150, 10, -40), dist: 150, lat: 1, lon: 178, fov: 34, haze: 0.6 },
 }
+
+/** The home page, one shot per section, top to bottom: one night, dusk to dawn. */
+export const HOME: Record<string, ShotSpec> = {
+  hero: shot({ ...V.skyline, shiftX: 0.2, shiftY: -0.1, dusk: 1 }, { dist: 150, fov: 44, shiftX: 0.06, shiftY: -0.26 }),
+  currently: shot({ ...V.bridge, shiftX: -0.2, dusk: 0.3 }, { dist: 120, fov: 50, shiftX: 0, shiftY: 0.26 }),
+  about: shot({ ...V.galata, shiftX: 0.2 }, { dist: 74, fov: 50, shiftX: 0, shiftY: 0.26 }),
+  resume: shot({ ...V.maiden, shiftX: -0.2 }, { dist: 48, fov: 50, shiftX: 0, shiftY: 0.26 }),
+  writing: shot({ ...V.horn, shiftX: 0.2 }, { dist: 112, fov: 48, shiftX: 0, shiftY: 0.26 }),
+  contact: shot({ ...V.sunrise, shiftY: -0.3, dawn: 0.8 }, { dist: 170, fov: 52, shiftY: -0.32 }),
+}
+
+/** Where the resume's two scenes are: up in space, straight above the city. */
+export const PHYSICS_AT: [number, number, number] = [I.x - 320, I.y + 2600, I.z - 900]
+export const LLM_AT: [number, number, number] = [I.x + 320, I.y + 2600, I.z - 900]
 
 /**
  * Every other page gets one shot, and blog posts get none: reading wins. The
  * resume has a table of its own, SCENES, below.
  */
 export const ROUTES: Record<'about' | 'projects' | 'blog' | 'lost', ShotSpec> = {
-  about: shot(
-    { dist: 1.75, lat: 10, lon: 22, pitch: 42, roll: -3, fov: 42, shiftX: 0, face: 1, faceOffset: 4, orbits: 0 },
-    { pitch: 48, fov: 52 }
-  ),
-  projects: shot(
-    { dist: 6.8, lat: 26, lon: -30, roll: 5, shiftX: 0.35, shiftY: 0.04, face: 0, orbits: 1, beacon: 0.6 },
-    { dist: 7.6, fov: 40, shiftX: 0.1, shiftY: 0.32 }
-  ),
-  blog: shot(
-    { dist: 9, lat: 10, lon: 100, roll: -12, shiftX: 0.34, shiftY: -0.28, face: 0, orbits: 0.15, beacon: 0.3 },
-    { dist: 11, fov: 40, shiftX: 0.18, shiftY: -0.34 }
-  ),
+  about: shot({ ...V.galata, lon: -64, shiftX: 0.26 }, { dist: 74, fov: 50, shiftX: 0, shiftY: 0.28 }),
+  projects: shot({ ...V.bridge, lon: -96, shiftX: 0.26, dusk: 0.3 }, { dist: 120, fov: 50, shiftX: 0, shiftY: 0.28 }),
+  blog: shot({ ...V.horn, shiftX: 0.26 }, { dist: 112, fov: 48, shiftX: 0, shiftY: 0.28 }),
+  // Lost: adrift in space, a long way out from anything.
   lost: shot(
-    { dist: 30, lat: 40, lon: 200, roll: 30, shiftX: 0.3, shiftY: 0.28, face: 0, orbits: 0, beacon: 0.2, aurora: 0.4 },
-    { dist: 34, fov: 40, shiftX: 0.15, shiftY: 0.32 }
+    {
+      cx: PHYSICS_AT[0], cy: PHYSICS_AT[1], cz: PHYSICS_AT[2],
+      dist: 150, lat: 30, lon: 160, roll: 24, fov: 36, shiftX: 0.3, shiftY: 0.2, physics: 0.5,
+    },
+    { dist: 180, fov: 44, shiftX: 0.1, shiftY: 0.3 }
   ),
 }
 
-/** Where the resume's two scenes out in space are. */
-export const PHYSICS_AT: [number, number, number] = [-72, 14, -96]
-export const LLM_AT: [number, number, number] = [80, -6, -88]
-
 /**
- * The resume, entry by entry (the scene: key in content/site.md). Places on
- * the planet turn it to face the city; physics and interpretability fly out
- * to their own corners of space. Everything sits right of centre, where the
- * resume's text column is not.
+ * The resume, entry by entry (the scene: key in content/site.md). Istanbul
+ * and Padova are places on the ground; physics and interpretability are up
+ * in space above them. Everything sits right of centre, where the resume's
+ * text column is not.
  */
 export const SCENES: Record<string, ShotSpec> = {
-  istanbul: shot(
-    { dist: 5.2, lat: 30, lon: 18, roll: -6, shiftX: 0.33, face: 1, faceOffset: 0, place: 0, orbits: 0.12, beacon: 1 },
-    { dist: 6.8, fov: 40, shiftX: 0, shiftY: 0.27 }
-  ),
+  istanbul: shot({ ...V.mosque, shiftX: 0.3 }, { dist: 100, fov: 46, shiftX: 0, shiftY: 0.27 }),
+  // Prato della Valle from the south: the canal and its statues, Santa
+  // Giustina close on the right, the Santo's domes and towers beyond.
   padova: shot(
-    { dist: 4.9, lat: 36, lon: 6, roll: -6, shiftX: 0.33, face: 1, faceOffset: 0, place: 1, orbits: 0.12, beacon: 1 },
-    { dist: 6.4, fov: 40, shiftX: 0, shiftY: 0.27 }
+    { ...padova(0, 2, 0), dist: 115, lat: 26, lon: -96, pitch: 10, fov: 36, shiftX: 0.3 },
+    { dist: 140, fov: 48, shiftX: 0, shiftY: 0.27 }
   ),
   physics: shot(
     {
       cx: PHYSICS_AT[0], cy: PHYSICS_AT[1] + 0.6, cz: PHYSICS_AT[2],
-      dist: 21, lat: 8, lon: -80, roll: -3, fov: 34, shiftX: 0.33,
-      face: 0, orbits: 0, beacon: 0, physics: 1,
+      dist: 21, lat: 8, lon: -80, roll: -3, fov: 34, shiftX: 0.33, physics: 1,
     },
     { dist: 33, fov: 44, shiftX: 0, shiftY: 0.24 }
   ),
   interpretability: shot(
     {
       cx: LLM_AT[0], cy: LLM_AT[1] + 0.55, cz: LLM_AT[2],
-      dist: 14, lat: 10, lon: -84, roll: 0, fov: 34, shiftX: 0.33,
-      face: 0, orbits: 0, beacon: 0, llm: 1,
+      dist: 14, lat: 10, lon: -84, fov: 34, shiftX: 0.33, llm: 1,
     },
     { dist: 21, fov: 44, shiftX: 0, shiftY: 0.24 }
   ),
+}
+
+/** Where a shot is. Moving between places is a flight up through the cloud and down again. */
+export type Place = 'istanbul' | 'padova' | 'space'
+
+export function placeOf(s: Shot): Place {
+  if (s.cy - I.y > 1500) return 'space'
+  return Math.abs(s.cx - P.x) < 2500 ? 'padova' : 'istanbul'
 }
 
 /**

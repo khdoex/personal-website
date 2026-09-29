@@ -16,10 +16,10 @@ import type { Palette } from './palette'
 import type { Quality } from './quality'
 import { PHYSICS_AT } from './shots'
 
-// The Boğaziçi years, out in their own corner of space: Saturn, a pair of
+// The Boğaziçi years, up in space above the city: Saturn, a pair of
 // black holes circling each other, and the sheet of spacetime under them,
 // dented by the two masses and rippling with the waves their orbit sends
-// out. Everything here is lit or tinted from the palette, like the planet.
+// out. Everything here is lit or tinted from the palette, like the city.
 
 // Laid out tall rather than wide: on the resume the scene lives in the
 // column right of the text. The black holes above, Saturn below, the sheet

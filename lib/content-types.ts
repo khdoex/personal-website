@@ -45,7 +45,6 @@ export interface ResumeEntry {
 }
 
 export interface WorldLabels {
-  places: { istanbul: string; padova: string }
   captions: {
     saturn: string
     blackHole: string

@@ -18,7 +18,7 @@ export default function Navigation({ labels }: { labels: SiteContent['navigation
     { href: '/resume', label: labels.resume },
   ]
 
-  // On the home page the bar stays out of the way of the planet until the
+  // On the home page the bar stays out of the way of the city until the
   // reader scrolls; everywhere else it keeps its glass from the start.
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24)

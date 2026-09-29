@@ -174,6 +174,7 @@ export function createStars(count: number, palette: Palette) {
       uPixelRatio: { value: 1 },
       uBrightness: { value: 1 },
       uTwinkle: { value: 1 },
+      uHorizon: { value: 0 },
     },
     vertexShader: /* glsl */ `
       attribute vec3 aColor;
@@ -184,6 +185,7 @@ export function createStars(count: number, palette: Palette) {
       uniform float uPixelRatio;
       uniform float uBrightness;
       uniform float uTwinkle;
+      uniform float uHorizon;
       varying vec3 vColor;
       varying float vAlpha;
       void main() {
@@ -191,7 +193,11 @@ export function createStars(count: number, palette: Palette) {
         gl_Position = projectionMatrix * mv;
         gl_Position.z = gl_Position.w * 0.99999; // in front of the sky, behind everything else
         float tw = 0.72 + 0.28 * sin(uTime * (0.5 + aPhase * 2.2) + aPhase * 60.0);
-        vAlpha = mix(1.0, tw, uTwinkle) * uBrightness * (0.9 + 0.12 * uBreath);
+        // Seen from the ground, stars thin out toward the horizon, where the
+        // air is thickest and the city's light is brightest.
+        float up = normalize(position).y;
+        float seen = mix(1.0, smoothstep(0.04, 0.5, up), uHorizon);
+        vAlpha = mix(1.0, tw, uTwinkle) * uBrightness * seen * (0.9 + 0.12 * uBreath);
         vColor = aColor;
         gl_PointSize = aSize * uPixelRatio;
       }

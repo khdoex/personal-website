@@ -64,8 +64,8 @@ relative luminance of two colours; WCAG AA asks for 4.5 on body text.
 
 The heading white is warm (`#f4efe3`, moonlight on paper) rather than the cold
 white it replaced, so it sits with the gold instead of against it. The ground is
-a clear blue, not a blue-black: the planet's night side and the page are meant to
-read as the same dark.
+a clear blue, not a blue-black: the night over the city and the page are meant
+to read as the same dark.
 
 Decided 2026-09-29 with the move to the 3D world, replacing a near-black ground
 with one cyan signal and an amber for dates. `amber` became `sun` and `accent`
@@ -97,7 +97,7 @@ reader cannot tell apart still cost a maintainer a decision every time. All 89
 are gone. One literal stands, the `themeColor` in `app/layout.tsx`, which Next
 serves as a browser meta tag where a CSS variable cannot be read. The rule holds
 inside the WebGL engine too: `components/world/engine/palette.ts` reads the
-tokens from the stylesheet at runtime, so the planet has no colour of its own.
+tokens from the stylesheet at runtime, so the world has no colour of its own.
 
 The tokens hold bare sRGB channels rather than colours, so `var(--accent)` is
 not a colour anywhere a colour is expected. In an SVG attribute or a JavaScript
@@ -106,12 +106,14 @@ a graded step. In a class, write `text-accent` or `bg-sun/5`.
 
 ### World paint
 
-A second block on `:root`, the `--world-*` tokens, paints the planet: three
-depths of ocean, forest, meadow, arid ground, ice, city light, air, dusk and
-aurora. They are read once by the engine and handed to the shaders as they are
-(colour management is off, so a channel of 40 reaches the screen as 40). They
-are never a class and never text, so `npm run contrast` does not rate them.
-Change them to repaint the planet; nothing else reads them.
+A second block on `:root`, the `--world-*` tokens, paints the world: Istanbul
+at night (the deep ocean for the water and the dark walls, forest for the
+hills, city light for windows, lamps and floodlit stone, dusk for the sunset
+and the sunrise), and the planet the ride passes on its way down. They are read
+once by the engine and handed to the shaders as they are (colour management is
+off, so a channel of 40 reaches the screen as 40). They are never a class and
+never text, so `npm run contrast` does not rate them. Change them to repaint
+the world; nothing else reads them.
 
 ### Figure poles
 
@@ -172,9 +174,9 @@ Headings inside prose are set in `app/globals.css` rather than through these
 utilities, and they sit one step lower: a post's own `h2` is 28px, because the
 post title above it already holds 36px. The sizes come off the same scale.
 
-`hero` sits above `display` for one job: the greeting beside the planet on the
-home page, and the percent counter of the ride that leads to it. Beside a globe
-half the height of the screen, 64px read as a caption. It is the only step that
+`hero` sits above `display` for one job: the greeting over the city on the
+home page, and the percent counter of the ride that leads to it. Beside a
+skyline across half the screen, 64px read as a caption. It is the only step that
 grows past 64px, and it is not for page titles.
 
 `tick` sits below `meta` because the figures needed it. Their legends, axis
@@ -223,7 +225,7 @@ and on a figure beside them lands on three different right edges. Five sites
 used `65ch` before the rebuild and could not be lined up. Pixels put all of them
 on one edge.
 
-The home page is the one page off the canvas. The planet takes one side of each
+The home page is the one page off the canvas. The city takes one side of each
 section and the text the other, alternating down the page, so its sections sit
 on a wide twelve-column grid (`max-w-[1280px]`) instead of the three tracks. Its
 text still uses the two registers and the type scale.
@@ -251,8 +253,8 @@ scroll.
 
 **The breath** is one period, seven seconds in and out, set as `--breath` in
 `app/globals.css` and as `BREATH` in the engine. Only small marks breathe: the
-green status dots, the scroll line, the light over the city, the city lights and
-the air around the planet. Text never breathes.
+green status dots, the scroll line, the stars, and the floodlights and lamps of
+the city. Text never breathes.
 
 **`Reveal`** (`components/motion/Reveal.tsx`) is unchanged: a rise on viewport
 entry, 0.55s, reversible. The hero uses `.arrive` in CSS instead, because it has
@@ -272,7 +274,7 @@ resolves without waiting for hydration. Any new reduced-motion branch needs the
 same guard.
 
 Reduced motion reaches the world too: no ride, no breathing, and the camera
-cuts between shots instead of flying. The planet is drawn once per change and
+cuts between shots instead of flying. The city is drawn once per change and
 then left alone.
 
 `framer-motion` stays a dependency because 13 components under `components/mdx/`
@@ -280,17 +282,16 @@ use it for scroll-driven figures.
 
 ## The world
 
-One WebGL scene, drawn with three.js behind every page but the blog posts. The
-page never depends on it: every word is server-rendered in the HTML, and the
-site reads the same with no JavaScript, without WebGL, with Save-Data on and
-with reduced motion. In those cases the gradients on `.world` stand in for the
-sky.
+One WebGL scene, drawn with three.js behind every page but the blog posts: the
+site lives in Istanbul, at night. The page never depends on it: every word is
+server-rendered in the HTML, and the site reads the same with no JavaScript,
+without WebGL, with Save-Data on and with reduced motion. In those cases the
+gradients on `.world` stand in for the sky.
 
 - `components/world/World.tsx` is mounted once in the root layout, so it
   survives client-side navigation and a route change is a camera move rather
-  than a reload. It loads the engine as a separate chunk after hydration
-  (about 170 KB gzipped with three.js), so the page's own JavaScript does not
-  grow.
+  than a reload. It loads the engine as a separate chunk after hydration, so
+  the page's own JavaScript does not grow.
 - `components/world/gate.ts` runs inline in `<head>` before the first paint and
   decides whether the home page opens with the ride. It has to run that early:
   a page that painted first and hid itself second would flash. The ride plays on
@@ -298,33 +299,51 @@ sky.
   automation, reduced motion, Save-Data or a missing WebGL. `?intro=1` forces
   it, `?intro=0` skips it. If the engine has not booted after nine seconds the
   page shows itself anyway.
-- The ride is the loading bar. The tube holds a hundred rings, one per percent;
-  a ring lights up once that much of the world has loaded, and the camera may
-  not pass an unlit ring. A slow connection slows the ride rather than freezing
-  it. Esc, the skip button, or tabbing into the page ends it.
+- The ride: deep space, the tube, the planet, and a fall through the cloud into
+  the city. The tube is the loading bar. It holds a hundred rings, one per
+  percent; a ring lights up once that much of the world has loaded, and the
+  camera may not pass an unlit ring, so a slow connection slows the ride rather
+  than freezing it. The planet shows only here, for the fall: the camera drops
+  toward the light over Istanbul, the cloud closes over it, and the city is
+  underneath when it clears. Esc, the skip button, or tabbing into the page ends
+  the ride, and however slowly a machine draws, the page is never held back
+  more than about sixteen seconds.
+- The city (`engine/city/`) is built from primitives, not pictures: the ground
+  and the Bosphorus (`terrain.ts`, `water.ts`, which mirrors the city), a street
+  plan that the buildings fill block by block and the lamps light
+  (`common.ts`, `buildings.ts`), the floodlit monuments (`landmarks.ts`), the
+  Bosphorus Bridge (`bridge.ts`), ferries and gulls (`life.ts`), and a sky with
+  an hour: `dusk` and `dawn` in each shot move the glow from the west to the
+  east and put the lights out. Fog takes the sky's colour at the horizon in
+  every direction, so the edges of the ground melt into it. Padova
+  (`padova.ts`: Prato della Valle, Santa Giustina, the Santo) is a second place
+  on the same ground, far to the west.
 - The camera follows the page through stations: any element marked
   `data-station`. The home page's sections name their shots in
-  `components/world/engine/shots.ts` (`HOME`); the resume's entries name a scene
-  (`SCENES`) through the `scene:` key in `content/site.md`; every other page has
-  one shot (`ROUTES`). Between stations the camera blends, holding each shot
-  around its section and travelling in between.
+  `components/world/engine/shots.ts` (`HOME`), one night from dusk over the old
+  city to dawn over Asia; the resume's entries name a scene (`SCENES`) through
+  the `scene:` key in `content/site.md`; every other page has one shot
+  (`ROUTES`). Between stations the camera blends, holding each shot around its
+  section and travelling in between. Between places (Istanbul, Padova, and the
+  resume's two scenes in space above the city) it never blends across the
+  ground: it draws back, climbs through the cloud, crosses, and comes down.
 - The resume's scenes are framed into the width its text column leaves free,
   measured from the page, so a scene never sits under the words it illustrates.
-  Pages with text over the planet render `components/layout/Scrim.tsx` first,
+  Pages with text over the world render `components/layout/Scrim.tsx` first,
   which shades the text side only.
-- The planet is real geography repainted. `public/world/` holds data textures,
-  not pictures: where land is, where the city lights are, how dry and how high
-  the ground is. `scripts/world-textures.py` bakes them from NASA imagery (not
-  copyrighted) and documents where each comes from. Every colour comes from the
-  `--world-*` tokens.
 - Labels pinned in 3D are ordinary DOM text, positioned by the engine every
   frame, placed in priority order and hidden rather than allowed to overlap one
   another or leave the screen.
 - Three quality tiers, chosen from what the browser reports, set resolution,
-  star count, texture size and noise octaves; a device that runs slow for two
-  seconds steps its resolution down. `?quality=` forces a tier and `?debug`
-  exposes `window.__world` (`?debug=paused` stops the clock, so a screenshot
-  script can step it exactly).
+  star count, building count, reflection size and noise octaves. The low tier
+  drops the two most expensive things per pixel, the water's mirror and the
+  street plan, and a device that runs slow for two seconds steps its resolution
+  down. `?quality=` forces a tier and `?debug` exposes `window.__world`
+  (`?debug=paused` stops the clock, so a screenshot script can step it exactly).
+- The planet in the ride is real geography repainted. `public/world/` holds data
+  textures, not pictures: where land is, where the city lights are, how dry and
+  how high the ground is. `scripts/world-textures.py` bakes them from NASA
+  imagery (not copyrighted) and documents where each comes from.
 
 ## Copy
 

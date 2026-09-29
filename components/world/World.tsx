@@ -28,7 +28,7 @@ function measureInto(engine: Engine) {
 }
 
 /**
- * The planet behind every page. Mounted once in the root layout, so it
+ * The world behind every page. Mounted once in the root layout, so it
  * survives client-side navigation and each route change becomes a camera
  * move rather than a reload. The page is server-rendered and complete
  * without it: this only adds the canvas, and only after hydration, from a
@@ -36,17 +36,12 @@ function measureInto(engine: Engine) {
  */
 export default function World({ labels }: { labels: WorldLabels }) {
   const host = useRef<HTMLDivElement>(null)
-  const placeRef = useRef<HTMLDivElement>(null)
-  const placeTextRef = useRef<HTMLSpanElement>(null)
   const captionRefs = useRef<Partial<Record<CaptionKey, HTMLElement>>>({})
   const tokenRefs = useRef<HTMLElement[]>([])
   const engine = useRef<Engine | null>(null)
   const pathname = usePathname()
   const path = useRef(pathname)
   path.current = pathname
-  // The engine is built once; it reads the label copy through a ref.
-  const copy = useRef(labels)
-  copy.current = labels
 
   useEffect(() => {
     let cancelled = false
@@ -91,9 +86,6 @@ export default function World({ labels }: { labels: WorldLabels }) {
             reducedMotion: matchMedia('(prefers-reduced-motion: reduce)').matches,
             route: path.current,
             labels: {
-              place: placeRef.current,
-              placeText: placeTextRef.current,
-              names: copy.current.places,
               captions: captionRefs.current,
               tokens: tokenRefs.current.filter(Boolean),
             },
@@ -145,12 +137,6 @@ export default function World({ labels }: { labels: WorldLabels }) {
     <>
       <div ref={host} className="world" aria-hidden />
       <div aria-hidden className="world-labels">
-        <div ref={placeRef} className="world-label" style={{ opacity: 0 }}>
-          <span className="world-label-tick" />
-          <span ref={placeTextRef} className="world-label-text">
-            {labels.places.istanbul} · 41.0°N 28.9°E
-          </span>
-        </div>
         {CAPTIONS.map((key) => (
           <div
             key={key}

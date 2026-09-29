@@ -1,5 +1,5 @@
 /**
- * Shade between the planet and a page of text. On wide screens it covers the
+ * Shade between the world and a page of text. On wide screens it covers the
  * text side and clears toward the right, where the scene plays. On small
  * screens it is even, unless the page asks for a window: then the top of the
  * screen stays clear for the scene and the shade starts below it, where the

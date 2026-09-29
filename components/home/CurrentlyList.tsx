@@ -6,12 +6,13 @@ import Reveal from '@/components/motion/Reveal'
 import { world } from '@/components/world/store'
 import type { CurrentItem } from '@/lib/content-types'
 
-// The same order as the satellites in components/world/engine/orbits.ts.
+// The same order as the colours of the bridge's lights (pick() in
+// components/world/engine/city/bridge.ts).
 const TONES = ['text-accent', 'text-sun', 'text-sky']
 
 /**
- * What Kaan is working on, one satellite each. Pointing at an entry (or
- * tabbing to its link) makes its satellite burn brighter on the planet.
+ * What Kaan is working on, one colour each. Pointing at an entry (or tabbing
+ * to its link) lights the whole Bosphorus Bridge in its colour.
  */
 export default function CurrentlyList({ items }: { items: CurrentItem[] }) {
   return (

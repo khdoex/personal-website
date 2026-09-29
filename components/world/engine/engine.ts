@@ -13,10 +13,14 @@ import {
   type Texture,
 } from 'three'
 import { worldStore } from '../store'
-import { createEarth } from './earth'
+import { createAtmosphere, ISTANBUL_AT, PADOVA_AT } from './city/common'
+import { createIstanbul } from './city/istanbul'
+import { createPadova } from './city/padova'
+import { createCitySky, followCamera } from './city/sky'
+import { heightAt } from './city/terrain'
+import { createEarth, ISTANBUL } from './earth'
 import { createModel } from './llm'
-import { angleDelta, clamp, dampFactor, DEG, easeOutCubic, lerp, smoothstep, TAU } from './math'
-import { createOrbits } from './orbits'
+import { clamp, dampFactor, DEG, easeInOutCubic, easeOutCubic, lerp, smoothstep, TAU } from './math'
 import { createPhysics } from './physics'
 import { readPalette } from './palette'
 import { createPlanets } from './planets'
@@ -25,18 +29,20 @@ import {
   blend,
   frameToColumn,
   HOME,
+  placeOf,
   resolve,
   ROUTES,
   routeKind,
   SCENES,
   SHOT_KEYS,
+  type Place,
   type RouteKind,
   type Shot,
   type ShotSpec,
 } from './shots'
 import { bakeClouds, createBackground, createStars } from './sky'
-import { createSun } from './sun'
 import { APPROACH, createTunnel } from './tunnel'
+import { createVeil } from './veil'
 
 export interface Anchor {
   id: string
@@ -48,10 +54,6 @@ export type CaptionKey = 'saturn' | 'blackHole' | 'transformer' | 'refusal' | 'h
 
 /** DOM labels the engine pins to points in the scene, every frame. */
 export interface EngineLabels {
-  /** The light's label, and the text inside it the engine rewrites as the light travels. */
-  place: HTMLElement | null
-  placeText: HTMLElement | null
-  names: { istanbul: string; padova: string }
   /** Captions in the resume's scenes. */
   captions: Partial<Record<CaptionKey, HTMLElement>>
   /** One per word of the prompt the transformer reads. */
@@ -59,7 +61,7 @@ export interface EngineLabels {
 }
 
 export interface EngineOptions {
-  /** 'full' plays the ride in from deep space; 'none' only settles into orbit. */
+  /** 'full' plays the ride in from deep space; 'none' only settles into place. */
   intro: 'full' | 'none'
   reducedMotion: boolean
   route: string
@@ -73,16 +75,39 @@ export interface EngineOptions {
 export const BREATH = 7
 const SPACE_T = 2.1
 const TUBE_T = 3.0
+/** From the mouth of the tube, down through the cloud to Istanbul. */
+const DIVE_T = 2.8
+/** The globe turns Istanbul to a camera at this longitude: just past the sunset, the lights coming on. */
+const DIVE_LON = -33
 /** After this long the ride stops waiting for the network and lands anyway. */
 const MAX_RIDE = 20
+/**
+ * The same, in wall-clock seconds, for machines that draw too slowly for the
+ * ride's own clock to be any guide: a page is never held back longer.
+ */
+const MAX_RIDE_WALL = 16
+const REVEAL_WALL = 2.5
+/** The page comes in this long after the camera breaks out of the cloud. */
+const REVEAL_AFTER = 1.5
 const ARRIVED_KEY = 'world:arrived'
+/** The cloud over the city, by height above the water: thickest at peak. */
+const CLOUD = { low: 300, peak: 600, high: 900 }
 
-type EnginePhase = 'space' | 'tunnel' | 'live'
+type EnginePhase = 'space' | 'tunnel' | 'dive' | 'live'
+
+const smootherstep = (t: number) => t * t * t * (t * (t * 6 - 15) + 10)
+
+/** How much cloud is around a camera at this height over the city. */
+function cloudAt(altitude: number) {
+  return altitude < CLOUD.peak
+    ? smoothstep(CLOUD.low, CLOUD.peak, altitude)
+    : 1 - smoothstep(CLOUD.peak, CLOUD.high, altitude)
+}
 
 export class Engine {
   private readonly renderer: WebGLRenderer
   private readonly scene = new Scene()
-  private readonly camera = new PerspectiveCamera(40, 1, 0.05, 1000)
+  private readonly camera = new PerspectiveCamera(40, 1, 0.05, 5000)
   private readonly quality: Quality
   private readonly opts: EngineOptions
 
@@ -91,11 +116,14 @@ export class Engine {
   private readonly planets: ReturnType<typeof createPlanets>
   private readonly tunnel: ReturnType<typeof createTunnel>
   private readonly earth: ReturnType<typeof createEarth>
-  private readonly orbits: ReturnType<typeof createOrbits>
-  private readonly sun: ReturnType<typeof createSun>
+  private readonly atmos: ReturnType<typeof createAtmosphere>
+  private readonly istanbul: ReturnType<typeof createIstanbul>
+  private readonly padova: ReturnType<typeof createPadova>
+  private readonly sky: ReturnType<typeof createCitySky>
   private readonly physics: ReturnType<typeof createPhysics>
   private readonly model: ReturnType<typeof createModel>
   private readonly clouds: ReturnType<typeof bakeClouds>
+  private readonly veil: ReturnType<typeof createVeil>
   private readonly flash: Mesh<PlaneGeometry, ShaderMaterial>
 
   private phase: EnginePhase = 'live'
@@ -109,20 +137,29 @@ export class Engine {
   private rideT = 0
   private s = 0
   private tubeT = 0
+  private diveT = 0
+  private diveVeil = 0
   private loadedTasks = 0
   private readonly totalTasks = 4
   private frontier = 0
   private flashLevel = 0
   private shake = 0
   private arriveT = 99
+  private revealAt = 0.45
   private revealed = false
+  /** performance.now() when the ride started, and when it came out of the cloud. */
+  private rideWall = 0
+  private arriveWall = 0
 
   // live camera
   private route: RouteKind = 'home'
   private readonly cur: Shot
   private readonly target: Shot
-  private spin = 0
-  private drift = 0
+  /** The place the camera is in, or flying to. */
+  private place: Place = 'istanbul'
+  /** A flight between places: up through the cloud, across, and down. */
+  private hop: { from: Shot; t: number; duration: number; lift: number } | null = null
+  private lift = 0
   private anchors: { id: string; at: number }[] = []
   private anchorSource: Anchor[] = []
   private scrollY = 0
@@ -133,11 +170,12 @@ export class Engine {
   private height = 1
   private pixelRatio = 1
   private highlightIndex: number | null = null
-  private placeLon = 0
-  private placeText = ''
   private canvasOpacity = -1
   /** 0..1, the canvas fading in over the CSS sky when the world first draws. */
   private fade = 0
+  /** How far the cloud has streamed past, for the veil's pattern. */
+  private rush = 0
+  private lastY = 0
 
   // adaptive resolution
   private slowFor = 0
@@ -167,14 +205,22 @@ export class Engine {
 
     this.background = createBackground(this.renderer, palette, this.quality.backgroundSize, this.quality.octaves)
     this.stars = createStars(this.quality.stars, palette)
+    // The sky and the stars stay centred on whichever camera draws them,
+    // the water's reflection included.
+    followCamera(this.background.mesh)
+    followCamera(this.stars.points)
     this.planets = createPlanets(palette, this.quality.octaves, this.quality.sphereSegments)
     this.tunnel = createTunnel(palette, this.quality)
     this.clouds = bakeClouds(this.renderer, this.quality.cloudMapSize, this.quality.octaves)
     this.earth = createEarth(palette, this.quality, this.clouds.texture)
-    this.orbits = createOrbits(palette)
-    this.sun = createSun(palette, this.earth.sunDir)
+    this.atmos = createAtmosphere(palette)
+    this.istanbul = createIstanbul(palette, this.quality, this.atmos)
+    this.padova = createPadova(palette, this.quality, this.atmos)
+    this.sky = createCitySky(palette, this.atmos, this.quality.tier !== 'low')
     this.physics = createPhysics(palette, this.quality, this.background.material.uniforms.uMap.value)
     this.model = createModel(palette, opts.labels.tokens.length || 6)
+    this.veil = createVeil(palette)
+    this.sky.fogColor(0, this.atmos.uFogColor.value)
 
     this.flash = new Mesh(
       new PlaneGeometry(2, 2),
@@ -207,16 +253,20 @@ export class Engine {
       this.planets.group,
       this.tunnel.group,
       this.earth.group,
-      this.orbits.group,
-      this.sun.mesh,
+      this.istanbul.group,
+      this.padova.group,
+      this.sky.dome,
+      this.sky.moon,
       this.physics.group,
       this.model.group,
+      this.veil.mesh,
       this.flash
     )
 
     this.route = routeKind(opts.route)
     this.cur = { ...this.shotFor(this.route) }
     this.target = { ...this.cur }
+    this.place = placeOf(this.cur)
 
     this.resize()
     this.loadTextures()
@@ -278,12 +328,16 @@ export class Engine {
 
   setHighlight(index: number | null) {
     this.highlightIndex = index
-    if (this.opts.reducedMotion) this.renderFrame()
+    if (this.opts.reducedMotion) {
+      this.tick(0.5)
+      this.renderFrame()
+    }
   }
 
   skip() {
     if (this.phase === 'live') return
-    this.land(false)
+    this.settle(true)
+    worldStore.set({ phase: 'arrive', percent: 100 })
   }
 
   replay() {
@@ -303,11 +357,13 @@ export class Engine {
     this.planets.dispose()
     this.tunnel.dispose()
     this.earth.dispose()
-    this.orbits.dispose()
-    this.sun.dispose()
+    this.istanbul.dispose()
+    this.padova.dispose()
+    this.sky.dispose()
     this.physics.dispose()
     this.model.dispose()
     this.clouds.dispose()
+    this.veil.dispose()
     this.flash.geometry.dispose()
     this.flash.material.dispose()
     this.renderer.dispose()
@@ -323,6 +379,8 @@ export class Engine {
     this.renderer.setPixelRatio(this.pixelRatio)
     this.renderer.setSize(w, h, false)
     this.camera.aspect = w / h
+    this.istanbul.resize(w, h, this.pixelRatio)
+    this.padova.resize(w, h, this.pixelRatio)
     this.computeAnchors()
     if (this.opts.reducedMotion) this.snap()
   }
@@ -369,31 +427,65 @@ export class Engine {
     const breath = 0.5 - 0.5 * Math.cos((this.time / BREATH) * TAU)
 
     if (this.phase === 'live') this.tickLive(dt)
+    else if (this.phase === 'dive') this.tickDive(dt)
     else this.tickRide(dt)
 
-    if (this.flashLevel > 0 && this.phase === 'live') this.flashLevel *= Math.exp(-dt * 4.2)
+    if (this.flashLevel > 0 && (this.phase === 'live' || this.phase === 'dive')) this.flashLevel *= Math.exp(-dt * 4.2)
     if (this.flashLevel < 0.002) this.flashLevel = 0
     this.flash.material.uniforms.uFlash.value = this.flashLevel
     this.flash.visible = this.flashLevel > 0
 
+    // What is drawn follows from where the camera is. Under the cloud it is
+    // the city and its sky; above it, space.
+    const live = this.phase === 'live'
+    const { x, y } = this.camera.position
+    const altitude = y - ISTANBUL_AT.y
+    const grounded = live && altitude < CLOUD.peak
+    const inCity = grounded && Math.abs(x - ISTANBUL_AT.x) < 3000
+    const inPadova = grounded && Math.abs(x - PADOVA_AT.x) < 3000
+    const space = inCity || inPadova ? 0 : 1
+    // The ride comes down at dusk, whatever hour the page was left at.
+    const dusk = live ? this.cur.dusk : 1
+    const dawn = live ? this.cur.dawn : 0
+    const a = this.atmos
+    a.uTime.value = this.time
+    a.uBreath.value = breath
+    a.uDusk.value = dusk
+    a.uDawn.value = dawn
+    a.uLights.value = 1 - 0.85 * smoothstep(0.45, 1, dawn)
+    a.uFogDensity.value = 0.0024 * (live ? this.cur.haze : 1)
+    this.sky.fogColor(dawn, a.uFogColor.value)
+    this.sky.update(space, dawn)
+    // Under the city's sky, space is out of sight: no need to draw it.
+    this.background.mesh.visible = space > 0
+    this.istanbul.update(this.time, dt, this.highlightIndex, inCity)
+    this.padova.update(inPadova)
+    // The city is big and far: a nearer near plane would waste the depth
+    // buffer's precision and set the shoreline flickering.
+    const near = space < 1 ? 0.5 : 0.02
+    if (this.camera.near !== near) {
+      this.camera.near = near
+      this.camera.updateProjectionMatrix()
+    }
+    // Near the ground the city's own light washes most stars out, and the
+    // ones low over the horizon go first.
     const su = this.stars.material.uniforms
     su.uTime.value = this.time
     su.uBreath.value = breath
     su.uPixelRatio.value = this.pixelRatio
-    this.background.mesh.position.copy(this.camera.position)
-    this.stars.points.position.copy(this.camera.position)
+    su.uBrightness.value = space < 1 ? 0.5 - 0.4 * dawn : 1
+    su.uHorizon.value = 1 - space
 
-    this.earth.update(this.time, dt, breath, this.pixelRatio, 1, this.cur.aurora)
-    const light = this.earth.setPlace(this.cur.place)
-    this.placeLon = light.lon
-    this.writePlace(light.lat, light.lon)
-    this.earth.setBeaconOpacity(this.cur.beacon)
-    const live = this.phase === 'live'
+    const cloud = live ? cloudAt(altitude) : this.diveVeil
+    const climb = Math.abs(this.camera.position.y - this.lastY)
+    this.lastY = this.camera.position.y
+    this.rush += this.phase === 'dive' ? dt * 0.8 : Math.min(0.2, climb / 900) + dt * 0.02
+    this.veil.update(this.time, cloud, this.rush, this.width / this.height, a.uFogColor.value)
+
+    if (this.earth.group.visible) this.earth.update(this.time, dt, breath, this.pixelRatio, 1, 0.6)
     this.physics.update(this.time, breath, live ? this.cur.physics : 0)
     this.model.update(this.time, breath, live ? this.cur.llm : 0, this.pixelRatio)
-    this.orbits.update(this.time, dt, this.phase === 'live' ? this.cur.orbits : 0, this.highlightIndex, this.pixelRatio)
-    this.sun.update(this.phase === 'live' ? this.cur.sun : 0, breath)
-    this.planets.update(this.time)
+    if (this.planets.group.visible) this.planets.update(this.time)
   }
 
   private renderFrame() {
@@ -404,10 +496,13 @@ export class Engine {
   private adapt(dt: number) {
     this.frameAvg += (dt * 1000 - this.frameAvg) * 0.05
     this.slowFor = this.frameAvg > 28 ? this.slowFor + dt : 0
-    if (this.slowFor > 2 && this.pixelRatio > 0.75) {
-      this.pixelRatio = Math.max(0.75, this.pixelRatio - 0.25)
+    const floor = this.quality.tier === 'low' ? 0.5 : 0.75
+    if (this.slowFor > 2 && this.pixelRatio > floor) {
+      this.pixelRatio = Math.max(floor, this.pixelRatio - 0.25)
       this.renderer.setPixelRatio(this.pixelRatio)
       this.renderer.setSize(this.width, this.height, false)
+      this.istanbul.resize(this.width, this.height, this.pixelRatio)
+      this.padova.resize(this.width, this.height, this.pixelRatio)
       this.slowFor = 0
       this.frameAvg = 16
     }
@@ -420,18 +515,20 @@ export class Engine {
     this.rideT = 0
     this.s = 0
     this.tubeT = 0
+    this.diveT = 0
+    this.diveVeil = 0
     this.revealed = false
     this.arriveT = 99
     this.flashLevel = 0
-    this.setRideVisibility(true)
+    this.rideWall = performance.now()
+    this.setVisibility('ride')
     worldStore.set({ phase: 'space', percent: 0 })
   }
 
-  private setRideVisibility(riding: boolean) {
-    this.planets.group.visible = riding
-    this.tunnel.group.visible = riding
-    this.earth.group.visible = !riding
-    this.orbits.group.visible = !riding
+  private setVisibility(stage: 'ride' | 'dive' | 'live') {
+    this.planets.group.visible = stage === 'ride'
+    this.tunnel.group.visible = stage === 'ride'
+    this.earth.group.visible = stage === 'dive'
   }
 
   private tickRide(dt: number) {
@@ -472,44 +569,109 @@ export class Engine {
     this.flashLevel = smoothstep(0.94, 1, u)
     this.fade = Math.min(1, this.fade + dt / 0.9)
     this.setCanvasOpacity(this.fade)
-    worldStore.set({ percent: Math.min(100, Math.floor(u * 100.5)) })
+    // The tube is the first half of the counter; the fall to the city the rest.
+    worldStore.set({ percent: Math.min(50, Math.floor(u * 50.5)) })
 
-    if (u >= 0.999 || this.rideT > MAX_RIDE) this.land(true)
+    if (u >= 0.999) this.startDive()
+    else if (this.rideT > MAX_RIDE || this.overdue()) this.skip()
   }
 
-  /** Out of the tube: the flash, the cut to the planet, the page. */
-  private land(boom: boolean) {
-    this.phase = 'live'
-    this.setRideVisibility(false)
-    this.settle(true, boom)
-    this.flashLevel = boom ? 1 : 0
-    this.shake = boom ? 1 : 0
+  /** Out of the tube: the flash, then the planet, falling toward Istanbul. */
+  private startDive() {
+    this.phase = 'dive'
+    this.diveT = 0
+    this.diveVeil = 0
+    this.flashLevel = 1
+    this.shake = 1
+    this.setVisibility('dive')
+    worldStore.set({ phase: 'dive', percent: 50 })
+  }
+
+  private tickDive(dt: number) {
+    this.diveT += dt
+    const u = Math.min(1, this.diveT / DIVE_T)
+    // Height over the surface falls by the same fraction every moment, the
+    // way a fall looks from inside it.
+    const altitude = 2.6 * Math.exp(-2.8 * u)
+    const lat = lerp(22, ISTANBUL.lat, easeInOutCubic(u)) * DEG
+    const lon = DIVE_LON * DEG
+    const d = 1 + altitude
+    const c = this.camera
+    c.position.set(d * Math.cos(lat) * Math.cos(lon), d * Math.sin(lat), -d * Math.cos(lat) * Math.sin(lon))
+    c.up.set(0, 1, 0)
+    c.lookAt(0, 0, 0)
+    c.rotateZ((1 - u) * 0.2)
+    this.shake *= Math.exp(-dt * 3.4)
+    if (this.shake > 0.001) {
+      c.rotateX((Math.random() - 0.5) * 0.012 * this.shake)
+      c.rotateY((Math.random() - 0.5) * 0.012 * this.shake)
+    }
+    c.fov = lerp(38, 52, u)
+    c.clearViewOffset()
+    c.updateProjectionMatrix()
+    this.earth.spin.rotation.y = (DIVE_LON - ISTANBUL.lon) * DEG
+    this.earth.setBeaconOpacity(1 - smoothstep(0.5, 0.8, u))
+
+    this.diveVeil = smoothstep(0.55, 1, u)
+    this.fade = Math.min(1, this.fade + dt / 0.9)
+    this.setCanvasOpacity(this.fade)
+    worldStore.set({ percent: Math.min(100, 50 + Math.floor(u * 50.5)) })
+    if (u >= 1) this.arrive()
+    else if (this.overdue()) this.skip()
+  }
+
+  /** True once the ride has taken longer on the clock than any ride should. */
+  private overdue() {
+    return this.opts.debug !== 'paused' && performance.now() - this.rideWall > MAX_RIDE_WALL * 1000
+  }
+
+  /** Through the cloud over Istanbul: the city from high above, then down to the water. */
+  private arrive() {
+    this.enterLive()
+    this.targetShot(this.target)
+    Object.assign(this.cur, this.target)
+    const ground = this.target.cy - ISTANBUL_AT.y
+    this.cur.lat = 86
+    this.cur.dist = (CLOUD.peak - ground) / Math.sin(86 * DEG)
+    this.cur.lon = this.target.lon + 40
+    this.cur.roll = this.target.roll - 12
+    this.cur.fov = this.target.fov + 12
+    this.cur.pitch = 0
+    this.place = placeOf(this.target)
+    this.arriveT = 0
+    this.arriveWall = performance.now()
+    this.revealAt = REVEAL_AFTER
     worldStore.set({ phase: 'arrive', percent: 100 })
-    if (!boom) this.reveal()
+  }
+
+  private enterLive() {
+    this.phase = 'live'
+    this.setVisibility('live')
+    this.hop = null
+    this.lift = 0
+    this.diveVeil = 0
   }
 
   /** Start just off the target shot and let the damping bring the camera in. */
-  private settle(animate: boolean, far = false) {
-    this.phase = 'live'
-    this.setRideVisibility(false)
+  private settle(animate: boolean) {
+    this.enterLive()
     this.shotFor(this.route, this.target)
     Object.assign(this.cur, this.target)
-    this.spin = this.faceAngle(this.cur)
-    this.drift = this.spin
+    this.place = placeOf(this.cur)
     if (animate) {
-      const k = far ? 1 : 0.35
+      const k = 0.35
       this.cur.dist = this.target.dist * (1 + 1.9 * k)
       this.cur.lat = this.target.lat + 14 * k
       this.cur.lon = this.target.lon - 48 * k
       this.cur.roll = this.target.roll + 24 * k
       this.cur.fov = this.target.fov + 14 * k
       this.cur.pitch = this.target.pitch * (1 - 0.5 * k)
-      this.spin -= 0.9 * k
       this.arriveT = 0
     } else {
       this.arriveT = 99
     }
-    if (!far) this.reveal()
+    this.revealAt = 0.45
+    this.reveal()
   }
 
   private reveal() {
@@ -528,59 +690,84 @@ export class Engine {
 
   private tickLive(dt: number) {
     this.arriveT += dt
-    if (!this.revealed && this.arriveT > 0.45) this.reveal()
+    const late = this.opts.debug !== 'paused' && performance.now() - this.arriveWall > REVEAL_WALL * 1000
+    if (!this.revealed && (this.arriveT > this.revealAt || late)) this.reveal()
 
     this.targetShot(this.target)
-    const lambda = this.arriveT < 3 ? lerp(1.5, 3.2, smoothstep(0.8, 3, this.arriveT)) : 3.2
-    const f = dampFactor(lambda, dt)
-    for (const k of SHOT_KEYS) this.cur[k] += (this.target[k] - this.cur[k]) * f
+    const place = placeOf(this.target)
+    if (place !== this.place) {
+      // Somewhere else: up through the cloud, across, and down again.
+      const dx = this.target.cx - this.cur.cx
+      const dy = this.target.cy - this.cur.cy
+      const dz = this.target.cz - this.cur.cz
+      const across = Math.hypot(dx, dz)
+      this.hop = {
+        from: { ...this.cur },
+        t: 0,
+        duration: clamp(1.5 + Math.hypot(across, dy) / 4000, 1.8, 3.2),
+        lift: across * 0.3,
+      }
+      this.place = place
+    }
 
-    // The planet turns on its own, or turns Istanbul toward the camera.
-    const face = clamp(this.cur.face)
-    this.drift += dt * 0.028 * (1 - face)
-    this.drift += angleDelta(this.drift, this.spin) * face * dampFactor(2, dt)
-    const facing = this.faceAngle(this.cur)
-    const desired = this.drift + angleDelta(this.drift, facing) * face
-    this.spin += angleDelta(this.spin, desired) * dampFactor(this.arriveT < 3 ? 1.6 : 2.4, dt)
+    if (this.hop) {
+      const hop = this.hop
+      hop.t = Math.min(1, hop.t + dt / hop.duration)
+      blend(hop.from, this.target, smootherstep(hop.t), this.cur)
+      // The camera draws back from what it was looking at before it sets
+      // off, travels, and closes in on the new place at the end.
+      const move = smootherstep(clamp((hop.t - 0.14) / 0.72))
+      this.cur.cx = lerp(hop.from.cx, this.target.cx, move)
+      this.cur.cy = lerp(hop.from.cy, this.target.cy, move)
+      this.cur.cz = lerp(hop.from.cz, this.target.cz, move)
+      this.cur.dist *= 1 + 2.5 * smoothstep(0, 0.35, hop.t) * (1 - smoothstep(0.65, 1, hop.t))
+      this.lift = hop.lift * Math.sin(Math.PI * move) ** 2
+      if (hop.t >= 1) {
+        this.hop = null
+        this.lift = 0
+      }
+    } else {
+      const lambda = this.arriveT < 3 ? lerp(1.5, 3.2, smoothstep(0.8, 3, this.arriveT)) : 3.2
+      const f = dampFactor(lambda, dt)
+      for (const k of SHOT_KEYS) this.cur[k] += (this.target[k] - this.cur[k]) * f
+    }
 
-    this.shake *= Math.exp(-dt * 3.4)
     this.fade = Math.min(1, this.fade + dt / 1.1)
     this.applyShot(this.cur)
     this.applyCanvasOpacity()
-  }
-
-  /** The spin that puts the light faceOffset degrees east of the camera's meridian. */
-  private faceAngle(shot: Shot) {
-    return (shot.lon + shot.faceOffset - this.placeLon) * DEG
   }
 
   private applyShot(shot: Shot) {
     const c = this.camera
     const lat = shot.lat * DEG
     const lon = shot.lon * DEG
+    const cy = shot.cy + this.lift
     c.position.set(
       shot.cx + shot.dist * Math.cos(lat) * Math.cos(lon),
-      shot.cy + shot.dist * Math.sin(lat),
+      cy + shot.dist * Math.sin(lat),
       shot.cz - shot.dist * Math.cos(lat) * Math.sin(lon)
     )
+    // Never into the hills: the camera rides over them.
+    const x = c.position.x - ISTANBUL_AT.x
+    const z = c.position.z - ISTANBUL_AT.z
+    if (Math.abs(x) < 1500 && Math.abs(z) < 1500) {
+      c.position.y = Math.max(c.position.y, ISTANBUL_AT.y + heightAt(x, z) + 3)
+    } else if (Math.abs(c.position.x - PADOVA_AT.x) < 1500) {
+      c.position.y = Math.max(c.position.y, PADOVA_AT.y + this.padova.ground + 3)
+    }
     c.up.set(0, 1, 0)
-    c.lookAt(shot.cx, shot.cy, shot.cz)
+    c.lookAt(shot.cx, cy, shot.cz)
     c.rotateX(shot.pitch * DEG)
     c.rotateY(shot.yaw * DEG)
     c.rotateZ(shot.roll * DEG)
-    if (this.shake > 0.001) {
-      c.rotateX((Math.random() - 0.5) * 0.012 * this.shake)
-      c.rotateY((Math.random() - 0.5) * 0.012 * this.shake)
-    }
     c.fov = shot.fov
     c.setViewOffset(this.width, this.height, -shot.shiftX * this.width, shot.shiftY * this.height, this.width, this.height)
     c.updateProjectionMatrix()
-    this.earth.spin.rotation.y = this.spin
   }
 
   private applyCanvasOpacity() {
     let o = this.cur.canvas * easeOutCubic(this.fade)
-    // Over a page of text the planet steps back once the reader scrolls in.
+    // Over a page of text the world steps back once the reader scrolls in.
     // The resume is the exception: its scenes are the point, and the page
     // lays a scrim under its text instead.
     if (this.route !== 'home' && this.route !== 'resume') o *= 1 - 0.62 * smoothstep(0, this.height * 0.9, this.scrollY)
@@ -598,13 +785,15 @@ export class Engine {
   private snap() {
     if (this.hidden) return
     this.fade = 1
+    this.enterLive()
     this.targetShot(this.target, true)
     Object.assign(this.cur, this.target)
-    this.spin = this.faceAngle(this.cur) * this.cur.face + this.spin * (1 - this.cur.face)
-    this.phase = 'live'
-    this.setRideVisibility(false)
+    this.place = placeOf(this.cur)
     this.tick(0)
     this.applyShot(this.cur)
+    // Once more, now the camera is where it will stay: what is drawn
+    // depends on where that is.
+    this.tick(0)
     this.applyCanvasOpacity()
     this.reveal()
     this.renderFrame()
@@ -658,27 +847,17 @@ export class Engine {
         const t = b.at > a.at ? (y - a.at) / (b.at - a.at) : 1
         // Hold each shot around its section, travel in between.
         const eased = smoothstep(0.18, 0.82, t)
-        return cut ? Object.assign(out, shotOf(eased < 0.5 ? a.id : b.id)) : blend(shotOf(a.id), shotOf(b.id), eased, out)
+        const A = shotOf(a.id)
+        const B = shotOf(b.id)
+        // Two places are never blended: halfway, the camera sets off for the other.
+        if (cut || placeOf(A) !== placeOf(B)) return Object.assign(out, eased < 0.5 ? A : B)
+        return blend(A, B, eased, out)
       }
     }
     return Object.assign(out, shotOf(list[list.length - 1].id))
   }
 
   // ------------------------------------------------------------------ labels
-
-  /** The light's label: the city's name, and coordinates that count as it travels. */
-  private writePlace(lat: number, lon: number) {
-    const { placeText, names } = this.opts.labels
-    if (!placeText) return
-    // Truncated, not rounded, the way the site has always written Istanbul.
-    const f = (x: number) => (Math.floor(Math.abs(x) * 10) / 10).toFixed(1)
-    const name = this.cur.place < 0.5 ? names.istanbul : names.padova
-    const text = `${name} · ${f(lat)}°${lat >= 0 ? 'N' : 'S'} ${f(lon)}°${lon >= 0 ? 'E' : 'W'}`
-    if (text !== this.placeText) {
-      this.placeText = text
-      placeText.textContent = text
-    }
-  }
 
   private readonly labelSizes = new WeakMap<HTMLElement, { w: number; h: number }>()
   /** Boxes of the labels already placed this frame, to keep the next ones clear of them. */
@@ -705,7 +884,7 @@ export class Engine {
   private pin(el: HTMLElement | null | undefined, at: Vector3, weight: number, mode: 'tick' | 'center' | 'token' = 'tick'): boolean {
     if (!el) return false
     let visible = 0
-    if (weight > 0.01 && !this.hidden && this.phase === 'live') {
+    if (weight > 0.01 && !this.hidden && this.phase === 'live' && !this.hop) {
       this.v.copy(at).project(this.camera)
       const x = (this.v.x * 0.5 + 0.5) * this.width
       const y = (-this.v.y * 0.5 + 0.5) * this.height
@@ -746,9 +925,7 @@ export class Engine {
 
   private placeLabels() {
     this.placed = []
-    const { place, captions, tokens } = this.opts.labels
-    const { position, facing } = this.earth.beacon(this.camera.position)
-    this.pin(place, position, smoothstep(0.25, 0.5, facing) * smoothstep(0.85, 1, this.cur.beacon))
+    const { captions, tokens } = this.opts.labels
 
     const physics = smoothstep(0.6, 1, this.cur.physics)
     this.pin(captions.blackHole, this.physics.anchors.blackHole, physics)

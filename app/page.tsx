@@ -29,7 +29,7 @@ export const metadata = pageMetadata({
 const at = (i: number) => ({ '--i': i }) as CSSProperties
 
 // Each section is one station for the camera (data-station, read by
-// components/world): the planet sits opposite the text, so the columns
+// components/world): the scene sits opposite the text, so the columns
 // alternate sides as the page goes down.
 const wrap = 'mx-auto grid w-full max-w-[1280px] grid-cols-1 px-6 md:px-10 lg:grid-cols-12'
 const panel = 'max-lg:glass max-lg:rounded-2xl max-lg:p-6'
@@ -61,7 +61,7 @@ export default async function Home() {
       {/* hero */}
       <section data-station="hero" className="relative flex min-h-[calc(100svh-4rem)] items-start lg:items-center">
         <div className={wrap}>
-          {/* On a phone the planet rises from the bottom, so the words sit high. */}
+          {/* On a phone the skyline sits at the bottom, so the words sit high. */}
           <header className="pb-32 pt-12 lg:col-span-7 lg:pt-10 xl:col-span-6">
             <p className="arrive flex flex-wrap items-center gap-x-3 gap-y-1" style={at(0)}>
               <span className="font-mono text-meta text-muted">{hero.location}</span>
@@ -95,7 +95,7 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* currently: the planet steps left, the satellites come out */}
+      {/* currently: the bosphorus bridge, lit in the colour of what is pointed at */}
       <section id="currently" data-station="currently" className="relative flex min-h-[100svh] items-center py-24">
         <div className={wrap}>
           <div className={right}>
@@ -107,7 +107,7 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* about: down to the horizon over istanbul */}
+      {/* about: galata, across the golden horn */}
       <section data-station="about" className="relative flex min-h-[100svh] items-start pb-24 pt-28">
         <div className={wrap}>
           <div className={left}>
@@ -146,7 +146,7 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* resume: another face of the planet */}
+      {/* resume: the maiden's tower, its lamp turning */}
       <section data-station="resume" className="relative flex min-h-[100svh] items-center py-24">
         <div className={wrap}>
           <div className={right}>
@@ -191,7 +191,7 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* writing: out to where the planet is small */}
+      {/* writing: from the galata tower down over the old city */}
       <section data-station="writing" className="relative flex min-h-[100svh] items-center py-24">
         <div className={wrap}>
           <div className={left}>
@@ -235,7 +235,7 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* contact: the sun comes up over the edge */}
+      {/* contact: dawn over the asian side */}
       <section data-station="contact" className="relative flex min-h-[100svh] items-start pb-40 pt-28">
         <div className="mx-auto w-full max-w-[1280px] px-6 md:px-10">
           <div className={`${panel} mx-auto max-w-2xl text-center`}>

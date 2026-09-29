@@ -31,9 +31,10 @@
 
 <!--
   The ride in. The first time someone opens the home page, the camera starts
-  in deep space and flies through a tube to earth; the tube is the loading
-  bar. These lines show under the progress counter, first to last, spread
-  evenly over the ride. Keep them short, four or five is plenty.
+  in deep space, flies through a tube to earth (the tube is the loading
+  bar), then falls through the clouds into istanbul. These lines show under
+  the progress counter, first to last, spread evenly over the ride. Keep
+  them short, four or five is plenty.
   keys: skip (the skip button), replay (the button that plays it again)
 -->
 
@@ -43,13 +44,13 @@ replay: replay the ride
 - leaving deep space
 - through the tube (shorter than it looks)
 - that blue one is earth
-- istanbul, 41.0°N 28.9°E
+- down through the clouds, into istanbul
 
 
 ## hero
 
 <!--
-  The first screen after landing, next to the planet.
+  The first screen after landing: istanbul at dusk, seen from the water.
   keys: greeting (the big line), name (the word in the greeting that gets
   the gold), location, time (label for the live istanbul clock), scroll
   (the hint at the bottom). The paragraph is the line under the greeting.
@@ -57,7 +58,7 @@ replay: replay the ride
 
 greeting: hi, i am kaan.
 name: kaan
-location: istanbul · 41.0°N 28.9°E
+location: istanbul
 time: local time
 scroll: scroll, we are still landing
 
@@ -67,9 +68,10 @@ physics grad turned ai engineer, working on refusal mechanics and safety in llms
 ## currently
 
 <!--
-  What you are working on now. Shows on the home page (each one gets its
-  own satellite around the planet, in order: green, gold, blue) and on the
-  about page. One ### per thing, the title is its name.
+  What you are working on now. Shows on the home page, next to the
+  bosphorus bridge (pointing at one lights the bridge in its colour, in
+  order: green, gold, blue) and on the about page. One ### per thing, the
+  title is its name.
   section keys: label
   keys per thing: since, link (optional). The paragraph is the description.
 -->
@@ -146,7 +148,7 @@ notes on interpretability, machine learning, and the occasional detour through l
 ## contact
 
 <!--
-  The last part of the home page, where the sun comes up over the planet.
+  The last part of the home page, where the sun comes up over the asian side.
   Your email and profiles come from lib/site.ts.
   keys: label, email (the text on the email button)
 -->
@@ -154,7 +156,7 @@ notes on interpretability, machine learning, and the occasional detour through l
 label: say hi
 email: write me
 
-if you work on interpretability, or on synthetic consumers, or you just liked the planet, write me. i read everything, i answer most of it.
+if you work on interpretability, or on synthetic consumers, or you just liked the view, write me. i read everything, i answer most of it.
 
 
 ## about
@@ -456,18 +458,14 @@ this page does not exist, or it did once and does not any more.
 ## world
 
 <!--
-  The small labels the 3D world pins beside things. The city names sit
-  next to the lights on the planet (the coordinates are added on their own,
-  and count up as the light travels between cities). The rest are the
-  captions in the scenes the resume flies through. prompt is what the
+  The small labels the 3D world pins beside things: the captions in the
+  scenes the resume flies up into, above the city. prompt is what the
   transformer in the interpretability scene reads, one word per token
   (three to eight words), and answer is what it says back.
-  keys: istanbul, padova, saturn, black-hole, transformer, refusal,
-  harmful, harmless, prompt, answer
+  keys: saturn, black-hole, transformer, refusal, harmful, harmless,
+  prompt, answer
 -->
 
-istanbul: istanbul
-padova: padova
 saturn: saturn, where the physics started
 black-hole: a black hole, bending the light behind it
 transformer: a transformer, read one layer at a time
@@ -493,4 +491,4 @@ resume: resume
 
 <!-- The line at the bottom of every page, after the year. keys: line -->
 
-line: kaan hacihaliloglu · istanbul, 41.0°N 28.9°E
+line: kaan hacihaliloglu · istanbul

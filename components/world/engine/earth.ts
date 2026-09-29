@@ -7,7 +7,6 @@ import {
   DataTexture,
   DoubleSide,
   Group,
-  LineSegments,
   LinearFilter,
   LinearMipmapLinearFilter,
   Mesh,
@@ -31,7 +30,6 @@ import type { Quality } from './quality'
 // palette. See scripts/world-textures.py for where the data comes from.
 
 export const ISTANBUL = { lat: 41.0082, lon: 28.9784 }
-export const PADOVA = { lat: 45.4064, lon: 11.8768 }
 
 const surfaceVertex = /* glsl */ `
   varying vec2 vUv;
@@ -321,13 +319,9 @@ export function createEarth(palette: Palette, quality: Quality, clouds: Texture)
     group.add(curtain)
   }
 
-  // The light where Kaan is: a point that breathes, with a ring going out
-  // from it on each half breath. It sits over Istanbul, and slides along the
-  // great circle to Padova when the resume gets there.
+  // The light where Kaan is: a point over Istanbul that breathes, with a
+  // ring going out from it on each half breath. The ride falls toward it.
   const beaconGeometry = new BufferGeometry()
-  const fromDir = geo(ISTANBUL.lat, ISTANBUL.lon)
-  const toDir = geo(PADOVA.lat, PADOVA.lon)
-  const beaconPos = fromDir.clone().multiplyScalar(1.004)
   beaconGeometry.setAttribute('position', new BufferAttribute(new Float32Array(3), 3))
   const beaconMaterial = new ShaderMaterial({
     uniforms: {
@@ -370,78 +364,15 @@ export function createEarth(palette: Palette, quality: Quality, clouds: Texture)
   })
   const beacon = new Points(beaconGeometry, beaconMaterial)
   beacon.frustumCulled = false
-  beacon.position.copy(beaconPos)
+  beacon.position.copy(geo(ISTANBUL.lat, ISTANBUL.lon)).multiplyScalar(1.004)
   spin.add(beacon)
 
-  // The route between the two, drawn as far as the light has travelled.
-  const omega = fromDir.angleTo(toDir)
-  const slerp = (t: number, out: Vector3) => {
-    const a = Math.sin((1 - t) * omega) / Math.sin(omega)
-    const b = Math.sin(t * omega) / Math.sin(omega)
-    return out.copy(fromDir).multiplyScalar(a).addScaledVector(toDir, b)
-  }
-  const routeSteps = 48
-  const routePos: number[] = []
-  const routeT: number[] = []
-  const rp = new Vector3()
-  const lifted = (t: number) => slerp(t, rp).multiplyScalar(1.004 + Math.sin(Math.PI * t) * 0.03)
-  for (let k = 0; k < routeSteps; k++) {
-    routePos.push(...lifted(k / routeSteps).toArray(), ...lifted((k + 1) / routeSteps).toArray())
-    routeT.push(k / routeSteps, (k + 1) / routeSteps)
-  }
-  const routeGeometry = new BufferGeometry()
-  routeGeometry.setAttribute('position', new BufferAttribute(new Float32Array(routePos), 3))
-  routeGeometry.setAttribute('aT', new BufferAttribute(new Float32Array(routeT), 1))
-  const routeMaterial = new ShaderMaterial({
-    uniforms: { uPlace: { value: 0 }, uOpacity: { value: 0 }, cRoute: { value: palette.sun } },
-    vertexShader: /* glsl */ `
-      attribute float aT;
-      varying float vT;
-      void main() {
-        vT = aT;
-        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-      }
-    `,
-    fragmentShader: /* glsl */ `
-      uniform float uPlace, uOpacity;
-      uniform vec3 cRoute;
-      varying float vT;
-      void main() {
-        float drawn = step(vT, uPlace);
-        float dash = 0.55 + 0.45 * step(0.5, fract(vT * 16.0));
-        gl_FragColor = vec4(cRoute, drawn * dash * uOpacity * (0.45 + 0.55 * smoothstep(uPlace - 0.3, uPlace, vT)));
-      }
-    `,
-    transparent: true,
-    depthWrite: false,
-    blending: AdditiveBlending,
-  })
-  const route = new LineSegments(routeGeometry, routeMaterial)
-  route.frustumCulled = false
-  spin.add(route)
-
-  const beaconWorld = new Vector3()
   let cloudDrift = 0
-
-  let place = -1
 
   return {
     group,
     spin,
     sunDir,
-    beaconLocal: beaconPos,
-    /** 0 over Istanbul, 1 over Padova. Returns the light's latitude and longitude in degrees. */
-    setPlace(t: number) {
-      const clamped = Math.min(1, Math.max(0, t))
-      if (clamped !== place) {
-        place = clamped
-        slerp(clamped, beaconPos).multiplyScalar(1.004)
-        beacon.position.copy(beaconPos)
-        routeMaterial.uniforms.uPlace.value = clamped
-      }
-      const n = beaconPos.clone().normalize()
-      return { lat: Math.asin(n.y) / (Math.PI / 180), lon: Math.atan2(-n.z, n.x) / (Math.PI / 180) }
-    },
     setTextures({ land, lights, biome }: { land?: Texture; lights?: Texture; biome?: Texture }) {
       const u = surfaceMaterial.uniforms
       for (const [key, tex] of [['uLand', land], ['uLights', lights], ['uBiome', biome]] as const) {
@@ -457,12 +388,6 @@ export function createEarth(palette: Palette, quality: Quality, clouds: Texture)
           u.uTexel.value.set(1 / img.width, 1 / img.height)
         }
       }
-    },
-    /** Where the Istanbul light is in world space, and how squarely it faces the camera. */
-    beacon(camera: Vector3, out = beaconWorld) {
-      out.copy(beaconPos).applyMatrix4(spin.matrixWorld)
-      const facing = out.clone().normalize().dot(camera.clone().sub(out).normalize())
-      return { position: out, facing }
     },
     update(time: number, dt: number, breath: number, pixelRatio: number, lightsBoost: number, auroraIntensity: number) {
       cloudDrift += dt * 0.0045
@@ -482,7 +407,6 @@ export function createEarth(palette: Palette, quality: Quality, clouds: Texture)
     },
     setBeaconOpacity(o: number) {
       beaconMaterial.uniforms.uOpacity.value = o
-      routeMaterial.uniforms.uOpacity.value = o * Math.min(1, place * 12)
     },
     dispose() {
       group.traverse((o) => {

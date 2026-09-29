@@ -59,7 +59,9 @@ const RULES = [
     why: 'the tracks and the page width are defined once, in Canvas.tsx',
     baseline: 0,
     pattern: /(?<![\d.A-Za-z])(1168|660|220|160)(?:px|rem)?(?![\d.A-Za-z])/g,
-    skip: (file) => file === 'components/layout/Canvas.tsx',
+    // The 3D world measures in its own units (about ten metres each), not in
+    // pixels: a hill 160 units out has nothing to do with the page's tracks.
+    skip: (file) => file === 'components/layout/Canvas.tsx' || file.startsWith('components/world/engine/'),
     allow: (file, text) =>
       CANVAS_ALLOW.some((e) => e.file === file && text.startsWith(e.value)),
   },

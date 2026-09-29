@@ -5,11 +5,11 @@ import { useSyncExternalStore } from 'react'
 // highlights read them. Kept outside React so the engine, which is plain
 // TypeScript, can write without a render.
 
-export type Phase = 'boot' | 'space' | 'tunnel' | 'arrive' | 'live'
+export type Phase = 'boot' | 'space' | 'tunnel' | 'dive' | 'arrive' | 'live'
 
 export interface WorldState {
   phase: Phase
-  /** Rings passed in the tube, 0..100. */
+  /** How far the ride has come, 0..100: the tube is the first half, the fall to the city the second. */
   percent: number
   /** True once WebGL is known to be missing or broken. */
   failed: boolean

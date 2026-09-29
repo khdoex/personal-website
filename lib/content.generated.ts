@@ -9,7 +9,7 @@ export const content: SiteContent = {
       "leaving deep space",
       "through the tube (shorter than it looks)",
       "that blue one is earth",
-      "istanbul, 41.0°N 28.9°E"
+      "down through the clouds, into istanbul"
     ],
     "skip": "skip the ride",
     "replay": "replay the ride"
@@ -17,7 +17,7 @@ export const content: SiteContent = {
   "hero": {
     "greeting": "hi, i am kaan.",
     "name": "kaan",
-    "location": "istanbul · 41.0°N 28.9°E",
+    "location": "istanbul",
     "time": "local time",
     "scroll": "scroll, we are still landing",
     "body": [
@@ -90,7 +90,7 @@ export const content: SiteContent = {
     "label": "say hi",
     "email": "write me",
     "body": [
-      "if you work on interpretability, or on synthetic consumers, or you just liked the planet, write me. i read everything, i answer most of it."
+      "if you work on interpretability, or on synthetic consumers, or you just liked the view, write me. i read everything, i answer most of it."
     ]
   },
   "about": {
@@ -421,10 +421,6 @@ export const content: SiteContent = {
     ]
   },
   "world": {
-    "places": {
-      "istanbul": "istanbul",
-      "padova": "padova"
-    },
     "captions": {
       "saturn": "saturn, where the physics started",
       "blackHole": "a black hole, bending the light behind it",
@@ -451,6 +447,6 @@ export const content: SiteContent = {
     "resume": "resume"
   },
   "footer": {
-    "line": "kaan hacihaliloglu · istanbul, 41.0°N 28.9°E"
+    "line": "kaan hacihaliloglu · istanbul"
   }
 }
