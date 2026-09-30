@@ -33,9 +33,10 @@ const SCHEMA = {
   projects: { keys: [], itemKeys: ['status', 'source', 'demo', 'tags'], body: true },
   writing: { keys: [], body: true },
   resume: { keys: ['pdf'], body: true },
-  'resume-experience': { keys: [], itemKeys: ['period', 'org', 'org-link', 'link', 'scene'], body: false },
-  'resume-education': { keys: [], itemKeys: ['period', 'org', 'org-link', 'link', 'scene'], body: false },
-  'resume-projects': { keys: [], itemKeys: ['period', 'org', 'org-link', 'link', 'scene'], body: false },
+  'resume-story': { keys: ['label'], itemKeys: ['period', 'scene'], body: false },
+  'resume-experience': { keys: [], itemKeys: ['period', 'org', 'org-link', 'link'], body: false },
+  'resume-education': { keys: [], itemKeys: ['period', 'org', 'org-link', 'link'], body: false },
+  'resume-projects': { keys: [], itemKeys: ['period', 'org', 'org-link', 'link'], body: false },
   'resume-skills': { keys: [], body: false, bullets: true },
   'resume-certifications': { keys: [], body: false, bullets: true },
   'resume-languages': { keys: [], body: true },
@@ -53,9 +54,10 @@ const SCHEMA = {
   footer: { keys: ['line'], body: false },
 }
 
-// What the 3D world can show beside a resume entry. The same names as
-// SceneName in lib/content-types.ts and SCENES in components/world/engine/shots.ts.
-const SCENES = ['istanbul', 'padova', 'physics', 'interpretability']
+// What the 3D world can show beside a chapter of the resume's story. The same
+// names as SceneName in lib/content-types.ts and SCENES in
+// components/world/engine/shots.ts.
+const SCENES = ['bogazici', 'physics', 'padova', 'interpretability', 'levent']
 
 class ContentError extends Error {}
 const fail = (line, message) => {
@@ -234,7 +236,7 @@ function build(sections) {
     return list
   }
   const scene = (b) => {
-    const v = opt(b, 'scene') ?? 'istanbul'
+    const v = need(b, 'scene')
     if (!SCENES.includes(v)) fail(b.fields.scene.line, `scene is "${v}"; it has to be one of ${SCENES.join(', ')}.`)
     return v
   }
@@ -246,7 +248,6 @@ function build(sections) {
     ...(url(b, 'org-link') && { orgHref: url(b, 'org-link') }),
     summary: one(b),
     ...(b.bullets.length && { detail: b.bullets.map((d) => d.text) }),
-    scene: scene(b),
   })
 
   const intro = get('intro')
@@ -337,6 +338,15 @@ function build(sections) {
     resume: {
       pdf: need(resume, 'pdf'),
       summary: one(resume),
+      story: {
+        label: need(get('resume-story'), 'label'),
+        chapters: items(get('resume-story')).map((b) => ({
+          title: b.title,
+          ...(opt(b, 'period') && { period: opt(b, 'period') }),
+          scene: scene(b),
+          body: paras(b),
+        })),
+      },
       experience: items(get('resume-experience')).map(resumeEntry),
       education: items(get('resume-education')).map(resumeEntry),
       projects: items(get('resume-projects')).map(resumeEntry),

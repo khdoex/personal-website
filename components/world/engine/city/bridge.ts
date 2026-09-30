@@ -14,28 +14,39 @@ import {
 import { at, fogGLSL, merge, rng, type Atmosphere } from './common'
 import type { Palette } from '../palette'
 
-// The Bosphorus Bridge, which lights its cables in colours that run from one
-// continent to the other. Here they run in the site's three: leaf, sun and
-// sky. Pointing at one of the things Kaan is working on floods the whole
-// bridge with that thing's colour. Traffic crosses all night.
+// The Bosphorus bridges. The first lights its cables in colours that run
+// from one continent to the other; here they run in the site's three: leaf,
+// sun and sky, and pointing at one of the things Kaan is working on floods
+// the whole bridge with that thing's colour. The second, up at the narrows,
+// keeps to plain warm lamps. Traffic crosses both all night.
 
 const TOWER_H = 17
 const DECK_Y = 6.2
 const INSET = 6
 
-/** The colour of the lights at a point along the bridge, 0 at the European end, 1 at the Asian. */
+/**
+ * The colour of the lights at a point along the bridge, 0 at the European
+ * end, 1 at the Asian. A bridge with plain lamps (uStatic) is warm white all
+ * along, and pays no attention to pointing.
+ */
 const ledGLSL = /* glsl */ `
-  uniform float uHighlight, uHighlightMix;
-  uniform vec3 cA, cB, cC;
+  uniform float uHighlight, uHighlightMix, uStatic;
+  uniform vec3 cA, cB, cC, cWhite;
   vec3 pick(float i) { return i < 0.5 ? cA : (i < 1.5 ? cB : cC); }
   vec3 ledColor(float t) {
+    if (uStatic > 0.5) return cWhite * (0.75 + 0.1 * sin(t * 40.0));
     float w = fract(t * 1.5 - uTime * 0.05) * 3.0;
     vec3 wave = mix(pick(floor(w)), pick(mod(floor(w) + 1.0, 3.0)), smoothstep(0.7, 1.0, fract(w)));
     return mix(wave, pick(mod(max(uHighlight, 0.0), 3.0)), uHighlightMix);
   }
 `
 
-export function createBridge(palette: Palette, atmos: Atmosphere, [x0, x1, z]: [number, number, number]) {
+export function createBridge(
+  palette: Palette,
+  atmos: Atmosphere,
+  [x0, x1, z]: [number, number, number],
+  style: 'leds' | 'lamps' = 'leds'
+) {
   const span = x1 - x0
   const towers = [x0 + INSET, x1 - INSET]
   const shared = {
@@ -43,6 +54,8 @@ export function createBridge(palette: Palette, atmos: Atmosphere, [x0, x1, z]: [
     uPixelRatio: { value: 1 },
     uHighlight: { value: -1 },
     uHighlightMix: { value: 0 },
+    uStatic: { value: style === 'lamps' ? 1 : 0 },
+    cWhite: { value: palette.heading.clone().lerp(palette.city, 0.35) },
     uX0: { value: x0 },
     uSpan: { value: span },
     cA: { value: palette.accent },
@@ -262,6 +275,7 @@ export function createBridge(palette: Palette, atmos: Atmosphere, [x0, x1, z]: [
     materials: [structure.material, cables.material, ledMaterial],
     ledMaterial,
     update(highlight: number | null, dt: number) {
+      if (style === 'lamps') return
       if (highlight !== null) shared.uHighlight.value = highlight
       shared.uHighlightMix.value += ((highlight === null ? 0 : 1) - shared.uHighlightMix.value) * (1 - Math.exp(-6 * dt))
     },

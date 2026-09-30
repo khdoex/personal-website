@@ -107,7 +107,7 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* about: galata, across the golden horn */}
+      {/* about: boğaziçi's hill over bebek, rumelihisarı below it */}
       <section data-station="about" className="relative flex min-h-[100svh] items-start pb-24 pt-28">
         <div className={wrap}>
           <div className={left}>
@@ -146,7 +146,7 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* resume: the maiden's tower, its lamp turning */}
+      {/* resume: kanyon on büyükdere caddesi, the traffic going by */}
       <section data-station="resume" className="relative flex min-h-[100svh] items-center py-24">
         <div className={wrap}>
           <div className={right}>
@@ -191,7 +191,7 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* writing: from the galata tower down over the old city */}
+      {/* writing: galata, across the golden horn */}
       <section data-station="writing" className="relative flex min-h-[100svh] items-center py-24">
         <div className={wrap}>
           <div className={left}>

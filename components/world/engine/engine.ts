@@ -125,6 +125,8 @@ export class Engine {
   private readonly clouds: ReturnType<typeof bakeClouds>
   private readonly veil: ReturnType<typeof createVeil>
   private readonly flash: Mesh<PlaneGeometry, ShaderMaterial>
+  /** Darkens the text's side of the frame, as much as the shot asks. */
+  private readonly shade: Mesh<PlaneGeometry, ShaderMaterial>
 
   private phase: EnginePhase = 'live'
   private time = 0
@@ -159,6 +161,8 @@ export class Engine {
   private place: Place = 'istanbul'
   /** A flight between places: up through the cloud, across, and down. */
   private hop: { from: Shot; t: number; duration: number; lift: number } | null = null
+  /** A shot set by hand through window.__world.look, overriding the page's. */
+  private forced: Shot | null = null
   private lift = 0
   private anchors: { id: string; at: number }[] = []
   private anchorSource: Anchor[] = []
@@ -247,6 +251,33 @@ export class Engine {
     this.flash.frustumCulled = false
     this.flash.renderOrder = 999
 
+    this.shade = new Mesh(
+      new PlaneGeometry(2, 2),
+      new ShaderMaterial({
+        uniforms: { uShade: { value: 0 }, uSide: { value: 0 }, cGround: { value: palette.background } },
+        vertexShader: /* glsl */ `
+          varying vec2 vUv;
+          void main() { vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }
+        `,
+        fragmentShader: /* glsl */ `
+          uniform float uShade, uSide;
+          uniform vec3 cGround;
+          varying vec2 vUv;
+          void main() {
+            // uSide -1: the text is on the left; +1: on the right.
+            float x = uSide < 0.0 ? 1.0 - vUv.x : vUv.x;
+            float a = smoothstep(0.3, 0.62, x) * 0.82 * uShade;
+            gl_FragColor = vec4(cGround, a);
+          }
+        `,
+        transparent: true,
+        depthTest: false,
+        depthWrite: false,
+      })
+    )
+    this.shade.frustumCulled = false
+    this.shade.renderOrder = 997
+
     this.scene.add(
       this.background.mesh,
       this.stars.points,
@@ -259,6 +290,7 @@ export class Engine {
       this.sky.moon,
       this.physics.group,
       this.model.group,
+      this.shade,
       this.veil.mesh,
       this.flash
     )
@@ -287,6 +319,22 @@ export class Engine {
       ;(window as unknown as { __world: unknown }).__world = {
         engine: this,
         advance: (seconds: number) => this.advance(seconds),
+        // Points the camera at any shot, in the city's own frame, for
+        // screenshots while a view is being tuned. null gives it back.
+        look: (spec: (Partial<Shot> & { x?: number; y?: number; z?: number }) | null) => {
+          if (!spec) {
+            this.forced = null
+            return
+          }
+          const { x, y, z, ...rest } = spec
+          this.forced = {
+            ...this.shotFor(this.route),
+            ...rest,
+            ...(x !== undefined && { cx: ISTANBUL_AT.x + x }),
+            ...(y !== undefined && { cy: ISTANBUL_AT.y + y }),
+            ...(z !== undefined && { cz: ISTANBUL_AT.z + z }),
+          }
+        },
       }
     }
     this.setRoute(opts.route)
@@ -366,6 +414,8 @@ export class Engine {
     this.veil.dispose()
     this.flash.geometry.dispose()
     this.flash.material.dispose()
+    this.shade.geometry.dispose()
+    this.shade.material.dispose()
     this.renderer.dispose()
     this.renderer.domElement.remove()
   }
@@ -481,6 +531,10 @@ export class Engine {
     this.lastY = this.camera.position.y
     this.rush += this.phase === 'dive' ? dt * 0.8 : Math.min(0.2, climb / 900) + dt * 0.02
     this.veil.update(this.time, cloud, this.rush, this.width / this.height, a.uFogColor.value)
+    const shade = live ? this.cur.shade : 0
+    this.shade.material.uniforms.uShade.value = shade
+    this.shade.material.uniforms.uSide.value = this.cur.shiftX > 0.02 ? -1 : this.cur.shiftX < -0.02 ? 1 : 0
+    this.shade.visible = shade > 0.01 && Math.abs(this.cur.shiftX) > 0.02
 
     if (this.earth.group.visible) this.earth.update(this.time, dt, breath, this.pixelRatio, 1, 0.6)
     this.physics.update(this.time, breath, live ? this.cur.physics : 0)
@@ -807,7 +861,7 @@ export class Engine {
   private shotFor(kind: RouteKind, out?: Shot): Shot {
     const portrait = this.width / this.height < 0.8
     const spec =
-      kind === 'home' || kind === 'hidden' ? HOME.hero : kind === 'resume' ? SCENES.istanbul : ROUTES[kind]
+      kind === 'home' || kind === 'hidden' ? HOME.hero : kind === 'resume' ? SCENES.bogazici : ROUTES[kind]
     const shot = resolve(spec, portrait)
     return out ? Object.assign(out, shot) : { ...shot }
   }
@@ -825,6 +879,7 @@ export class Engine {
   }
 
   private targetShot(out: Shot, cut = false) {
+    if (this.forced) return Object.assign(out, this.forced)
     this.followReader(out, cut)
     if (this.route === 'resume' && this.textEdge > 0 && this.width / this.height >= 0.8) {
       frameToColumn(out, this.width, this.textEdge)
@@ -849,8 +904,15 @@ export class Engine {
         const eased = smoothstep(0.18, 0.82, t)
         const A = shotOf(a.id)
         const B = shotOf(b.id)
-        // Two places are never blended: halfway, the camera sets off for the other.
-        if (cut || placeOf(A) !== placeOf(B)) return Object.assign(out, eased < 0.5 ? A : B)
+        // Two places are never blended: past halfway, the camera sets off for
+        // the other. Once it has, it needs a clear step back before it turns
+        // round again, so a reader resting near the halfway line does not
+        // send it back and forth.
+        if (cut) return Object.assign(out, eased < 0.5 ? A : B)
+        if (placeOf(A) !== placeOf(B)) {
+          const towardB = this.place === placeOf(B) ? eased > 0.35 : eased > 0.65
+          return Object.assign(out, towardB ? B : A)
+        }
         return blend(A, B, eased, out)
       }
     }

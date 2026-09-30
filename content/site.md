@@ -237,21 +237,62 @@ pdf: download pdf
 AI engineer and grad student working on refusal mechanics and safety in llm through interpretability and SCL a new way of doing market research.
 
 
+## resume-story
+
+<!--
+  The story at the top of the /resume page, before the full list: one ###
+  per chapter, oldest first. The 3D world travels with it, one place per
+  chapter, and stays on the last one while the list is read.
+  keys: label (the small title over the story)
+  keys per chapter: period (optional), scene (what the world shows while the
+  chapter is read: bogazici, physics, padova, interpretability or levent).
+  The paragraphs are the chapter.
+-->
+
+label: the story so far
+
+### boğaziçi
+period: 2018 – 2023
+scene: bogazici
+
+physics, on a hill over the bosphorus. the part that stayed with me was earthml: transformers on seismic data, picking earthquakes out of the noise. i also taught numerical methods, and once we even turned seismic data into an art exhibition.
+
+### the habit
+scene: physics
+
+physics left me one habit i cannot turn off: when something works, i want to know what is actually happening inside it. first it was physics, then earthquakes, now language models. same question, different box.
+
+### padova
+period: 2023 – 2024
+scene: padova
+
+a computer science master's in padova. i did the first year and stopped: i could not feel myself getting better. the long version is on the blog, in turkish. right call i think, i still think about it though.
+
+### sabancı
+period: 2025 –
+scene: interpretability
+
+back in istanbul, a data science msc at sabancı. the thesis is on the refusal direction: when a model says "i can't help with that", something specific happens inside, and it can be shown as a direction in activation space. i am mapping how jailbreaks push the model off it, and i am a ta for quantum programming on the side.
+
+### now
+period: 2025 –
+scene: levent
+
+days are SCL: synthetic consumers that behave like real ones, for market research, and i lead the engineering. before that, audio models at soundboost. nights are still the thesis. the two feed each other more than i expected, we will see where it goes.
+
+
 ## resume-experience
 
 <!--
   One ### per job, the title is the role, the paragraph the summary, the
   list lines the details behind "+ detail".
-  keys per job: period, org, org-link, link (a link on the role itself),
-  scene (what the 3D world shows while this entry is being read: istanbul,
-  padova, physics or interpretability; istanbul if you leave it out)
+  keys per job: period, org, org-link, link (a link on the role itself)
 -->
 
 ### AI Engineer
 period: 2025 –
 org: Synthetic Consumer Lab
 org-link: https://synthetic-consumers.com/
-scene: istanbul
 
 Engineering lead responsible for the full product stack: backend, frontend, AI systems, and statistical methodology.
 
@@ -263,7 +304,6 @@ Engineering lead responsible for the full product stack: backend, frontend, AI s
 period: 2025 –
 org: Sabancı University
 org-link: https://sabanciuniv.edu/
-scene: interpretability
 
 Teaching assistant for the Quantum Programming course, guiding students through quantum computing concepts, circuit design, and practical implementations using quantum programming frameworks.
 
@@ -271,7 +311,6 @@ Teaching assistant for the Quantum Programming course, guiding students through 
 period: 2024 – 2025
 org: SoundBoost
 org-link: https://soundboost.ai/about
-scene: istanbul
 
 Designed and deployed deep learning models for audio source separation, classification, and acoustic event detection.
 
@@ -283,7 +322,6 @@ Designed and deployed deep learning models for audio source separation, classifi
 period: 2023
 org: Live The World
 org-link: https://livetheworld.com/
-scene: istanbul
 
 Engineered content generation pipelines using llms and web scraping.
 
@@ -293,7 +331,6 @@ Engineered content generation pipelines using llms and web scraping.
 period: 2022 – 2023
 org: Allianz TR
 org-link: https://www.allianz.com.tr/
-scene: istanbul
 
 Automated Excel reporting workflows using Python and SQL. Built dynamic dashboards for operational visibility and optimized business processes using Celonis process mining.
 
@@ -302,7 +339,6 @@ period: 2020 – 2022
 org: Boğaziçi University
 org-link: https://boun.edu.tr/
 link: https://arxiv.org/abs/2407.18402
-scene: physics
 
 Worked on feature engineering and transformer-based architectures for seismic data analysis and earthquake detection.
 
@@ -312,20 +348,18 @@ Worked on feature engineering and transformer-based architectures for seismic da
 period: 2021 – 2022
 org: Boğaziçi University
 org-link: https://boun.edu.tr/
-scene: physics
 
 Led QA sessions for Numerical Methods, teaching practical applications of NumPy, SciPy, and Matplotlib through hands-on problem solving.
 
 
 ## resume-education
 
-<!-- One ### per degree. keys: period, org, org-link, scene -->
+<!-- One ### per degree. keys: period, org, org-link -->
 
 ### M.Sc. in Data Science
 period: 2025 –
 org: Sabancı University
 org-link: https://sabanciuniv.edu/
-scene: interpretability
 
 Thesis research on mechanistic interpretability of large language models, studying how refusal and related concepts are represented geometrically in a model’s internal activations. Coursework in advanced deep learning and statistical analysis.
 
@@ -333,7 +367,6 @@ Thesis research on mechanistic interpretability of large language models, studyi
 period: 2023 – 2024
 org: University of Padua
 org-link: https://www.unipd.it/en/
-scene: padova
 
 Completed the first year of the M.Sc. program. Advanced coursework in artificial intelligence and deep learning, building strong theoretical foundations in deep learning architectures and algorithmic problem-solving.
 
@@ -341,44 +374,37 @@ Completed the first year of the M.Sc. program. Advanced coursework in artificial
 period: 2018 – 2023
 org: Boğaziçi University
 org-link: https://boun.edu.tr/
-scene: physics
 
 was part of the EarthML research group, Science Club
 
 
 ## resume-projects
 
-<!-- One ### per project or award. keys: link, scene -->
+<!-- One ### per project or award. keys: link -->
 
 ### TÜBİTAK 2209-A
-scene: physics
 
 Developed a high-precision earthquake detection model through interesting feature engineering methods.
 
 ### Earth-ML
-scene: physics
 
 Enhanced time series classification using advanced modeling techniques for geophysical data.
 
 ### Kaggle ML Challenge
 link: https://github.com/khdoex/Past_ML_codes/blob/main/isb5-gradient-ensemble.ipynb
-scene: istanbul
 
 8th place in Türkiye İş Bankası ML Challenge 5 through effective feature engineering.
 
 ### Datathon AI
-scene: istanbul
 
 3rd place in computer vision competition.
 
 ### NLP News Summarization
 link: https://github.com/khdoex/nlp_news_sum
-scene: interpretability
 
 Comparative evaluation of BART and T5 architectures for summarization tasks.
 
 ### "Burası" Art Exhibition
-scene: physics
 
 Merged seismic data with artistic representation, fusing science and art.
 

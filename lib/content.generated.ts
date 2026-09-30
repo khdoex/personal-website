@@ -167,6 +167,50 @@ export const content: SiteContent = {
   "resume": {
     "pdf": "download pdf",
     "summary": "AI engineer and grad student working on refusal mechanics and safety in llm through interpretability and SCL a new way of doing market research.",
+    "story": {
+      "label": "the story so far",
+      "chapters": [
+        {
+          "title": "boğaziçi",
+          "period": "2018 – 2023",
+          "scene": "bogazici",
+          "body": [
+            "physics, on a hill over the bosphorus. the part that stayed with me was earthml: transformers on seismic data, picking earthquakes out of the noise. i also taught numerical methods, and once we even turned seismic data into an art exhibition."
+          ]
+        },
+        {
+          "title": "the habit",
+          "scene": "physics",
+          "body": [
+            "physics left me one habit i cannot turn off: when something works, i want to know what is actually happening inside it. first it was physics, then earthquakes, now language models. same question, different box."
+          ]
+        },
+        {
+          "title": "padova",
+          "period": "2023 – 2024",
+          "scene": "padova",
+          "body": [
+            "a computer science master's in padova. i did the first year and stopped: i could not feel myself getting better. the long version is on the blog, in turkish. right call i think, i still think about it though."
+          ]
+        },
+        {
+          "title": "sabancı",
+          "period": "2025 –",
+          "scene": "interpretability",
+          "body": [
+            "back in istanbul, a data science msc at sabancı. the thesis is on the refusal direction: when a model says \"i can't help with that\", something specific happens inside, and it can be shown as a direction in activation space. i am mapping how jailbreaks push the model off it, and i am a ta for quantum programming on the side."
+          ]
+        },
+        {
+          "title": "now",
+          "period": "2025 –",
+          "scene": "levent",
+          "body": [
+            "days are SCL: synthetic consumers that behave like real ones, for market research, and i lead the engineering. before that, audio models at soundboost. nights are still the thesis. the two feed each other more than i expected, we will see where it goes."
+          ]
+        }
+      ]
+    },
     "experience": [
       {
         "period": "2025 –",
@@ -178,16 +222,14 @@ export const content: SiteContent = {
           "Architected the platform on a Laravel, Python/FastAPI, and Redis stack",
           "Built agentic systems and solutions for market research, synthetic consumer persona systems grounded in real demographic and behavioral data",
           "agnus, the agent of the market research"
-        ],
-        "scene": "istanbul"
+        ]
       },
       {
         "period": "2025 –",
         "title": "Teaching Assistant",
         "org": "Sabancı University",
         "orgHref": "https://sabanciuniv.edu/",
-        "summary": "Teaching assistant for the Quantum Programming course, guiding students through quantum computing concepts, circuit design, and practical implementations using quantum programming frameworks.",
-        "scene": "interpretability"
+        "summary": "Teaching assistant for the Quantum Programming course, guiding students through quantum computing concepts, circuit design, and practical implementations using quantum programming frameworks."
       },
       {
         "period": "2024 – 2025",
@@ -199,8 +241,7 @@ export const content: SiteContent = {
           "End-to-end AI pipelines with Django backends for model serving and JavaScript for real-time inference",
           "Led development of AI agents for complex audio processing workflows",
           "Created free tools on SoundBoost like Loudness Penalty, LUFS meter, etc."
-        ],
-        "scene": "istanbul"
+        ]
       },
       {
         "period": "2023",
@@ -210,16 +251,14 @@ export const content: SiteContent = {
         "summary": "Engineered content generation pipelines using llms and web scraping.",
         "detail": [
           "Enhanced web scraping capabilities and developed Python solutions for AI-driven applications"
-        ],
-        "scene": "istanbul"
+        ]
       },
       {
         "period": "2022 – 2023",
         "title": "Data Analytics & Process Mining Intern",
         "org": "Allianz TR",
         "orgHref": "https://www.allianz.com.tr/",
-        "summary": "Automated Excel reporting workflows using Python and SQL. Built dynamic dashboards for operational visibility and optimized business processes using Celonis process mining.",
-        "scene": "istanbul"
+        "summary": "Automated Excel reporting workflows using Python and SQL. Built dynamic dashboards for operational visibility and optimized business processes using Celonis process mining."
       },
       {
         "period": "2020 – 2022",
@@ -230,16 +269,14 @@ export const content: SiteContent = {
         "summary": "Worked on feature engineering and transformer-based architectures for seismic data analysis and earthquake detection.",
         "detail": [
           "Contributed to published research (arXiv:2407.18402)"
-        ],
-        "scene": "physics"
+        ]
       },
       {
         "period": "2021 – 2022",
         "title": "Teaching Assistant",
         "org": "Boğaziçi University",
         "orgHref": "https://boun.edu.tr/",
-        "summary": "Led QA sessions for Numerical Methods, teaching practical applications of NumPy, SciPy, and Matplotlib through hands-on problem solving.",
-        "scene": "physics"
+        "summary": "Led QA sessions for Numerical Methods, teaching practical applications of NumPy, SciPy, and Matplotlib through hands-on problem solving."
       }
     ],
     "education": [
@@ -248,64 +285,55 @@ export const content: SiteContent = {
         "title": "M.Sc. in Data Science",
         "org": "Sabancı University",
         "orgHref": "https://sabanciuniv.edu/",
-        "summary": "Thesis research on mechanistic interpretability of large language models, studying how refusal and related concepts are represented geometrically in a model’s internal activations. Coursework in advanced deep learning and statistical analysis.",
-        "scene": "interpretability"
+        "summary": "Thesis research on mechanistic interpretability of large language models, studying how refusal and related concepts are represented geometrically in a model’s internal activations. Coursework in advanced deep learning and statistical analysis."
       },
       {
         "period": "2023 – 2024",
         "title": "Graduate Studies in Computer Science",
         "org": "University of Padua",
         "orgHref": "https://www.unipd.it/en/",
-        "summary": "Completed the first year of the M.Sc. program. Advanced coursework in artificial intelligence and deep learning, building strong theoretical foundations in deep learning architectures and algorithmic problem-solving.",
-        "scene": "padova"
+        "summary": "Completed the first year of the M.Sc. program. Advanced coursework in artificial intelligence and deep learning, building strong theoretical foundations in deep learning architectures and algorithmic problem-solving."
       },
       {
         "period": "2018 – 2023",
         "title": "B.Sc. in Physics",
         "org": "Boğaziçi University",
         "orgHref": "https://boun.edu.tr/",
-        "summary": "was part of the EarthML research group, Science Club",
-        "scene": "physics"
+        "summary": "was part of the EarthML research group, Science Club"
       }
     ],
     "projects": [
       {
         "period": "",
         "title": "TÜBİTAK 2209-A",
-        "summary": "Developed a high-precision earthquake detection model through interesting feature engineering methods.",
-        "scene": "physics"
+        "summary": "Developed a high-precision earthquake detection model through interesting feature engineering methods."
       },
       {
         "period": "",
         "title": "Earth-ML",
-        "summary": "Enhanced time series classification using advanced modeling techniques for geophysical data.",
-        "scene": "physics"
+        "summary": "Enhanced time series classification using advanced modeling techniques for geophysical data."
       },
       {
         "period": "",
         "title": "Kaggle ML Challenge",
         "href": "https://github.com/khdoex/Past_ML_codes/blob/main/isb5-gradient-ensemble.ipynb",
-        "summary": "8th place in Türkiye İş Bankası ML Challenge 5 through effective feature engineering.",
-        "scene": "istanbul"
+        "summary": "8th place in Türkiye İş Bankası ML Challenge 5 through effective feature engineering."
       },
       {
         "period": "",
         "title": "Datathon AI",
-        "summary": "3rd place in computer vision competition.",
-        "scene": "istanbul"
+        "summary": "3rd place in computer vision competition."
       },
       {
         "period": "",
         "title": "NLP News Summarization",
         "href": "https://github.com/khdoex/nlp_news_sum",
-        "summary": "Comparative evaluation of BART and T5 architectures for summarization tasks.",
-        "scene": "interpretability"
+        "summary": "Comparative evaluation of BART and T5 architectures for summarization tasks."
       },
       {
         "period": "",
         "title": "\"Burası\" Art Exhibition",
-        "summary": "Merged seismic data with artistic representation, fusing science and art.",
-        "scene": "physics"
+        "summary": "Merged seismic data with artistic representation, fusing science and art."
       }
     ],
     "skills": [

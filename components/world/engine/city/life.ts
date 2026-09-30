@@ -18,8 +18,10 @@ import {
 import { at, fogGLSL, merge, rng, tag, type Atmosphere } from './common'
 import type { Palette } from '../palette'
 
-// What moves in the city: ferries crossing between the continents, their
-// wakes, and gulls. The ferries borrow the monuments' material, so their
+// What moves on and over the water: ferries crossing between the
+// continents, tankers working up and down the strait, fishing boats riding
+// at anchor off the shore, their wakes, and gulls. Everything afloat rolls
+// with the waves. The boats borrow the monuments' material, so their
 // windows are lit the same gold.
 
 type Route = { from: [number, number]; to: [number, number]; period: number; phase: number }
@@ -47,6 +49,66 @@ function ferryGeometry(): BufferGeometry {
     }
   }
   return merge(parts)
+}
+
+/** The middle of the strait, south to north: the tankers' lane. */
+const LANE: [number, number][] = [
+  [58, 120], [62, 20], [64, -100], [66, -250], [62, -330], [64, -400], [66, -452], [68, -560], [70, -760],
+]
+
+function tankerGeometry(): BufferGeometry {
+  const parts: BufferGeometry[] = [
+    // hull and deck, long and low
+    tag(new BoxGeometry(17, 1.3, 2.7).translate(0, 0.2, 0), 0.1),
+    tag(new CylinderGeometry(1.35, 1.35, 1.3, 12, 1, false, 0, Math.PI).rotateY(Math.PI / 2).translate(8.5, 0.2, 0), 0.1),
+    tag(at(new BoxGeometry(12, 0.25, 2.3), 1, 0.95, 0), 0.18),
+    // the bridge at the stern, its funnel, the mast forward
+    tag(at(new BoxGeometry(2.8, 2.6, 2.5), -6.6, 0.9, 0), (t) => 0.45 - 0.2 * t),
+    tag(at(new BoxGeometry(1.2, 0.5, 2.9), -6.6, 3.5, 0), 0.3),
+    tag(at(new CylinderGeometry(0.4, 0.45, 1.6, 8), -7.6, 3.6, 0), 0.25),
+    tag(at(new CylinderGeometry(0.05, 0.05, 2.6, 4), 6.8, 1, 0), 0.2),
+    tag(at(new BoxGeometry(0.16, 0.16, 0.16), 6.8, 3.7, 0), 0, 1.8),
+    tag(at(new BoxGeometry(0.16, 0.16, 0.16), -6.6, 4.3, 0), 0, 1.6),
+  ]
+  // Bridge windows, and a string of deck lights down the length.
+  for (let k = 0; k < 5; k++) {
+    for (const z of [-1.26, 1.26]) parts.push(tag(new BoxGeometry(0.34, 0.3, 0.05).translate(-7.6 + k * 0.5, 2.9, z), 0.2, 0.95))
+  }
+  for (let k = 0; k < 10; k++) parts.push(tag(new BoxGeometry(0.1, 0.1, 0.1).translate(-4 + k * 1.2, 1.35, 0), 0, 0.9))
+  return merge(parts)
+}
+
+function boatGeometry(): BufferGeometry {
+  return merge([
+    tag(new BoxGeometry(2.2, 0.5, 0.9).translate(0, 0.1, 0), 0.15),
+    tag(at(new BoxGeometry(0.7, 0.5, 0.7), -0.3, 0.35, 0), 0.3),
+    tag(at(new CylinderGeometry(0.03, 0.03, 1, 4), 0.5, 0.35, 0), 0.2),
+    tag(at(new BoxGeometry(0.14, 0.14, 0.14), 0.5, 0.95, 0), 0, 1.5),
+  ])
+}
+
+/** Where along a polyline, and which way it points, a distance s along it. */
+function alongLane(points: [number, number][], s: number) {
+  for (let i = 0; i < points.length - 1; i++) {
+    const [ax, az] = points[i]
+    const [bx, bz] = points[i + 1]
+    const len = Math.hypot(bx - ax, bz - az)
+    if (s <= len || i === points.length - 2) {
+      const t = Math.min(1, s / len)
+      return { x: ax + (bx - ax) * t, z: az + (bz - az) * t, heading: Math.atan2(-(bz - az), bx - ax) }
+    }
+    s -= len
+  }
+  return { x: points[0][0], z: points[0][1], heading: 0 }
+}
+
+const laneLength = LANE.slice(1).reduce((sum, [x, z], i) => sum + Math.hypot(x - LANE[i][0], z - LANE[i][1]), 0)
+
+/** Rolls, pitches and lifts a floating thing a little, each on its own clock. */
+function float(holder: Group, time: number, seed: number, size = 1) {
+  holder.rotation.x = Math.sin(time * 0.9 + seed * 7) * 0.035 / size
+  holder.rotation.z = Math.sin(time * 0.7 + seed * 3) * 0.02 / size
+  holder.position.y = Math.sin(time * 1.1 + seed * 5) * 0.08
 }
 
 export function createLife(palette: Palette, atmos: Atmosphere, landmarkMaterial: ShaderMaterial, gullCount: number) {
@@ -87,13 +149,43 @@ export function createLife(palette: Palette, atmos: Atmosphere, landmarkMaterial
     blending: AdditiveBlending,
     side: DoubleSide,
   })
+  // Each vessel sits in a holder that the route moves and turns; the hull
+  // inside it rolls on the waves, the wake stays flat on the water.
   const ferries = ROUTES.map(() => {
     const holder = new Group()
-    const hull = new Mesh(ferryGeo, landmarkMaterial)
+    const rolling = new Group()
+    rolling.add(new Mesh(ferryGeo, landmarkMaterial))
     const wake = new Mesh(new PlaneGeometry(9, 26).rotateX(-Math.PI / 2).rotateY(Math.PI / 2).translate(-16.5, 0.05, 0), wakeMaterial)
-    holder.add(hull, wake)
+    holder.add(rolling, wake)
     group.add(holder)
-    return holder
+    return { holder, rolling, wake }
+  })
+
+  // Two tankers in the strait, one each way, slow enough to take the length
+  // of a long read to pass.
+  const tankerGeo = tankerGeometry()
+  const tankers = [0.15, 0.62].map((phase, i) => {
+    const holder = new Group()
+    const rolling = new Group()
+    rolling.add(new Mesh(tankerGeo, landmarkMaterial))
+    const wake = new Mesh(new PlaneGeometry(12, 40).rotateX(-Math.PI / 2).rotateY(Math.PI / 2).translate(-28, 0.05, 0), wakeMaterial)
+    holder.add(rolling, wake)
+    group.add(holder)
+    return { holder, rolling, phase, dir: i === 0 ? 1 : -1 }
+  })
+
+  // Fishing boats at anchor off the shores, each with its lamp.
+  const boatGeo = boatGeometry()
+  const moorings: [number, number, number][] = [
+    [32, -345, 0.4], [34, -365, 2.1], [30, -300, 1.2], [94, -150, 2.8], [92, -60, 0.9], [46, 58, 1.7], [-12, 30, 3], [18, -120, 0.2],
+  ]
+  const boats = moorings.map(([x, z, heading], i) => {
+    const holder = new Group()
+    holder.add(new Mesh(boatGeo, landmarkMaterial))
+    holder.position.set(x, 0, z)
+    holder.rotation.y = heading
+    group.add(holder)
+    return { holder, x, z, seed: i * 1.37 }
   })
 
   // ------------------------------------------------------------------ gulls
@@ -174,12 +266,28 @@ export function createLife(palette: Palette, atmos: Atmosphere, landmarkMaterial
         const e = 0.5 - 0.5 * Math.cos(Math.PI * t)
         const [ax, az] = route.from
         const [bx, bz] = route.to
-        const holder = ferries[i]
+        const { holder, rolling, wake } = ferries[i]
         holder.position.set(ax + (bx - ax) * e, 0, az + (bz - az) * e)
         const heading = Math.atan2(-(bz - az), bx - ax) + (outbound ? 0 : Math.PI)
         holder.rotation.y = heading
-        holder.children[1].visible = Math.sin(Math.PI * t) > 0.25
+        wake.visible = Math.sin(Math.PI * t) > 0.25
+        float(rolling, time, i)
       })
+      for (const tanker of tankers) {
+        const u = (((time / 900 + tanker.phase) % 1) + 1) % 1
+        const s = (tanker.dir > 0 ? u : 1 - u) * laneLength
+        const at = alongLane(LANE, s)
+        // Keep to the right-hand side of the lane, as ships in the strait do.
+        const side = 5 * tanker.dir
+        tanker.holder.position.set(at.x + Math.sin(at.heading) * side, 0, at.z + Math.cos(at.heading) * side)
+        tanker.holder.rotation.y = at.heading + (tanker.dir > 0 ? 0 : Math.PI)
+        float(tanker.rolling, time, tanker.phase * 10, 3)
+      }
+      for (const boat of boats) {
+        float(boat.holder, time, boat.seed, 0.6)
+        boat.holder.position.x = boat.x + Math.sin(time * 0.05 + boat.seed) * 0.8
+        boat.holder.position.z = boat.z + Math.cos(time * 0.04 + boat.seed) * 0.8
+      }
       birds.forEach((b, i) => {
         const a = b.phase + time * b.speed
         p.set(b.cx + Math.cos(a) * b.r, b.cy + Math.sin(time * 0.6 + b.bob) * 0.8, b.cz + Math.sin(a) * b.r)
@@ -191,12 +299,14 @@ export function createLife(palette: Palette, atmos: Atmosphere, landmarkMaterial
     },
     dispose() {
       ferryGeo.dispose()
+      tankerGeo.dispose()
+      boatGeo.dispose()
       gullGeo.dispose()
       wakeMaterial.dispose()
       gullMaterial.dispose()
       group.traverse((o) => {
         const mesh = o as Mesh
-        if (mesh.geometry && mesh.geometry !== ferryGeo) mesh.geometry.dispose()
+        if (mesh.geometry && ![ferryGeo, tankerGeo, boatGeo].includes(mesh.geometry)) mesh.geometry.dispose()
       })
     },
   }

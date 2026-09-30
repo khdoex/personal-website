@@ -19,6 +19,9 @@ import type { Palette } from '../palette'
 // the horizon it is exactly the colour of the fog, so the ground's far
 // edges melt into it. Climb above the cloud and it gives way to space.
 
+/** Where the moon is: low in the west, a little north. The water glitters toward it. */
+export const MOON_DIR = new Vector3(-0.993, 0.25, -0.122).normalize()
+
 /** Keeps an object centred on whichever camera is drawing it, the reflection's included. */
 export function followCamera(object: Object3D, offset?: Vector3) {
   object.onBeforeRender = (_renderer, _scene, camera: Camera) => {
@@ -97,7 +100,6 @@ export function createCitySky(palette: Palette, atmos: Atmosphere, clouds = true
   followCamera(dome)
 
   // A young crescent moon, low in the west, following the sun down.
-  const moonDir = new Vector3(-0.993, 0.25, -0.122).normalize()
   const moonMaterial = new ShaderMaterial({
     uniforms: { uOpacity: { value: 1 }, cMoon: { value: palette.heading }, cGlow: { value: palette.sky } },
     vertexShader: /* glsl */ `
@@ -131,7 +133,7 @@ export function createCitySky(palette: Palette, atmos: Atmosphere, clouds = true
   const moon = new Mesh(new PlaneGeometry(2, 2), moonMaterial)
   moon.frustumCulled = false
   moon.renderOrder = -8
-  followCamera(moon, moonDir.clone().multiplyScalar(900))
+  followCamera(moon, MOON_DIR.clone().multiplyScalar(900))
 
   const fogNight = palette.ocean.clone().lerp(palette.atmosphere, 0.2).lerp(palette.background, 0.38)
   const fogMorning = palette.ocean.clone().lerp(palette.sky, 0.42).lerp(palette.dusk, 0.12)

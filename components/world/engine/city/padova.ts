@@ -308,7 +308,7 @@ export function createPadova(palette: Palette, quality: Quality, atmos: Atmosphe
       height: () => GROUND,
       inland: (x, z) => (inPlaza(x, z, 3) ? -1 : 100),
       bounds: [-260, 260, -300, 260],
-      focus: [0, -20],
+      focus: [[0, -20]],
       reach: 140,
       clear: [
         [SANTA_GIUSTINA[0], SANTA_GIUSTINA[1], 19],
@@ -321,7 +321,7 @@ export function createPadova(palette: Palette, quality: Quality, atmos: Atmosphe
     29
   )
 
-  const water = createWater(palette, atmos, 90, 256, 256, !lite)
+  const water = createWater(palette, atmos, 90, 256, 256, !lite, { origin: PADOVA_AT })
   water.mesh.position.y = WATER
 
   group.add(ground, stone, lampPoints, buildings.mesh, water.mesh)

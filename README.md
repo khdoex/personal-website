@@ -13,11 +13,14 @@ This site presents:
 Behind the pages is one 3D world (three.js): Istanbul at night. The first visit
 to the home page opens with a ride in from deep space through a tube that
 doubles as the loading bar, past the planet, and down through the clouds into
-the city. Every page after that is a view of it (the old city's skyline at
-dusk, the Bosphorus Bridge, Galata, the Maiden's Tower, dawn over Asia), and
-the resume flies to a scene per entry: Istanbul, Padova's Prato della Valle,
-and up above the city the physics years (Saturn and a pair of black holes) and
-the interpretability years (a transformer and the refusal direction).
+the city. Every page after that is a view of it (the sea at dusk behind the
+Maiden's Tower, the Bosphorus Bridge, Boğaziçi's campus over Bebek, Kanyon on
+Büyükdere Caddesi, Galata, dawn over Asia), with the strait running, ships
+passing and foam at the shores. The resume opens with a story in chapters,
+and the world travels with it: Boğaziçi, up into space for the physics
+(Saturn and a pair of black holes), down to Padova's Prato della Valle, up
+again for the thesis (a transformer and the refusal direction), and down to
+Levent for now.
 
 ## Tech Stack
 

@@ -31,7 +31,15 @@ export interface Project {
 }
 
 /** What the 3D world shows while a resume entry is being read. */
-export type SceneName = 'istanbul' | 'padova' | 'physics' | 'interpretability'
+/** A place the 3D world can take the resume's story to (the scene: key). */
+export type SceneName = 'bogazici' | 'physics' | 'padova' | 'interpretability' | 'levent'
+
+export interface StoryChapter {
+  title: string
+  period?: string
+  scene: SceneName
+  body: InlineText[]
+}
 
 export interface ResumeEntry {
   period: string
@@ -41,7 +49,6 @@ export interface ResumeEntry {
   orgHref?: string
   summary: string
   detail?: string[]
-  scene?: SceneName
 }
 
 export interface WorldLabels {
@@ -84,6 +91,8 @@ export interface SiteContent {
   resume: {
     pdf: string
     summary: string
+    /** The story at the top of the page, oldest first, a place per chapter. */
+    story: { label: string; chapters: StoryChapter[] }
     experience: ResumeEntry[]
     education: ResumeEntry[]
     projects: ResumeEntry[]

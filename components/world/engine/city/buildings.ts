@@ -24,10 +24,12 @@ export interface Plot {
   clear: [number, number, number][]
   /** The rectangle to fill: x0, x1, z0, z1. */
   bounds: [number, number, number, number]
-  /** Where the camera mostly looks: buildings crowd toward it. */
-  focus: [number, number]
-  /** How far from the focus the city thins out. */
+  /** Where the camera mostly looks: buildings crowd toward these. */
+  focus: [number, number][]
+  /** How far from a focus the city thins out. */
   reach: number
+  /** Ground that must stay open: a road, a campus lawn. */
+  avoid?(x: number, z: number): boolean
   /** How tall a building at a point is, from a random number. Towers (over 6) stand slender on their plot. */
   rise(x: number, z: number, r: number): number
 }
@@ -122,13 +124,13 @@ export function createBuildings(palette: Palette, atmos: Atmosphere, count: numb
   const pos = new Vector3()
   const scale = new Vector3()
   const [x0, x1, z0, z1] = plot.bounds
-  const [fx, fz] = plot.focus
   const inner = BLOCK - STREET - 0.5
   const reach = Math.ceil((DISTRICT * 1.2) / BLOCK)
   let placed = 0
 
   const build = (x: number, z: number, angle: number, w: number, d: number, r: number) => {
     if (placed >= count || plot.inland(x, z) < Math.max(w, d) * 0.5 + 0.4) return
+    if (plot.avoid?.(x, z)) return
     const h = plot.rise(x, z, r)
     pos.set(x, plot.height(x, z) - 0.4, z)
     q.setFromAxisAngle(up, -angle)
@@ -158,7 +160,7 @@ export function createBuildings(palette: Palette, atmos: Atmosphere, count: numb
           if (own.gx !== gx || own.gz !== gz || own.edge < BLOCK * 0.55) continue
           if (plot.inland(x, z) < 1.5) continue
           if (plot.clear.some(([cx, cz, r]) => (x - cx) ** 2 + (z - cz) ** 2 < r * r)) continue
-          const near = Math.exp(-Math.hypot(x - fx, z - fz) / plot.reach)
+          const near = Math.max(...plot.focus.map(([fx, fz]) => Math.exp(-Math.hypot(x - fx, z - fz) / plot.reach)))
           blocks.push({ x, z, angle: cell.angle, near })
         }
       }

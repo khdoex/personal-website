@@ -12,6 +12,7 @@ import Canvas from '@/components/layout/Canvas'
 import Gutter from '@/components/layout/Gutter'
 import Meta from '@/components/ui/Meta'
 import Entry from '@/components/ui/Entry'
+import Inline from '@/components/ui/Inline'
 import Reveal from '@/components/motion/Reveal'
 import JsonLd from '@/components/JsonLd'
 import Scrim from '@/components/layout/Scrim'
@@ -32,8 +33,6 @@ function EntryRow({ entry, delay }: { entry: ResumeEntry; delay: number }) {
       delay={delay}
       gutter={<Meta tone="date">{entry.period}</Meta>}
     >
-      {/* The world flies to this entry's scene while it is being read. */}
-      <div data-station={entry.scene ?? 'istanbul'}>
       <h3 className="font-serif text-lead font-normal text-heading">
         {entry.href ? (
           <a href={entry.href} target="_blank" rel="noopener noreferrer" className="u-link hover:text-accent">
@@ -73,30 +72,54 @@ function EntryRow({ entry, delay }: { entry: ResumeEntry; delay: number }) {
           </ul>
         </details>
       )}
-      </div>
     </Entry>
+  )
+}
+
+/**
+ * The story before the list, oldest first. Each chapter is a station: the
+ * world goes to its place while it is read, and the chapters stand tall so
+ * each place holds for a while. After the last one the world stays put, and
+ * the list below reads over a still scene.
+ */
+function Story() {
+  const { label, chapters } = content.resume.story
+  return (
+    <>
+      <Gutter className="mt-4">
+        <Reveal>
+          <Meta>{label}</Meta>
+        </Reveal>
+      </Gutter>
+      {chapters.map((chapter, i) => (
+        <Entry
+          key={chapter.title}
+          className="border-t border-border"
+          delay={i === 0 ? 0.08 : 0}
+          gutter={chapter.period && <Meta tone="date">{chapter.period}</Meta>}
+        >
+          <div data-station={chapter.scene} className="flex min-h-[62svh] max-w-[30rem] flex-col justify-center">
+            <h2 className="font-serif text-h3 font-normal text-heading">{chapter.title}</h2>
+            {chapter.body.map((paragraph, k) => (
+              <p key={k} className="mt-4 font-serif text-lead text-foreground">
+                <Inline text={paragraph} />
+              </p>
+            ))}
+          </div>
+        </Entry>
+      ))}
+    </>
   )
 }
 
 // The label leads its own rows. Both arrive on their own viewport entry, so
 // the section no longer needs a hand-tuned place in a page-wide cascade.
-function Section({
-  label,
-  scene,
-  children,
-}: {
-  label: string
-  /** For sections whose rows carry no scene of their own. */
-  scene?: string
-  children: React.ReactNode
-}) {
+function Section({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <>
       <Gutter className="mt-14">
         <Reveal>
-          <div data-station={scene}>
-            <Meta>{label}</Meta>
-          </div>
+          <Meta>{label}</Meta>
         </Reveal>
       </Gutter>
       {children}
@@ -109,7 +132,7 @@ export default function Resume() {
     <Canvas className="pb-28 pt-16 md:pt-24">
       <Scrim window />
       <JsonLd data={graph(breadcrumbNode([{ name: 'Resume', path: '/resume' }]))} />
-      <header data-station="istanbul" className="mb-10 lg:col-start-2">
+      <header className="mb-10 lg:col-start-2">
         <Reveal>
           <div className="flex items-baseline justify-between gap-6">
             <h1 className="font-serif text-h2 font-normal text-heading">resume</h1>
@@ -126,6 +149,8 @@ export default function Resume() {
           <p className="mt-4 font-serif text-lead text-muted">{about}</p>
         </Reveal>
       </header>
+
+      <Story />
 
       <Section label="experience">
         {experience.map((entry, i) => (
@@ -145,7 +170,7 @@ export default function Resume() {
         ))}
       </Section>
 
-      <Section label="skills" scene="istanbul">
+      <Section label="skills">
         {skills.map((group, i) => (
           <Entry
             key={group.label}

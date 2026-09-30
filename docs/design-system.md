@@ -309,15 +309,23 @@ gradients on `.world` stand in for the sky.
   the ride, and however slowly a machine draws, the page is never held back
   more than about sixteen seconds.
 - The city (`engine/city/`) is built from primitives, not pictures: the ground
-  and the Bosphorus (`terrain.ts`, `water.ts`, which mirrors the city), a street
-  plan that the buildings fill block by block and the lamps light
-  (`common.ts`, `buildings.ts`), the floodlit monuments (`landmarks.ts`), the
-  Bosphorus Bridge (`bridge.ts`), ferries and gulls (`life.ts`), and a sky with
-  an hour: `dusk` and `dawn` in each shot move the glow from the west to the
-  east and put the lights out. Fog takes the sky's colour at the horizon in
-  every direction, so the edges of the ground melt into it. Padova
-  (`padova.ts`: Prato della Valle, Santa Giustina, the Santo) is a second place
-  on the same ground, far to the west.
+  (`terrain.ts`), a street plan that the buildings fill block by block and the
+  lamps light in pools (`common.ts`, `buildings.ts`), the floodlit monuments
+  (`landmarks.ts`), both Bosphorus bridges (`bridge.ts`: the first in the
+  palette's colours, the second in plain lamps), Boğaziçi's campus in its woods
+  with Rumelihisarı below it (`bogazici.ts`, `trees.ts`), Kanyon on Büyükdere
+  Caddesi (`kanyon.ts`), the avenues and the coast road with their traffic
+  (`roads.ts`), and ferries, tankers, fishing boats and gulls (`life.ts`). The
+  sky has an hour: `dusk` and `dawn` in each shot move the glow from the west
+  to the east and put the lights out. Fog takes the sky's colour at the horizon
+  in every direction, so the edges of the ground melt into it. Padova
+  (`padova.ts`: Prato della Valle, Santa Giustina, the Santo) is a second
+  place on the same ground, far to the west.
+- The sea (`water.ts`) mirrors the city and moves: the strait runs south,
+  fastest in the middle, and carries its waves with it; the moon lays a path
+  of glints toward itself; and a line of foam laps at every shore, read from a
+  map of the waterline baked once at startup from the same outline the ground
+  is made from. Everything afloat rolls with it.
 - The camera follows the page through stations: any element marked
   `data-station`. The home page's sections name their shots in
   `components/world/engine/shots.ts` (`HOME`), one night from dusk over the old
@@ -326,7 +334,18 @@ gradients on `.world` stand in for the sky.
   (`ROUTES`). Between stations the camera blends, holding each shot around its
   section and travelling in between. Between places (Istanbul, Padova, and the
   resume's two scenes in space above the city) it never blends across the
-  ground: it draws back, climbs through the cloud, crosses, and comes down.
+  ground: it draws back, climbs through the cloud, crosses, and comes down,
+  and once it has set off it needs a clear step back before it turns round,
+  so a reader resting near the halfway line does not send it back and forth.
+- The resume tells a story before its list: a chapter per place, oldest
+  first (`resume-story` in `content/site.md`), each chapter a station. The
+  places on the ground and the scenes in space take turns, so every change of
+  chapter is one flight through the cloud, and after the last chapter the
+  world stays where it is while the list is read.
+- A shot can ask for `shade`: the side of the frame the text is on darkens
+  toward the page's ground. The home page has no scrim of its own, so a busy
+  view (Levent at night, Galata's rooftops) uses this instead, and the shade
+  moves with the camera from one side to the other as the sections alternate.
 - The resume's scenes are framed into the width its text column leaves free,
   measured from the page, so a scene never sits under the words it illustrates.
   Pages with text over the world render `components/layout/Scrim.tsx` first,
@@ -339,7 +358,9 @@ gradients on `.world` stand in for the sky.
   drops the two most expensive things per pixel, the water's mirror and the
   street plan, and a device that runs slow for two seconds steps its resolution
   down. `?quality=` forces a tier and `?debug` exposes `window.__world`
-  (`?debug=paused` stops the clock, so a screenshot script can step it exactly).
+  (`?debug=paused` stops the clock, so a screenshot script can step it
+  exactly, and `__world.look({ x, y, z, dist, lat, lon, ... })` points the
+  camera at any spot in the city while a view is being tuned).
 - The planet in the ride is real geography repainted. `public/world/` holds data
   textures, not pictures: where land is, where the city lights are, how dry and
   how high the ground is. `scripts/world-textures.py` bakes them from NASA
