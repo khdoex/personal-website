@@ -1,17 +1,20 @@
 import {
   AdditiveBlending,
   BoxGeometry,
+  BufferAttribute,
   BufferGeometry,
   ConeGeometry,
   CylinderGeometry,
   DoubleSide,
   Group,
   Mesh,
+  Points,
   ShaderMaterial,
   SphereGeometry,
   TorusGeometry,
   Vector3,
 } from 'three'
+import { createBeacons } from './beacons'
 import { at, fogGLSL, merge, tag, type Atmosphere } from './common'
 import { GALATA_BRIDGE, heightAt } from './terrain'
 import type { Palette } from '../palette'
@@ -57,13 +60,20 @@ export function minaret(h: number, r: number, balconies: number): BufferGeometry
   return merge(parts)
 }
 
-/** A dome on its drum, with a finial. */
+/** A dome on its drum, with a finial, and the ring of lit windows round the drum. */
 export function domeOnDrum(r: number, drumH: number, squash = 0.92): BufferGeometry {
-  return merge([
+  const parts = [
     tag(cylinder(r * 1.02, r * 1.05, drumH, 28), 1),
     tag(at(hemisphere(r, squash), 0, drumH, 0), domeLight),
     tag(at(cylinder(0.06, 0.09, r * 0.35, 5), 0, drumH + r * squash, 0), 0.5),
-  ])
+  ]
+  const n = Math.max(10, Math.round(r * 5))
+  for (let k = 0; k < n; k++) {
+    const a = ((k + 0.5) / n) * TAU
+    const g = new BoxGeometry(r * 0.2, drumH * 0.46, 0.06).rotateY(a).translate(Math.sin(a) * r * 1.05, drumH * 0.5, Math.cos(a) * r * 1.05)
+    parts.push(tag(g, 0.3, 0.7))
+  }
+  return merge(parts)
 }
 
 interface MosqueSpec {
@@ -439,6 +449,71 @@ export function createLandmarks(palette: Palette, atmos: Atmosphere) {
     side: DoubleSide,
   })
   const beam = new Mesh(new ConeGeometry(5, 40, 20, 1, true).rotateZ(Math.PI / 2).translate(20, 0, 0), beamMaterial)
+  // Under the Galata Bridge's deck, the restaurants along both sides of its
+  // lower level: strings of coloured bulbs just over the water.
+  const bulbs: number[] = []
+  const bulbColour: number[] = []
+  const tints = [palette.city, palette.accent, palette.sky, palette.sun, palette.heading]
+  {
+    const [ax, az] = GALATA_BRIDGE.from
+    const [bx, bz] = GALATA_BRIDGE.to
+    const len = Math.hypot(bx - ax, bz - az)
+    const ux = (bx - ax) / len
+    const uz = (bz - az) / len
+    for (let t = 3; t < len - 3; t += 0.42) {
+      for (const side of [-1.35, 1.35]) {
+        bulbs.push(ax + ux * t - uz * side, GALATA_BRIDGE.y - 0.62, az + uz * t + ux * side)
+        const c = tints[Math.floor(t * 1.7 + (side > 0 ? 2 : 0)) % tints.length]
+        bulbColour.push(c.r, c.g, c.b)
+      }
+    }
+  }
+  const bulbGeometry = new BufferGeometry()
+  bulbGeometry.setAttribute('position', new BufferAttribute(new Float32Array(bulbs), 3))
+  bulbGeometry.setAttribute('aColor', new BufferAttribute(new Float32Array(bulbColour), 3))
+  const bulbMaterial = new ShaderMaterial({
+    uniforms: { ...atmos, uPixelRatio: { value: 1 } },
+    vertexShader: /* glsl */ `
+      attribute vec3 aColor;
+      uniform float uPixelRatio;
+      varying vec3 vColor;
+      varying float vDist;
+      void main() {
+        vColor = aColor;
+        vec4 wp = modelMatrix * vec4(position, 1.0);
+        vDist = length(cameraPosition - wp.xyz);
+        gl_Position = projectionMatrix * viewMatrix * wp;
+        gl_PointSize = clamp(110.0 / vDist, 1.4, 4.0) * uPixelRatio;
+      }
+    `,
+    fragmentShader: /* glsl */ `
+      uniform float uLights, uFogDensity;
+      varying vec3 vColor;
+      varying float vDist;
+      void main() {
+        float r = length(gl_PointCoord - 0.5) * 2.0;
+        float f = 1.0 - exp(-pow(vDist * uFogDensity, 1.25));
+        gl_FragColor = vec4(vColor * exp(-r * r * 5.0) * 1.1 * uLights * (1.0 - 0.8 * f), 1.0);
+      }
+    `,
+    transparent: true,
+    depthWrite: false,
+    blending: AdditiveBlending,
+  })
+  const strings = new Points(bulbGeometry, bulbMaterial)
+  strings.frustumCulled = false
+  group.add(strings)
+
+  // The red lamps up the mast on Çamlıca.
+  const [cx, cz] = SITES.camlica
+  const cg = heightAt(cx, cz) - 0.4
+  const warning = createBeacons(palette, atmos, [
+    cx, cg + 38.9 * SCALE, cz,
+    cx + 0.3, cg + 26.6 * SCALE, cz,
+    cx - 0.3, cg + 26.6 * SCALE, cz,
+  ])
+  group.add(warning.points)
+
   const beamPivot = new Group()
   const lamp = new Vector3(1.9 * SCALE, 8.45 * SCALE, 0).applyAxisAngle(new Vector3(0, 1, 0), -0.4)
   beamPivot.position.set(SITES.maidens[0] + lamp.x, heightAt(...SITES.maidens) + lamp.y, SITES.maidens[1] + lamp.z)
@@ -448,6 +523,8 @@ export function createLandmarks(palette: Palette, atmos: Atmosphere) {
   return {
     group,
     materials: [material, beamMaterial],
+    beaconMaterial: warning.material,
+    bulbMaterial,
     update(time: number) {
       beamPivot.rotation.y = time * 0.35
     },
@@ -458,6 +535,8 @@ export function createLandmarks(palette: Palette, atmos: Atmosphere) {
       })
       material.dispose()
       beamMaterial.dispose()
+      warning.dispose()
+      bulbMaterial.dispose()
     },
   }
 }

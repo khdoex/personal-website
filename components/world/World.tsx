@@ -34,7 +34,7 @@ function measureInto(engine: Engine) {
  * without it: this only adds the canvas, and only after hydration, from a
  * separate chunk.
  */
-export default function World({ labels }: { labels: WorldLabels }) {
+export default function World({ labels, email }: { labels: WorldLabels; email: string }) {
   const host = useRef<HTMLDivElement>(null)
   const captionRefs = useRef<Partial<Record<CaptionKey, HTMLElement>>>({})
   const tokenRefs = useRef<HTMLElement[]>([])
@@ -42,6 +42,8 @@ export default function World({ labels }: { labels: WorldLabels }) {
   const pathname = usePathname()
   const path = useRef(pathname)
   path.current = pathname
+  const banner = useRef(email)
+  banner.current = email
 
   useEffect(() => {
     let cancelled = false
@@ -91,8 +93,11 @@ export default function World({ labels }: { labels: WorldLabels }) {
             },
             quality: params.get('quality'),
             debug: debug === null ? null : debug === 'paused' ? 'paused' : 'on',
+            email: banner.current,
           })
-        } catch {
+        } catch (error) {
+          // Without WebGL this is expected; under ?debug, say what went wrong.
+          if (params.has('debug')) console.error(error)
           fail()
           return
         }

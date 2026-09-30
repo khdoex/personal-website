@@ -2,11 +2,13 @@ import {
   BoxGeometry,
   BufferAttribute,
   ExtrudeGeometry,
+  Group,
   Mesh,
   ShaderMaterial,
   Shape,
   type BufferGeometry,
 } from 'three'
+import { createBeacons } from './beacons'
 import { at, fogGLSL, merge, type Atmosphere } from './common'
 import type { Palette } from '../palette'
 
@@ -134,6 +136,13 @@ export function createKanyon(palette: Palette, atmos: Atmosphere, ground: number
     parts.push(kind(at(new BoxGeometry(1.1, 0.04, 0.04), x, (level + 1) * LEVEL_H + 0.2, centre(x) - w / 2), 4))
     parts.push(kind(at(new BoxGeometry(1.1, 0.04, 0.04), x, (level + 1) * LEVEL_H + 0.2, centre(x) + w / 2), 4))
   }
+  // Escalators climbing the canyon's walls from one terrace to the next, lit.
+  for (const [x, level, sign] of [[-6.2, 0, 1], [-2, 1, -1], [1.6, 0, -1], [4.4, 2, 1]] as const) {
+    const run = 1.3
+    const angle = Math.atan2(LEVEL_H, run)
+    const z = centre(x + run / 2) + sign * (GAP + level * STEP - 0.25)
+    parts.push(kind(new BoxGeometry(run / Math.cos(angle), 0.05, 0.2).rotateZ(angle).translate(x + run / 2, (level + 0.5) * LEVEL_H, z), 4))
+  }
   parts.push(at(tower(), 5, 0, 9.5, 0.3))
   parts.push(at(residence(), -6, 0, -13, 0))
   const geometry = merge(parts)
@@ -205,6 +214,8 @@ export function createKanyon(palette: Palette, atmos: Atmosphere, ground: number
           col = mix(cWall * 0.5, mix(cShop, cCool, step(0.7, hash(cell + 1.0))) * 0.8, win * lit);
           float fine = smoothstep(0.35, 0.9, max(fwidth(along / 0.32), fwidth(y / 0.4)));
           col = mix(col, cWall * 0.5 + cShop * 0.22 * uLights, fine);
+          // A band of light round the top floors, the tower's crown.
+          col += cCool * 0.55 * smoothstep(11.55, 11.7, y) * (1.0 - smoothstep(12.25, 12.4, y)) * uLights;
         } else if (vKind < 3.5) {
           // Terrace floors and roofs, lit a little by the shops below.
           col = cWall * 0.5 + cShop * 0.08 * uLights;
@@ -221,12 +232,27 @@ export function createKanyon(palette: Palette, atmos: Atmosphere, ground: number
   mesh.scale.setScalar(1.25)
   mesh.frustumCulled = false
 
+  // The red lamps at both ends of the tower's roof, and one on the flats.
+  const k = 1.25
+  const top = ground - 0.2 + 12.6 * k
+  const [ex, ez] = [2.4 * Math.cos(0.3), -2.4 * Math.sin(0.3)]
+  const warning = createBeacons(palette, atmos, [
+    KANYON[0] + (5 + ex) * k, top, KANYON[1] + (9.5 + ez) * k,
+    KANYON[0] + (5 - ex) * k, top, KANYON[1] + (9.5 - ez) * k,
+    KANYON[0] - 6 * k, ground - 0.2 + 8.3 * k, KANYON[1] - 12.1 * k,
+  ])
+  const group = new Group()
+  group.add(mesh, warning.points)
+
   return {
+    group,
     mesh,
     material,
+    beaconMaterial: warning.material,
     dispose() {
       geometry.dispose()
       material.dispose()
+      warning.dispose()
     },
   }
 }

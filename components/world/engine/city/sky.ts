@@ -21,6 +21,8 @@ import type { Palette } from '../palette'
 
 /** Where the moon is: low in the west, a little north. The water glitters toward it. */
 export const MOON_DIR = new Vector3(-0.993, 0.25, -0.122).normalize()
+/** Venus, the evening star, a little above the moon and to its left. */
+const VENUS_DIR = new Vector3(-0.97, 0.33, -0.02).normalize()
 
 /** Keeps an object centred on whichever camera is drawing it, the reflection's included. */
 export function followCamera(object: Object3D, offset?: Vector3) {
@@ -37,6 +39,8 @@ export function createCitySky(palette: Palette, atmos: Atmosphere, clouds = true
     uniforms: {
       ...atmos,
       uSpace: { value: 0 },
+      uMoonDir: { value: MOON_DIR },
+      cMoonlight: { value: palette.heading },
       cSpace: { value: palette.space },
       cNavy: { value: palette.background },
       cOcean: { value: palette.ocean },
@@ -54,7 +58,8 @@ export function createCitySky(palette: Palette, atmos: Atmosphere, clouds = true
       ${noise}
       ${airGLSL}
       uniform float uTime, uSpace;
-      uniform vec3 cSpace, cNavy, cOcean, cSky;
+      uniform vec3 uMoonDir;
+      uniform vec3 cSpace, cNavy, cOcean, cSky, cMoonlight;
       varying vec3 vDir;
       void main() {
         vec3 d = normalize(vDir);
@@ -78,6 +83,13 @@ export function createCitySky(palette: Palette, atmos: Atmosphere, clouds = true
         float clouds = smoothstep(0.25, 0.8, n) * band;
         vec3 under = mix(mix(upper, cHaze, 0.12), horizon, 0.55);
         col = mix(col, under, clouds * 0.45);
+        // Higher, thinner cloud in long streaks; near the moon, every cloud
+        // has a silver edge.
+        float streak = snoise(vec3(cp * vec2(0.22, 2.6) + 7.0, uTime * 0.004));
+        float cirrus = smoothstep(0.3, 0.95, streak) * smoothstep(0.06, 0.2, h) * (1.0 - smoothstep(0.45, 0.8, h));
+        col = mix(col, mix(upper, horizon, 0.4), cirrus * 0.07);
+        float toMoon = max(dot(d, uMoonDir), 0.0);
+        col += cMoonlight * (clouds * 0.07 + cirrus * 0.04) * pow(toMoon, 30.0) * (1.0 - uDawn);
         #endif
 
         // The sun itself at dawn, just clear of the hills over Asia.
@@ -121,8 +133,11 @@ export function createCitySky(palette: Palette, atmos: Atmosphere, clouds = true
         float disk = smoothstep(0.2, 0.19, r);
         float bite = smoothstep(0.19, 0.17, length(c - vec2(0.085, 0.045)));
         float crescent = disk * (1.0 - bite);
+        // The rest of the disk, faintly: earthshine, the city's own light
+        // come back from the moon.
+        float earthshine = disk * bite * 0.09;
         float glow = exp(-r * 5.0) * 0.4 + exp(-r * r * 30.0) * 0.25;
-        vec3 col = cMoon * crescent * 1.1 + mix(cGlow, cMoon, 0.5) * glow * 0.5;
+        vec3 col = cMoon * crescent * 1.1 + mix(cGlow, cMoon, 0.5) * (glow * 0.5 + earthshine);
         gl_FragColor = vec4(col * uOpacity, 1.0);
       }
     `,
@@ -135,6 +150,37 @@ export function createCitySky(palette: Palette, atmos: Atmosphere, clouds = true
   moon.renderOrder = -8
   followCamera(moon, MOON_DIR.clone().multiplyScalar(900))
 
+  // Venus beside it, brighter than any star.
+  const venusMaterial = new ShaderMaterial({
+    uniforms: { uOpacity: moonMaterial.uniforms.uOpacity, cStar: { value: palette.heading } },
+    vertexShader: /* glsl */ `
+      varying vec2 vUv;
+      void main() {
+        vUv = uv;
+        vec4 mv = modelViewMatrix * vec4(0.0, 0.0, 0.0, 1.0);
+        mv.xy += position.xy * 7.0;
+        gl_Position = projectionMatrix * mv;
+      }
+    `,
+    fragmentShader: /* glsl */ `
+      uniform float uOpacity;
+      uniform vec3 cStar;
+      varying vec2 vUv;
+      void main() {
+        float r = length(vUv - 0.5) * 2.0;
+        float light = exp(-r * r * 60.0) * 1.4 + exp(-r * 7.0) * 0.18;
+        gl_FragColor = vec4(cStar * light * uOpacity, 1.0);
+      }
+    `,
+    transparent: true,
+    depthWrite: false,
+    blending: AdditiveBlending,
+  })
+  const venus = new Mesh(new PlaneGeometry(2, 2), venusMaterial)
+  venus.frustumCulled = false
+  venus.renderOrder = -8
+  followCamera(venus, VENUS_DIR.clone().multiplyScalar(900))
+
   const fogNight = palette.ocean.clone().lerp(palette.atmosphere, 0.2).lerp(palette.background, 0.38)
   const fogMorning = palette.ocean.clone().lerp(palette.sky, 0.42).lerp(palette.dusk, 0.12)
   const fogScratch = fogNight.clone()
@@ -142,12 +188,14 @@ export function createCitySky(palette: Palette, atmos: Atmosphere, clouds = true
   return {
     dome,
     moon,
+    venus,
     material,
     update(space: number, dawn: number) {
       material.uniforms.uSpace.value = space
       dome.visible = space < 0.999
       moonMaterial.uniforms.uOpacity.value = (1 - dawn * 0.8) * (1 - space)
       moon.visible = space < 0.999
+      venus.visible = moon.visible
     },
     /** The plain colour of the air at the horizon, for the fog, at an hour. */
     fogColor(dawn: number, out: Vector3) {
@@ -159,6 +207,8 @@ export function createCitySky(palette: Palette, atmos: Atmosphere, clouds = true
       material.dispose()
       moon.geometry.dispose()
       moonMaterial.dispose()
+      venus.geometry.dispose()
+      venusMaterial.dispose()
     },
   }
 }

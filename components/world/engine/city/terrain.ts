@@ -43,6 +43,8 @@ export const ISLET = { x: 80, z: 10, r: 3.6 }
 export const GALATA_BRIDGE = { from: [-17, -31] as [number, number], to: [-9, -64] as [number, number], y: 1.6 }
 /** The European shore from Karaköy up to the narrows, for the coast road along it. */
 export const EUROPEAN_SHORE: Poly = BEYOGLU.slice(8, 22)
+/** The Asian shore from Kadıköy up past Anadoluhisarı, for its own coast road. */
+export const ASIAN_SHORE: Poly = ASIA.slice(0, 13)
 
 const LANDS = [PENINSULA, BEYOGLU, ASIA]
 
@@ -196,6 +198,20 @@ export function createGroundMaterial(palette: Palette, atmos: Atmosphere, street
         float fine = smoothstep(0.4, 1.4, px / ${STREET.toFixed(2)});
         lamps = mix(max(street * pools, road * (0.5 + 0.5 * pools)) * 0.6, lamps, fine);
         #endif
+        #if STREETS
+        // Gardens, courtyards and bare lots between the blocks: patches a
+        // shade greener or darker, so the ground is never one flat colour.
+        vec2 gp = vLocal.xz * 0.21;
+        vec2 gi = floor(gp);
+        vec2 gf = fract(gp);
+        gf = gf * gf * (3.0 - 2.0 * gf);
+        float g00 = hashCell(gi, 11u), g10 = hashCell(gi + vec2(1.0, 0.0), 11u);
+        float g01 = hashCell(gi + vec2(0.0, 1.0), 11u), g11 = hashCell(gi + vec2(1.0, 1.0), 11u);
+        float patchy = mix(mix(g00, g10, gf.x), mix(g01, g11, gf.x), gf.y);
+        float land = smoothstep(0.8, 2.0, h);
+        col = mix(col, mix(cLow, cHigh, 0.5) * 0.5, smoothstep(0.62, 0.9, patchy) * 0.55 * land);
+        col *= 1.0 - 0.18 * smoothstep(0.45, 0.1, patchy) * land;
+        #endif
         // Only on dry ground, and thinning out up the steepest slopes.
         float dry = smoothstep(0.6, 1.6, h) * smoothstep(0.55, 0.85, N.y);
         col += cWarm * lamps * dry * (1.0 - max(vPlaza, vPark)) * uLights * 0.32;
@@ -213,8 +229,8 @@ export function createGroundMaterial(palette: Palette, atmos: Atmosphere, street
 }
 
 export function createTerrain(palette: Palette, atmos: Atmosphere, detail: number, streets = true, parks: Park[] = []) {
-  const nx = Math.round(300 * detail)
-  const nz = Math.round(260 * detail)
+  const nx = Math.round(360 * detail)
+  const nz = Math.round(310 * detail)
   const positions = new Float32Array((nx + 1) * (nz + 1) * 3)
   const park = new Float32Array((nx + 1) * (nz + 1))
   const indices: number[] = []

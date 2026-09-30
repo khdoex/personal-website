@@ -135,6 +135,8 @@ export function createGiant(palette: Palette, { radius, light, segments, octaves
 
   return {
     mesh: giant,
+    /** The rings, whose plane anything orbiting the planet keeps to. */
+    rings,
     update(time: number, spin = 0.02) {
       ;(giant.material as ShaderMaterial).uniforms.uTime.value = time
       giant.rotation.y = 0.6 + time * spin

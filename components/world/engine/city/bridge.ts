@@ -4,6 +4,7 @@ import {
   BufferAttribute,
   BufferGeometry,
   CatmullRomCurve3,
+  CylinderGeometry,
   Group,
   LineSegments,
   Mesh,
@@ -11,6 +12,7 @@ import {
   ShaderMaterial,
   Vector3,
 } from 'three'
+import { createBeacons } from './beacons'
 import { at, fogGLSL, merge, rng, type Atmosphere } from './common'
 import type { Palette } from '../palette'
 
@@ -74,10 +76,20 @@ export function createBridge(
     g.deleteAttribute('uv')
     return g
   }
+  const beacons: number[] = []
   for (const tx of towers) {
-    for (const dz of [-1.6, 1.6]) parts.push(part(at(new BoxGeometry(0.9, TOWER_H, 0.9).translate(0, TOWER_H / 2, 0), tx, 0, z + dz), 0))
-    for (const y of [DECK_Y + 1.2, TOWER_H - 1.4]) parts.push(part(at(new BoxGeometry(0.7, 0.7, 4), tx, y, z), 0))
+    // Each leg a steel box, narrowing as it rises; three beams tie the pair.
+    for (const dz of [-1.6, 1.6]) {
+      const leg = new CylinderGeometry(0.34 * Math.SQRT2, 0.5 * Math.SQRT2, TOWER_H, 4, 1).rotateY(Math.PI / 4).translate(0, TOWER_H / 2, 0)
+      parts.push(part(at(leg, tx, 0, z + dz), 0))
+      parts.push(part(at(new BoxGeometry(0.62, 0.3, 0.62).translate(0, 0.15, 0), tx, TOWER_H, z + dz), 0))
+      beacons.push(tx, TOWER_H + 0.45, z + dz)
+    }
+    for (const y of [DECK_Y + 1.2, (DECK_Y + TOWER_H) / 2 + 0.6, TOWER_H - 1.4]) parts.push(part(at(new BoxGeometry(0.6, 0.6, 4), tx, y, z), 0))
   }
+  // The deck's edge girders, and the piers it stands on at each shore.
+  for (const dz of [-1.75, 1.75]) parts.push(part(at(new BoxGeometry(span + 30, 0.34, 0.12), (x0 + x1) / 2, DECK_Y - 0.28, z + dz), 1))
+  for (const px of [x0 - 8, x1 + 8]) parts.push(part(at(new BoxGeometry(1.2, DECK_Y, 3).translate(0, DECK_Y / 2, 0), px, 0, z), 0))
   parts.push(part(at(new BoxGeometry(span + 30, 0.6, 3.4), (x0 + x1) / 2, DECK_Y, z), 1))
   const structure = new Mesh(
     merge(parts),
@@ -267,13 +279,16 @@ export function createBridge(
   const lights = new Points(ledGeometry, ledMaterial)
   lights.frustumCulled = false
 
+  const warning = createBeacons(palette, atmos, beacons)
   const group = new Group()
-  group.add(structure, cables, lights)
+  group.add(structure, cables, lights, warning.points)
 
   return {
     group,
     materials: [structure.material, cables.material, ledMaterial],
     ledMaterial,
+    /** The red lamps on the pylons, which need the pixel ratio too. */
+    beaconMaterial: warning.material,
     update(highlight: number | null, dt: number) {
       if (style === 'lamps') return
       if (highlight !== null) shared.uHighlight.value = highlight
@@ -286,6 +301,7 @@ export function createBridge(
       cables.material.dispose()
       ledGeometry.dispose()
       ledMaterial.dispose()
+      warning.dispose()
     },
   }
 }

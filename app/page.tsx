@@ -42,7 +42,7 @@ function Greeting({ text, name }: { text: string; name?: string }) {
   return (
     <>
       {text.slice(0, at)}
-      <span className="italic text-sun">{name}</span>
+      <span className="italic">{name}</span>
       {text.slice(at + name.length)}
     </>
   )

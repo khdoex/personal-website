@@ -52,7 +52,7 @@ relative luminance of two colours; WCAG AA asks for 4.5 on body text.
 | token        | hex       | ratio | carries                                         |
 |--------------|-----------|-------|-------------------------------------------------|
 | `heading`    | `#f4efe3` | 16.00 | headings                                        |
-| `sun`        | `#f4cd5e` | 12.02 | dates, the adverse figure pole, the name        |
+| `sun`        | `#f4cd5e` | 12.02 | dates, the adverse figure pole                  |
 | `foreground` | `#c5cfdb` | 11.65 | prose                                           |
 | `accent`     | `#86d6a4` | 10.64 | links, active state, what breathes              |
 | `sky`        | `#7fb8f5` |  8.81 | the cool figure pole                            |
@@ -309,18 +309,29 @@ gradients on `.world` stand in for the sky.
   the ride, and however slowly a machine draws, the page is never held back
   more than about sixteen seconds.
 - The city (`engine/city/`) is built from primitives, not pictures: the ground
-  (`terrain.ts`), a street plan that the buildings fill block by block and the
-  lamps light in pools (`common.ts`, `buildings.ts`), the floodlit monuments
-  (`landmarks.ts`), both Bosphorus bridges (`bridge.ts`: the first in the
-  palette's colours, the second in plain lamps), Boğaziçi's campus in its woods
-  with Rumelihisarı below it (`bogazici.ts`, `trees.ts`), Kanyon on Büyükdere
-  Caddesi (`kanyon.ts`), the avenues and the coast road with their traffic
-  (`roads.ts`), and ferries, tankers, fishing boats and gulls (`life.ts`). The
-  sky has an hour: `dusk` and `dawn` in each shot move the glow from the west
-  to the east and put the lights out. Fog takes the sky's colour at the horizon
-  in every direction, so the edges of the ground melt into it. Padova
-  (`padova.ts`: Prato della Valle, Santa Giustina, the Santo) is a second
-  place on the same ground, far to the west.
+  (`terrain.ts`), and a street plan that the buildings fill block by block and
+  the lamps light in pools (`common.ts`, `buildings.ts`). Each building is
+  drawn by its kind: blocks of flats with balconies and a clutter of water
+  tanks and solar heaters on their flat roofs, older houses and hans under
+  tiled roofs, offices in bands of glass, glass towers lit a floor at a time
+  under a crown of light, Padova's palazzi over their lit arcades; shops light
+  the street floor. The yalıs stand in the water on both shores, and the
+  palaces on it are floodlit (`shore.ts`: Dolmabahçe, Çırağan, Beylerbeyi,
+  Kuleli). Then the floodlit monuments (`landmarks.ts`), both Bosphorus bridges
+  (`bridge.ts`: the first in the palette's colours, the second in plain lamps),
+  Boğaziçi's campus with Rumelihisarı below it (`bogazici.ts`), the woods and
+  gardens in plane trees, stone pines and cypresses (`trees.ts`), Kanyon on
+  Büyükdere Caddesi (`kanyon.ts`), the avenues, the coast roads, Kennedy
+  Caddesi and the Galata Bridge with their traffic (`roads.ts`), everything
+  afloat with its navigation lights (`life.ts`: ferries, tankers, a tour boat
+  strung with bulbs, motorboats, fishing boats and sailboats at anchor, and
+  gulls), and airliners far off (`air.ts`). Everything tall carries a red lamp
+  for the aircraft (`beacons.ts`). The sky has an hour: `dusk` and `dawn` in
+  each shot move the glow from the west to the east and put the lights out; a
+  crescent moon with Venus beside it silvers the clouds near it. Fog takes the
+  sky's colour at the horizon in every direction, so the edges of the ground
+  melt into it. Padova (`padova.ts`: Prato della Valle, Santa Giustina, the
+  Santo) is a second place on the same ground, far to the west.
 - The sea (`water.ts`) mirrors the city and moves: the strait runs south,
   fastest in the middle, and carries its waves with it; the moon lays a path
   of glints toward itself; and a line of foam laps at every shore, read from a
@@ -350,14 +361,24 @@ gradients on `.world` stand in for the sky.
   measured from the page, so a scene never sits under the words it illustrates.
   Pages with text over the world render `components/layout/Scrim.tsx` first,
   which shades the text side only.
+- Every two minutes someone spends on the site, a small plane tows the email
+  from `lib/site.ts` across the sky (`engine/banner.ts`): five seconds from one
+  edge to the other, high where the sky is free, from the side the words are on
+  toward the side the city is on. `engine/visit.ts` keeps the time, counting
+  only while the tab is visible and carrying it across pages and reloads in the
+  same tab. The plane flies only over a city, once the camera has settled, and
+  never for reduced motion; `__world.plane()` sends it over at once.
 - Labels pinned in 3D are ordinary DOM text, positioned by the engine every
   frame, placed in priority order and hidden rather than allowed to overlap one
   another or leave the screen.
 - Three quality tiers, chosen from what the browser reports, set resolution,
-  star count, building count, reflection size and noise octaves. The low tier
-  drops the two most expensive things per pixel, the water's mirror and the
-  street plan, and a device that runs slow for two seconds steps its resolution
-  down. `?quality=` forces a tier and `?debug` exposes `window.__world`
+  star count, building and tree counts, rooftop clutter, reflection size and
+  noise octaves. The low tier drops the two most expensive things per pixel,
+  the water's mirror and the street plan, keeps its buildings plainer (no
+  tiled roofs, shops or balconies) and its woods and water emptier, and a
+  device that runs slow for two seconds steps its resolution down. Roofs and
+  what stands on them are left out of the water's mirror (`ABOVE_ONLY` in
+  `common.ts`): from below, the walls hide them anyway. `?quality=` forces a tier and `?debug` exposes `window.__world`
   (`?debug=paused` stops the clock, so a screenshot script can step it
   exactly, and `__world.look({ x, y, z, dist, lat, lon, ... })` points the
   camera at any spot in the city while a view is being tuned).

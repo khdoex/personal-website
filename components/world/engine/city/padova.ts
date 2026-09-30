@@ -4,16 +4,17 @@ import {
   BufferGeometry,
   CylinderGeometry,
   Group,
-  IcosahedronGeometry,
   Mesh,
   Points,
   ShaderMaterial,
   SphereGeometry,
+  type Camera,
 } from 'three'
 import { createBuildings } from './buildings'
 import { at, merge, PADOVA_AT, rng, tag, type Atmosphere } from './common'
 import { box, cone, createFloodMaterial, cylinder, domeLight, hemisphere, ringAt } from './landmarks'
 import { createGroundMaterial } from './terrain'
+import { createTrees, type Tree } from './trees'
 import { createWater } from './water'
 import type { Palette } from '../palette'
 import type { Quality } from '../quality'
@@ -111,10 +112,11 @@ function statue(r: () => number): BufferGeometry {
   ])
 }
 
-function square(): { geometry: BufferGeometry; lamps: number[] } {
+function square(): { geometry: BufferGeometry; lamps: number[]; trees: Tree[] } {
   const random = rng(21)
   const parts: BufferGeometry[] = []
   const lamps: number[] = []
+  const trees: Tree[] = []
   const { a, b, canal } = RING
   const bridgeAt = [0, Math.PI / 2, Math.PI, (3 * Math.PI) / 2]
   const nearBridge = (t: number) => bridgeAt.some((c) => Math.abs(Math.atan2(Math.sin(t - c), Math.cos(t - c))) < 0.09)
@@ -145,7 +147,7 @@ function square(): { geometry: BufferGeometry; lamps: number[] } {
     ])
     parts.push(at(bridge, (x0 + x1) / 2, 0, (z0 + z1) / 2, angle))
   }
-  // Trees along the island's paths, dark, lit a little from below.
+  // Trees along the island's paths, in two rings.
   for (const [ta, tb, n] of [
     [a * 0.52, b * 0.52, 30],
     [a * 0.82, b * 0.82, 44],
@@ -154,9 +156,7 @@ function square(): { geometry: BufferGeometry; lamps: number[] } {
       const t = ((i + random() * 0.3) / n) * TAU
       if (nearBridge(t)) continue
       const [x, z] = onEllipse(ta, tb, t)
-      const s = 0.8 + random() * 0.5
-      parts.push(tag(at(new CylinderGeometry(0.08, 0.1, 1.6, 5).translate(0, 0.8, 0), x, GROUND, z), 0.15))
-      parts.push(tag(at(new IcosahedronGeometry(s, 1).scale(1, 1.1, 1), x, GROUND + 1.6 + s * 0.8, z), (t2) => 0.22 - 0.2 * t2))
+      trees.push([x, z, 0, 1.7 + random() * 0.6])
     }
   }
   // The fountain in the middle.
@@ -175,7 +175,7 @@ function square(): { geometry: BufferGeometry; lamps: number[] } {
       lamps.push(x, GROUND + 1.4, z)
     }
   }
-  return { geometry: merge(parts), lamps }
+  return { geometry: merge(parts), lamps, trees }
 }
 
 // ------------------------------------------------------------- the churches
@@ -256,7 +256,8 @@ export function createPadova(palette: Palette, quality: Quality, atmos: Atmosphe
   ground.frustumCulled = false
 
   const flood = createFloodMaterial(palette, atmos)
-  const { geometry: squareGeometry, lamps } = square()
+  const { geometry: squareGeometry, lamps, trees: islandTrees } = square()
+  const trees = createTrees(palette, atmos, { rows: islandTrees }, () => GROUND, () => false, 1, lite ? 0 : 1)
   const stone = new Mesh(
     merge([
       squareGeometry,
@@ -315,25 +316,31 @@ export function createPadova(palette: Palette, quality: Quality, atmos: Atmosphe
         [SANTO[0], SANTO[1] + 2, 17],
         [SANTO[0], SANTO[1] + 18, 9],
       ],
-      // Three to five storeys of old palazzi, a few taller.
+      // Three to five storeys of old palazzi over their arcades, a few taller.
       rise: (_x, _z, r) => 1.1 + r * 1.2 + (r > 0.95 ? 0.9 : 0),
+      style: (_x, _z, _h, r) => (r < 0.82 ? 5 : 1),
     },
-    29
+    29,
+    lite
   )
 
   const water = createWater(palette, atmos, 90, 256, 256, !lite, { origin: PADOVA_AT })
   water.mesh.position.y = WATER
 
-  group.add(ground, stone, lampPoints, buildings.mesh, water.mesh)
+  group.add(ground, stone, lampPoints, trees.group, buildings.group, water.mesh)
   const texScale = tier === 'high' ? 0.4 : tier === 'medium' ? 0.3 : 0.25
 
   return {
     group,
     /** The ground is flat: this is how high it stands. */
     ground: GROUND,
+    watch(camera: Camera) {
+      water.watch(camera)
+    },
     resize(width: number, height: number, pixelRatio: number) {
       water.resize(width * pixelRatio * texScale, height * pixelRatio * texScale)
       lampMaterial.uniforms.uPixelRatio.value = pixelRatio
+      for (const m of buildings.points) m.uniforms.uPixelRatio.value = pixelRatio
     },
     update(visible: boolean) {
       group.visible = visible
@@ -349,6 +356,7 @@ export function createPadova(palette: Palette, quality: Quality, atmos: Atmosphe
       lampGeometry.dispose()
       lampMaterial.dispose()
       buildings.dispose()
+      trees.dispose()
       water.dispose()
     },
   }

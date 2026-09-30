@@ -18,6 +18,8 @@ import type { Palette } from '../palette'
 
 export interface Route {
   points: [number, number][]
+  /** A fixed height for a road off the ground: a bridge's deck. */
+  level?: number
   /** Lanes each way, as distances from the middle of the road. */
   lanes: number[]
   cars: number
@@ -41,7 +43,7 @@ export function distToRoute(points: [number, number][], x: number, z: number) {
 }
 
 /** The route every unit or so along its length, with its heading. */
-function sample(points: [number, number][], height: (x: number, z: number) => number) {
+function sample(points: [number, number][], height: (x: number, z: number) => number, level?: number) {
   const out: { x: number; y: number; z: number; tx: number; tz: number; s: number }[] = []
   let s = 0
   for (let i = 0; i < points.length - 1; i++) {
@@ -53,13 +55,13 @@ function sample(points: [number, number][], height: (x: number, z: number) => nu
       const t = k / n
       const x = ax + (bx - ax) * t
       const z = az + (bz - az) * t
-      out.push({ x, y: height(x, z), z, tx: (bx - ax) / len, tz: (bz - az) / len, s: s + len * t })
+      out.push({ x, y: level ?? height(x, z), z, tx: (bx - ax) / len, tz: (bz - az) / len, s: s + len * t })
     }
     s += len
   }
   const [lx, lz] = points[points.length - 1]
   const prev = out[out.length - 1]
-  out.push({ x: lx, y: height(lx, lz), z: lz, tx: prev.tx, tz: prev.tz, s })
+  out.push({ x: lx, y: level ?? height(lx, lz), z: lz, tx: prev.tx, tz: prev.tz, s })
   return out
 }
 
@@ -81,7 +83,7 @@ export function createRoads(
   const cars: Car[] = []
 
   for (const route of routes) {
-    const path = sample(route.points, height)
+    const path = sample(route.points, height, route.level)
     const length = path[path.length - 1].s
     // The lit strip: a ribbon a little above the ground.
     const base = glow.length / 3

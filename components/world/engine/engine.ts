@@ -13,7 +13,8 @@ import {
   type Texture,
 } from 'three'
 import { worldStore } from '../store'
-import { createAtmosphere, ISTANBUL_AT, PADOVA_AT } from './city/common'
+import { createBanner } from './banner'
+import { ABOVE_ONLY, createAtmosphere, ISTANBUL_AT, PADOVA_AT } from './city/common'
 import { createIstanbul } from './city/istanbul'
 import { createPadova } from './city/padova'
 import { createCitySky, followCamera } from './city/sky'
@@ -43,6 +44,7 @@ import {
 import { bakeClouds, createBackground, createStars } from './sky'
 import { APPROACH, createTunnel } from './tunnel'
 import { createVeil } from './veil'
+import { createVisit, type Visit } from './visit'
 
 export interface Anchor {
   id: string
@@ -69,6 +71,8 @@ export interface EngineOptions {
   quality?: string | null
   /** 'on' exposes window.__world; 'paused' also stops the clock so only __world.advance moves it. */
   debug?: 'on' | 'paused' | null
+  /** What the plane's banner says: the email, from lib/site.ts. None, no plane. */
+  email?: string
 }
 
 /** One breath, in seconds. The same as --breath in app/globals.css. */
@@ -92,6 +96,9 @@ const REVEAL_AFTER = 1.5
 const ARRIVED_KEY = 'world:arrived'
 /** The cloud over the city, by height above the water: thickest at peak. */
 const CLOUD = { low: 300, peak: 600, high: 900 }
+/** Seconds on the site before the plane with the email first flies over, and between its passes. */
+const PLANE_FIRST = 120
+const PLANE_EVERY = 120
 
 type EnginePhase = 'space' | 'tunnel' | 'dive' | 'live'
 
@@ -127,6 +134,9 @@ export class Engine {
   private readonly flash: Mesh<PlaneGeometry, ShaderMaterial>
   /** Darkens the text's side of the frame, as much as the shot asks. */
   private readonly shade: Mesh<PlaneGeometry, ShaderMaterial>
+  /** The plane that tows the email over the city, and the clock it keeps. */
+  private readonly banner: ReturnType<typeof createBanner>
+  private readonly visit: Visit
 
   private phase: EnginePhase = 'live'
   private time = 0
@@ -225,6 +235,10 @@ export class Engine {
     this.model = createModel(palette, opts.labels.tokens.length || 6)
     this.veil = createVeil(palette)
     this.sky.fogColor(0, this.atmos.uFogColor.value)
+    // The camera sees roofs; the water's mirror of it does not need to.
+    this.camera.layers.enable(ABOVE_ONLY)
+    this.istanbul.watch(this.camera)
+    this.padova.watch(this.camera)
 
     this.flash = new Mesh(
       new PlaneGeometry(2, 2),
@@ -278,6 +292,14 @@ export class Engine {
     this.shade.frustumCulled = false
     this.shade.renderOrder = 997
 
+    this.banner = createBanner(
+      palette,
+      opts.email ?? '',
+      getComputedStyle(document.body).fontFamily,
+      this.renderer.capabilities.getMaxAnisotropy()
+    )
+    this.visit = createVisit(PLANE_FIRST, PLANE_EVERY)
+
     this.scene.add(
       this.background.mesh,
       this.stars.points,
@@ -288,8 +310,10 @@ export class Engine {
       this.padova.group,
       this.sky.dome,
       this.sky.moon,
+      this.sky.venus,
       this.physics.group,
       this.model.group,
+      this.banner.group,
       this.shade,
       this.veil.mesh,
       this.flash
@@ -302,10 +326,14 @@ export class Engine {
 
     this.resize()
     this.loadTextures()
+    // Compiled with everything else, so its first pass does not stutter;
+    // hidden again before anything is drawn.
+    this.banner.group.visible = true
     this.renderer
       .compileAsync(this.scene, this.camera)
       .catch(() => undefined)
       .then(() => this.taskDone())
+    this.banner.group.visible = false
 
     canvas.addEventListener('webglcontextlost', this.onContextLost)
 
@@ -319,6 +347,8 @@ export class Engine {
       ;(window as unknown as { __world: unknown }).__world = {
         engine: this,
         advance: (seconds: number) => this.advance(seconds),
+        // Sends the plane over now, whatever the clock says.
+        plane: () => this.launchPlane(),
         // Points the camera at any shot, in the city's own frame, for
         // screenshots while a view is being tuned. null gives it back.
         look: (spec: (Partial<Shot> & { x?: number; y?: number; z?: number }) | null) => {
@@ -352,6 +382,7 @@ export class Engine {
     this.hidden = kind === 'hidden'
     this.host.dataset.route = kind
     if (this.hidden) {
+      this.banner.stop()
       this.stop()
       return
     }
@@ -416,6 +447,8 @@ export class Engine {
     this.flash.material.dispose()
     this.shade.geometry.dispose()
     this.shade.material.dispose()
+    this.banner.dispose()
+    this.visit.dispose()
     this.renderer.dispose()
     this.renderer.domElement.remove()
   }
@@ -431,6 +464,8 @@ export class Engine {
     this.camera.aspect = w / h
     this.istanbul.resize(w, h, this.pixelRatio)
     this.padova.resize(w, h, this.pixelRatio)
+    this.banner.setPixelRatio(this.pixelRatio)
+    this.physics.setPixelRatio(this.pixelRatio)
     this.computeAnchors()
     if (this.opts.reducedMotion) this.snap()
   }
@@ -510,6 +545,7 @@ export class Engine {
     this.background.mesh.visible = space > 0
     this.istanbul.update(this.time, dt, this.highlightIndex, inCity)
     this.padova.update(inPadova)
+    this.flyPlane(dt, space === 0)
     // The city is big and far: a nearer near plane would waste the depth
     // buffer's precision and set the shoreline flickering.
     const near = space < 1 ? 0.5 : 0.02
@@ -557,6 +593,8 @@ export class Engine {
       this.renderer.setSize(this.width, this.height, false)
       this.istanbul.resize(this.width, this.height, this.pixelRatio)
       this.padova.resize(this.width, this.height, this.pixelRatio)
+      this.banner.setPixelRatio(this.pixelRatio)
+      this.physics.setPixelRatio(this.pixelRatio)
       this.slowFor = 0
       this.frameAvg = 16
     }
@@ -565,6 +603,7 @@ export class Engine {
   // ------------------------------------------------------------------ the ride
 
   private startRide() {
+    this.banner.stop()
     this.phase = 'space'
     this.rideT = 0
     this.s = 0
@@ -917,6 +956,38 @@ export class Engine {
       }
     }
     return Object.assign(out, shotOf(list[list.length - 1].id))
+  }
+
+  // ------------------------------------------------------------------ the plane
+
+  /**
+   * Every two minutes someone spends on the site, a plane tows the email
+   * across the sky: only over a city, once the camera has settled, and never
+   * for a reader who asked for less motion.
+   */
+  private flyPlane(dt: number, overCity: boolean) {
+    const plane = this.banner
+    if (plane.flying) {
+      plane.update(dt, this.camera)
+      // Off through the cloud to somewhere else, the camera leaves it behind.
+      plane.group.visible = plane.flying && overCity
+      return
+    }
+    if (this.opts.reducedMotion || !this.opts.email || this.opts.debug === 'paused') return
+    const settled = this.phase === 'live' && this.revealed && !this.hop && this.arriveT > 3 && overCity
+    if (settled && this.visit.seconds() >= this.visit.due) this.launchPlane()
+  }
+
+  private launchPlane() {
+    const portrait = this.width / this.height < 0.8
+    // From the side the words are on toward the side the city is on, so the
+    // banner finishes its pass in the open.
+    const dir = this.cur.shiftX > 0.02 ? 1 : -1
+    // High in the sky; on a phone whose words hold the top of the screen,
+    // low, in the strip of sky between them and the skyline.
+    const row = portrait && this.cur.shiftY < -0.1 ? -0.26 : 0.5
+    this.banner.launch(this.camera, dir, row)
+    this.visit.flew()
   }
 
   // ------------------------------------------------------------------ labels

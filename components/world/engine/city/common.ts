@@ -11,6 +11,13 @@ export const ISTANBUL_AT = new Vector3(0, -10000, 0)
 /** Padova sits on the same ground, far to the west. */
 export const PADOVA_AT = new Vector3(-6000, -10000, 0)
 
+/**
+ * The camera layer for what the water never shows: roofs and the clutter on
+ * them, hidden from below by the walls anyway. The main camera sees it; the
+ * reflection's does not, and draws the city a little faster for it.
+ */
+export const ABOVE_ONLY = 1
+
 /** West, where the sun sets over the old city; east, where it rises over Asia. */
 export const WEST = new Vector3(-1, 0, 0.12).normalize()
 export const EAST = new Vector3(1, 0, -0.18).normalize()

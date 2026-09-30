@@ -1,4 +1,5 @@
 import {
+  type Camera,
   ClampToEdgeWrapping,
   DataTexture,
   LinearFilter,
@@ -11,7 +12,7 @@ import {
   Vector4,
 } from 'three'
 import { Reflector } from 'three/examples/jsm/objects/Reflector.js'
-import { fogGLSL, type Atmosphere } from './common'
+import { ABOVE_ONLY, fogGLSL, type Atmosphere } from './common'
 import { MOON_DIR } from './sky'
 import type { Palette } from '../palette'
 
@@ -234,6 +235,10 @@ export function createWater(
     resize(width: number, height: number) {
       water.getRenderTarget().setSize(Math.max(64, Math.round(width)), Math.max(64, Math.round(height)))
     },
+    /** The mirror leaves out what it would never show (see ABOVE_ONLY), for this camera. */
+    watch(camera: Camera) {
+      water.getReflectionCamera(camera).layers.disable(ABOVE_ONLY)
+    },
     dispose() {
       water.geometry.dispose()
       water.dispose()
@@ -291,6 +296,8 @@ function createPlainWater(palette: Palette, atmos: Atmosphere, size: number, opt
     mesh,
     sync() {},
     resize() {},
+    // No mirror, nothing to leave out of it.
+    watch() {},
     dispose() {
       mesh.geometry.dispose()
       material.dispose()

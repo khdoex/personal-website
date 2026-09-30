@@ -16,7 +16,10 @@ doubles as the loading bar, past the planet, and down through the clouds into
 the city. Every page after that is a view of it (the sea at dusk behind the
 Maiden's Tower, the Bosphorus Bridge, Boğaziçi's campus over Bebek, Kanyon on
 Büyükdere Caddesi, Galata, dawn over Asia), with the strait running, ships
-passing and foam at the shores. The resume opens with a story in chapters,
+passing and foam at the shores, yalıs and palaces lit along the water, tiled
+roofs over the old city, glass towers in Levent, and airliners blinking far
+off. Every two minutes someone spends on the site, a small plane tows the
+email across the sky. The resume opens with a story in chapters,
 and the world travels with it: Boğaziçi, up into space for the physics
 (Saturn and a pair of black holes), down to Padova's Prato della Valle, up
 again for the thesis (a transformer and the refusal direction), and down to
@@ -66,7 +69,8 @@ Levent for now.
 - `components/world/` — the 3D world: `World.tsx` (mounted once in the layout),
   `gate.ts` (decides before first paint whether the ride plays), and the engine
   in `engine/` (the ride's tube and planet, the city in `engine/city/`, the
-  resume's scenes in space, camera shots)
+  resume's scenes in space, camera shots, the plane with the email in
+  `banner.ts`)
 - `lib/posts.ts` — blog loading/parsing utilities
 - `lib/resume.ts`, `lib/projects.ts`, `lib/currently.ts` — typed views of `content/site.md`
 - `posts/` — markdown blog content

@@ -7,8 +7,12 @@ import {
   Mesh,
   NormalBlending,
   PlaneGeometry,
+  Points,
   ShaderMaterial,
+  SphereGeometry,
   Vector3,
+  type Color,
+  type Object3D,
   type Texture,
 } from 'three'
 import { createGiant } from './planets'
@@ -213,6 +217,122 @@ function createGrid(palette: Palette, quality: Quality) {
   return { grid, material }
 }
 
+/** Titan in its orange haze, Rhea, Enceladus: round Saturn in the plane of its rings. */
+function createMoons(palette: Palette, rings: Object3D) {
+  const specs: [number, number, number, Color, Color][] = [
+    // radius, orbit (in planet radii), period in seconds, surface, haze
+    [0.13, 3.6, 46, palette.arid.clone().multiplyScalar(0.85), palette.dusk],
+    [0.07, 2.75, 29, palette.heading.clone().multiplyScalar(0.7), palette.sky.clone().multiplyScalar(0.4)],
+    [0.05, 2.35, 17, palette.ice, palette.sky],
+  ]
+  const moons = specs.map(([r, orbit, period, base, haze], i) => {
+    const material = new ShaderMaterial({
+      uniforms: { uLight: { value: LIGHT }, cBase: { value: base }, cHaze: { value: haze } },
+      vertexShader: /* glsl */ `
+        varying vec3 vNormalW;
+        varying vec3 vPosW;
+        void main() {
+          vNormalW = normalize(mat3(modelMatrix) * normal);
+          vec4 wp = modelMatrix * vec4(position, 1.0);
+          vPosW = wp.xyz;
+          gl_Position = projectionMatrix * viewMatrix * wp;
+        }
+      `,
+      fragmentShader: /* glsl */ `
+        uniform vec3 uLight, cBase, cHaze;
+        varying vec3 vNormalW;
+        varying vec3 vPosW;
+        void main() {
+          vec3 N = normalize(vNormalW);
+          float d = max(dot(N, uLight), 0.0);
+          float rim = pow(1.0 - max(dot(N, normalize(cameraPosition - vPosW)), 0.0), 3.0);
+          gl_FragColor = vec4(cBase * (0.03 + 0.97 * d) + cHaze * rim * (0.2 + 0.8 * d) * 0.6, 1.0);
+        }
+      `,
+    })
+    // Placed in the rings' frame, which keeps the scene's units.
+    const mesh = new Mesh(new SphereGeometry(r, 20, 14), material)
+    rings.add(mesh)
+    return { mesh, orbit: orbit * SATURN_RADIUS, period, phase: i * 2.1 }
+  })
+  return {
+    update(time: number) {
+      for (const m of moons) {
+        const a = m.phase + (time / m.period) * Math.PI * 2
+        m.mesh.position.set(Math.cos(a) * m.orbit, Math.sin(a) * m.orbit, 0)
+      }
+    },
+  }
+}
+
+/**
+ * Gas pulled off the smaller black hole and spiralling into the larger: a
+ * stream of sparks, gold where it leaves, white-hot where it falls in.
+ */
+function createStream(palette: Palette, count: number) {
+  const phase = new Float32Array(count)
+  const seed = new Float32Array(count)
+  for (let i = 0; i < count; i++) {
+    phase[i] = i / count
+    seed[i] = (Math.sin(i * 12.9898) * 43758.5453) % 1
+  }
+  const geometry = new BufferGeometry()
+  geometry.setAttribute('position', new BufferAttribute(new Float32Array(count * 3), 3))
+  geometry.setAttribute('aPhase', new BufferAttribute(phase, 1))
+  geometry.setAttribute('aSeed', new BufferAttribute(seed, 1))
+  const material = new ShaderMaterial({
+    uniforms: {
+      uTime: { value: 0 },
+      uOpacity: { value: 0 },
+      uPixelRatio: { value: 1 },
+      uFrom: { value: new Vector3() },
+      uTo: { value: new Vector3() },
+      cGold: { value: palette.sun },
+      cHot: { value: palette.heading },
+    },
+    vertexShader: /* glsl */ `
+      attribute float aPhase;
+      attribute float aSeed;
+      uniform float uTime, uPixelRatio;
+      uniform vec3 uFrom, uTo;
+      varying float vT;
+      void main() {
+        float t = fract(aPhase + uTime * 0.05);
+        vT = t;
+        vec3 dir = uTo - uFrom;
+        vec3 side = normalize(cross(dir, vec3(0.0, 1.0, 0.0)));
+        vec3 up = normalize(cross(side, dir));
+        // Along a curve that swings wide of the straight line, then round and
+        // round the larger hole, closing in.
+        float fall = t * t;
+        vec3 p = mix(uFrom, uTo, fall) + side * sin(t * 3.1416) * 1.4;
+        float swirl = aSeed * 6.2832 + t * 18.0;
+        float r = mix(0.12, 0.9, 1.0 - t) * (0.5 + 0.5 * fract(aSeed * 7.3)) + smoothstep(0.7, 1.0, t) * 0.25;
+        p += (side * cos(swirl) + up * sin(swirl) * 0.35) * r;
+        vec4 wp = modelMatrix * vec4(p, 1.0);
+        gl_Position = projectionMatrix * viewMatrix * wp;
+        gl_PointSize = (1.4 + 2.4 * t) * uPixelRatio;
+      }
+    `,
+    fragmentShader: /* glsl */ `
+      uniform float uOpacity;
+      uniform vec3 cGold, cHot;
+      varying float vT;
+      void main() {
+        float r = length(gl_PointCoord - 0.5) * 2.0;
+        float fade = smoothstep(0.0, 0.08, vT) * (1.0 - smoothstep(0.93, 1.0, vT));
+        gl_FragColor = vec4(mix(cGold, cHot, vT) * exp(-r * r * 4.0) * fade * uOpacity * 0.8, 1.0);
+      }
+    `,
+    transparent: true,
+    depthWrite: false,
+    blending: AdditiveBlending,
+  })
+  const points = new Points(geometry, material)
+  points.frustumCulled = false
+  return { points, material }
+}
+
 export function createPhysics(palette: Palette, quality: Quality, sky: Texture) {
   const group = new Group()
   group.position.set(...PHYSICS_AT)
@@ -226,6 +346,7 @@ export function createPhysics(palette: Palette, quality: Quality, sky: Texture) 
   saturn.mesh.position.copy(SATURN)
   saturn.mesh.rotation.set(0.35, 0.5, -0.28)
   group.add(saturn.mesh)
+  const moons = createMoons(palette, saturn.rings)
 
   const primary = createBlackHole(palette, sky, 7.5)
   primary.mesh.position.copy(PRIMARY)
@@ -234,6 +355,8 @@ export function createPhysics(palette: Palette, quality: Quality, sky: Texture) 
 
   const { grid, material: gridMaterial } = createGrid(palette, quality)
   group.add(grid)
+  const stream = createStream(palette, quality.tier === 'low' ? 160 : 420)
+  group.add(stream.points)
 
   const anchorSaturn = new Vector3()
   const anchorHole = new Vector3()
@@ -242,6 +365,9 @@ export function createPhysics(palette: Palette, quality: Quality, sky: Texture) 
     group,
     /** Where the captions pin, in world space. */
     anchors: { saturn: anchorSaturn, blackHole: anchorHole },
+    setPixelRatio(pixelRatio: number) {
+      stream.material.uniforms.uPixelRatio.value = pixelRatio
+    },
     update(time: number, breath: number, weight: number) {
       group.visible = weight > 0.002
       if (!group.visible) return
@@ -256,6 +382,12 @@ export function createPhysics(palette: Palette, quality: Quality, sky: Texture) 
         hole.material.uniforms.uOpacity.value = weight
       }
       saturn.update(time, 0.03)
+      moons.update(time)
+      const su = stream.material.uniforms
+      su.uTime.value = time
+      su.uOpacity.value = weight
+      su.uFrom.value.copy(companion.mesh.position)
+      su.uTo.value.copy(PRIMARY)
       const gu = gridMaterial.uniforms
       gu.uTime.value = time
       gu.uBreath.value = breath

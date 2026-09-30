@@ -119,7 +119,7 @@ export default function RootLayout({
         className={`${jetbrainsMono.variable} ${newsreader.variable} antialiased`}
       >
         <JsonLd data={graph(websiteNode(), personNode())} />
-        <World labels={content.world} />
+        <World labels={content.world} email={PERSON.email} />
         {/* Outside <main>: the ride hides main, and its instruments must show. */}
         <IntroOverlay
           brand={content.navigation.home}

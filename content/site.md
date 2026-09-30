@@ -51,8 +51,8 @@ replay: replay the ride
 
 <!--
   The first screen after landing: istanbul at dusk, seen from the water.
-  keys: greeting (the big line), name (the word in the greeting that gets
-  the gold), location, time (label for the live istanbul clock), scroll
+  keys: greeting (the big line), name (the word in the greeting set in
+  italic), location, time (label for the live istanbul clock), scroll
   (the hint at the bottom). The paragraph is the line under the greeting.
 -->
 
@@ -149,7 +149,9 @@ notes on interpretability, machine learning, and the occasional detour through l
 
 <!--
   The last part of the home page, where the sun comes up over the asian side.
-  Your email and profiles come from lib/site.ts.
+  Your email and profiles come from lib/site.ts. The same email is what the
+  little plane tows across the sky every two minutes someone spends on the
+  site.
   keys: label, email (the text on the email button)
 -->
 
