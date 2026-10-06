@@ -336,7 +336,10 @@ gradients on `.world` stand in for the sky.
   fastest in the middle, and carries its waves with it; the moon lays a path
   of glints toward itself; and a line of foam laps at every shore, read from a
   map of the waterline baked once at startup from the same outline the ground
-  is made from. Everything afloat rolls with it.
+  is made from. Everything afloat rolls with it. A wave finer than a few
+  pixels fades out before it can alias into moiré, and the roughness it would
+  have added blurs the mirror up and down instead, the way far lights on water
+  stretch into streaks; the moon's path widens into a soft band the same way.
 - The camera follows the page through stations: any element marked
   `data-station`. The home page's sections name their shots in
   `components/world/engine/shots.ts` (`HOME`), one night from dusk over the old

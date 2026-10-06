@@ -209,7 +209,12 @@ export function createIstanbul(palette: Palette, quality: Quality, atmos: Atmosp
   // The waterline, baked once from the same outline the ground is made
   // from: the ground meets the water about 1.7 units inside it.
   const shore = bakeShore(landSdf, [-260, -620, 360, 180], lite ? [160, 206] : [256, 330], 1.66)
-  const water = createWater(palette, atmos, 4400, 512, 512, !lite, { origin: ISTANBUL_AT, shore, current: 1 })
+  const water = createWater(palette, atmos, 4400, 512, 512, !lite, {
+    origin: ISTANBUL_AT,
+    shore,
+    current: 1,
+    taps: tier === 'high' ? 6 : 4,
+  })
 
   group.add(
     terrain.mesh,

@@ -66,6 +66,8 @@ export interface WaterOptions {
   shore?: ShoreMap
   /** 1 where the strait runs; 0 for still water. */
   current?: number
+  /** How many times the mirror is read per pixel to blur it where the waves are too fine to draw. */
+  taps?: number
 }
 
 const seaUniforms = (palette: Palette, atmos: Atmosphere, options: WaterOptions) => ({
@@ -107,32 +109,57 @@ const seaGLSL = /* glsl */ `
     return vec2(0.05, 1.0) * strait * (0.3 + 0.9 * middle) + vec2(-0.3, 0.14) * (1.0 - strait) * 0.3;
   }
 
-  // One train of waves: its slope, for a direction, a frequency, a speed.
-  vec2 train(vec2 q, vec2 dir, float k, float w, float a, float t) {
-    return dir * (k * a * cos(dot(q, dir) * k - t * w));
+  // How much of a train of frequency k a pixel can still show, px being how
+  // much water one pixel covers. A wave shorter than a few pixels fades out
+  // before it can alias into moiré; far off, and at a glancing angle, only
+  // the long waves are left.
+  float keep(float k, float px) {
+    return 1.0 - smoothstep(0.6, 1.8, k * px);
+  }
+
+  // The slope the trains a pixel cannot show would have added, squared, on
+  // average: the water is still that rough, only finer than the eye can
+  // follow, and the mirror blurs by as much.
+  float lostSlope;
+
+  // One train of waves: its slope, for a direction, a frequency, a speed,
+  // a height; what of it the pixel cannot show goes into lostSlope.
+  vec2 train(vec2 q, vec2 dir, float k, float w, float a, float t, float px) {
+    float c = keep(k, px);
+    lostSlope += k * k * a * a * (1.0 - c * c) * 0.5;
+    return dir * (k * a * c * cos(dot(q, dir) * k - t * w));
   }
 
   // Waves from several directions at once, carried along by the current, and
   // a long swell under them.
-  vec2 seaSlope(vec2 p, vec2 flow, float t) {
+  vec2 seaSlope(vec2 p, vec2 flow, float t, float px) {
+    lostSlope = 0.0;
     vec2 q = p - flow * t * 1.6;
     q += 0.9 * vec2(sin(q.y * 0.13 + t * 0.21), cos(q.x * 0.11 - t * 0.17));
     vec2 g = vec2(0.0);
-    g += train(q, vec2(0.83, 0.55), 0.55, 0.9, 1.0, t);
-    g += train(q, vec2(-0.45, 0.89), 0.9, 1.25, 0.75, t);
-    g += train(q, vec2(0.2, -0.98), 1.6, 1.8, 0.5, t);
-    g += train(q, vec2(0.97, 0.24), 2.7, 2.5, 0.36, t);
-    g += train(q, vec2(-0.71, -0.7), 4.3, 3.3, 0.24, t);
-    g += train(q, vec2(0.37, 0.93), 6.9, 4.3, 0.15, t);
-    g += train(p, vec2(-0.6, 0.8), 0.16, 0.45, 1.6, t);
+    g += train(q, vec2(0.83, 0.55), 0.55, 0.9, 1.0, t, px);
+    g += train(q, vec2(-0.45, 0.89), 0.9, 1.25, 0.75, t, px);
+    g += train(q, vec2(0.2, -0.98), 1.6, 1.8, 0.5, t, px);
+    g += train(q, vec2(0.97, 0.24), 2.7, 2.5, 0.36, t, px);
+    g += train(q, vec2(-0.71, -0.7), 4.3, 3.3, 0.24, t, px);
+    g += train(q, vec2(0.37, 0.93), 6.9, 4.3, 0.15, t, px);
+    g += train(p, vec2(-0.6, 0.8), 0.16, 0.45, 1.6, t, px);
     return g;
+  }
+
+  // The moon's glints. Where the waves are too fine to draw, their glints
+  // are still there, too many to count: the path goes on as a soft band.
+  float moonGlint(vec3 R, float px) {
+    float rough = smoothstep(0.04, 0.5, px);
+    return pow(max(dot(R, uMoonDir), 0.0), mix(380.0, 40.0, rough)) * mix(0.85, 0.24, rough);
   }
 
   // Foam lapping at the shore: a line at the water's edge, and fainter ones
   // rolling in toward it.
-  float foamAt(vec2 p, float d, float t) {
+  float foamAt(vec2 p, float d, float t, float px) {
     float wobble = sin(p.x * 0.31 + p.y * 0.23) * 1.5 + sin(p.x * 0.07 - p.y * 0.11 + t * 0.3) * 1.2;
-    float lap = pow(0.5 + 0.5 * sin(-d * 2.4 + t * 1.3 + wobble), 4.0);
+    // (Rolling lines finer than a pixel show as what they add up to.)
+    float lap = mix(pow(0.5 + 0.5 * sin(-d * 2.4 + t * 1.3 + wobble), 4.0), 0.27, smoothstep(0.25, 1.0, px * 2.4));
     float band = smoothstep(-2.8, -0.4, d) * (1.0 - smoothstep(-0.1, 0.4, d));
     float edge = smoothstep(-0.9, -0.1, d) * (1.0 - smoothstep(0.0, 0.5, d));
     return band * lap * 0.6 + edge * (0.6 + 0.4 * sin(t * 0.8 + wobble));
@@ -171,6 +198,7 @@ export function createWater(
     fragmentShader: /* glsl */ `
       ${fogGLSL}
       ${seaGLSL}
+      const int TAPS = ${Math.max(1, Math.round(options.taps ?? 6))};
       uniform sampler2D tDiffuse;
       uniform float uTime, uLights;
       uniform vec3 cDeep, cShallow, cMoon, cFoam, cSky;
@@ -182,15 +210,32 @@ export function createWater(
         vec3 V = toCam / dist;
         vec2 p = vPosW.xz - uOrigin.xz;
         float t = uTime;
+        // How much water one pixel covers, the long way.
+        float px = max(length(dFdx(p)), length(dFdy(p)));
         float d = shoreDistance(p);
         vec2 flow = flowAt(p, d);
-        vec2 g = seaSlope(p, flow, t);
-        // Far off the waves are finer than a pixel: let them settle.
+        vec2 g = seaSlope(p, flow, t, px);
+        // The waves bend the mirror, a little across the screen and more up
+        // and down, which draws each light into the long streak lit water
+        // makes; in the camera's own frame, whichever way it faces.
         float calm = 1.0 / (1.0 + dist * 0.012);
+        vec3 tilt = mat3(viewMatrix) * vec3(-g.x, 0.0, -g.y);
         vec4 uv = vUv;
-        uv.x += g.x * 0.004 * calm * uv.w;
-        uv.y += (g.y * 0.022 + g.x * 0.006) * calm * uv.w;
-        vec3 refl = texture2DProj(tDiffuse, uv).rgb;
+        uv.x += tilt.x * 0.0035 * calm * uv.w;
+        uv.y += tilt.z * 0.011 * calm * uv.w;
+        // The waves too fine to draw still roughen the mirror: blur it up and
+        // down by as much, the way far lights on water stretch into streaks.
+        // The taps start at a different place in every pixel, so the blur
+        // reads as water rather than as copies.
+        float spread = sqrt(lostSlope) * 0.022;
+        float jitter = fract(52.9829189 * fract(dot(gl_FragCoord.xy, vec2(0.06711056, 0.00583715))));
+        vec3 refl = vec3(0.0);
+        for (int i = 0; i < TAPS; i++) {
+          vec4 tap = uv;
+          tap.y += ((float(i) + jitter) / float(TAPS) - 0.5) * 2.0 * spread * uv.w;
+          refl += texture2DProj(tDiffuse, tap).rgb;
+        }
+        refl /= float(TAPS);
         // More mirror at a glancing angle, more deep water looking down.
         float fres = 0.28 + 0.72 * pow(1.0 - max(V.y, 0.0), 5.0);
         vec3 deep = mix(cDeep * 0.55, cShallow * 0.5, uDawn * 0.6);
@@ -198,12 +243,13 @@ export function createWater(
         // The moon's path: glints wherever a wave turns it toward the eye.
         vec3 N = normalize(vec3(-g.x * 0.09 * calm, 1.0, -g.y * 0.09 * calm));
         vec3 R = reflect(-V, N);
-        float glint = pow(max(dot(R, uMoonDir), 0.0), 340.0);
-        col += cMoon * glint * 1.1 * (1.0 - uDawn * 0.8);
-        // Lines the current draws down the middle of the strait.
+        col += cMoon * moonGlint(R, px) * (1.0 - uDawn * 0.8);
+        // Lines the current draws down the middle of the strait, where they
+        // are still wider than a pixel.
         float along = p.y * 0.05 + sin(p.x * 0.35 + p.y * 0.02) * 0.6 - t * length(flow) * 0.1;
-        col += cSky * 0.018 * pow(0.5 + 0.5 * sin(p.x * 1.7 + sin(along * 3.0) * 2.0), 12.0) * length(flow);
-        col += cFoam * foamAt(p, d, t) * (0.06 + 0.14 * uLights);
+        float lines = pow(0.5 + 0.5 * sin(p.x * 1.7 + sin(along * 3.0) * 2.0), 12.0) * (1.0 - smoothstep(0.06, 0.25, px));
+        col += cSky * 0.018 * lines * length(flow);
+        col += cFoam * foamAt(p, d, t, px) * (0.06 + 0.14 * uLights);
         gl_FragColor = vec4(fogSky(col, vPosW), 1.0);
       }
     `,
@@ -274,8 +320,9 @@ function createPlainWater(palette: Palette, atmos: Atmosphere, size: number, opt
         float dist = length(toCam);
         vec3 V = toCam / dist;
         vec2 p = vPosW.xz - uOrigin.xz;
+        float px = max(length(dFdx(p)), length(dFdy(p)));
         float d = shoreDistance(p);
-        vec2 g = seaSlope(p, flowAt(p, d), uTime);
+        vec2 g = seaSlope(p, flowAt(p, d), uTime, px);
         float calm = 1.0 / (1.0 + dist * 0.012);
         vec3 N = normalize(vec3(-g.x * 0.09 * calm, 1.0, -g.y * 0.09 * calm));
         vec3 R = reflect(-V, N);
@@ -283,8 +330,8 @@ function createPlainWater(palette: Palette, atmos: Atmosphere, size: number, opt
         float fres = 0.28 + 0.72 * pow(1.0 - max(V.y, 0.0), 5.0);
         vec3 deep = mix(cDeep * 0.55, cShallow * 0.5, uDawn * 0.6);
         vec3 col = mix(deep, sky, fres) + cLit * 0.03 * (0.5 + 0.5 * g.x) * uLights;
-        col += cMoon * pow(max(dot(R, uMoonDir), 0.0), 340.0) * 1.1 * (1.0 - uDawn * 0.8);
-        col += cFoam * foamAt(p, d, uTime) * (0.06 + 0.14 * uLights);
+        col += cMoon * moonGlint(R, px) * (1.0 - uDawn * 0.8);
+        col += cFoam * foamAt(p, d, uTime, px) * (0.06 + 0.14 * uLights);
         gl_FragColor = vec4(fogSky(col, vPosW), 1.0);
       }
     `,
