@@ -1,5 +1,3 @@
-import Link from 'next/link'
-
 // rel="me" tells crawlers these profiles belong to the site owner. Paired
 // with the same URLs in the Person schema's sameAs, it links the handles
 // (khdoex, kaanhho) to this site.
@@ -38,13 +36,6 @@ export default function Footer({ line }: { line: string }) {
             >
               email
             </a>
-            <Link
-              href="/tr"
-              hrefLang="tr"
-              className="u-link text-muted hover:text-accent"
-            >
-              tr
-            </Link>
           </div>
         </div>
       </div>

@@ -21,7 +21,6 @@ export const metadata = pageMetadata({
     'Kaan Hacihaliloglu (Hacıhaliloğlu, kaanhho): physicist turned AI engineer in Istanbul. Researches refusal and safety in LLMs through mechanistic interpretability, builds an AI market research engine at SCL.',
   path: '/',
   type: 'profile',
-  languages: { en: '/', tr: '/tr', 'x-default': '/' },
 })
 
 // Stagger index for .arrive (globals.css): the hero comes in piece by piece

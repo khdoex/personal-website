@@ -7,14 +7,13 @@ import { getAllPosts } from '@/lib/posts'
 // only allows extension elements after them, so adding either made the file
 // schema-invalid (a likely cause of Search Console's "Sitemap could not be
 // read").
-// Both signals already live elsewhere: hreflang in each page's <head>
-// (pageMetadata `languages`), the portrait in the Person JSON-LD.
+// Neither is missed: the portrait lives in the Person JSON-LD, and the site
+// is in one language, so there is no alternate to point to.
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date()
 
   const staticRoutes: MetadataRoute.Sitemap = [
     { path: '', priority: 1 },
-    { path: '/tr', priority: 0.9 },
     { path: '/about', priority: 0.9 },
     { path: '/resume', priority: 0.8 },
     { path: '/projects', priority: 0.7 },

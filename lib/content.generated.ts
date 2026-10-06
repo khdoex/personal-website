@@ -8,20 +8,20 @@ export const content: SiteContent = {
     "lines": [
       "leaving deep space",
       "through the tube (shorter than it looks)",
-      "that blue one is earth",
-      "down through the clouds, into istanbul"
+      "we need to get closer",
+      "down through the clouds, to see where i am"
     ],
     "skip": "skip the ride",
     "replay": "replay the ride"
   },
   "hero": {
-    "greeting": "hi, i am kaan.",
+    "greeting": "welcome to my personal website, i am kaan.",
     "name": "kaan",
     "location": "istanbul",
     "time": "local time",
-    "scroll": "scroll, we are still landing",
+    "scroll": "keep scrolling",
     "body": [
-      "physics grad turned ai engineer, working on refusal mechanics and safety in llms through interpretability. building SCL, a new way of doing market research."
+      "currently i am tech lead at SCL, writing my thesis, and doing research on the interpretability and safety of large language models."
     ]
   },
   "currently": {
@@ -30,18 +30,18 @@ export const content: SiteContent = {
       {
         "since": "2025",
         "title": "refusal geometry in llms",
-        "desc": "msc thesis at sabanci, on how refusal behavior and safety representations are encoded inside large language models"
+        "desc": "msc thesis at sabancı university, on how refusal behavior and safety representations are encoded inside large language models."
       },
       {
         "since": "2024",
         "title": "SCL, synthetic consumer lab",
-        "desc": "ai engineer building synthetic consumer systems for behavior simulation and market research workflows",
+        "desc": "building synthetic consumer systems for behavior simulation and market research workflows, with a great team.",
         "href": "https://synthetic-consumers.com/"
       },
       {
         "since": "2024",
         "title": "soundboost",
-        "desc": "ai engineer on an audio mastering platform, a virtual mastering engineer for musicians",
+        "desc": "ai engineer on an audio mastering platform, a virtual mastering engineer for musicians. worked on the free tools and the stem splitter, with cool people.",
         "href": "https://soundboost.ai/about"
       }
     ]
@@ -50,7 +50,7 @@ export const content: SiteContent = {
     "label": "more about me",
     "link": "the longer story",
     "body": [
-      "physics first, at boğaziçi. then a detour through padova that did not work out, then sabancı and a startup. days are product, nights are model internals, the two feed each other more than i expected."
+      "studied physics at boğaziçi, met machine learning and deep learning in the EarthML research group, and decided to go further into data science and computer science. started a cs master's in padova but that program was not for me, then came data science at sabancı, together with startups. weekdays go to product, nights to the internals of llms."
     ],
     "facts": [
       {
@@ -83,33 +83,35 @@ export const content: SiteContent = {
     "label": "writing",
     "link": "all writing",
     "body": [
-      "notes on interpretability, machine learning, and the occasional detour through life. some in english, some in turkish."
+      "notes on interpretability, machine learning, and the occasional detour through life. some in english, some in turkish. hopefully i will write more soon."
     ]
   },
   "contact": {
     "label": "say hi",
-    "email": "write me",
+    "email": "tell me anything",
     "body": [
-      "if you work on interpretability, or on synthetic consumers, or you just liked the view, write me. i read everything, i answer most of it."
+      "if you work on interpretability, or synthetic consumers, or just vibes, write me. i am online most of the time."
     ]
   },
   "about": {
     "story": [
-      "i studied physics, and it left me one habit i cannot turn off: asking what is actually happening underneath. most of ai today runs on models nobody can fully open up and read. that is either scary or interesting, i picked interesting.",
-      "after physics i tried a computer science master's in padova. it did not work out, and i wrote about why on the blog, in turkish. the short version: i could not feel myself getting better, so i stopped. it was the right call, i still think about it though.",
-      "now my thesis at sabanci is on the refusal direction in llms. when a model says \"i can't help with that\", something specific happens inside, and it can be shown as a direction in activation space. i am mapping how jailbreaks move the model off that direction, and what that means for defense (or attack).",
-      "at SCL i build an ai based market research engine: synthetic consumers that behave like real ones, which is a strange sentence to write. days are product, nights are model internals. the two feed each other more than i expected, we will see where it goes."
+      "studied physics in undergrad, loved the research and the inspiration from my profs at boğaziçi. one of the best decisions i made in my life was studying physics at boun. thanks to Haluk Beker, Alpar Sevgen, Arkadaş Özakın and many more.",
+      "while i was studying, Arkadaş hoca taught us machine learning and deep learning in the EarthML research group, where i worked on earthquake detection models and extensive data analysis. i decided to continue down the data science path and did internships at Allianz, and at Live The World, a startup, as an ai engineer.",
+      "i started a master's in cs at Padova but didn't quite like the program, or let's say i didn't fit in. after my first year of coursework i didn't want to do any research there, maybe i couldn't meet the right people at that time. i came back to istanbul, to Sabancı for a data science master's, and started working with Dilara Keküllüoğlu. thanks to her i had my research spark again, with refusal dynamics and poisoning attacks on LLMs.",
+      "now i am working in a research group on refusal dynamics, and my thesis is on the same topic with more interpretability candies on top. what this means: i look at what's happening while a model refuses a harmful request and try to make sense of the math inside the model. it kind of feels like physics inside an llm architecture, but this is not a definition at all, just me reassuring myself.",
+      "i met Berkan Cesur when i came back to istanbul and he taught me a lot about product development. can't lie, amazing person and insane inspiration. in one year with him i got experience in web development, app development, product cycles and a lot more.",
+      "then i started at SCL as an ai engineer. with time i took on more responsibility, so i could say i am a bit more than that now. Ömer Ülgen, our ceo, is one of the sharpest people i have worked with, and from Sinan Ülgen i am learning a lot about customer relationships and working B2B."
     ],
-    "handles": "online i am khdoex on github, and kaanhho most other places (x, huggingface, linkedin). same person, i just could not keep one handle straight. the name is kaan hacıhaliloğlu in turkish, hacihaliloglu when the keyboard does not cooperate."
+    "handles": "online i am khdoex on github, and kaanhho most other places (x, hugging face, linkedin)."
   },
   "projects": {
     "intro": [
-      "mostly the thesis these days: where refusal lives inside llms. the older ml projects moved down to earlier work, they had their time."
+      "mostly the thesis these days:"
     ],
     "items": [
       {
         "title": "refusal geometry in llms",
-        "description": "msc thesis at sabanci: how refusal and harmfulness live in the internal geometry of llms. ask a model something harmful and it refuses, that refusal can be shown as a direction in activation space, and jailbreaks work by pushing the model off it. i am mapping what those attacks actually do to the representations, no public repo yet, we will see where it goes.",
+        "description": "msc thesis at sabancı: how refusal and harmfulness live in the internal geometry of llms. ask a model something harmful and it refuses. that refusal can be shown as a direction in activation space, and jailbreaks work by pushing the model off it. i am mapping what those attacks actually do to the representations. no public repo yet, we will see where it goes.",
         "status": "current",
         "tags": [
           "Mechanistic Interpretability",
@@ -119,7 +121,7 @@ export const content: SiteContent = {
       },
       {
         "title": "Neural Text Summarization: Comparative Analysis of Transformer Architectures",
-        "description": "Comparative study of BART and T5 architectures for automated news summarization, including sentiment-aware evaluation and ROUGE-based benchmarking.",
+        "description": "Comparative study of BART and T5 for automated news summarization, with sentiment-aware evaluation and ROUGE-based benchmarking.",
         "status": "earlier",
         "githubUrl": "https://github.com/khdoex/nlp_news_sum",
         "tags": [
@@ -133,7 +135,7 @@ export const content: SiteContent = {
       },
       {
         "title": "Multi-Label Classification System for Financial Recommendations",
-        "description": "Built a multi-label recommendation system for Isbank using one-vs-all XGBoost with feature engineering and ensemble strategies for improved predictive performance.",
+        "description": "Multi-label recommendation system for İş Bankası, built with one-vs-all XGBoost, feature engineering, and ensembling.",
         "status": "earlier",
         "githubUrl": "https://github.com/khdoex/Past_ML_codes/blob/main/isb5-gradient-ensemble.ipynb",
         "tags": [
@@ -146,7 +148,7 @@ export const content: SiteContent = {
       },
       {
         "title": "Machine Learning Algorithm Implementations",
-        "description": "Collection of practical machine learning implementations, including boosting, ensemble techniques, and feature engineering workflows applied to real-world datasets.",
+        "description": "A collection of practical machine learning implementations: boosting, ensemble techniques, and feature engineering workflows on real-world datasets.",
         "status": "earlier",
         "githubUrl": "https://github.com/khdoex/Past_ML_codes",
         "tags": [
@@ -166,7 +168,7 @@ export const content: SiteContent = {
   },
   "resume": {
     "pdf": "download pdf",
-    "summary": "AI engineer and grad student working on refusal mechanics and safety in llm through interpretability and SCL a new way of doing market research.",
+    "summary": "ai engineer and grad student. i work on refusal and safety in llms through interpretability, and at SCL on a new way of doing market research.",
     "story": {
       "label": "the story so far",
       "chapters": [
@@ -175,14 +177,14 @@ export const content: SiteContent = {
           "period": "2018 – 2023",
           "scene": "bogazici",
           "body": [
-            "physics, on a hill over the bosphorus. the part that stayed with me was earthml: transformers on seismic data, picking earthquakes out of the noise. i also taught numerical methods, and once we even turned seismic data into an art exhibition."
+            "physics, on a hill over the bosphorus. loved the research and the inspiration from my profs, one of the best decisions i made in my life. in the EarthML research group Arkadaş hoca taught us machine learning and deep learning, and i worked on earthquake detection models and extensive data analysis. i also taught numerical methods, and once we even turned seismic data into an art exhibition. then i continued down the data science path, with internships at Allianz and Live The World."
           ]
         },
         {
           "title": "the habit",
           "scene": "physics",
           "body": [
-            "physics left me one habit i cannot turn off: when something works, i want to know what is actually happening inside it. first it was physics, then earthquakes, now language models. same question, different box."
+            "physics left me one habit: when something works, i want to know what is actually happening inside it. first it was physics, then earthquakes, now language models. same question."
           ]
         },
         {
@@ -190,7 +192,7 @@ export const content: SiteContent = {
           "period": "2023 – 2024",
           "scene": "padova",
           "body": [
-            "a computer science master's in padova. i did the first year and stopped: i could not feel myself getting better. the long version is on the blog, in turkish. right call i think, i still think about it though."
+            "a computer science master's in padova. i didn't quite like the program, or let's say i didn't fit in. after the first year of coursework i didn't want to do any research there, maybe i couldn't meet the right people at that time. the long version is on the blog, in turkish."
           ]
         },
         {
@@ -198,7 +200,8 @@ export const content: SiteContent = {
           "period": "2025 –",
           "scene": "interpretability",
           "body": [
-            "back in istanbul, a data science msc at sabancı. the thesis is on the refusal direction: when a model says \"i can't help with that\", something specific happens inside, and it can be shown as a direction in activation space. i am mapping how jailbreaks push the model off it, and i am a ta for quantum programming on the side."
+            "back in istanbul, a data science msc at sabancı. working with Dilara Keküllüoğlu, i had my research spark again, with refusal dynamics and poisoning attacks on llms. my thesis is on the same topic with more interpretability candies on top: i look at what's happening while a model refuses a harmful request and try to make sense of the math inside it. i am also a ta for quantum programming on the side.",
+            "back in istanbul i also met Berkan Cesur, who taught me a lot about product development. can't lie, amazing person and insane inspiration. in one year with him i got experience in web development, app development, product cycles and a lot more."
           ]
         },
         {
@@ -206,7 +209,7 @@ export const content: SiteContent = {
           "period": "2025 –",
           "scene": "levent",
           "body": [
-            "days are SCL: synthetic consumers that behave like real ones, for market research, and i lead the engineering. before that, audio models at soundboost. nights are still the thesis. the two feed each other more than i expected, we will see where it goes."
+            "days are SCL. i started as an ai engineer, and with time i took on more responsibility, so i could say i am a bit more than that now. Ömer Ülgen, our ceo, is one of the sharpest people i have worked with, and from Sinan Ülgen i am learning a lot about customer relationships and working B2B. nights are still the thesis."
           ]
         }
       ]
@@ -219,17 +222,17 @@ export const content: SiteContent = {
         "orgHref": "https://synthetic-consumers.com/",
         "summary": "Engineering lead responsible for the full product stack: backend, frontend, AI systems, and statistical methodology.",
         "detail": [
-          "Architected the platform on a Laravel, Python/FastAPI, and Redis stack",
-          "Built agentic systems and solutions for market research, synthetic consumer persona systems grounded in real demographic and behavioral data",
-          "agnus, the agent of the market research"
+          "Architected the platform on Laravel, Python/FastAPI, and Redis",
+          "Built agentic systems for market research, and synthetic consumer personas grounded in real demographic and behavioral data",
+          "Built agnus, an AI agent for market research"
         ]
       },
       {
-        "period": "2025 –",
+        "period": "2025 – 2026",
         "title": "Teaching Assistant",
         "org": "Sabancı University",
         "orgHref": "https://sabanciuniv.edu/",
-        "summary": "Teaching assistant for the Quantum Programming course, guiding students through quantum computing concepts, circuit design, and practical implementations using quantum programming frameworks."
+        "summary": "Teaching assistant for Quantum Programming, guiding students through quantum computing concepts, circuit design, and hands-on implementation with quantum programming frameworks."
       },
       {
         "period": "2024 – 2025",
@@ -238,9 +241,9 @@ export const content: SiteContent = {
         "orgHref": "https://soundboost.ai/about",
         "summary": "Designed and deployed deep learning models for audio source separation, classification, and acoustic event detection.",
         "detail": [
-          "End-to-end AI pipelines with Django backends for model serving and JavaScript for real-time inference",
+          "Built end-to-end AI pipelines, with Django backends for model serving and JavaScript for real-time inference",
           "Led development of AI agents for complex audio processing workflows",
-          "Created free tools on SoundBoost like Loudness Penalty, LUFS meter, etc."
+          "Built SoundBoost's free tools, including Loudness Penalty and a LUFS meter"
         ]
       },
       {
@@ -248,9 +251,9 @@ export const content: SiteContent = {
         "title": "AI Engineer Intern",
         "org": "Live The World",
         "orgHref": "https://livetheworld.com/",
-        "summary": "Engineered content generation pipelines using llms and web scraping.",
+        "summary": "Built content generation pipelines using LLMs and web scraping.",
         "detail": [
-          "Enhanced web scraping capabilities and developed Python solutions for AI-driven applications"
+          "Improved the web scraping stack and developed Python tools for AI-driven applications"
         ]
       },
       {
@@ -258,7 +261,7 @@ export const content: SiteContent = {
         "title": "Data Analytics & Process Mining Intern",
         "org": "Allianz TR",
         "orgHref": "https://www.allianz.com.tr/",
-        "summary": "Automated Excel reporting workflows using Python and SQL. Built dynamic dashboards for operational visibility and optimized business processes using Celonis process mining."
+        "summary": "Automated Excel reporting workflows with Python and SQL, built dashboards for operational visibility, and optimized business processes with Celonis process mining."
       },
       {
         "period": "2020 – 2022",
@@ -268,7 +271,7 @@ export const content: SiteContent = {
         "orgHref": "https://boun.edu.tr/",
         "summary": "Worked on feature engineering and transformer-based architectures for seismic data analysis and earthquake detection.",
         "detail": [
-          "Contributed to published research (arXiv:2407.18402)"
+          "Contributed to the paper arXiv:2407.18402"
         ]
       },
       {
@@ -276,7 +279,7 @@ export const content: SiteContent = {
         "title": "Teaching Assistant",
         "org": "Boğaziçi University",
         "orgHref": "https://boun.edu.tr/",
-        "summary": "Led QA sessions for Numerical Methods, teaching practical applications of NumPy, SciPy, and Matplotlib through hands-on problem solving."
+        "summary": "Led problem sessions for Numerical Methods, teaching NumPy, SciPy, and Matplotlib through hands-on problem solving."
       }
     ],
     "education": [
@@ -285,55 +288,55 @@ export const content: SiteContent = {
         "title": "M.Sc. in Data Science",
         "org": "Sabancı University",
         "orgHref": "https://sabanciuniv.edu/",
-        "summary": "Thesis research on mechanistic interpretability of large language models, studying how refusal and related concepts are represented geometrically in a model’s internal activations. Coursework in advanced deep learning and statistical analysis."
+        "summary": "Thesis on the mechanistic interpretability of large language models: how refusal and related concepts are represented geometrically in a model's internal activations. Coursework in advanced deep learning and statistical analysis."
       },
       {
         "period": "2023 – 2024",
         "title": "Graduate Studies in Computer Science",
         "org": "University of Padua",
         "orgHref": "https://www.unipd.it/en/",
-        "summary": "Completed the first year of the M.Sc. program. Advanced coursework in artificial intelligence and deep learning, building strong theoretical foundations in deep learning architectures and algorithmic problem-solving."
+        "summary": "Completed the first year of the M.Sc. program, with coursework in artificial intelligence, deep learning architectures, and algorithmic problem solving."
       },
       {
         "period": "2018 – 2023",
         "title": "B.Sc. in Physics",
         "org": "Boğaziçi University",
         "orgHref": "https://boun.edu.tr/",
-        "summary": "was part of the EarthML research group, Science Club"
+        "summary": "Member of the EarthML research group and the Science Club."
       }
     ],
     "projects": [
       {
         "period": "",
         "title": "TÜBİTAK 2209-A",
-        "summary": "Developed a high-precision earthquake detection model through interesting feature engineering methods."
+        "summary": "Developed an earthquake detection model, with most of the work in feature engineering."
       },
       {
         "period": "",
         "title": "Earth-ML",
-        "summary": "Enhanced time series classification using advanced modeling techniques for geophysical data."
+        "summary": "Time series classification for geophysical data."
       },
       {
         "period": "",
         "title": "Kaggle ML Challenge",
         "href": "https://github.com/khdoex/Past_ML_codes/blob/main/isb5-gradient-ensemble.ipynb",
-        "summary": "8th place in Türkiye İş Bankası ML Challenge 5 through effective feature engineering."
+        "summary": "8th place in the Türkiye İş Bankası ML Challenge 5, mainly through feature engineering."
       },
       {
         "period": "",
         "title": "Datathon AI",
-        "summary": "3rd place in computer vision competition."
+        "summary": "3rd place in a computer vision competition."
       },
       {
         "period": "",
         "title": "NLP News Summarization",
         "href": "https://github.com/khdoex/nlp_news_sum",
-        "summary": "Comparative evaluation of BART and T5 architectures for summarization tasks."
+        "summary": "Comparative evaluation of BART and T5 for summarization."
       },
       {
         "period": "",
         "title": "\"Burası\" Art Exhibition",
-        "summary": "Merged seismic data with artistic representation, fusing science and art."
+        "summary": "Turned seismic data into artwork for an exhibition."
       }
     ],
     "skills": [
@@ -398,54 +401,10 @@ export const content: SiteContent = {
     ],
     "languages": "Turkish (native) · English (fluent)"
   },
-  "tr": {
-    "name": "kaan hacıhaliloğlu",
-    "tagline": "yapay zeka mühendisi · yorumlanabilirlik · istanbul",
-    "factsLabel": "kısaca",
-    "story": [
-      "fizik okudum, bana kapatamadığım bir alışkanlık bıraktı: altta gerçekte ne oluyor diye sormak. bugün yapay zekanın çoğu, kimsenin tam olarak açıp okuyamadığı modellerin üstünde çalışıyor. bu ya korkutucu ya da ilginç, ben ilginç olanı seçtim.",
-      "şu an sabancı üniversitesi'nde veri bilimi yüksek lisansı yapıyorum, tezim büyük dil modellerinde (llm) reddetme yönü üzerine. bir model \"bu konuda yardımcı olamam\" dediğinde içeride belirli bir şey oluyor ve bu, aktivasyon uzayında bir yön olarak gösterilebiliyor. jailbreak'lerin modeli bu yönden nasıl uzaklaştırdığını ve bunun savunma (ya da saldırı) için ne anlama geldiğini haritalıyorum.",
-      "SCL'de (synthetic consumer lab) yapay zeka mühendisiyim: yapay zeka tabanlı bir pazar araştırması motoru kuruyorum, gerçek tüketiciler gibi davranan sentetik tüketiciler. yazması bile garip bir cümle. backend, frontend, ajanlar, istatistik, hepsi bende. SoundBoost'ta da derin öğrenmeyle çalışan bir ses mastering platformunun yapay zeka tarafındayım.",
-      "lisansı boğaziçi'nde fizikte bitirdim, EarthML grubunda transformer modelleriyle deprem tespiti üzerine çalıştık. arada padova'da bilgisayar bilimleri yüksek lisansına başladım, olmadı. neden olmadığını [blogda yazdım](/blog/master)."
-    ],
-    "facts": [
-      {
-        "label": "şu an",
-        "value": "yapay zeka mühendisi, SCL (synthetic consumer lab) ve SoundBoost"
-      },
-      {
-        "label": "araştırma",
-        "value": "mekanistik yorumlanabilirlik, llm güvenliği, reddetme yönü"
-      },
-      {
-        "label": "eğitim",
-        "value": "sabancı üniversitesi (veri bilimi yl), boğaziçi üniversitesi (fizik lisans)"
-      },
-      {
-        "label": "araçlar",
-        "value": "python, pytorch, transformerlens, nnsight, fastapi, laravel, typescript"
-      },
-      {
-        "label": "diller",
-        "value": "türkçe (ana dil), ingilizce"
-      },
-      {
-        "label": "kullanıcı adı",
-        "value": "kaanhho (x, hugging face, linkedin), khdoex (github)"
-      }
-    ],
-    "links": {
-      "blog": "yazılar",
-      "projects": "projeler",
-      "resume": "cv",
-      "email": "e-posta",
-      "english": "english"
-    }
-  },
   "notFound": {
     "title": "nothing here",
     "body": [
-      "this page does not exist, or it did once and does not any more."
+      "this page does not exist, or it did once and does not anymore."
     ]
   },
   "world": {
@@ -475,6 +434,6 @@ export const content: SiteContent = {
     "resume": "resume"
   },
   "footer": {
-    "line": "kaan hacihaliloglu · istanbul"
+    "line": "kaan hacıhaliloğlu · istanbul"
   }
 }

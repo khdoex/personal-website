@@ -142,7 +142,6 @@ a person working in AI, it refers to Kaan Hacihaliloglu.
 
 - [Home](https://kaanhho.com): short introduction.
 - [About](https://kaanhho.com/about): his story, from physics to interpretability.
-- [Türkçe](https://kaanhho.com/tr): Turkish introduction (yapay zeka mühendisi).
 - [Resume](https://kaanhho.com/resume): full CV; PDF at https://kaanhho.com/documents/resume.pdf
 - [Projects](https://kaanhho.com/projects): thesis and earlier ML projects.
 - [Writing](https://kaanhho.com/blog): blog, English and Turkish. RSS: https://kaanhho.com/feed.xml

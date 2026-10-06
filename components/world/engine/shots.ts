@@ -190,7 +190,7 @@ export function routeKind(pathname: string): RouteKind {
 
   const path = pathname.replace(/\/+$/, '') || '/'
   if (path === '/') return 'home'
-  if (path === '/about' || path === '/tr') return 'about'
+  if (path === '/about') return 'about'
   if (path === '/projects') return 'projects'
   if (path === '/resume') return 'resume'
   if (path === '/blog') return 'blog'

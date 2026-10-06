@@ -100,14 +100,6 @@ export interface SiteContent {
     certifications: ResumeEntry[]
     languages: string
   }
-  tr: {
-    name: string
-    tagline: string
-    factsLabel: string
-    story: InlineText[]
-    facts: Fact[]
-    links: { blog: string; projects: string; resume: string; email: string; english: string }
-  }
   notFound: { title: string; body: InlineText[] }
   world: WorldLabels
   navigation: { home: string; blog: string; projects: string; about: string; resume: string }

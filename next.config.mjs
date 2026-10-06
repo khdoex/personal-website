@@ -22,6 +22,8 @@ const nextConfig = {
         destination: '/images/kaan-hacihaliloglu.png',
         permanent: true,
       },
+      // The turkish page is gone; links to it land on the home page.
+      { source: '/tr', destination: '/', permanent: true },
     ]
   },
 }

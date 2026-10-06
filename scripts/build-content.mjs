@@ -40,11 +40,6 @@ const SCHEMA = {
   'resume-skills': { keys: [], body: false, bullets: true },
   'resume-certifications': { keys: [], body: false, bullets: true },
   'resume-languages': { keys: [], body: true },
-  tr: {
-    keys: ['name', 'tagline', 'facts', 'blog', 'projects', 'resume', 'email', 'english'],
-    body: true,
-    bullets: true,
-  },
   'not-found': { keys: ['title'], body: true },
   world: {
     keys: ['saturn', 'black-hole', 'transformer', 'refusal', 'harmful', 'harmless', 'prompt', 'answer'],
@@ -264,7 +259,6 @@ function build(sections) {
   const about = get('about')
   const projects = get('projects')
   const resume = get('resume')
-  const tr = get('tr')
   const notFound = get('not-found')
   const nav = get('navigation')
 
@@ -358,20 +352,6 @@ function build(sections) {
         summary: '',
       })),
       languages: one(get('resume-languages')),
-    },
-    tr: {
-      name: need(tr, 'name'),
-      tagline: need(tr, 'tagline'),
-      factsLabel: need(tr, 'facts'),
-      story: paras(tr),
-      facts: pairs(tr),
-      links: {
-        blog: need(tr, 'blog'),
-        projects: need(tr, 'projects'),
-        resume: need(tr, 'resume'),
-        email: need(tr, 'email'),
-        english: need(tr, 'english'),
-      },
     },
     notFound: { title: need(notFound, 'title'), body: paras(notFound) },
     world: {

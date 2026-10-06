@@ -167,7 +167,7 @@ Ten steps in `tailwind.config.ts`, 18px base, 1.25 ratio.
 | `h3`      | 28px                      | section heads                      |
 | `h2`      | 36px                      | page and post titles               |
 | `h1`      | 48px                      | unused on pages today              |
-| `display` | clamp(40px, 6vw, 64px)    | mastheads: /tr, the 404            |
+| `display` | clamp(40px, 6vw, 64px)    | mastheads: the 404                 |
 | `hero`    | clamp(44px, 7.5vw, 92px)  | the home greeting, the ride's counter |
 
 Headings inside prose are set in `app/globals.css` rather than through these
