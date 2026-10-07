@@ -3,6 +3,7 @@ import {
   ClampToEdgeWrapping,
   DataTexture,
   LinearFilter,
+  Matrix4,
   Mesh,
   PlaneGeometry,
   RedFormat,
@@ -166,6 +167,14 @@ const seaGLSL = /* glsl */ `
   }
 `
 
+/** Whether two matrices agree to within rounding. */
+function same(a: Matrix4, b: Matrix4) {
+  const x = a.elements
+  const y = b.elements
+  for (let i = 0; i < 16; i++) if (Math.abs(x[i] - y[i]) > 1e-6 * (1 + Math.abs(y[i]))) return false
+  return true
+}
+
 export function createWater(
   palette: Palette,
   atmos: Atmosphere,
@@ -227,15 +236,21 @@ export function createWater(
         // down by as much, the way far lights on water stretch into streaks.
         // The taps start at a different place in every pixel, so the blur
         // reads as water rather than as copies.
+        // Near the camera, where every wave is drawn, one look is enough.
         float spread = sqrt(lostSlope) * 0.022;
-        float jitter = fract(52.9829189 * fract(dot(gl_FragCoord.xy, vec2(0.06711056, 0.00583715))));
-        vec3 refl = vec3(0.0);
-        for (int i = 0; i < TAPS; i++) {
-          vec4 tap = uv;
-          tap.y += ((float(i) + jitter) / float(TAPS) - 0.5) * 2.0 * spread * uv.w;
-          refl += texture2DProj(tDiffuse, tap).rgb;
+        vec3 refl;
+        if (spread < 0.0006) {
+          refl = texture2DProj(tDiffuse, uv).rgb;
+        } else {
+          float jitter = fract(52.9829189 * fract(dot(gl_FragCoord.xy, vec2(0.06711056, 0.00583715))));
+          refl = vec3(0.0);
+          for (int i = 0; i < TAPS; i++) {
+            vec4 tap = uv;
+            tap.y += ((float(i) + jitter) / float(TAPS) - 0.5) * 2.0 * spread * uv.w;
+            refl += texture2DProj(tDiffuse, tap).rgb;
+          }
+          refl /= float(TAPS);
         }
-        refl /= float(TAPS);
         // More mirror at a glancing angle, more deep water looking down.
         float fres = 0.28 + 0.72 * pow(1.0 - max(V.y, 0.0), 5.0);
         vec3 deep = mix(cDeep * 0.55, cShallow * 0.5, uDawn * 0.6);
@@ -266,6 +281,29 @@ export function createWater(
   water.frustumCulled = false
   const material = water.material as ShaderMaterial
 
+  // While the camera holds still the mirror is redrawn every other frame:
+  // the ripples on it still move every frame, and what it shows moves slowly
+  // (boats, the cars on the bridge). On the move it is redrawn every frame,
+  // so the reflection never trails the view, and after a resize, which
+  // leaves it blank.
+  const mirror = water.onBeforeRender.bind(water)
+  const lastView = new Matrix4()
+  const lastLens = new Matrix4()
+  let rested = false
+  let blank = true
+  water.onBeforeRender = (renderer, scene, camera, geometry, mat, group) => {
+    const still = same(lastView, camera.matrixWorld) && same(lastLens, camera.projectionMatrix)
+    lastView.copy(camera.matrixWorld)
+    lastLens.copy(camera.projectionMatrix)
+    if (still && !rested && !blank) {
+      rested = true
+      return
+    }
+    rested = false
+    blank = false
+    mirror(renderer, scene, camera, geometry, mat, group)
+  }
+
   return {
     mesh: water,
     /** The reflector copies its uniforms, so the shared air is handed over by hand. */
@@ -280,6 +318,7 @@ export function createWater(
     },
     resize(width: number, height: number) {
       water.getRenderTarget().setSize(Math.max(64, Math.round(width)), Math.max(64, Math.round(height)))
+      blank = true
     },
     /** The mirror leaves out what it would never show (see ABOVE_ONLY), for this camera. */
     watch(camera: Camera) {

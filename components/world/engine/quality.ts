@@ -16,10 +16,13 @@ export interface Quality {
   octaves: number
 }
 
+// Past one and a half device pixels to a CSS pixel the world, behind the
+// text and softened by fog, looks no sharper; it only costs more: a retina
+// screen at 2 draws nearly twice the pixels it does at 1.5.
 const PRESETS: Record<Tier, Quality> = {
   high: {
     tier: 'high',
-    maxPixelRatio: 2,
+    maxPixelRatio: 1.5,
     stars: 6500,
     textureSize: 2048,
     tubeSegments: 900,
@@ -31,7 +34,7 @@ const PRESETS: Record<Tier, Quality> = {
   },
   medium: {
     tier: 'medium',
-    maxPixelRatio: 1.5,
+    maxPixelRatio: 1.25,
     stars: 4200,
     textureSize: 2048,
     tubeSegments: 600,

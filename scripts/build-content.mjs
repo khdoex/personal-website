@@ -23,7 +23,7 @@ const OUT = join(process.cwd(), 'lib', 'content.generated.ts')
 // items: true). body/bullets: whether paragraphs and list lines are shown.
 const SCHEMA = {
   intro: { keys: ['skip', 'replay'], body: false, bullets: true },
-  hero: { keys: ['greeting', 'name', 'location', 'time', 'scroll'], body: true },
+  hero: { keys: ['greeting', 'location', 'time', 'scroll'], body: true },
   currently: { keys: ['label'], itemKeys: ['since', 'link'], body: false },
   'about-teaser': { keys: ['label', 'link'], body: true, bullets: true },
   'resume-teaser': { keys: ['label', 'link', 'pdf'], body: true },
@@ -247,10 +247,6 @@ function build(sections) {
 
   const intro = get('intro')
   const hero = get('hero')
-  const heroName = opt(hero, 'name')
-  if (heroName && !need(hero, 'greeting').includes(heroName)) {
-    fail(hero.fields.name.line, `the name "${heroName}" does not appear in the greeting "${hero.fields.greeting.value}", so there is nothing to paint gold.`)
-  }
   const currently = get('currently')
   const aboutTeaser = get('about-teaser')
   const resumeTeaser = get('resume-teaser')
@@ -270,7 +266,6 @@ function build(sections) {
     },
     hero: {
       greeting: need(hero, 'greeting'),
-      ...(heroName && { name: heroName }),
       location: need(hero, 'location'),
       time: need(hero, 'time'),
       scroll: need(hero, 'scroll'),

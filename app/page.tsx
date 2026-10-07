@@ -35,18 +35,6 @@ const panel = 'max-lg:glass max-lg:rounded-2xl max-lg:p-6'
 const left = `${panel} lg:col-span-6 xl:col-span-5`
 const right = `${panel} lg:col-span-6 lg:col-start-7 xl:col-span-5 xl:col-start-8`
 
-function Greeting({ text, name }: { text: string; name?: string }) {
-  const at = name ? text.indexOf(name) : -1
-  if (!name || at < 0) return <>{text}</>
-  return (
-    <>
-      {text.slice(0, at)}
-      <span className="italic">{name}</span>
-      {text.slice(at + name.length)}
-    </>
-  )
-}
-
 export default async function Home() {
   const posts = (await getAllPosts()).slice(0, 4)
   const { intro, hero, currently, aboutTeaser, resumeTeaser, writingTeaser, contact, resume } = content
@@ -61,14 +49,14 @@ export default async function Home() {
       <section data-station="hero" className="relative flex min-h-[calc(100svh-4rem)] items-start lg:items-center">
         <div className={wrap}>
           {/* On a phone the skyline sits at the bottom, so the words sit high. */}
-          <header className="pb-32 pt-12 lg:col-span-7 lg:pt-10 xl:col-span-6">
+          <header className="pb-32 pt-12 lg:col-span-8 lg:pt-10 xl:col-span-7">
             <p className="arrive flex flex-wrap items-center gap-x-3 gap-y-1" style={at(0)}>
               <span className="font-mono text-meta text-muted">{hero.location}</span>
               <span aria-hidden className="h-px w-6 bg-border" />
               <IstanbulClock label={hero.time} />
             </p>
-            <h1 className="arrive mt-6 font-serif text-hero font-normal tracking-[-0.015em] text-heading" style={at(1)}>
-              <Greeting text={hero.greeting} name={hero.name} />
+            <h1 className="arrive mt-6 font-serif text-display font-normal tracking-[-0.015em] text-heading" style={at(1)}>
+              {hero.greeting}
             </h1>
             {hero.body.map((paragraph, i) => (
               <p key={i} className="arrive mt-7 max-w-[34rem] font-serif text-lead text-foreground" style={at(2 + i)}>

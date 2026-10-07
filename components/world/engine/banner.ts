@@ -240,10 +240,16 @@ export function createBanner(palette: Palette, text: string, family: string, ani
   const ink = inkCanvas(text, family)
   const texture = new CanvasTexture(ink.canvas)
   texture.anisotropy = anisotropy
-  document.fonts?.load(ink.spec).then(() => {
-    ink.draw()
-    texture.needsUpdate = true
-  }, () => undefined)
+  // Settles once the words are drawn in the site's own face, or in the
+  // fallback if it will not load.
+  const inked = (document.fonts?.load(ink.spec) ?? Promise.resolve()).then(
+    () => {
+      ink.draw()
+      texture.needsUpdate = true
+      return texture
+    },
+    () => texture
+  )
   const height = (LENGTH * ink.canvas.height) / ink.canvas.width
   const clothMaterial = new ShaderMaterial({
     uniforms: {
@@ -350,6 +356,8 @@ export function createBanner(palette: Palette, text: string, family: string, ani
 
   return {
     group,
+    /** The banner's words, once drawn: to send to the GPU before the first pass needs them. */
+    inked,
     /** True while a pass is under way. */
     get flying() {
       return flying

@@ -51,13 +51,12 @@ replay: replay the ride
 
 <!--
   The first screen after landing: istanbul at dusk, seen from the water.
-  keys: greeting (the big line), name (the word in the greeting set in
-  italic), location, time (label for the live istanbul clock), scroll
-  (the hint at the bottom). The paragraph is the line under the greeting.
+  keys: greeting (the big line), location, time (label for the live
+  istanbul clock), scroll (the hint at the bottom). The paragraph is the
+  line under the greeting.
 -->
 
 greeting: welcome to my personal website, i am kaan.
-name: kaan
 location: istanbul
 time: local time
 scroll: keep scrolling
@@ -480,7 +479,7 @@ answer: i can't help with that
 
 <!-- The bar at the top. keys: home (the name on the left), blog, projects, about, resume -->
 
-home: kaan h.
+home: kaan hacihaliloglu
 blog: blog
 projects: projects
 about: about

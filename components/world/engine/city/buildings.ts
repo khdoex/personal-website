@@ -2,11 +2,14 @@ import {
   BoxGeometry,
   BufferAttribute,
   BufferGeometry,
+  CircleGeometry,
+  ConeGeometry,
   CylinderGeometry,
   Group,
   InstancedBufferAttribute,
   InstancedMesh,
   Matrix4,
+  PlaneGeometry,
   Quaternion,
   ShaderMaterial,
   Vector3,
@@ -123,21 +126,24 @@ function hipRoof() {
 /**
  * What stands on a flat roof in Istanbul, in real units: the stair
  * housing with a lamp over its door, a solar heater with its tank, a round
- * water tank, an aerial, a dish. 0 concrete, 1 painted metal, 2 glass, 3 a lamp.
+ * water tank, a dish. 0 concrete, 1 painted metal, 2 glass, 3 a lamp.
+ * Eighty-odd triangles: from the heights the camera keeps to, anything
+ * finer (legs, an aerial) is narrower than a pixel and only shimmers.
  */
 function rooftopKit() {
   const box = (w: number, h: number, d: number, x: number, y: number, z: number) => new BoxGeometry(w, h, d).translate(x, y + h / 2, z)
   const parts = [
     made(box(0.5, 0.42, 0.46, -0.3, 0, -0.26), 0),
-    made(box(0.08, 0.06, 0.03, -0.3, 0.3, -0.02), 3),
-    made(new BoxGeometry(0.62, 0.025, 0.36).rotateX(0.6).translate(0.28, 0.17, 0.22), 2),
-    made(new CylinderGeometry(0.065, 0.065, 0.66, 8).rotateZ(Math.PI / 2).translate(0.28, 0.33, 0.07), 1),
-    made(box(0.03, 0.2, 0.03, 0.02, 0, 0.1), 0),
-    made(box(0.03, 0.2, 0.03, 0.54, 0, 0.1), 0),
-    made(new CylinderGeometry(0.12, 0.12, 0.26, 10).translate(0.36, 0.13, -0.34), 1),
-    made(box(0.02, 0.75, 0.02, -0.52, 0.42, -0.42), 0),
-    made(box(0.3, 0.015, 0.015, -0.52, 1.02, -0.42), 0),
-    made(new CylinderGeometry(0.1, 0.02, 0.05, 10).rotateX(-1.1).translate(-0.05, 0.14, 0.34), 1),
+    // the lamp: a pane facing out over the door
+    made(new PlaneGeometry(0.08, 0.06).translate(-0.3, 0.33, -0.005), 3),
+    // the heater's glass leaning on the roof, its tank along the top edge
+    made(new BoxGeometry(0.62, 0.025, 0.36).rotateX(0.6).translate(0.28, 0.112, 0.22), 2),
+    made(new CylinderGeometry(0.065, 0.065, 0.66, 6).rotateZ(Math.PI / 2).translate(0.28, 0.27, 0.07), 1),
+    // the water tank, open underneath, where the roof hides it
+    made(new CylinderGeometry(0.12, 0.12, 0.26, 7, 1, true).translate(0.36, 0.13, -0.34), 1),
+    made(new CircleGeometry(0.12, 7, -Math.PI / 2).rotateX(-Math.PI / 2).translate(0.36, 0.26, -0.34), 1),
+    // the dish, its face tipped up to the sky
+    made(new ConeGeometry(0.1, 0.05, 6).rotateX(Math.PI - 1.1).translate(-0.05, 0.14, 0.34), 1),
   ]
   return merge(parts)
 }
@@ -263,66 +269,80 @@ const wallFragment = /* glsl */ `
       col = wall;
       vec2 cell = vec2(along / size.x, height / size.y);
       vec2 id = floor(cell);
-      vec2 f = fract(cell);
-      vec2 w = (f - box.xz) / (box.yw - box.xz);
-      // Below the street, where a slope bares a building's foot: no windows.
-      float win = step(0.0, w.x) * step(w.x, 1.0) * step(0.0, w.y) * step(w.y, 1.0) * step(-0.5, id.y);
-      // Balconies on some columns of a block of flats: a rail across the
-      // foot of a door that reaches down behind it.
-      float rail = 0.0;
-      #if DETAIL
-      if (style == 0 && id.y > 0.5 && hash(vec3(id.x, 3.0, vSeed * 17.0 + face)) < 0.45) {
-        rail = step(0.05, f.x) * step(f.x, 0.95) * step(f.y, 0.32) * (0.6 + 0.8 * smoothstep(0.26, 0.3, f.y));
-        w.y = (f.y - 0.32) / (box.w - 0.32);
-        win = step(0.0, w.x) * step(w.x, 1.0) * step(0.0, w.y) * step(w.y, 1.0);
-      }
-      #endif
-      float h = hash(vec3(id, vSeed * 97.0 + face));
-      float on = step(1.0 - uLit * busy, h);
-      // A window now and then goes out or comes on.
-      on *= step(0.02, fract(h * 13.7 + floor(uTime * 0.08 + h * 9.0) * 0.37));
-      vec3 light = mix(cWarm, cCool, step(0.84, fract(h * 7.31)));
-      float inside = 1.0;
-      #if DETAIL
-      // Here and there a television: cold, restless.
-      float tv = step(0.94, fract(h * 3.17));
-      light = mix(light, cSky * (0.55 + 0.3 * sin(uTime * 5.0 + h * 40.0) + 0.15 * sin(uTime * 13.0 + h * 7.0)), tv);
-      // The lamp hangs high in a room, so a window is brighter at the top;
-      // some have their curtains half drawn.
-      float curtain = step(0.55, fract(h * 5.3)) * smoothstep(0.16, 0.34, abs(w.x - 0.5));
-      inside = (0.78 + 0.34 * clamp(w.y, 0.0, 1.0)) * (1.0 - 0.55 * curtain);
-      #endif
       // Far away the grid is finer than a pixel: show what it adds up to.
       // (A little brighter than the true average: at a distance lit windows
       // read as points of light, and the eye counts them up.)
       float fine = smoothstep(0.35, 0.9, max(fwidth(cell.x), fwidth(cell.y)));
-      float lit = mix(win * on * inside, uLit * busy * 0.5, fine);
-      #if DETAIL
-      if (id.y > -0.5 && id.y < 0.5 && style != 3) {
-        // The street floor: shops for most, an arcade in Padova.
-        vec2 s = vec2(along / 1.05, height / size.y);
-        vec2 sf = fract(s);
-        float sh = hash(vec3(floor(s.x), 7.0, vSeed * 41.0 + face));
-        if (style == 5) {
-          // Arches, lit from inside by the arcade's lamps.
-          vec2 a = vec2(fract(along / 0.62) - 0.5, height / size.y);
-          float open = step(abs(a.x), 0.38) * step(a.y, 0.62) + step(length(vec2(a.x / 0.38, (a.y - 0.62) / 0.3)), 1.0) * step(0.62, a.y);
-          lit = mix(min(open, 1.0) * (0.55 + 0.25 * a.y), 0.4, fine);
-          light = cWarm;
-        } else {
-          float glass = step(0.06, sf.x) * step(sf.x, 0.94) * step(0.12, sf.y) * step(sf.y, 0.78);
-          float mullion = step(0.05, fract(sf.x * 3.0 + 0.02));
-          float board = step(0.06, sf.x) * step(sf.x, 0.94) * step(0.84, sf.y) * step(sf.y, 0.96) * step(0.62, sh);
-          float open = step(0.48, sh);
-          lit = mix(glass * mullion * open * (0.45 + 0.4 * sf.y) * (0.7 + 0.5 * fract(sh * 9.7)), 0.25, fine);
-          light = mix(cWarm, cCool, step(0.75, fract(sh * 5.1)));
-          vec3 signColor = sh < 0.75 ? cGreen : (sh < 0.88 ? cSky : cSun);
-          col += signColor * board * (1.0 - fine) * 0.6 * uLights;
+      // A window's light on average: warm, one in six cold.
+      vec3 glow = mix(cWarm, cCool, 0.16);
+      if (fine > 0.995) {
+        // So far that no single window shows: only the sum, and none of the
+        // work of drawing each one.
+        float lit = uLit * busy * 0.5;
+        #if DETAIL
+        if (id.y > -0.5 && id.y < 0.5 && style != 3) lit = style == 5 ? 0.4 : 0.25;
+        #endif
+        col += glow * lit * uLights * 0.9;
+      } else {
+        vec2 f = fract(cell);
+        vec2 w = (f - box.xz) / (box.yw - box.xz);
+        // Below the street, where a slope bares a building's foot: no windows.
+        float win = step(0.0, w.x) * step(w.x, 1.0) * step(0.0, w.y) * step(w.y, 1.0) * step(-0.5, id.y);
+        // Balconies on some columns of a block of flats: a rail across the
+        // foot of a door that reaches down behind it.
+        float rail = 0.0;
+        #if DETAIL
+        if (style == 0 && id.y > 0.5 && hash(vec3(id.x, 3.0, vSeed * 17.0 + face)) < 0.45) {
+          rail = step(0.05, f.x) * step(f.x, 0.95) * step(f.y, 0.32) * (0.6 + 0.8 * smoothstep(0.26, 0.3, f.y));
+          w.y = (f.y - 0.32) / (box.w - 0.32);
+          win = step(0.0, w.x) * step(w.x, 1.0) * step(0.0, w.y) * step(w.y, 1.0);
         }
+        #endif
+        float h = hash(vec3(id, vSeed * 97.0 + face));
+        float on = step(1.0 - uLit * busy, h);
+        // A window now and then goes out or comes on.
+        on *= step(0.02, fract(h * 13.7 + floor(uTime * 0.08 + h * 9.0) * 0.37));
+        vec3 light = mix(cWarm, cCool, step(0.84, fract(h * 7.31)));
+        float inside = 1.0;
+        #if DETAIL
+        // Here and there a television: cold, restless.
+        float tv = step(0.94, fract(h * 3.17));
+        light = mix(light, cSky * (0.55 + 0.3 * sin(uTime * 5.0 + h * 40.0) + 0.15 * sin(uTime * 13.0 + h * 7.0)), tv);
+        // The lamp hangs high in a room, so a window is brighter at the top;
+        // some have their curtains half drawn.
+        float curtain = step(0.55, fract(h * 5.3)) * smoothstep(0.16, 0.34, abs(w.x - 0.5));
+        inside = (0.78 + 0.34 * clamp(w.y, 0.0, 1.0)) * (1.0 - 0.55 * curtain);
+        #endif
+        float lit = mix(win * on * inside, uLit * busy * 0.5, fine);
+        #if DETAIL
+        if (id.y > -0.5 && id.y < 0.5 && style != 3) {
+          // The street floor: shops for most, an arcade in Padova.
+          vec2 s = vec2(along / 1.05, height / size.y);
+          vec2 sf = fract(s);
+          float sh = hash(vec3(floor(s.x), 7.0, vSeed * 41.0 + face));
+          if (style == 5) {
+            // Arches, lit from inside by the arcade's lamps.
+            vec2 a = vec2(fract(along / 0.62) - 0.5, height / size.y);
+            float open = step(abs(a.x), 0.38) * step(a.y, 0.62) + step(length(vec2(a.x / 0.38, (a.y - 0.62) / 0.3)), 1.0) * step(0.62, a.y);
+            lit = mix(min(open, 1.0) * (0.55 + 0.25 * a.y), 0.4, fine);
+            light = cWarm;
+          } else {
+            float glass = step(0.06, sf.x) * step(sf.x, 0.94) * step(0.12, sf.y) * step(sf.y, 0.78);
+            float mullion = step(0.05, fract(sf.x * 3.0 + 0.02));
+            float board = step(0.06, sf.x) * step(sf.x, 0.94) * step(0.84, sf.y) * step(sf.y, 0.96) * step(0.62, sh);
+            float open = step(0.48, sh);
+            lit = mix(glass * mullion * open * (0.45 + 0.4 * sf.y) * (0.7 + 0.5 * fract(sh * 9.7)), 0.25, fine);
+            light = mix(cWarm, cCool, step(0.75, fract(sh * 5.1)));
+            vec3 signColor = sh < 0.75 ? cGreen : (sh < 0.88 ? cSky : cSun);
+            col += signColor * board * (1.0 - fine) * 0.6 * uLights;
+          }
+        }
+        #endif
+        // Nearing the cut-off each window's colour gives way to the average, so
+        // the two meet without a seam.
+        col += mix(light, glow, fine) * lit * uLights * 0.9;
+        col += (cWarm * 0.06 * uLights + cSky * 0.025) * rail * (1.0 - fine);
       }
-      #endif
-      col += light * lit * uLights * 0.9;
-      col += (cWarm * 0.06 * uLights + cSky * 0.025) * rail * (1.0 - fine);
       // The street lamps light the bottom of the walls.
       col += cWarm * 0.1 * exp(-height * 2.2) * uLights;
     }
@@ -359,6 +379,7 @@ const roofFragment = /* glsl */ `
 `
 
 const kitVertex = /* glsl */ `
+  uniform float uPixel;
   attribute float aSeed;
   attribute float aPart;
   varying float vSeed;
@@ -372,6 +393,11 @@ const kitVertex = /* glsl */ `
     vec4 wp = modelMatrix * instanceMatrix * vec4(position, 1.0);
     vPosW = wp.xyz;
     gl_Position = projectionMatrix * viewMatrix * wp;
+    // A roof's clutter under three pixels across is left out, behind the far
+    // plane: its triangles would cost more than they show.
+    vec4 foot = projectionMatrix * viewMatrix * modelMatrix * instanceMatrix[3];
+    float across = 1.2 * length(instanceMatrix[0].xyz) * projectionMatrix[1][1] / max(foot.w, 0.001);
+    if (across < 3.0 * uPixel) gl_Position = vec4(0.0, 0.0, 2.0, 1.0);
   }
 `
 
@@ -596,7 +622,8 @@ export function createBuildings(palette: Palette, atmos: Atmosphere, count: numb
     .slice(0, plot.rooftops ?? 0)
   const kitGeometry = rooftopKit()
   const kitMaterial = new ShaderMaterial({
-    uniforms: { ...atmos, uMoonDir: { value: MOON_DIR }, cIce: { value: palette.ice }, ...colours },
+    // uPixel: the height of a pixel on screen, in clip space (2 / pixels tall).
+    uniforms: { ...atmos, uMoonDir: { value: MOON_DIR }, cIce: { value: palette.ice }, uPixel: { value: 2 / 900 }, ...colours },
     vertexShader: kitVertex,
     fragmentShader: kitFragment,
   })
@@ -639,6 +666,10 @@ export function createBuildings(palette: Palette, atmos: Atmosphere, count: numb
     material,
     /** Point materials, which need the pixel ratio. */
     points: [lamps.material],
+    /** The canvas's height in device pixels, for the rooftops' cut-off. */
+    resize(pixelsTall: number) {
+      kitMaterial.uniforms.uPixel.value = 2 / Math.max(1, pixelsTall)
+    },
     dispose() {
       geometry.dispose()
       material.dispose()

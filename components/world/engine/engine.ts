@@ -144,6 +144,7 @@ export class Engine {
   private last = 0
   private running = false
   private hidden = false
+  private disposed = false
 
   // the ride
   private rideT = 0
@@ -190,6 +191,11 @@ export class Engine {
   /** How far the cloud has streamed past, for the veil's pattern. */
   private rush = 0
   private lastY = 0
+
+  // frame pacing
+  /** The display's refresh interval in ms, as the animation frames arrive. */
+  private refresh = 1000 / 60
+  private lastCall = 0
 
   // adaptive resolution
   private slowFor = 0
@@ -299,6 +305,11 @@ export class Engine {
       this.renderer.capabilities.getMaxAnisotropy()
     )
     this.visit = createVisit(PLANE_FIRST, PLANE_EVERY)
+    // Uploaded now, while nothing moves, rather than when the plane first
+    // flies over two minutes in.
+    this.banner.inked.then((texture) => {
+      if (!this.disposed) this.renderer.initTexture(texture)
+    })
 
     this.scene.add(
       this.background.mesh,
@@ -429,6 +440,7 @@ export class Engine {
   }
 
   dispose() {
+    this.disposed = true
     this.stop()
     this.renderer.domElement.removeEventListener('webglcontextlost', this.onContextLost)
     this.background.dispose()
@@ -487,6 +499,15 @@ export class Engine {
   private frame = (now: number) => {
     if (!this.running) return
     this.raf = requestAnimationFrame(this.frame)
+    // A display faster than 60Hz gets every second frame (every third or
+    // fourth on the fastest): the motion is as smooth, for half the work and
+    // the heat that would slow the laptop down after a minute.
+    const gap = now - this.lastCall
+    this.lastCall = now
+    if (gap > 0 && gap < this.refresh * 0.8) this.refresh = (this.refresh + gap) / 2
+    else if (gap > 0 && gap < this.refresh * 1.25) this.refresh += (gap - this.refresh) * 0.05
+    const every = Math.max(1, Math.floor(1000 / this.refresh / 60 + 0.1))
+    if (now - this.last < this.refresh * (every - 0.5)) return
     const dt = Math.min(0.05, Math.max(0.001, (now - this.last) / 1000))
     this.last = now
     if (this.opts.reducedMotion) {
@@ -584,10 +605,13 @@ export class Engine {
   }
 
   private adapt(dt: number) {
+    // Slower than 50 frames a second for a second and a half (at 60Hz, one
+    // frame in four missed): a step down in resolution, and another, until
+    // it keeps up.
     this.frameAvg += (dt * 1000 - this.frameAvg) * 0.05
-    this.slowFor = this.frameAvg > 28 ? this.slowFor + dt : 0
+    this.slowFor = this.frameAvg > 20 ? this.slowFor + dt : 0
     const floor = this.quality.tier === 'low' ? 0.5 : 0.75
-    if (this.slowFor > 2 && this.pixelRatio > floor) {
+    if (this.slowFor > 1.5 && this.pixelRatio > floor) {
       this.pixelRatio = Math.max(floor, this.pixelRatio - 0.25)
       this.renderer.setPixelRatio(this.pixelRatio)
       this.renderer.setSize(this.width, this.height, false)

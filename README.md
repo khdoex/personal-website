@@ -62,8 +62,8 @@ Levent for now.
 ## Content structure
 
 - `content/site.md` — every word a visitor reads: home page, about, projects,
-  resume, the Turkish page, the ride's lines and the 3D captions. Edit it and
-  run `npm run content`; a mistake is reported with its line number.
+  resume, the ride's lines and the 3D captions. Edit it and run
+  `npm run content`; a mistake is reported with its line number.
 - `app/` — routes and page components
 - `components/` — shared UI (navigation, footer)
 - `components/world/` — the 3D world: `World.tsx` (mounted once in the layout),

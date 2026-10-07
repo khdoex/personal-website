@@ -167,17 +167,17 @@ Ten steps in `tailwind.config.ts`, 18px base, 1.25 ratio.
 | `h3`      | 28px                      | section heads                      |
 | `h2`      | 36px                      | page and post titles               |
 | `h1`      | 48px                      | unused on pages today              |
-| `display` | clamp(40px, 6vw, 64px)    | mastheads: the 404                 |
-| `hero`    | clamp(44px, 7.5vw, 92px)  | the home greeting, the ride's counter |
+| `display` | clamp(40px, 6vw, 64px)    | the home greeting, the 404's masthead |
+| `hero`    | clamp(44px, 7.5vw, 92px)  | the ride's counter                 |
 
 Headings inside prose are set in `app/globals.css` rather than through these
 utilities, and they sit one step lower: a post's own `h2` is 28px, because the
 post title above it already holds 36px. The sizes come off the same scale.
 
-`hero` sits above `display` for one job: the greeting over the city on the
-home page, and the percent counter of the ride that leads to it. Beside a
-skyline across half the screen, 64px read as a caption. It is the only step that
-grows past 64px, and it is not for page titles.
+`hero` sits above `display` for one job: the percent counter of the ride in,
+alone in the middle of the screen. It is the only step that grows past 64px,
+and it is not for page titles. The home greeting used it too, until it grew
+into a sentence; at `display` it holds two lines beside the skyline.
 
 `tick` sits below `meta` because the figures needed it. Their legends, axis
 captions and in-figure notes ran at 9, 10 and 11 pixels, and 13px wrapped a
@@ -374,14 +374,19 @@ gradients on `.world` stand in for the sky.
 - Labels pinned in 3D are ordinary DOM text, positioned by the engine every
   frame, placed in priority order and hidden rather than allowed to overlap one
   another or leave the screen.
-- Three quality tiers, chosen from what the browser reports, set resolution,
-  star count, building and tree counts, rooftop clutter, reflection size and
-  noise octaves. The low tier drops the two most expensive things per pixel,
-  the water's mirror and the street plan, keeps its buildings plainer (no
-  tiled roofs, shops or balconies) and its woods and water emptier, and a
-  device that runs slow for two seconds steps its resolution down. Roofs and
-  what stands on them are left out of the water's mirror (`ABOVE_ONLY` in
-  `common.ts`): from below, the walls hide them anyway. `?quality=` forces a tier and `?debug` exposes `window.__world`
+- Three quality tiers, chosen from what the browser reports, set resolution
+  (at most 1.5 device pixels to a CSS pixel on the high tier, 1.25 on the
+  middle one), star count, building and tree counts, rooftop clutter,
+  reflection size and noise octaves. The low tier drops the two most
+  expensive things per pixel, the water's mirror and the street plan, keeps
+  its buildings plainer (no tiled roofs, shops or balconies) and its woods and
+  water emptier. On every tier the world draws about 60 frames a second at
+  most (a 120Hz display gets every other frame), a device that runs under 50
+  for a second and a half steps its resolution down, the mirror is redrawn
+  every other frame while the camera holds still, and a roof's clutter is left
+  out once it is under three pixels across. Roofs and what stands on them are
+  left out of the water's mirror (`ABOVE_ONLY` in `common.ts`): from below,
+  the walls hide them anyway. `?quality=` forces a tier and `?debug` exposes `window.__world`
   (`?debug=paused` stops the clock, so a screenshot script can step it
   exactly, and `__world.look({ x, y, z, dist, lat, lon, ... })` points the
   camera at any spot in the city while a view is being tuned).
@@ -393,8 +398,8 @@ gradients on `.world` stand in for the sky.
 ## Copy
 
 Every word a visitor reads lives in `content/site.md`: the ride's lines, the
-home page, the about story, the projects, the whole resume, the Turkish page,
-the captions in the 3D scenes, the navigation and the footer.
+home page, the about story, the projects, the whole resume, the captions in
+the 3D scenes, the navigation and the footer.
 `scripts/build-content.mjs` checks it against the shape the pages need and
 emits `lib/content.generated.ts`, typed by `lib/content-types.ts`; a mistake
 stops the build with the line number. `npm run dev` and `npm run build` run it,

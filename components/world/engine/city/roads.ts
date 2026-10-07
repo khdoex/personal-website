@@ -222,7 +222,7 @@ export function createRoads(
     materials: [glowMaterial, carMaterial],
     carMaterial,
     update(time: number) {
-      cars.forEach((car, i) => place(car, time, carPositions, i))
+      for (let i = 0; i < cars.length; i++) place(cars[i], time, carPositions, i)
       positionAttribute.needsUpdate = true
     },
     dispose() {

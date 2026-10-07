@@ -98,7 +98,7 @@ export function createIstanbul(palette: Palette, quality: Quality, atmos: Atmosp
   const lite = tier === 'low'
   // The cheapest tier keeps to the three woods the camera sees most.
   const parks = lite ? PARKS.slice(0, 3) : PARKS
-  const terrain = createTerrain(palette, atmos, tier === 'high' ? 1 : tier === 'medium' ? 0.75 : 0.46, !lite, parks)
+  const terrain = createTerrain(palette, atmos, tier === 'high' ? 1 : tier === 'medium' ? 0.75 : 0.55, !lite, parks)
   const landmarks = createLandmarks(palette, atmos)
   const bridge = createBridge(palette, atmos, SITES.bridge)
   const second = createBridge(palette, atmos, SECOND_BRIDGE, 'lamps')
@@ -188,7 +188,7 @@ export function createIstanbul(palette: Palette, quality: Quality, atmos: Atmosp
       onShore(x, z),
     style: istanbulStyle,
     extra: yalis(rng(61)),
-    rooftops: tier === 'high' ? 6000 : tier === 'medium' ? 2400 : 0,
+    rooftops: tier === 'high' ? 2200 : tier === 'medium' ? 900 : 0,
     rise(x, z, r) {
       // Low round Kanyon, so the avenue sees it; the towers stand behind.
       if (Math.hypot(x - KANYON[0], z - KANYON[1]) < 40) return 0.7 + r * 0.8
@@ -213,7 +213,7 @@ export function createIstanbul(palette: Palette, quality: Quality, atmos: Atmosp
     origin: ISTANBUL_AT,
     shore,
     current: 1,
-    taps: tier === 'high' ? 6 : 4,
+    taps: 4,
   })
 
   group.add(
@@ -256,6 +256,7 @@ export function createIstanbul(palette: Palette, quality: Quality, atmos: Atmosp
     },
     resize(width: number, height: number, pixelRatio: number) {
       water.resize(width * pixelRatio * texScale, height * pixelRatio * texScale)
+      buildings.resize(height * pixelRatio)
       for (const m of points) m.uniforms.uPixelRatio.value = pixelRatio
     },
     update(time: number, dt: number, highlight: number | null, visible: boolean) {

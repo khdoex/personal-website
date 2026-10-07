@@ -229,8 +229,8 @@ export function createGroundMaterial(palette: Palette, atmos: Atmosphere, street
 }
 
 export function createTerrain(palette: Palette, atmos: Atmosphere, detail: number, streets = true, parks: Park[] = []) {
-  const nx = Math.round(360 * detail)
-  const nz = Math.round(310 * detail)
+  const nx = Math.round(300 * detail)
+  const nz = Math.round(260 * detail)
   const positions = new Float32Array((nx + 1) * (nz + 1) * 3)
   const park = new Float32Array((nx + 1) * (nz + 1))
   const indices: number[] = []

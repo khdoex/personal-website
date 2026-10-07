@@ -74,7 +74,6 @@ export interface SiteContent {
   intro: { lines: string[]; skip: string; replay: string }
   hero: {
     greeting: string
-    name?: string
     location: string
     time: string
     scroll: string

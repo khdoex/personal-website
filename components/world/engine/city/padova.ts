@@ -324,7 +324,7 @@ export function createPadova(palette: Palette, quality: Quality, atmos: Atmosphe
     lite
   )
 
-  const water = createWater(palette, atmos, 90, 256, 256, !lite, { origin: PADOVA_AT, taps: tier === 'high' ? 6 : 4 })
+  const water = createWater(palette, atmos, 90, 256, 256, !lite, { origin: PADOVA_AT, taps: 4 })
   water.mesh.position.y = WATER
 
   group.add(ground, stone, lampPoints, trees.group, buildings.group, water.mesh)

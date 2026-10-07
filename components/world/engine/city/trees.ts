@@ -55,28 +55,34 @@ function part(g: BufferGeometry, leaves: number) {
   return geometry
 }
 
-/** The three kinds, a unit or so tall, standing on y = 0. detail: 1 round crowns, 0 cheaper facets. */
+/**
+ * The three kinds, a unit or so tall, standing on y = 0. detail: 1 a round
+ * main crown, 0 all facets. The lesser lumps are always plain facets: in the
+ * dark only the outline tells, and the main crown makes it round.
+ */
 function shapes(detail: number): BufferGeometry[] {
-  const blob = (r: number, x: number, y: number, z: number, squash = 1) =>
-    part(new IcosahedronGeometry(r, detail).scale(1, squash, 1).translate(x, y, z), 1)
+  const blob = (r: number, x: number, y: number, z: number, squash = 1, round = 0) =>
+    part(new IcosahedronGeometry(r, round).scale(1, squash, 1).translate(x, y, z), 1)
+  // Trunks open at both ends: the crown hides the top, the ground the foot.
+  const trunk = (r0: number, r1: number, h: number) => new CylinderGeometry(r0, r1, h, 5, 1, true)
   const broadleaf = merge([
-    part(new CylinderGeometry(0.045, 0.07, 0.6, 6).translate(0, 0.3, 0), 0),
-    blob(0.5, 0, 0.95, 0, 0.92),
+    part(trunk(0.045, 0.07, 0.6).translate(0, 0.3, 0), 0),
+    blob(0.5, 0, 0.95, 0, 0.92, detail),
     blob(0.38, 0.32, 0.8, 0.1),
     blob(0.4, -0.3, 0.86, -0.12),
     blob(0.34, 0.04, 0.76, 0.34),
     blob(0.32, -0.08, 1.24, -0.04),
   ])
   const pine = merge([
-    part(new CylinderGeometry(0.04, 0.07, 1.2, 6).rotateZ(0.07).translate(0.03, 0.6, 0), 0),
-    blob(0.62, 0, 1.28, 0, 0.42),
+    part(trunk(0.04, 0.07, 1.2).rotateZ(0.07).translate(0.03, 0.6, 0), 0),
+    blob(0.62, 0, 1.28, 0, 0.42, detail),
     blob(0.42, 0.38, 1.2, 0.12, 0.45),
     blob(0.42, -0.34, 1.22, -0.16, 0.45),
   ])
   const profile = [
     [0, 0.02], [0.16, 0.14], [0.23, 0.5], [0.22, 0.95], [0.16, 1.4], [0.08, 1.8], [0, 2.02],
   ].map(([r, y]) => new Vector2(r, y))
-  const cypress = merge([part(new LatheGeometry(profile, detail > 0 ? 9 : 6), 1)])
+  const cypress = merge([part(new LatheGeometry(profile, detail > 0 ? 7 : 6), 1)])
   return [broadleaf, pine, cypress]
 }
 

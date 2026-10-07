@@ -16,7 +16,6 @@ export const content: SiteContent = {
   },
   "hero": {
     "greeting": "welcome to my personal website, i am kaan.",
-    "name": "kaan",
     "location": "istanbul",
     "time": "local time",
     "scroll": "keep scrolling",
@@ -427,7 +426,7 @@ export const content: SiteContent = {
     "answer": "i can't help with that"
   },
   "navigation": {
-    "home": "kaan h.",
+    "home": "kaan hacihaliloglu",
     "blog": "blog",
     "projects": "projects",
     "about": "about",

@@ -461,6 +461,8 @@ export function createLife(palette: Palette, atmos: Atmosphere, landmarkMaterial
   const up = new Vector3(0, 1, 0)
   const p = new Vector3()
   const s = new Vector3(1, 1, 1)
+  // The boats that only rock where they lie, gathered once rather than every frame.
+  const rocking = [boats, sails]
 
   return {
     group,
@@ -505,18 +507,21 @@ export function createLife(palette: Palette, atmos: Atmosphere, landmarkMaterial
         tour.holder.rotation.y = at.heading + (outbound ? 0 : Math.PI)
         float(tour.rolling, time, 11, 1.5)
       }
-      for (const boat of [...boats, ...sails]) {
-        float(boat.rolling, time, boat.seed, 0.6)
-        boat.holder.position.x = boat.x + Math.sin(time * 0.05 + boat.seed) * 0.8
-        boat.holder.position.z = boat.z + Math.cos(time * 0.04 + boat.seed) * 0.8
+      for (const fleet of rocking) {
+        for (const boat of fleet) {
+          float(boat.rolling, time, boat.seed, 0.6)
+          boat.holder.position.x = boat.x + Math.sin(time * 0.05 + boat.seed) * 0.8
+          boat.holder.position.z = boat.z + Math.cos(time * 0.04 + boat.seed) * 0.8
+        }
       }
-      birds.forEach((b, i) => {
+      for (let i = 0; i < birds.length; i++) {
+        const b = birds[i]
         const a = b.phase + time * b.speed
         p.set(b.cx + Math.cos(a) * b.r, b.cy + Math.sin(time * 0.6 + b.bob) * 0.8, b.cz + Math.sin(a) * b.r)
         q.setFromAxisAngle(up, -a + (b.speed > 0 ? 0 : Math.PI))
         m.compose(p, q, s)
         gulls.setMatrixAt(i, m)
-      })
+      }
       gulls.instanceMatrix.needsUpdate = true
     },
     dispose() {

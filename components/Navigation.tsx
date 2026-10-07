@@ -36,17 +36,20 @@ export default function Navigation({ labels }: { labels: SiteContent['navigation
           : 'border-border/70 bg-background/70 backdrop-blur-md'
       }`}
     >
-      <div className="mx-auto w-full max-w-[1168px] px-6 md:px-8">
+      <div className="mx-auto w-full max-w-[1168px] px-4 min-[360px]:px-6 md:px-8">
         <div className="flex items-center justify-between h-16">
+          {/* On a phone the name stacks, one word a line, so it and the four
+              links share the bar without crowding; on the narrowest the links
+              and the margins come down a step as well. */}
           <Link
             href="/"
-            className="group flex items-center gap-2.5 font-serif text-lead font-medium text-heading hover:text-accent transition-colors whitespace-nowrap shrink-0"
+            className="group flex items-center gap-2.5 font-serif text-sm leading-tight sm:text-lead sm:leading-normal font-medium text-heading hover:text-accent transition-colors shrink-0"
           >
-            <span aria-hidden className="dot breathe text-accent" style={{ width: 6, height: 6 }} />
-            {labels.home}
+            <span aria-hidden className="dot breathe shrink-0 text-accent" style={{ width: 6, height: 6 }} />
+            <span className="w-min sm:w-auto sm:whitespace-nowrap">{labels.home}</span>
           </Link>
 
-          <div className="flex items-center gap-3 sm:gap-6">
+          <div className="flex items-center gap-1.5 min-[375px]:gap-2 min-[400px]:gap-3 sm:gap-6">
             {navItems.map((item) => {
               const isActive = pathname === item.href ||
                 (item.href !== '/' && pathname.startsWith(item.href))
@@ -55,7 +58,7 @@ export default function Navigation({ labels }: { labels: SiteContent['navigation
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`relative font-mono text-meta transition-colors ${
+                  className={`relative font-mono text-tick min-[360px]:text-meta transition-colors ${
                     isActive ? 'text-accent' : 'text-muted hover:text-heading'
                   }`}
                 >
