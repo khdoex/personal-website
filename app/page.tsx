@@ -50,21 +50,19 @@ export default async function Home() {
         <div className={wrap}>
           {/* On a phone the skyline sits at the bottom, so the words sit high. */}
           <header className="pb-32 pt-12 lg:col-span-8 lg:pt-10 xl:col-span-7">
+            <h1 className="sr-only">{PERSON.name}</h1>
             <p className="arrive flex flex-wrap items-center gap-x-3 gap-y-1" style={at(0)}>
               <span className="font-mono text-meta text-muted">{hero.location}</span>
               <span aria-hidden className="h-px w-6 bg-border" />
               <IstanbulClock label={hero.time} />
             </p>
-            <h1 className="arrive mt-6 font-serif text-display font-normal tracking-[-0.015em] text-heading" style={at(1)}>
-              {hero.greeting}
-            </h1>
             {hero.body.map((paragraph, i) => (
-              <p key={i} className="arrive mt-7 max-w-[34rem] font-serif text-lead text-foreground" style={at(2 + i)}>
+              <p key={i} className="arrive mt-7 max-w-[34rem] font-serif text-lead text-foreground" style={at(1 + i)}>
                 <Inline text={paragraph} />
               </p>
             ))}
             {currently.items[0] && (
-              <p className="arrive mt-9 flex flex-wrap items-center gap-x-3 gap-y-1" style={at(3 + hero.body.length)}>
+              <p className="arrive mt-9 flex flex-wrap items-center gap-x-3 gap-y-1" style={at(2 + hero.body.length)}>
                 <span aria-hidden className="dot breathe text-accent" />
                 <span className="font-mono text-meta text-muted">{currently.label}</span>
                 <a href="#currently" className="u-link font-serif text-base text-heading hover:text-accent">

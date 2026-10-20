@@ -23,7 +23,7 @@ const OUT = join(process.cwd(), 'lib', 'content.generated.ts')
 // items: true). body/bullets: whether paragraphs and list lines are shown.
 const SCHEMA = {
   intro: { keys: ['skip', 'replay'], body: false, bullets: true },
-  hero: { keys: ['greeting', 'location', 'time', 'scroll'], body: true },
+  hero: { keys: ['location', 'time', 'scroll'], body: true },
   currently: { keys: ['label'], itemKeys: ['since', 'link'], body: false },
   'about-teaser': { keys: ['label', 'link'], body: true, bullets: true },
   'resume-teaser': { keys: ['label', 'link', 'pdf'], body: true },
@@ -265,7 +265,6 @@ function build(sections) {
       replay: need(intro, 'replay'),
     },
     hero: {
-      greeting: need(hero, 'greeting'),
       location: need(hero, 'location'),
       time: need(hero, 'time'),
       scroll: need(hero, 'scroll'),

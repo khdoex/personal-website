@@ -15,7 +15,6 @@ export const content: SiteContent = {
     "replay": "replay the ride"
   },
   "hero": {
-    "greeting": "welcome to my personal website, i am kaan.",
     "location": "istanbul",
     "time": "local time",
     "scroll": "keep scrolling",

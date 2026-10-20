@@ -73,7 +73,6 @@ export interface SkillGroup {
 export interface SiteContent {
   intro: { lines: string[]; skip: string; replay: string }
   hero: {
-    greeting: string
     location: string
     time: string
     scroll: string
