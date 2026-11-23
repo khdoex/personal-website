@@ -35,7 +35,8 @@ export default async function Home() {
       <header className="lg:col-start-2">
         <h1 className="font-serif text-h2 font-normal text-heading">{PERSON.name}</h1>
         <p className="mt-2">
-          <Meta>{hero.role}</Meta>
+          {/* A no-break space after each dot, so a line never ends on one. */}
+          <Meta>{hero.role.replaceAll(' · ', ' · ')}</Meta>
         </p>
         {hero.body.map((paragraph, i) => (
           <p key={i} className="mt-6 font-serif text-lead text-foreground">
@@ -65,7 +66,7 @@ export default async function Home() {
 
       <Rule className="col-span-full mt-16" />
       <Gutter className="mt-8">
-        <Meta>{currently.label}</Meta>
+        <Meta className="whitespace-nowrap">{currently.label}</Meta>
       </Gutter>
       {currently.items.map((item) => (
         <Entry key={item.title} gutter={<Meta tone="date">{item.since}</Meta>}>
