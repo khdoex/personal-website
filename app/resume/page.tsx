@@ -85,16 +85,24 @@ function Story() {
         <Entry
           key={chapter.title}
           className="border-t border-border"
-          gutter={chapter.period && <Meta tone="date">{chapter.period}</Meta>}
+          gutter={
+            <>
+              <h2>
+                <Meta>{chapter.title}</Meta>
+              </h2>
+              {chapter.period && (
+                <p>
+                  <Meta tone="date">{chapter.period}</Meta>
+                </p>
+              )}
+            </>
+          }
         >
-          <div className="flex min-h-[62svh] max-w-[30rem] flex-col justify-center">
-            <h2 className="font-serif text-h3 font-normal text-heading">{chapter.title}</h2>
-            {chapter.body.map((paragraph, k) => (
-              <p key={k} className="mt-4 font-serif text-lead text-foreground">
-                <Inline text={paragraph} />
-              </p>
-            ))}
-          </div>
+          {chapter.body.map((paragraph, k) => (
+            <p key={k} className="mt-4 font-serif text-lead text-foreground first:mt-0">
+              <Inline text={paragraph} />
+            </p>
+          ))}
         </Entry>
       ))}
     </>
