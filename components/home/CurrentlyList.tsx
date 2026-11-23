@@ -2,7 +2,6 @@
 
 import Meta from '@/components/ui/Meta'
 import Inline from '@/components/ui/Inline'
-import Reveal from '@/components/motion/Reveal'
 import type { CurrentItem } from '@/lib/content-types'
 
 const TONES = ['text-accent', 'text-sun', 'text-sky']
@@ -17,10 +16,7 @@ export default function CurrentlyList({ items }: { items: CurrentItem[] }) {
         <li
           key={item.title}
         >
-          <Reveal
-            delay={i * 0.08}
-            className="-mx-5 rounded-2xl border border-transparent px-5 py-5 transition-colors duration-300 hover:border-border/80 hover:bg-background/40"
-          >
+          <div className="-mx-5 rounded-2xl border border-transparent px-5 py-5 hover:border-border/80 hover:bg-background/40">
             <div className="flex items-center gap-3">
               <span aria-hidden className={`dot ${TONES[i % TONES.length]}`} />
               <Meta tone="date">{item.since}</Meta>
@@ -42,7 +38,7 @@ export default function CurrentlyList({ items }: { items: CurrentItem[] }) {
             <p className="mt-2 font-serif text-sm text-muted">
               <Inline text={item.desc} />
             </p>
-          </Reveal>
+          </div>
         </li>
       ))}
     </ol>

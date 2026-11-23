@@ -17,14 +17,11 @@
   --sun: 244 205 94; /* #f4cd5e */
   --sky: 127 184 245; /* #7fb8f5 */
 
-  /* One breath, shared by the canvas and the CSS. */
-  --breath: 7s;
 }
 
 html {
   background: rgb(var(--background));
   position: relative;
-  scroll-behavior: smooth;
 }
 
 body {
@@ -51,50 +48,6 @@ main {
   position: relative;
 }
 
-/* Whatever carries .arrive rises in once the ride has landed, or at once on
-   any visit without one. --i staggers siblings. */
-@keyframes arrive {
-  from {
-    opacity: 0;
-    transform: translateY(18px);
-    filter: blur(6px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-    filter: blur(0);
-  }
-}
-
-html:not([data-intro='play']) .arrive {
-  animation: arrive 1.1s cubic-bezier(0.2, 0.8, 0.2, 1) both;
-  animation-delay: calc(var(--i, 0) * 110ms + 120ms);
-}
-
-html[data-intro='play'] .arrive {
-  opacity: 0;
-}
-
-/* ------------------------------------------------------------ the breath */
-
-/* Seven seconds, in and out: the same period the globe's lights and air
-   breathe on. Only small marks breathe; text never does. */
-@keyframes breathe {
-  0%,
-  100% {
-    transform: scale(0.78);
-    opacity: 0.55;
-  }
-  50% {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
-
-.breathe {
-  animation: breathe var(--breath) ease-in-out infinite;
-}
-
 .dot {
   display: inline-block;
   width: 8px;
@@ -103,43 +56,6 @@ html[data-intro='play'] .arrive {
   border-radius: 9999px;
   background: currentColor;
   box-shadow: 0 0 12px currentColor;
-}
-
-@keyframes scroll-line {
-  0% {
-    transform: scaleY(0);
-    opacity: 0;
-  }
-  45% {
-    transform: scaleY(1);
-    opacity: 1;
-  }
-  100% {
-    transform: scaleY(1) translateY(24px);
-    opacity: 0;
-  }
-}
-
-.scroll-line {
-  display: block;
-  width: 1px;
-  height: 44px;
-  transform-origin: top;
-  background: linear-gradient(rgb(var(--heading) / 0), rgb(var(--heading) / 0.75));
-  animation: scroll-line var(--breath) ease-in-out infinite;
-}
-
-/* A panel that lets the planet through, for text that has to sit over it.
-   In the components layer so a variant applies it: max-lg:glass puts the
-   panel under a section on small screens only, where the planet and the
-   text have to share the width. */
-@layer components {
-  .glass {
-    background: rgb(var(--background) / 0.58);
-    border: 1px solid rgb(var(--border) / 0.85);
-    -webkit-backdrop-filter: blur(14px) saturate(1.15);
-    backdrop-filter: blur(14px) saturate(1.15);
-  }
 }
 
 /* Scrollbar */
@@ -171,53 +87,23 @@ html[data-intro='play'] .arrive {
   color: rgb(var(--background));
 }
 
-a {
-  transition: color 0.2s ease;
-}
-
 .figure-dialog::backdrop {
   background: rgb(var(--background) / 0.86);
-  backdrop-filter: blur(4px);
 }
 
-.figure-dialog[open] {
-  animation: figure-dialog-in 160ms ease-out;
-}
-
-@keyframes figure-dialog-in {
-  from {
-    opacity: 0;
-    transform: translateY(8px) scale(0.99);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .figure-dialog[open] {
-    animation: none;
-  }
-}
-
-/* Underline draws in from the left */
+/* Underline on hover, no animation */
 .u-link {
-  background-image: linear-gradient(currentColor, currentColor);
-  background-size: 0% 1px;
-  background-position: 0 100%;
-  background-repeat: no-repeat;
-  transition: background-size 0.2s ease, color 0.2s ease;
   padding-bottom: 2px;
 }
 
 .u-link:hover {
-  background-size: 100% 1px;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
 }
 
-/* Fade-up — slow, no bounce. Set --d per element for the cascade.
-   Still consumed by components/lens-test/LensGame.tsx; not part of
-   this pass's page conversions, so the class stays live. */
+/* Fade-up, used only by the archived components/lens-test/LensGame.tsx,
+   which the still redesign leaves untouched. */
 @keyframes rise {
   from {
     opacity: 0;
@@ -233,16 +119,6 @@ a {
   opacity: 0;
   animation: rise 0.5s ease-out forwards;
   animation-delay: calc(var(--d, 0) * 80ms);
-}
-
-/* The one animation that runs constantly */
-@keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
-}
-
-.cursor-blink {
-  animation: blink 1.2s step-end infinite;
 }
 
 /* Disclosure rows — native details, no JS */
@@ -490,37 +366,11 @@ details[open] > summary .if-closed {
   padding: 0.25em 0;
 }
 
-/* Reduced motion */
+/* Reduced motion: the archived lens-test page is the only thing that still
+   animates, through .reveal. */
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-
   .reveal {
+    animation: none;
     opacity: 1;
-  }
-
-  .breathe,
-  .scroll-line,
-  .arrive {
-    animation: none !important;
-    opacity: 1;
-  }
-
-  .replay {
-    display: none;
-  }
-
-  /* Reveal ships its from-state in the server markup and relies on the
-     viewport animation to clear it. That animation never runs here, and
-     hydration keeps the server's inline style, so every revealed block
-     would stay invisible. */
-  .reveal-root {
-    opacity: 1 !important;
-    transform: none !important;
   }
 }

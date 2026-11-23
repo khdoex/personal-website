@@ -15,7 +15,7 @@ export default function Gutter({
 }) {
   return (
     <div
-      className={`lg:col-start-1 ${sticky ? 'lg:sticky lg:top-24 lg:self-start' : ''} ${className}`}
+      className={`lg:col-start-1 ${sticky ? 'lg:sticky lg:top-8 lg:self-start' : ''} ${className}`}
     >
       {children}
     </div>

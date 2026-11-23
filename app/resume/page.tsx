@@ -13,7 +13,6 @@ import Gutter from '@/components/layout/Gutter'
 import Meta from '@/components/ui/Meta'
 import Entry from '@/components/ui/Entry'
 import Inline from '@/components/ui/Inline'
-import Reveal from '@/components/motion/Reveal'
 import JsonLd from '@/components/JsonLd'
 import { breadcrumbNode, graph, pageMetadata } from '@/lib/seo'
 import { content } from '@/lib/content.generated'
@@ -25,11 +24,11 @@ export const metadata = pageMetadata({
   path: '/resume',
 })
 
-function EntryRow({ entry, delay }: { entry: ResumeEntry; delay: number }) {
+function EntryRow({ entry }: { entry: ResumeEntry }) {
   return (
     <Entry
       className="border-t border-border"
-      delay={delay}
+     
       gutter={<Meta tone="date">{entry.period}</Meta>}
     >
       <h3 className="font-serif text-lead font-normal text-heading">
@@ -58,7 +57,7 @@ function EntryRow({ entry, delay }: { entry: ResumeEntry; delay: number }) {
       )}
       {entry.detail && (
         <details className="mt-3">
-          <summary className="inline-block font-mono text-meta text-muted transition-colors hover:text-accent">
+          <summary className="inline-block font-mono text-meta text-muted hover:text-accent">
             <span className="if-closed">+ detail</span>
             <span className="if-open">− detail</span>
           </summary>
@@ -81,15 +80,13 @@ function Story() {
   return (
     <>
       <Gutter className="mt-4">
-        <Reveal>
-          <Meta>{label}</Meta>
-        </Reveal>
+        <Meta>{label}</Meta>
       </Gutter>
-      {chapters.map((chapter, i) => (
+      {chapters.map((chapter) => (
         <Entry
           key={chapter.title}
           className="border-t border-border"
-          delay={i === 0 ? 0.08 : 0}
+         
           gutter={chapter.period && <Meta tone="date">{chapter.period}</Meta>}
         >
           <div className="flex min-h-[62svh] max-w-[30rem] flex-col justify-center">
@@ -106,15 +103,12 @@ function Story() {
   )
 }
 
-// The label leads its own rows. Both arrive on their own viewport entry, so
-// the section no longer needs a hand-tuned place in a page-wide cascade.
+// The label leads its own rows.
 function Section({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <>
       <Gutter className="mt-14">
-        <Reveal>
-          <Meta>{label}</Meta>
-        </Reveal>
+        <Meta>{label}</Meta>
       </Gutter>
       {children}
     </>
@@ -126,49 +120,45 @@ export default function Resume() {
     <Canvas className="pb-28 pt-16 md:pt-24">
       <JsonLd data={graph(breadcrumbNode([{ name: 'Resume', path: '/resume' }]))} />
       <header className="mb-10 lg:col-start-2">
-        <Reveal>
-          <div className="flex items-baseline justify-between gap-6">
-            <h1 className="font-serif text-h2 font-normal text-heading">resume</h1>
-            <a
-              href="/documents/resume.pdf"
-              download="KaanHacihaliloglu_Resume.pdf"
-              className="u-link shrink-0 font-mono text-meta text-accent hover:text-heading"
-            >
-              {content.resume.pdf}
-            </a>
-          </div>
-        </Reveal>
-        <Reveal delay={0.08}>
-          <p className="mt-4 font-serif text-lead text-muted">{about}</p>
-        </Reveal>
+        <div className="flex items-baseline justify-between gap-6">
+          <h1 className="font-serif text-h2 font-normal text-heading">resume</h1>
+          <a
+            href="/documents/resume.pdf"
+            download="KaanHacihaliloglu_Resume.pdf"
+            className="u-link shrink-0 font-mono text-meta text-accent hover:text-heading"
+          >
+            {content.resume.pdf}
+          </a>
+        </div>
+        <p className="mt-4 font-serif text-lead text-muted">{about}</p>
       </header>
 
       <Story />
 
       <Section label="experience">
-        {experience.map((entry, i) => (
-          <EntryRow key={entry.title + entry.period} entry={entry} delay={i * 0.08} />
+        {experience.map((entry) => (
+          <EntryRow key={entry.title + entry.period} entry={entry} />
         ))}
       </Section>
 
       <Section label="education">
-        {education.map((entry, i) => (
-          <EntryRow key={entry.title} entry={entry} delay={i * 0.08} />
+        {education.map((entry) => (
+          <EntryRow key={entry.title} entry={entry} />
         ))}
       </Section>
 
       <Section label="projects">
-        {resumeProjects.map((entry, i) => (
-          <EntryRow key={entry.title} entry={entry} delay={i * 0.08} />
+        {resumeProjects.map((entry) => (
+          <EntryRow key={entry.title} entry={entry} />
         ))}
       </Section>
 
       <Section label="skills">
-        {skills.map((group, i) => (
+        {skills.map((group) => (
           <Entry
             key={group.label}
             className="border-t border-border"
-            delay={i * 0.08}
+           
             gutter={<Meta>{group.label}</Meta>}
           >
             <span className="font-serif text-sm text-foreground">{group.items}</span>
@@ -177,8 +167,8 @@ export default function Resume() {
       </Section>
 
       <Section label="certifications">
-        {certifications.map((entry, i) => (
-          <Entry key={entry.title} className="border-t border-border" delay={i * 0.08}>
+        {certifications.map((entry) => (
+          <Entry key={entry.title} className="border-t border-border">
             <span className="font-serif text-sm text-heading">{entry.title}</span>
             <Meta className="ml-3">
               {entry.org}
@@ -188,7 +178,7 @@ export default function Resume() {
       </Section>
 
       <Section label="languages">
-        <Entry className="border-t border-border" delay={0}>
+        <Entry className="border-t border-border">
           <span className="font-serif text-sm text-foreground">{languages}</span>
         </Entry>
       </Section>

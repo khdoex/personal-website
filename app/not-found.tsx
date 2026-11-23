@@ -3,7 +3,6 @@ import Canvas from '@/components/layout/Canvas'
 import Gutter from '@/components/layout/Gutter'
 import Rule from '@/components/ui/Rule'
 import Meta from '@/components/ui/Meta'
-import Reveal from '@/components/motion/Reveal'
 import Inline from '@/components/ui/Inline'
 import { content } from '@/lib/content.generated'
 
@@ -17,23 +16,17 @@ export default function NotFound() {
   return (
     <Canvas className="pb-28 pt-24 md:pt-32">
       <Gutter>
-        <Reveal>
-          <Meta>404</Meta>
-        </Reveal>
+        <Meta>404</Meta>
       </Gutter>
 
       <div className="lg:col-start-2">
-        <Reveal>
-          <h1 className="font-serif text-h2 font-normal text-heading">
-            {content.notFound.title}
-          </h1>
-        </Reveal>
+        <h1 className="font-serif text-h2 font-normal text-heading">
+          {content.notFound.title}
+        </h1>
         {content.notFound.body.map((paragraph, i) => (
-          <Reveal key={i} delay={0.08}>
-            <p className="mt-4 font-serif text-lead text-muted">
-              <Inline text={paragraph} />
-            </p>
-          </Reveal>
+          <p key={i} className="mt-4 font-serif text-lead text-muted">
+            <Inline text={paragraph} />
+          </p>
         ))}
       </div>
 

@@ -2,14 +2,10 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useEffect, useState } from 'react'
 import type { SiteContent } from '@/lib/content-types'
 
 export default function Navigation({ labels }: { labels: SiteContent['navigation'] }) {
   const pathname = usePathname()
-  const isReading = pathname.startsWith('/blog/')
-  const isHome = pathname === '/'
-  const [scrolled, setScrolled] = useState(false)
 
   const navItems = [
     { href: '/blog', label: labels.blog },
@@ -18,24 +14,8 @@ export default function Navigation({ labels }: { labels: SiteContent['navigation
     { href: '/resume', label: labels.resume },
   ]
 
-  // On the home page the bar stays out of the way of the city until the
-  // reader scrolls; everywhere else it keeps its glass from the start.
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 24)
-    onScroll()
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
-  const clear = isHome && !scrolled
-
   return (
-    <nav
-      className={`site-nav ${isReading ? 'absolute' : 'fixed'} top-0 left-0 right-0 z-50 border-b transition-[background-color,border-color,backdrop-filter] duration-500 ${
-        clear
-          ? 'border-transparent bg-transparent'
-          : 'border-border/70 bg-background/70 backdrop-blur-md'
-      }`}
-    >
+    <nav className="relative border-b border-border bg-background">
       <div className="mx-auto w-full max-w-[1168px] px-4 min-[360px]:px-6 md:px-8">
         <div className="flex items-center justify-between h-16">
           {/* On a phone the name stacks, one word a line, so it and the four
@@ -43,9 +23,8 @@ export default function Navigation({ labels }: { labels: SiteContent['navigation
               and the margins come down a step as well. */}
           <Link
             href="/"
-            className="group flex items-center gap-2.5 font-serif text-sm leading-tight sm:text-lead sm:leading-normal font-medium text-heading hover:text-accent transition-colors shrink-0"
+            className="group flex items-center gap-2.5 font-serif text-sm leading-tight sm:text-lead sm:leading-normal font-medium text-heading hover:text-accent shrink-0"
           >
-            <span aria-hidden className="dot breathe shrink-0 text-accent" style={{ width: 6, height: 6 }} />
             <span className="w-min sm:w-auto sm:whitespace-nowrap">{labels.home}</span>
           </Link>
 
@@ -58,14 +37,14 @@ export default function Navigation({ labels }: { labels: SiteContent['navigation
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`relative font-mono text-tick min-[360px]:text-meta transition-colors ${
+                  className={`relative font-mono text-tick min-[360px]:text-meta ${
                     isActive ? 'text-accent' : 'text-muted hover:text-heading'
                   }`}
                 >
                   {item.label}
                   <span
                     aria-hidden
-                    className={`absolute -top-2 left-0 h-1.5 w-px bg-accent transition-opacity duration-200 ${
+                    className={`absolute -top-2 left-0 h-1.5 w-px bg-accent ${
                       isActive ? 'opacity-100' : 'opacity-0'
                     }`}
                   />

@@ -4,8 +4,6 @@ import { getAllPosts, getPostBySlug, plainExcerpt } from '@/lib/posts'
 import { getRichPost } from '@/lib/rich-posts'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import ReadingProgress from '@/components/ReadingProgress'
-import Reveal from '@/components/motion/Reveal'
 import Canvas from '@/components/layout/Canvas'
 import JsonLd from '@/components/JsonLd'
 import { blogPostingNode, breadcrumbNode, graph, pageMetadata } from '@/lib/seo'
@@ -127,48 +125,41 @@ function PostShell({
   return (
     <>
       <PostJsonLd slug={slug} />
-      <ReadingProgress />
       <article lang={language}>
         <Canvas className="pb-28 pt-16 md:pt-24">
           <header className="mb-12 max-w-[660px] lg:col-start-2">
-            <Reveal>
-              <div className="flex items-center justify-between gap-5">
-                <Link
-                  href="/blog"
-                  className="u-link inline-block font-mono text-xs text-muted hover:text-accent"
-                >
-                  {language === 'tr' ? 'yazılar' : 'writing'}
-                </Link>
-                {language && alternateSlug && (
-                  <nav aria-label={language === 'tr' ? 'yazı dili' : 'post language'} className="flex items-center gap-2 font-mono text-[11px]">
-                    {language === 'tr' ? (
-                      <>
-                        <span className="text-heading" aria-current="page">tr</span>
-                        <span className="text-muted">/</span>
-                        <Link href={`/blog/${alternateSlug}`} className="u-link text-muted hover:text-accent">en</Link>
-                      </>
-                    ) : (
-                      <>
-                        <Link href={`/blog/${alternateSlug}`} className="u-link text-muted hover:text-accent">tr</Link>
-                        <span className="text-muted">/</span>
-                        <span className="text-heading" aria-current="page">en</span>
-                      </>
-                    )}
-                  </nav>
-                )}
-              </div>
-            </Reveal>
-            <Reveal delay={0.08}>
-              <h1 className="font-serif text-h2 font-normal text-heading mt-8">
-                {title}
-              </h1>
-            </Reveal>
-            <Reveal delay={0.16}>
-              <p className="font-mono text-xs mt-4">
-                <time className="text-sun">{date}</time>
-                <span className="text-muted"> · {readingTime} {language === 'tr' ? 'dk okuma' : 'min read'}</span>
-              </p>
-            </Reveal>
+            <div className="flex items-center justify-between gap-5">
+              <Link
+                href="/blog"
+                className="u-link inline-block font-mono text-xs text-muted hover:text-accent"
+              >
+                {language === 'tr' ? 'yazılar' : 'writing'}
+              </Link>
+              {language && alternateSlug && (
+                <nav aria-label={language === 'tr' ? 'yazı dili' : 'post language'} className="flex items-center gap-2 font-mono text-[11px]">
+                  {language === 'tr' ? (
+                    <>
+                      <span className="text-heading" aria-current="page">tr</span>
+                      <span className="text-muted">/</span>
+                      <Link href={`/blog/${alternateSlug}`} className="u-link text-muted hover:text-accent">en</Link>
+                    </>
+                  ) : (
+                    <>
+                      <Link href={`/blog/${alternateSlug}`} className="u-link text-muted hover:text-accent">tr</Link>
+                      <span className="text-muted">/</span>
+                      <span className="text-heading" aria-current="page">en</span>
+                    </>
+                  )}
+                </nav>
+              )}
+            </div>
+            <h1 className="font-serif text-h2 font-normal text-heading mt-8">
+              {title}
+            </h1>
+            <p className="font-mono text-xs mt-4">
+              <time className="text-sun">{date}</time>
+              <span className="text-muted"> · {readingTime} {language === 'tr' ? 'dk okuma' : 'min read'}</span>
+            </p>
           </header>
           {children}
         </Canvas>

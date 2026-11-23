@@ -5,7 +5,6 @@ import Gutter from '@/components/layout/Gutter'
 import Rule from '@/components/ui/Rule'
 import Meta from '@/components/ui/Meta'
 import Entry from '@/components/ui/Entry'
-import Reveal from '@/components/motion/Reveal'
 import JsonLd from '@/components/JsonLd'
 import { PERSON } from '@/lib/site'
 import { content } from '@/lib/content.generated'
@@ -33,11 +32,9 @@ export default function About() {
       <AboutHero>
         <div className="mt-8 space-y-6">
           {content.about.story.map((paragraph, i) => (
-            <Reveal key={i} delay={i === 0 ? 0.08 : 0}>
-              <p className="font-serif text-base text-foreground">
-                <Inline text={paragraph} />
-              </p>
-            </Reveal>
+            <p key={i} className="font-serif text-base text-foreground">
+              <Inline text={paragraph} />
+            </p>
           ))}
         </div>
       </AboutHero>
@@ -49,10 +46,10 @@ export default function About() {
           <Meta>currently</Meta>
         </Gutter>
 
-        {currently.map((item, i) => (
+        {currently.map((item) => (
           <Entry
             key={item.title}
-            delay={i * 0.08}
+           
             gutter={<Meta tone="date">{item.since}</Meta>}
           >
             <h2 className="font-serif text-lead font-normal text-heading">

@@ -1,13 +1,10 @@
-import type { CSSProperties } from 'react'
 import Link from 'next/link'
 import { getAllPosts } from '@/lib/posts'
 import Meta from '@/components/ui/Meta'
 import Inline from '@/components/ui/Inline'
-import Reveal from '@/components/motion/Reveal'
 import JsonLd from '@/components/JsonLd'
 import { profiles } from '@/components/Footer'
 import SectionLabel from '@/components/home/SectionLabel'
-import IstanbulClock from '@/components/home/IstanbulClock'
 import CurrentlyList from '@/components/home/CurrentlyList'
 import { content } from '@/lib/content.generated'
 import { PERSON } from '@/lib/site'
@@ -22,12 +19,8 @@ export const metadata = pageMetadata({
   type: 'profile',
 })
 
-// Stagger index for .arrive (globals.css): the hero comes in piece by piece
-// once the ride lands.
-const at = (i: number) => ({ '--i': i }) as CSSProperties
-
 const wrap = 'mx-auto grid w-full max-w-[1280px] grid-cols-1 px-6 md:px-10 lg:grid-cols-12'
-const panel = 'max-lg:glass max-lg:rounded-2xl max-lg:p-6'
+const panel = ''
 const left = `${panel} lg:col-span-6 xl:col-span-5`
 const right = `${panel} lg:col-span-6 lg:col-start-7 xl:col-span-5 xl:col-start-8`
 
@@ -47,19 +40,16 @@ export default async function Home() {
           {/* On a phone the skyline sits at the bottom, so the words sit high. */}
           <header className="pb-32 pt-12 lg:col-span-8 lg:pt-10 xl:col-span-7">
             <h1 className="sr-only">{PERSON.name}</h1>
-            <p className="arrive flex flex-wrap items-center gap-x-3 gap-y-1" style={at(0)}>
+            <p className="flex flex-wrap items-center gap-x-3 gap-y-1">
               <span className="font-mono text-meta text-muted">{hero.location}</span>
-              <span aria-hidden className="h-px w-6 bg-border" />
-              <IstanbulClock label={hero.time} />
             </p>
             {hero.body.map((paragraph, i) => (
-              <p key={i} className="arrive mt-7 max-w-[34rem] font-serif text-lead text-foreground" style={at(1 + i)}>
+              <p key={i} className="mt-7 max-w-[34rem] font-serif text-lead text-foreground">
                 <Inline text={paragraph} />
               </p>
             ))}
             {currently.items[0] && (
-              <p className="arrive mt-9 flex flex-wrap items-center gap-x-3 gap-y-1" style={at(2 + hero.body.length)}>
-                <span aria-hidden className="dot breathe text-accent" />
+              <p className="mt-9 flex flex-wrap items-center gap-x-3 gap-y-1">
                 <span className="font-mono text-meta text-muted">{currently.label}</span>
                 <a href="#currently" className="u-link font-serif text-base text-heading hover:text-accent">
                   {currently.items[0].title}
@@ -68,21 +58,13 @@ export default async function Home() {
             )}
           </header>
         </div>
-        <div className="pointer-events-none absolute bottom-8 left-0 right-0 flex justify-center">
-          <div className="arrive flex flex-col items-center gap-3" style={at(6)}>
-            <span className="hidden font-mono text-meta text-muted sm:inline">{hero.scroll}</span>
-            <span aria-hidden className="scroll-line" />
-          </div>
-        </div>
       </section>
 
       {/* currently: the bosphorus bridge, lit in the colour of what is pointed at */}
       <section id="currently" className="relative flex min-h-[100svh] items-center py-24">
         <div className={wrap}>
           <div className={right}>
-            <Reveal>
-              <SectionLabel n="01" label={currently.label} />
-            </Reveal>
+            <SectionLabel n="01" label={currently.label} />
             <CurrentlyList items={currently.items} />
           </div>
         </div>
@@ -92,37 +74,29 @@ export default async function Home() {
       <section className="relative flex min-h-[100svh] items-start pb-24 pt-28">
         <div className={wrap}>
           <div className={left}>
-            <Reveal>
-              <SectionLabel n="02" label={aboutTeaser.label} />
-            </Reveal>
+            <SectionLabel n="02" label={aboutTeaser.label} />
             {aboutTeaser.body.map((paragraph, i) => (
-              <Reveal key={i} delay={0.08}>
-                <p className="mt-8 font-serif text-lead text-foreground">
-                  <Inline text={paragraph} />
-                </p>
-              </Reveal>
-            ))}
-            <Reveal delay={0.16}>
-              <dl className="mt-10 grid grid-cols-[auto_1fr] gap-x-6 gap-y-3 border-t border-border pt-6">
-                {aboutTeaser.facts.map((fact) => (
-                  <div key={fact.label} className="contents">
-                    <dt>
-                      <Meta>{fact.label}</Meta>
-                    </dt>
-                    <dd className="font-serif text-base text-heading">
-                      <Inline text={fact.value} />
-                    </dd>
-                  </div>
-                ))}
-              </dl>
-            </Reveal>
-            <Reveal delay={0.24}>
-              <p className="mt-10">
-                <Link href="/about" className="u-link font-mono text-meta text-accent hover:text-heading">
-                  {aboutTeaser.link} <span aria-hidden>→</span>
-                </Link>
+              <p key={i} className="mt-8 font-serif text-lead text-foreground">
+                <Inline text={paragraph} />
               </p>
-            </Reveal>
+            ))}
+            <dl className="mt-10 grid grid-cols-[auto_1fr] gap-x-6 gap-y-3 border-t border-border pt-6">
+              {aboutTeaser.facts.map((fact) => (
+                <div key={fact.label} className="contents">
+                  <dt>
+                    <Meta>{fact.label}</Meta>
+                  </dt>
+                  <dd className="font-serif text-base text-heading">
+                    <Inline text={fact.value} />
+                  </dd>
+                </div>
+              ))}
+            </dl>
+            <p className="mt-10">
+              <Link href="/about" className="u-link font-mono text-meta text-accent hover:text-heading">
+                {aboutTeaser.link} <span aria-hidden>→</span>
+              </Link>
+            </p>
           </div>
         </div>
       </section>
@@ -131,43 +105,35 @@ export default async function Home() {
       <section className="relative flex min-h-[100svh] items-center py-24">
         <div className={wrap}>
           <div className={right}>
-            <Reveal>
-              <SectionLabel n="03" label={resumeTeaser.label} />
-            </Reveal>
+            <SectionLabel n="03" label={resumeTeaser.label} />
             {resumeTeaser.body.map((paragraph, i) => (
-              <Reveal key={i} delay={0.08}>
-                <p className="mt-8 font-serif text-lead text-foreground">
-                  <Inline text={paragraph} />
-                </p>
-              </Reveal>
+              <p key={i} className="mt-8 font-serif text-lead text-foreground">
+                <Inline text={paragraph} />
+              </p>
             ))}
             <ol className="mt-8">
-              {resume.experience.slice(0, 3).map((entry, i) => (
+              {resume.experience.slice(0, 3).map((entry) => (
                 <li key={entry.title + entry.period} className="border-t border-border py-5">
-                  <Reveal delay={0.08 * i}>
-                    <Meta tone="date">{entry.period}</Meta>
-                    <p className="mt-1.5 font-serif text-lead text-heading">
-                      {entry.title}
-                      {entry.org && <span className="text-muted"> · {entry.org}</span>}
-                    </p>
-                  </Reveal>
+                  <Meta tone="date">{entry.period}</Meta>
+                  <p className="mt-1.5 font-serif text-lead text-heading">
+                    {entry.title}
+                    {entry.org && <span className="text-muted"> · {entry.org}</span>}
+                  </p>
                 </li>
               ))}
             </ol>
-            <Reveal delay={0.24}>
-              <p className="mt-6 flex flex-wrap gap-x-7 gap-y-3 border-t border-border pt-6">
-                <Link href="/resume" className="u-link font-mono text-meta text-accent hover:text-heading">
-                  {resumeTeaser.link} <span aria-hidden>→</span>
-                </Link>
-                <a
-                  href="/documents/resume.pdf"
-                  download="KaanHacihaliloglu_Resume.pdf"
-                  className="u-link font-mono text-meta text-muted hover:text-accent"
-                >
-                  {resumeTeaser.pdf} <span aria-hidden>↓</span>
-                </a>
-              </p>
-            </Reveal>
+            <p className="mt-6 flex flex-wrap gap-x-7 gap-y-3 border-t border-border pt-6">
+              <Link href="/resume" className="u-link font-mono text-meta text-accent hover:text-heading">
+                {resumeTeaser.link} <span aria-hidden>→</span>
+              </Link>
+              <a
+                href="/documents/resume.pdf"
+                download="KaanHacihaliloglu_Resume.pdf"
+                className="u-link font-mono text-meta text-muted hover:text-accent"
+              >
+                {resumeTeaser.pdf} <span aria-hidden>↓</span>
+              </a>
+            </p>
           </div>
         </div>
       </section>
@@ -176,42 +142,34 @@ export default async function Home() {
       <section className="relative flex min-h-[100svh] items-center py-24">
         <div className={wrap}>
           <div className={left}>
-            <Reveal>
-              <SectionLabel n="04" label={writingTeaser.label} />
-            </Reveal>
+            <SectionLabel n="04" label={writingTeaser.label} />
             {writingTeaser.body.map((paragraph, i) => (
-              <Reveal key={i} delay={0.08}>
-                <p className="mt-8 font-serif text-lead text-foreground">
-                  <Inline text={paragraph} />
-                </p>
-              </Reveal>
+              <p key={i} className="mt-8 font-serif text-lead text-foreground">
+                <Inline text={paragraph} />
+              </p>
             ))}
             <ol className="mt-8">
-              {posts.map((post, i) => (
+              {posts.map((post) => (
                 <li key={post.data.slug} className="border-t border-border">
-                  <Reveal delay={0.08 * i}>
-                    <Link href={`/blog/${post.data.slug}`} className="group block py-5">
-                      <span className="flex items-center gap-3">
-                        <Meta as="time" tone="date">{post.data.date}</Meta>
-                        <Meta>
-                          {post.data.readingTime} {post.data.language === 'tr' ? 'dk' : 'min'}
-                        </Meta>
-                      </span>
-                      <span className="mt-1.5 block font-serif text-lead text-heading transition-colors group-hover:text-accent">
-                        {post.data.title}
-                      </span>
-                    </Link>
-                  </Reveal>
+                  <Link href={`/blog/${post.data.slug}`} className="group block py-5">
+                    <span className="flex items-center gap-3">
+                      <Meta as="time" tone="date">{post.data.date}</Meta>
+                      <Meta>
+                        {post.data.readingTime} {post.data.language === 'tr' ? 'dk' : 'min'}
+                      </Meta>
+                    </span>
+                    <span className="mt-1.5 block font-serif text-lead text-heading group-hover:text-accent">
+                      {post.data.title}
+                    </span>
+                  </Link>
                 </li>
               ))}
             </ol>
-            <Reveal delay={0.24}>
-              <p className="border-t border-border pt-6">
-                <Link href="/blog" className="u-link font-mono text-meta text-accent hover:text-heading">
-                  {writingTeaser.link} <span aria-hidden>→</span>
-                </Link>
-              </p>
-            </Reveal>
+            <p className="border-t border-border pt-6">
+              <Link href="/blog" className="u-link font-mono text-meta text-accent hover:text-heading">
+                {writingTeaser.link} <span aria-hidden>→</span>
+              </Link>
+            </p>
           </div>
         </div>
       </section>
@@ -220,42 +178,35 @@ export default async function Home() {
       <section className="relative flex min-h-[100svh] items-start pb-40 pt-28">
         <div className="mx-auto w-full max-w-[1280px] px-6 md:px-10">
           <div className={`${panel} mx-auto max-w-2xl text-center`}>
-            <Reveal className="flex justify-center">
+            <div className="flex justify-center">
               <SectionLabel n="05" label={contact.label} />
-            </Reveal>
+            </div>
             {contact.body.map((paragraph, i) => (
-              <Reveal key={i} delay={0.08}>
-                <p className="mt-8 font-serif text-h3 font-normal text-heading">
-                  <Inline text={paragraph} />
-                </p>
-              </Reveal>
+              <p key={i} className="mt-8 font-serif text-h3 font-normal text-heading">
+                <Inline text={paragraph} />
+              </p>
             ))}
-            <Reveal delay={0.16}>
-              <p className="mt-10">
+            <p className="mt-10">
+              <a
+                href={`mailto:${PERSON.email}`}
+                className="inline-flex items-center gap-3 rounded-full border border-accent/50 bg-background/40 px-6 py-3 font-mono text-meta text-accent backdrop-blur-sm hover:border-accent hover:bg-accent/10"
+              >
+                {contact.email}
+              </a>
+            </p>
+            <p className="mt-8 flex flex-wrap justify-center gap-x-6 gap-y-2">
+              {profiles.map((profile) => (
                 <a
-                  href={`mailto:${PERSON.email}`}
-                  className="inline-flex items-center gap-3 rounded-full border border-accent/50 bg-background/40 px-6 py-3 font-mono text-meta text-accent backdrop-blur-sm transition-colors hover:border-accent hover:bg-accent/10"
+                  key={profile.href}
+                  href={profile.href}
+                  target="_blank"
+                  rel="me noopener noreferrer"
+                  className="u-link font-mono text-meta text-muted hover:text-accent"
                 >
-                  <span aria-hidden className="dot breathe text-accent" />
-                  {contact.email}
+                  {profile.label}
                 </a>
-              </p>
-            </Reveal>
-            <Reveal delay={0.24}>
-              <p className="mt-8 flex flex-wrap justify-center gap-x-6 gap-y-2">
-                {profiles.map((profile) => (
-                  <a
-                    key={profile.href}
-                    href={profile.href}
-                    target="_blank"
-                    rel="me noopener noreferrer"
-                    className="u-link font-mono text-meta text-muted hover:text-accent"
-                  >
-                    {profile.label}
-                  </a>
-                ))}
-              </p>
-            </Reveal>
+              ))}
+            </p>
           </div>
         </div>
       </section>

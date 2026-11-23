@@ -114,7 +114,7 @@ export default function RootLayout({
       >
         <JsonLd data={graph(websiteNode(), personNode())} />
         <Navigation labels={content.navigation} />
-        <main className="min-h-screen pt-16">
+        <main className="min-h-screen">
           {children}
         </main>
         <Footer line={content.footer.line} />

@@ -53,6 +53,14 @@ const RULES = [
     pattern: /components\/world|layout\/Scrim|from 'three'|data-station/g,
   },
   {
+    id: 'motion',
+    what: 'animation, transition or smooth scroll',
+    why: 'the site has no motion (spec 2026-11-24)',
+    baseline: 0,
+    // `@keyframes rise` stays: the archived lens-test page uses it through .reveal.
+    pattern: /@keyframes(?! rise\b)|\btransition(?:-[\w[\],-]+)?\b|\bduration-\d+|scroll-behavior:\s*smooth|motion\/Reveal|ReadingProgress|IstanbulClock|\bbreathe\b|\barrive\b|\bglass\b/g,
+  },
+  {
     id: 'hex-literal',
     what: 'six-digit hex literal',
     why: 'colour is the tokens defined once in globals.css; a literal escapes the palette',
