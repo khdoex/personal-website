@@ -15,7 +15,6 @@ import Entry from '@/components/ui/Entry'
 import Inline from '@/components/ui/Inline'
 import Reveal from '@/components/motion/Reveal'
 import JsonLd from '@/components/JsonLd'
-import Scrim from '@/components/layout/Scrim'
 import { breadcrumbNode, graph, pageMetadata } from '@/lib/seo'
 import { content } from '@/lib/content.generated'
 
@@ -76,12 +75,7 @@ function EntryRow({ entry, delay }: { entry: ResumeEntry; delay: number }) {
   )
 }
 
-/**
- * The story before the list, oldest first. Each chapter is a station: the
- * world goes to its place while it is read, and the chapters stand tall so
- * each place holds for a while. After the last one the world stays put, and
- * the list below reads over a still scene.
- */
+/** The story before the list, oldest first. */
 function Story() {
   const { label, chapters } = content.resume.story
   return (
@@ -98,7 +92,7 @@ function Story() {
           delay={i === 0 ? 0.08 : 0}
           gutter={chapter.period && <Meta tone="date">{chapter.period}</Meta>}
         >
-          <div data-station={chapter.scene} className="flex min-h-[62svh] max-w-[30rem] flex-col justify-center">
+          <div className="flex min-h-[62svh] max-w-[30rem] flex-col justify-center">
             <h2 className="font-serif text-h3 font-normal text-heading">{chapter.title}</h2>
             {chapter.body.map((paragraph, k) => (
               <p key={k} className="mt-4 font-serif text-lead text-foreground">
@@ -130,7 +124,6 @@ function Section({ label, children }: { label: string; children: React.ReactNode
 export default function Resume() {
   return (
     <Canvas className="pb-28 pt-16 md:pt-24">
-      <Scrim window />
       <JsonLd data={graph(breadcrumbNode([{ name: 'Resume', path: '/resume' }]))} />
       <header className="mb-10 lg:col-start-2">
         <Reveal>

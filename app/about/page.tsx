@@ -7,7 +7,6 @@ import Meta from '@/components/ui/Meta'
 import Entry from '@/components/ui/Entry'
 import Reveal from '@/components/motion/Reveal'
 import JsonLd from '@/components/JsonLd'
-import Scrim from '@/components/layout/Scrim'
 import { PERSON } from '@/lib/site'
 import { content } from '@/lib/content.generated'
 import Inline from '@/components/ui/Inline'
@@ -25,7 +24,6 @@ export const metadata = pageMetadata({
 export default function About() {
   return (
     <div className="pb-28">
-      <Scrim />
       <JsonLd
         data={graph(
           profilePageNode({ path: '/about', name: `About ${PERSON.name}` }),

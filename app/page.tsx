@@ -9,7 +9,6 @@ import { profiles } from '@/components/Footer'
 import SectionLabel from '@/components/home/SectionLabel'
 import IstanbulClock from '@/components/home/IstanbulClock'
 import CurrentlyList from '@/components/home/CurrentlyList'
-import ReplayButton from '@/components/world/ReplayButton'
 import { content } from '@/lib/content.generated'
 import { PERSON } from '@/lib/site'
 import { graph, pageMetadata, profilePageNode } from '@/lib/seo'
@@ -27,9 +26,6 @@ export const metadata = pageMetadata({
 // once the ride lands.
 const at = (i: number) => ({ '--i': i }) as CSSProperties
 
-// Each section is one station for the camera (data-station, read by
-// components/world): the scene sits opposite the text, so the columns
-// alternate sides as the page goes down.
 const wrap = 'mx-auto grid w-full max-w-[1280px] grid-cols-1 px-6 md:px-10 lg:grid-cols-12'
 const panel = 'max-lg:glass max-lg:rounded-2xl max-lg:p-6'
 const left = `${panel} lg:col-span-6 xl:col-span-5`
@@ -37,7 +33,7 @@ const right = `${panel} lg:col-span-6 lg:col-start-7 xl:col-span-5 xl:col-start-
 
 export default async function Home() {
   const posts = (await getAllPosts()).slice(0, 4)
-  const { intro, hero, currently, aboutTeaser, resumeTeaser, writingTeaser, contact, resume } = content
+  const { hero, currently, aboutTeaser, resumeTeaser, writingTeaser, contact, resume } = content
 
   return (
     <>
@@ -46,7 +42,7 @@ export default async function Home() {
       />
 
       {/* hero */}
-      <section data-station="hero" className="relative flex min-h-[calc(100svh-4rem)] items-start lg:items-center">
+      <section className="relative flex min-h-[calc(100svh-4rem)] items-start lg:items-center">
         <div className={wrap}>
           {/* On a phone the skyline sits at the bottom, so the words sit high. */}
           <header className="pb-32 pt-12 lg:col-span-8 lg:pt-10 xl:col-span-7">
@@ -81,7 +77,7 @@ export default async function Home() {
       </section>
 
       {/* currently: the bosphorus bridge, lit in the colour of what is pointed at */}
-      <section id="currently" data-station="currently" className="relative flex min-h-[100svh] items-center py-24">
+      <section id="currently" className="relative flex min-h-[100svh] items-center py-24">
         <div className={wrap}>
           <div className={right}>
             <Reveal>
@@ -93,7 +89,7 @@ export default async function Home() {
       </section>
 
       {/* about: boğaziçi's hill over bebek, rumelihisarı below it */}
-      <section data-station="about" className="relative flex min-h-[100svh] items-start pb-24 pt-28">
+      <section className="relative flex min-h-[100svh] items-start pb-24 pt-28">
         <div className={wrap}>
           <div className={left}>
             <Reveal>
@@ -132,7 +128,7 @@ export default async function Home() {
       </section>
 
       {/* resume: kanyon on büyükdere caddesi, the traffic going by */}
-      <section data-station="resume" className="relative flex min-h-[100svh] items-center py-24">
+      <section className="relative flex min-h-[100svh] items-center py-24">
         <div className={wrap}>
           <div className={right}>
             <Reveal>
@@ -177,7 +173,7 @@ export default async function Home() {
       </section>
 
       {/* writing: galata, across the golden horn */}
-      <section data-station="writing" className="relative flex min-h-[100svh] items-center py-24">
+      <section className="relative flex min-h-[100svh] items-center py-24">
         <div className={wrap}>
           <div className={left}>
             <Reveal>
@@ -221,7 +217,7 @@ export default async function Home() {
       </section>
 
       {/* contact: dawn over the asian side */}
-      <section data-station="contact" className="relative flex min-h-[100svh] items-start pb-40 pt-28">
+      <section className="relative flex min-h-[100svh] items-start pb-40 pt-28">
         <div className="mx-auto w-full max-w-[1280px] px-6 md:px-10">
           <div className={`${panel} mx-auto max-w-2xl text-center`}>
             <Reveal className="flex justify-center">
@@ -258,11 +254,6 @@ export default async function Home() {
                     {profile.label}
                   </a>
                 ))}
-              </p>
-            </Reveal>
-            <Reveal delay={0.32}>
-              <p className="mt-12">
-                <ReplayButton>{intro.replay}</ReplayButton>
               </p>
             </Reveal>
           </div>

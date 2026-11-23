@@ -7,7 +7,6 @@ import Meta from '@/components/ui/Meta'
 import Entry from '@/components/ui/Entry'
 import Reveal from '@/components/motion/Reveal'
 import JsonLd from '@/components/JsonLd'
-import Scrim from '@/components/layout/Scrim'
 import { breadcrumbNode, graph, pageMetadata } from '@/lib/seo'
 import { content } from '@/lib/content.generated'
 import Inline from '@/components/ui/Inline'
@@ -79,7 +78,6 @@ export default function Projects() {
 
   return (
     <Canvas className="pb-28 pt-16 md:pt-24">
-      <Scrim />
       <JsonLd data={graph(breadcrumbNode([{ name: 'Projects', path: '/projects' }]))} />
       <header className="mb-16 lg:col-start-2">
         <Reveal>

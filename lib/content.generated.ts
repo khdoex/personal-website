@@ -4,16 +4,6 @@
 import type { SiteContent } from './content-types'
 
 export const content: SiteContent = {
-  "intro": {
-    "lines": [
-      "leaving deep space",
-      "through the tube (shorter than it looks)",
-      "we need to get closer",
-      "down through the clouds, to see where i am"
-    ],
-    "skip": "skip the ride",
-    "replay": "replay the ride"
-  },
   "hero": {
     "location": "istanbul",
     "time": "local time",
@@ -173,14 +163,12 @@ export const content: SiteContent = {
         {
           "title": "boğaziçi",
           "period": "2018 – 2023",
-          "scene": "bogazici",
           "body": [
             "physics, on a hill over the bosphorus. loved the research and the inspiration from my profs, one of the best decisions i made in my life. in the EarthML research group Arkadaş hoca taught us machine learning and deep learning, and i worked on earthquake detection models and extensive data analysis. i also taught numerical methods, and once we even turned seismic data into an art exhibition. then i continued down the data science path, with internships at Allianz and Live The World."
           ]
         },
         {
           "title": "the habit",
-          "scene": "physics",
           "body": [
             "physics left me one habit: when something works, i want to know what is actually happening inside it. first it was physics, then earthquakes, now language models. same question."
           ]
@@ -188,7 +176,6 @@ export const content: SiteContent = {
         {
           "title": "padova",
           "period": "2023 – 2024",
-          "scene": "padova",
           "body": [
             "a computer science master's in padova. i didn't quite like the program, or let's say i didn't fit in. after the first year of coursework i didn't want to do any research there, maybe i couldn't meet the right people at that time. the long version is on the blog, in turkish."
           ]
@@ -196,7 +183,6 @@ export const content: SiteContent = {
         {
           "title": "sabancı",
           "period": "2025 –",
-          "scene": "interpretability",
           "body": [
             "back in istanbul, a data science msc at sabancı. working with Dilara Keküllüoğlu, i had my research spark again, with refusal dynamics and poisoning attacks on llms. my thesis is on the same topic with more interpretability candies on top: i look at what's happening while a model refuses a harmful request and try to make sense of the math inside it. i am also a ta for quantum programming on the side.",
             "back in istanbul i also met Berkan Cesur, who taught me a lot about product development. can't lie, amazing person and insane inspiration. in one year with him i got experience in web development, app development, product cycles and a lot more."
@@ -205,7 +191,6 @@ export const content: SiteContent = {
         {
           "title": "now",
           "period": "2025 –",
-          "scene": "levent",
           "body": [
             "days are SCL. i started as an ai engineer, and with time i took on more responsibility, so i could say i am a bit more than that now. Ömer Ülgen, our ceo, is one of the sharpest people i have worked with, and from Sinan Ülgen i am learning a lot about customer relationships and working B2B. nights are still the thesis."
           ]
@@ -404,25 +389,6 @@ export const content: SiteContent = {
     "body": [
       "this page does not exist, or it did once and does not anymore."
     ]
-  },
-  "world": {
-    "captions": {
-      "saturn": "saturn, where the physics started",
-      "blackHole": "a black hole, bending the light behind it",
-      "transformer": "a transformer, read one layer at a time",
-      "refusal": "the refusal direction",
-      "harmful": "harmful prompts",
-      "harmless": "harmless prompts"
-    },
-    "prompt": [
-      "how",
-      "do",
-      "i",
-      "pick",
-      "a",
-      "lock"
-    ],
-    "answer": "i can't help with that"
   },
   "navigation": {
     "home": "kaan hacihaliloglu",

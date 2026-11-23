@@ -3,16 +3,12 @@
 import Meta from '@/components/ui/Meta'
 import Inline from '@/components/ui/Inline'
 import Reveal from '@/components/motion/Reveal'
-import { world } from '@/components/world/store'
 import type { CurrentItem } from '@/lib/content-types'
 
-// The same order as the colours of the bridge's lights (pick() in
-// components/world/engine/city/bridge.ts).
 const TONES = ['text-accent', 'text-sun', 'text-sky']
 
 /**
- * What Kaan is working on, one colour each. Pointing at an entry (or tabbing
- * to its link) lights the whole Bosphorus Bridge in its colour.
+ * What Kaan is working on, one colour each.
  */
 export default function CurrentlyList({ items }: { items: CurrentItem[] }) {
   return (
@@ -20,10 +16,6 @@ export default function CurrentlyList({ items }: { items: CurrentItem[] }) {
       {items.map((item, i) => (
         <li
           key={item.title}
-          onMouseEnter={() => world.highlight(i)}
-          onMouseLeave={() => world.highlight(null)}
-          onFocus={() => world.highlight(i)}
-          onBlur={() => world.highlight(null)}
         >
           <Reveal
             delay={i * 0.08}

@@ -27,26 +27,6 @@
 -->
 
 
-## intro
-
-<!--
-  The ride in. The first time someone opens the home page, the camera starts
-  in deep space, flies through a tube to earth (the tube is the loading
-  bar), then falls through the clouds into istanbul. These lines show under
-  the progress counter, first to last, spread evenly over the ride. Keep
-  them short, four or five is plenty.
-  keys: skip (the skip button), replay (the button that plays it again)
--->
-
-skip: skip the ride
-replay: replay the ride
-
-- leaving deep space
-- through the tube (shorter than it looks)
-- we need to get closer
-- down through the clouds, to see where i am
-
-
 ## hero
 
 <!--
@@ -65,10 +45,8 @@ currently i am tech lead at SCL, writing my thesis, and doing research on the in
 ## currently
 
 <!--
-  What you are working on now. Shows on the home page, next to the
-  bosphorus bridge (pointing at one lights the bridge in its colour, in
-  order: green, gold, blue) and on the about page. One ### per thing, the
-  title is its name.
+  What you are working on now. Shows on the home page and on the about
+  page. One ### per thing, the title is its name.
   section keys: label
   keys per thing: since, link (optional). The paragraph is the description.
 -->
@@ -145,10 +123,8 @@ notes on interpretability, machine learning, and the occasional detour through l
 ## contact
 
 <!--
-  The last part of the home page, where the sun comes up over the asian side.
-  Your email and profiles come from lib/site.ts. The same email is what the
-  little plane tows across the sky every two minutes someone spends on the
-  site.
+  The last part of the home page. Your email and profiles come from
+  lib/site.ts.
   keys: label, email (the text on the email button)
 -->
 
@@ -244,36 +220,29 @@ ai engineer and grad student. i work on refusal and safety in llms through inter
 
 <!--
   The story at the top of the /resume page, before the full list: one ###
-  per chapter, oldest first. The 3D world travels with it, one place per
-  chapter, and stays on the last one while the list is read.
+  per chapter, oldest first.
   keys: label (the small title over the story)
-  keys per chapter: period (optional), scene (what the world shows while the
-  chapter is read: bogazici, physics, padova, interpretability or levent).
-  The paragraphs are the chapter.
+  keys per chapter: period (optional). The paragraphs are the chapter.
 -->
 
 label: the story so far
 
 ### boğaziçi
 period: 2018 – 2023
-scene: bogazici
 
 physics, on a hill over the bosphorus. loved the research and the inspiration from my profs, one of the best decisions i made in my life. in the EarthML research group Arkadaş hoca taught us machine learning and deep learning, and i worked on earthquake detection models and extensive data analysis. i also taught numerical methods, and once we even turned seismic data into an art exhibition. then i continued down the data science path, with internships at Allianz and Live The World.
 
 ### the habit
-scene: physics
 
 physics left me one habit: when something works, i want to know what is actually happening inside it. first it was physics, then earthquakes, now language models. same question.
 
 ### padova
 period: 2023 – 2024
-scene: padova
 
 a computer science master's in padova. i didn't quite like the program, or let's say i didn't fit in. after the first year of coursework i didn't want to do any research there, maybe i couldn't meet the right people at that time. the long version is on the blog, in turkish.
 
 ### sabancı
 period: 2025 –
-scene: interpretability
 
 back in istanbul, a data science msc at sabancı. working with Dilara Keküllüoğlu, i had my research spark again, with refusal dynamics and poisoning attacks on llms. my thesis is on the same topic with more interpretability candies on top: i look at what's happening while a model refuses a harmful request and try to make sense of the math inside it. i am also a ta for quantum programming on the side.
 
@@ -281,7 +250,6 @@ back in istanbul i also met Berkan Cesur, who taught me a lot about product deve
 
 ### now
 period: 2025 –
-scene: levent
 
 days are SCL. i started as an ai engineer, and with time i took on more responsibility, so i could say i am a bit more than that now. Ömer Ülgen, our ceo, is one of the sharpest people i have worked with, and from Sinan Ülgen i am learning a lot about customer relationships and working B2B. nights are still the thesis.
 
@@ -450,27 +418,6 @@ Turkish (native) · English (fluent)
 title: nothing here
 
 this page does not exist, or it did once and does not anymore.
-
-
-## world
-
-<!--
-  The small labels the 3D world pins beside things: the captions in the
-  scenes the resume flies up into, above the city. prompt is what the
-  transformer in the interpretability scene reads, one word per token
-  (three to eight words), and answer is what it says back.
-  keys: saturn, black-hole, transformer, refusal, harmful, harmless,
-  prompt, answer
--->
-
-saturn: saturn, where the physics started
-black-hole: a black hole, bending the light behind it
-transformer: a transformer, read one layer at a time
-refusal: the refusal direction
-harmful: harmful prompts
-harmless: harmless prompts
-prompt: how do i pick a lock
-answer: i can't help with that
 
 
 ## navigation
