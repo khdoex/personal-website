@@ -3,20 +3,19 @@
 @tailwind utilities;
 
 :root {
-  /* Earth at night, seen from orbit: a dark blue ground, leaf green for
-     anything alive (links, active state), sun gold for time (dates), sky
-     blue for the cool pole of a figure. */
-  --background: 10 20 40; /* #0a1428 */
-  --surface: 15 27 49; /* #0f1b31 */
-  --border: 27 42 68; /* #1b2a44 */
-  --foreground: 197 207 219; /* #c5cfdb */
-  --heading: 244 239 227; /* #f4efe3 */
-  --muted: 135 151 173; /* #8797ad */
-  --muted-dark: 59 77 104; /* #3b4d68 */
-  --accent: 134 214 164; /* #86d6a4 */
-  --sun: 244 205 94; /* #f4cd5e */
-  --sky: 127 184 245; /* #7fb8f5 */
-
+  /* A warm off-white ground with near-black text. Green is the one colour in
+     the page chrome and marks what a reader can click. Gold and blue are the
+     two poles of a figure and appear nowhere else. */
+  --background: 251 250 247; /* #fbfaf7 */
+  --surface: 242 240 234; /* #f2f0ea */
+  --border: 228 225 217; /* #e4e1d9 */
+  --foreground: 51 55 61; /* #33373d */
+  --heading: 22 24 27; /* #16181b */
+  --muted: 102 107 114; /* #666b72 */
+  --muted-dark: 180 176 166; /* #b4b0a6 */
+  --accent: 31 122 77; /* #1f7a4d */
+  --sun: 143 101 0; /* #8f6500 */
+  --sky: 36 98 168; /* #2462a8 */
 }
 
 html {

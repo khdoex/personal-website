@@ -22,7 +22,7 @@ const newsreader = Newsreader({
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  themeColor: '#0a1428',
+  themeColor: '#fbfaf7',
 };
 
 const DEFAULT_TITLE =

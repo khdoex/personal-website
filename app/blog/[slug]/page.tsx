@@ -157,7 +157,7 @@ function PostShell({
               {title}
             </h1>
             <p className="font-mono text-xs mt-4">
-              <time className="text-sun">{date}</time>
+              <time className="text-muted">{date}</time>
               <span className="text-muted"> · {readingTime} {language === 'tr' ? 'dk okuma' : 'min read'}</span>
             </p>
           </header>

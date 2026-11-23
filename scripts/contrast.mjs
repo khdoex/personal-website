@@ -24,9 +24,8 @@ const ratio = (a, b) => {
   return (hi + 0.05) / (lo + 0.05)
 }
 
-// Tokens that carry text must clear WCAG AA. The rest are reported only. The
-// --world-* paint is read by the WebGL globe and never set as text, so it is
-// not rated here.
+// Tokens that carry text must clear WCAG AA on the ground and on surface, the
+// ground of code blocks and figures. The rest are reported only.
 const TEXT = ['heading', 'foreground', 'muted', 'accent', 'sun', 'sky']
 const DECORATIVE = ['surface', 'border', 'muted-dark']
 const MIN = 4.5
@@ -34,8 +33,10 @@ const MIN = 4.5
 let failed = false
 for (const name of TEXT) {
   const r = ratio(tokens.background, tokens[name])
-  if (r < MIN) failed = true
-  console.log(`${r >= MIN ? 'PASS' : 'FAIL'}  ${name.padEnd(12)} ${tokens[name]}  ${r.toFixed(2)}`)
+  const rs = ratio(tokens.surface, tokens[name])
+  const ok = r >= MIN && rs >= MIN
+  if (!ok) failed = true
+  console.log(`${ok ? 'PASS' : 'FAIL'}  ${name.padEnd(12)} ${tokens[name]}  ${r.toFixed(2)}  ${rs.toFixed(2)}`)
 }
 for (const name of DECORATIVE) {
   console.log(`      ${name.padEnd(12)} ${tokens[name]}  ${ratio(tokens.background, tokens[name]).toFixed(2)}  decorative, never text`)
