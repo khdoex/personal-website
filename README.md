@@ -10,20 +10,8 @@ This site presents:
 - Blog posts (Markdown and MDX)
 - Resume viewer and PDF download
 
-Behind the pages is one 3D world (three.js): Istanbul at night. The first visit
-to the home page opens with a ride in from deep space through a tube that
-doubles as the loading bar, past the planet, and down through the clouds into
-the city. Every page after that is a view of it (the sea at dusk behind the
-Maiden's Tower, the Bosphorus Bridge, Boğaziçi's campus over Bebek, Kanyon on
-Büyükdere Caddesi, Galata, dawn over Asia), with the strait running, ships
-passing and foam at the shores, yalıs and palaces lit along the water, tiled
-roofs over the old city, glass towers in Levent, and airliners blinking far
-off. Every two minutes someone spends on the site, a small plane tows the
-email across the sky. The resume opens with a story in chapters,
-and the world travels with it: Boğaziçi, up into space for the physics
-(Saturn and a pair of black holes), down to Padova's Prato della Valle, up
-again for the thesis (a transformer and the refusal direction), and down to
-Levent for now.
+The site is still and light: one reading column, no animation, dates and
+labels in mono beside the text.
 
 ## Tech Stack
 
@@ -31,7 +19,6 @@ Levent for now.
 - React 18
 - TypeScript
 - Tailwind CSS
-- three.js for the world, loaded as its own chunk after hydration
 - MD/Markdown parsing via remark + gray-matter
 
 ## Run locally
@@ -62,24 +49,14 @@ Levent for now.
 ## Content structure
 
 - `content/site.md` — every word a visitor reads: home page, about, projects,
-  resume, the ride's lines and the 3D captions. Edit it and run
+  resume, navigation and footer. Edit it and run
   `npm run content`; a mistake is reported with its line number.
 - `app/` — routes and page components
 - `components/` — shared UI (navigation, footer)
-- `components/world/` — the 3D world: `World.tsx` (mounted once in the layout),
-  `gate.ts` (decides before first paint whether the ride plays), and the engine
-  in `engine/` (the ride's tube and planet, the city in `engine/city/`, the
-  resume's scenes in space, camera shots, the plane with the email in
-  `banner.ts`)
 - `lib/posts.ts` — blog loading/parsing utilities
 - `lib/resume.ts`, `lib/projects.ts`, `lib/currently.ts` — typed views of `content/site.md`
 - `posts/` — markdown blog content
 - `public/` — static assets (images, resume PDF)
-- `public/world/` — the planet's data textures, baked by `scripts/world-textures.py`
-
-Useful query strings: `?intro=1` plays the ride again, `?intro=0` skips it,
-`?quality=high|medium|low` forces a rendering tier, `?debug` exposes
-`window.__world`.
 
 ## SEO and AI discoverability
 
@@ -94,7 +71,6 @@ Configured for Cloudflare deployment via OpenNext and Wrangler.
 
 ## Notes
 
-The visual language is Istanbul at night: a dark blue ground, leaf green for
-what is alive, sun gold for time and city lights, sky blue for figures. `docs/design-system.md` records every rule and the reason for it,
-including how the world stays out of the way of reading: blog posts have no
-world at all, and every page works without JavaScript or WebGL.
+A warm off-white ground, near-black text, green for links, and gold and blue
+only inside figures. `docs/design-system.md` records every rule and the reason
+for it.
