@@ -22,12 +22,10 @@ const OUT = join(process.cwd(), 'lib', 'content.generated.ts')
 // keys: fields on the section. itemKeys: fields on each ### entry (and
 // items: true). body/bullets: whether paragraphs and list lines are shown.
 const SCHEMA = {
-  hero: { keys: ['location', 'time', 'scroll'], body: true },
+  hero: { keys: ['role', 'pdf'], body: true },
   currently: { keys: ['label'], itemKeys: ['since', 'link'], body: false },
-  'about-teaser': { keys: ['label', 'link'], body: true, bullets: true },
-  'resume-teaser': { keys: ['label', 'link', 'pdf'], body: true },
   'writing-teaser': { keys: ['label', 'link'], body: true },
-  contact: { keys: ['label', 'email'], body: true },
+  contact: { keys: ['label'], body: true },
   about: { keys: ['handles'], body: true },
   projects: { keys: [], itemKeys: ['status', 'source', 'demo', 'tags'], body: true },
   writing: { keys: [], body: true },
@@ -225,8 +223,6 @@ function build(sections) {
 
   const hero = get('hero')
   const currently = get('currently')
-  const aboutTeaser = get('about-teaser')
-  const resumeTeaser = get('resume-teaser')
   const writingTeaser = get('writing-teaser')
   const contact = get('contact')
   const about = get('about')
@@ -237,9 +233,8 @@ function build(sections) {
 
   return {
     hero: {
-      location: need(hero, 'location'),
-      time: need(hero, 'time'),
-      scroll: need(hero, 'scroll'),
+      role: need(hero, 'role'),
+      pdf: need(hero, 'pdf'),
       body: paras(hero),
     },
     currently: {
@@ -251,18 +246,6 @@ function build(sections) {
         ...(url(b, 'link') && { href: url(b, 'link') }),
       })),
     },
-    aboutTeaser: {
-      label: need(aboutTeaser, 'label'),
-      link: need(aboutTeaser, 'link'),
-      body: paras(aboutTeaser),
-      facts: pairs(aboutTeaser),
-    },
-    resumeTeaser: {
-      label: need(resumeTeaser, 'label'),
-      link: need(resumeTeaser, 'link'),
-      pdf: need(resumeTeaser, 'pdf'),
-      body: paras(resumeTeaser),
-    },
     writingTeaser: {
       label: need(writingTeaser, 'label'),
       link: need(writingTeaser, 'link'),
@@ -270,7 +253,6 @@ function build(sections) {
     },
     contact: {
       label: need(contact, 'label'),
-      email: need(contact, 'email'),
       body: paras(contact),
     },
     about: {

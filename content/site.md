@@ -30,14 +30,13 @@
 ## hero
 
 <!--
-  The first screen after landing: istanbul at dusk, seen from the water.
-  keys: location, time (label for the live istanbul clock), scroll (the
-  hint at the bottom). The paragraph is the line under them.
+  The top of the home page, under your name.
+  keys: role (the small line under the name), pdf (the text of the resume
+  download link). The paragraph is the line under them.
 -->
 
-location: istanbul
-time: local time
-scroll: keep scrolling
+role: ai engineer · interpretability · istanbul
+pdf: download pdf
 
 currently i am tech lead at SCL, writing my thesis, and doing research on the interpretability and safety of large language models.
 
@@ -71,41 +70,6 @@ link: https://soundboost.ai/about
 ai engineer on an audio mastering platform, a virtual mastering engineer for musicians. worked on the free tools and the stem splitter, with cool people.
 
 
-## about-teaser
-
-<!--
-  The "more about me" part of the home page.
-  keys: label, link (the text of the link to /about). The paragraph is the
-  short version; the list lines are the small facts table, written as
-  label: value.
--->
-
-label: more about me
-link: the longer story
-
-studied physics at boğaziçi, met machine learning and deep learning in the EarthML research group, and decided to go further into data science and computer science. started a cs master's in padova but that program was not for me, then came data science at sabancı, together with startups. weekdays go to product, nights to the internals of llms.
-
-- studied: physics, boğaziçi university
-- now: msc data science, sabancı university
-- based in: istanbul
-- online: kaanhho, and khdoex on github
-
-
-## resume-teaser
-
-<!--
-  The resume part of the home page. The three most recent jobs show up
-  under it on their own, taken from resume-experience below.
-  keys: label, link (the text of the link to /resume), pdf (the download)
--->
-
-label: resume
-link: the full resume
-pdf: download pdf
-
-where i have been so far, most recent first. the pdf is the same thing, in a shape recruiters like.
-
-
 ## writing-teaser
 
 <!--
@@ -125,11 +89,10 @@ notes on interpretability, machine learning, and the occasional detour through l
 <!--
   The last part of the home page. Your email and profiles come from
   lib/site.ts.
-  keys: label, email (the text on the email button)
+  keys: label
 -->
 
 label: say hi
-email: tell me anything
 
 if you work on interpretability, or synthetic consumers, or just vibes, write me. i am online most of the time.
 

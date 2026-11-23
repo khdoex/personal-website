@@ -49,7 +49,6 @@ export default function About() {
         {currently.map((item) => (
           <Entry
             key={item.title}
-           
             gutter={<Meta tone="date">{item.since}</Meta>}
           >
             <h2 className="font-serif text-lead font-normal text-heading">

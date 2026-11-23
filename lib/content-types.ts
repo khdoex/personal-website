@@ -9,11 +9,6 @@
  */
 export type InlineText = string
 
-export interface Fact {
-  label: string
-  value: string
-}
-
 export interface CurrentItem {
   since: string
   title: string
@@ -52,17 +47,10 @@ export interface SkillGroup {
 }
 
 export interface SiteContent {
-  hero: {
-    location: string
-    time: string
-    scroll: string
-    body: InlineText[]
-  }
+  hero: { role: string; pdf: string; body: InlineText[] }
   currently: { label: string; items: CurrentItem[] }
-  aboutTeaser: { label: string; link: string; body: InlineText[]; facts: Fact[] }
-  resumeTeaser: { label: string; link: string; pdf: string; body: InlineText[] }
   writingTeaser: { label: string; link: string; body: InlineText[] }
-  contact: { label: string; email: string; body: InlineText[] }
+  contact: { label: string; body: InlineText[] }
   about: { story: InlineText[]; handles: InlineText }
   projects: { intro: InlineText[]; items: Project[] }
   writing: { intro: InlineText[] }

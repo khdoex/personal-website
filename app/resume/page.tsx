@@ -28,7 +28,6 @@ function EntryRow({ entry }: { entry: ResumeEntry }) {
   return (
     <Entry
       className="border-t border-border"
-     
       gutter={<Meta tone="date">{entry.period}</Meta>}
     >
       <h3 className="font-serif text-lead font-normal text-heading">
@@ -86,7 +85,6 @@ function Story() {
         <Entry
           key={chapter.title}
           className="border-t border-border"
-         
           gutter={chapter.period && <Meta tone="date">{chapter.period}</Meta>}
         >
           <div className="flex min-h-[62svh] max-w-[30rem] flex-col justify-center">
@@ -158,7 +156,6 @@ export default function Resume() {
           <Entry
             key={group.label}
             className="border-t border-border"
-           
             gutter={<Meta>{group.label}</Meta>}
           >
             <span className="font-serif text-sm text-foreground">{group.items}</span>

@@ -5,9 +5,8 @@ import type { SiteContent } from './content-types'
 
 export const content: SiteContent = {
   "hero": {
-    "location": "istanbul",
-    "time": "local time",
-    "scroll": "keep scrolling",
+    "role": "ai engineer · interpretability · istanbul",
+    "pdf": "download pdf",
     "body": [
       "currently i am tech lead at SCL, writing my thesis, and doing research on the interpretability and safety of large language models."
     ]
@@ -34,39 +33,6 @@ export const content: SiteContent = {
       }
     ]
   },
-  "aboutTeaser": {
-    "label": "more about me",
-    "link": "the longer story",
-    "body": [
-      "studied physics at boğaziçi, met machine learning and deep learning in the EarthML research group, and decided to go further into data science and computer science. started a cs master's in padova but that program was not for me, then came data science at sabancı, together with startups. weekdays go to product, nights to the internals of llms."
-    ],
-    "facts": [
-      {
-        "label": "studied",
-        "value": "physics, boğaziçi university"
-      },
-      {
-        "label": "now",
-        "value": "msc data science, sabancı university"
-      },
-      {
-        "label": "based in",
-        "value": "istanbul"
-      },
-      {
-        "label": "online",
-        "value": "kaanhho, and khdoex on github"
-      }
-    ]
-  },
-  "resumeTeaser": {
-    "label": "resume",
-    "link": "the full resume",
-    "pdf": "download pdf",
-    "body": [
-      "where i have been so far, most recent first. the pdf is the same thing, in a shape recruiters like."
-    ]
-  },
   "writingTeaser": {
     "label": "writing",
     "link": "all writing",
@@ -76,7 +42,6 @@ export const content: SiteContent = {
   },
   "contact": {
     "label": "say hi",
-    "email": "tell me anything",
     "body": [
       "if you work on interpretability, or synthetic consumers, or just vibes, write me. i am online most of the time."
     ]
