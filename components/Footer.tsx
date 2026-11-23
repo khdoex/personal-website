@@ -10,7 +10,7 @@ export const profiles = [
 
 export default function Footer({ line }: { line: string }) {
   return (
-    <footer className="site-footer relative z-[1] mt-auto border-t border-border/70">
+    <footer className="relative z-[1] mt-auto border-t border-border/70">
       <div className="mx-auto w-full max-w-[1168px] px-6 md:px-8 py-10">
         <div className="flex flex-col md:flex-row justify-between items-center gap-4 font-mono text-meta">
           <span className="text-muted">

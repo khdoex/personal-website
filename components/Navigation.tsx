@@ -23,7 +23,7 @@ export default function Navigation({ labels }: { labels: SiteContent['navigation
               and the margins come down a step as well. */}
           <Link
             href="/"
-            className="group flex items-center gap-2.5 font-serif text-sm leading-tight sm:text-lead sm:leading-normal font-medium text-heading hover:text-accent shrink-0"
+            className="flex items-center font-serif text-sm leading-tight sm:text-lead sm:leading-normal font-medium text-heading hover:text-accent shrink-0"
           >
             <span className="w-min sm:w-auto sm:whitespace-nowrap">{labels.home}</span>
           </Link>

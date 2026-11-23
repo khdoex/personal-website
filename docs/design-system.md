@@ -137,8 +137,8 @@ A graded step that carries text has a floor the fill grades do not. On the
 light ground `sky` at 70% rates 3.19 and misses AA, and it only clears 4.5 near
 90%, where it no longer looks lighter. So text never takes a graded step: it
 takes a full token. Grade a fill, a bar or a rule as far as it still reads.
-`npm run contrast` rates any graded text step listed in `GRADED_TEXT`; none
-stand today.
+The `graded-text` rule in `npm run lint:design` fails on any text colour with
+an opacity step.
 
 ## Type scale
 
@@ -191,7 +191,7 @@ header.
 `components/layout/Canvas.tsx` owns the page grid and is the only place its
 numbers appear. Three tracks inside `max-w-[1168px]` with `px-6 md:px-8`:
 
-- left gutter, 160px: dates, section labels, status marks, reading progress. It
+- left gutter, 160px: dates, section labels and status marks. It
   behaves as a plotting axis, which is where the instrument vocabulary came
   from in the first place.
 - reading column, 660px: all prose.
@@ -261,9 +261,9 @@ because both are tuned for crawlers rather than read on the page.
 
 `npm run contrast` rates the text tokens against the ground and against
 `surface`, and fails below 4.5 on either. `npm run lint:design` checks the
-seven rules above that a script can see: `text-muted-dark` outside `Rule.tsx`,
+eight rules above that a script can see: `text-muted-dark` outside `Rule.tsx`,
 any import of the old 3D world or its scrim, any animation, transition or
-smooth scroll, hex literals, canvas numbers, arbitrary font sizes, and
+smooth scroll, text coloured at partial opacity, hex literals, canvas numbers, arbitrary font sizes, and
 off-scale size names.
 
 The design lint carries a baseline per rule, which is the count that stood when

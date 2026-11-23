@@ -38,22 +38,6 @@ for (const name of TEXT) {
   if (!ok) failed = true
   console.log(`${ok ? 'PASS' : 'FAIL'}  ${name.padEnd(12)} ${tokens[name]}  ${r.toFixed(2)}  ${rs.toFixed(2)}`)
 }
-// Graded steps that colour text, as [token, alpha, where]. Each one is the
-// token blended over the ground at that alpha, and has the same 4.5 floor.
-// None stand today: on the light ground a graded step loses AA long before it
-// looks lighter, so text takes a full token instead.
-const GRADED_TEXT = []
-const blend = (fg, bg, a) => {
-  const ch = (h, k) => parseInt(h.slice(1 + 2 * k, 3 + 2 * k), 16)
-  return '#' + [0, 1, 2].map((k) => Math.round(ch(fg, k) * a + ch(bg, k) * (1 - a)).toString(16).padStart(2, '0')).join('')
-}
-for (const [name, alpha, where] of GRADED_TEXT) {
-  const r = ratio(tokens.background, blend(tokens[name], tokens.background, alpha))
-  const rs = ratio(tokens.surface, blend(tokens[name], tokens.surface, alpha))
-  const ok = r >= MIN && rs >= MIN
-  if (!ok) failed = true
-  console.log(`${ok ? 'PASS' : 'FAIL'}  ${`${name}/${alpha}`.padEnd(12)} ${where}  ${r.toFixed(2)}  ${rs.toFixed(2)}`)
-}
 for (const name of DECORATIVE) {
   console.log(`      ${name.padEnd(12)} ${tokens[name]}  ${ratio(tokens.background, tokens[name]).toFixed(2)}  decorative, never text`)
 }

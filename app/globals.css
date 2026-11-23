@@ -47,16 +47,6 @@ main {
   position: relative;
 }
 
-.dot {
-  display: inline-block;
-  width: 8px;
-  height: 8px;
-  flex: none;
-  border-radius: 9999px;
-  background: currentColor;
-  box-shadow: 0 0 12px currentColor;
-}
-
 /* Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
