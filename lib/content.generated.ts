@@ -129,7 +129,7 @@ export const content: SiteContent = {
           "title": "boğaziçi",
           "period": "2018 – 2023",
           "body": [
-            "physics, on a hill over the bosphorus. loved the research and the inspiration from my profs, one of the best decisions i made in my life. in the EarthML research group Arkadaş hoca taught us machine learning and deep learning, and i worked on earthquake detection models and extensive data analysis. i also taught numerical methods, and once we even turned seismic data into an art exhibition. then i continued down the data science path, with internships at Allianz and Live The World."
+            "studied physics. loved the research and the inspiration from my profs, one of the best decisions i made in my life. in the EarthML research group Arkadaş hoca taught us machine learning and deep learning, and i worked on earthquake detection models and extensive data analysis. i also taught numerical methods, and once we even turned seismic data into an art exhibition. then i continued down the data science path, with internships at Allianz and Live The World."
           ]
         },
         {
