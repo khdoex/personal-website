@@ -72,9 +72,12 @@ const RULES = [
     id: 'hex-literal',
     what: 'six-digit hex literal',
     why: 'colour is the tokens defined once in globals.css; a literal escapes the palette',
-    baseline: 1,
+    baseline: 0,
     pattern: /#[0-9a-fA-F]{6}\b/g,
     skip: (file) => file === 'app/globals.css',
+    // The theme-color meta tag cannot read CSS variables, so the layout restates
+    // the two grounds.
+    allow: (file, text) => file === 'app/layout.tsx' && ['#fbfaf7', '#161615'].includes(text),
   },
   {
     id: 'canvas-number',

@@ -1,3 +1,5 @@
+import ThemeToggle from '@/components/ThemeToggle'
+
 // rel="me" tells crawlers these profiles belong to the site owner. Paired
 // with the same URLs in the Person schema's sameAs, it links the handles
 // (khdoex, kaanhho) to this site.
@@ -36,6 +38,7 @@ export default function Footer({ line }: { line: string }) {
             >
               email
             </a>
+            <ThemeToggle className="sm:hidden text-muted hover:text-accent" />
           </div>
         </div>
       </div>
