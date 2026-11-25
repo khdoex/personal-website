@@ -6,7 +6,7 @@ import Meta from '@/components/ui/Meta'
 import Inline from '@/components/ui/Inline'
 import { content } from '@/lib/content.generated'
 
-// The root layout sets a `%s | Kaan Hacihaliloglu` template, so the suffix
+// The root layout sets a `%s · Kaan Hacihaliloglu` template, so the suffix
 // belongs there and not here.
 export const metadata = {
   title: 'Not found',
