@@ -37,17 +37,11 @@ export default function Navigation({ labels }: { labels: SiteContent['navigation
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`relative font-mono text-tick min-[360px]:text-meta ${
+                  className={`font-mono text-tick min-[360px]:text-meta ${
                     isActive ? 'text-accent' : 'text-muted hover:text-heading'
                   }`}
                 >
                   {item.label}
-                  <span
-                    aria-hidden
-                    className={`absolute -top-2 left-0 h-1.5 w-px bg-accent ${
-                      isActive ? 'opacity-100' : 'opacity-0'
-                    }`}
-                  />
                 </Link>
               )
             })}
