@@ -3,7 +3,6 @@ import Link from 'next/link'
 import Canvas from '@/components/layout/Canvas'
 import Gutter from '@/components/layout/Gutter'
 import Meta from '@/components/ui/Meta'
-import Reveal from '@/components/motion/Reveal'
 import JsonLd from '@/components/JsonLd'
 import { SITE_URL } from '@/lib/site'
 import { PERSON_ID, breadcrumbNode, graph, pageMetadata } from '@/lib/seo'
@@ -45,15 +44,11 @@ export default async function Blog() {
         data={graph(blogNode, breadcrumbNode([{ name: 'Writing', path: '/blog' }]))}
       />
       <header className="mb-16 lg:col-start-2">
-        <Reveal>
-          <h1 className="font-serif text-h2 font-normal text-heading">writing</h1>
-        </Reveal>
+        <h1 className="font-serif text-h2 font-normal text-heading">Writing</h1>
         {content.writing.intro.map((paragraph, i) => (
-          <Reveal key={i} delay={0.08}>
-            <p className="mt-4 font-serif text-lead text-muted">
-              <Inline text={paragraph} />
-            </p>
-          </Reveal>
+          <p key={i} className="mt-4 font-serif text-lead text-muted">
+            <Inline text={paragraph} />
+          </p>
         ))}
       </header>
 
@@ -72,15 +67,11 @@ export default async function Blog() {
           <div className="lg:col-start-2">
             {posts
               .filter((post) => post.data.date.startsWith(year))
-              .map((post, i) => (
-                <Reveal
-                  key={post.data.slug}
-                  delay={i * 0.08}
-                  className="border-t border-border py-7"
-                >
+              .map((post) => (
+                <div key={post.data.slug} className="border-t border-border py-7">
                   <article>
                     <Link href={`/blog/${post.data.slug}`} className="group block">
-                      <span className="font-serif text-lead text-heading transition-colors group-hover:text-accent">
+                      <span className="font-serif text-lead text-heading group-hover:text-accent">
                         {post.data.title}
                       </span>
                       {post.data.excerpt && (
@@ -97,7 +88,7 @@ export default async function Blog() {
                       </p>
                     </Link>
                   </article>
-                </Reveal>
+                </div>
               ))}
           </div>
         </div>

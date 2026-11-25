@@ -1,12 +1,7 @@
 'use client'
 
 import { createContext, useContext, useRef, useState, type ReactNode } from 'react'
-import {
-  motionValue,
-  useReducedMotion,
-  useScroll,
-  type MotionValue,
-} from 'framer-motion'
+import { motionValue, type MotionValue } from 'framer-motion'
 
 const FigureProgress = createContext<MotionValue<number> | null>(null)
 
@@ -19,9 +14,8 @@ export function useFigureProgress(): MotionValue<number> {
 }
 
 /**
- * Figure wrapper that owns a scroll-scrubbed progress value (0 at figure
- * entering the lower viewport, 1 well before it reaches the top) and hands
- * it to child figure primitives via context. Scrolling back rewinds.
+ * Figure wrapper. Hands its child figure primitives a progress value fixed
+ * at 1, so every figure renders in its final state.
  */
 export default function ScrollFigure({
   n,
@@ -36,15 +30,9 @@ export default function ScrollFigure({
   width?: 'reading' | 'wide' | 'bleed'
   children: ReactNode
 }) {
-  const ref = useRef<HTMLElement>(null)
   const dialogRef = useRef<HTMLDialogElement>(null)
   const [zoom, setZoom] = useState(1)
-  const reduced = useReducedMotion()
   const staticProgress = useRef(motionValue(1)).current
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ['start 0.85', 'start 0.35'],
-  })
 
   const copy = lang === 'tr'
     ? { figure: 'şekil', open: 'büyüt', close: 'kapat', zoomOut: 'uzaklaştır', zoomIn: 'yakınlaştır', view: 'şeklin büyütülmüş görünümü' }
@@ -66,9 +54,9 @@ export default function ScrollFigure({
   }
 
   return (
-    <figure ref={ref} className={`relative my-16 ${widths[width]}`}>
+    <figure className={`relative my-16 ${widths[width]}`}>
       <div className="border-y border-border py-6 md:py-8">
-        <FigureProgress.Provider value={reduced ? staticProgress : scrollYProgress}>
+        <FigureProgress.Provider value={staticProgress}>
           {children}
         </FigureProgress.Provider>
       </div>
@@ -107,7 +95,7 @@ export default function ScrollFigure({
                 type="button"
                 onClick={() => changeZoom(-0.25)}
                 disabled={zoom <= 0.75}
-                className="h-8 w-8 rounded border border-border text-muted transition-colors hover:text-heading disabled:cursor-not-allowed disabled:opacity-30"
+                className="h-8 w-8 rounded border border-border text-muted hover:text-heading disabled:cursor-not-allowed disabled:opacity-30"
                 aria-label={copy.zoomOut}
               >
                 −
@@ -117,7 +105,7 @@ export default function ScrollFigure({
                 type="button"
                 onClick={() => changeZoom(0.25)}
                 disabled={zoom >= 2}
-                className="h-8 w-8 rounded border border-border text-muted transition-colors hover:text-heading disabled:cursor-not-allowed disabled:opacity-30"
+                className="h-8 w-8 rounded border border-border text-muted hover:text-heading disabled:cursor-not-allowed disabled:opacity-30"
                 aria-label={copy.zoomIn}
               >
                 +
@@ -125,14 +113,14 @@ export default function ScrollFigure({
               <button
                 type="button"
                 onClick={() => dialogRef.current?.close()}
-                className="ml-2 rounded border border-border px-3 py-1.5 text-muted transition-colors hover:border-muted-dark hover:text-heading"
+                className="ml-2 rounded border border-border px-3 py-1.5 text-muted hover:border-muted-dark hover:text-heading"
               >
                 {copy.close}
               </button>
             </div>
           </div>
           <div className="min-h-0 flex-1 overflow-auto p-4 md:p-8">
-            <div className="mx-auto origin-top transition-[width] duration-150" style={{ width: `${zoom * 100}%` }}>
+            <div className="mx-auto origin-top" style={{ width: `${zoom * 100}%` }}>
               <FigureProgress.Provider value={staticProgress}>
                 {children}
               </FigureProgress.Provider>

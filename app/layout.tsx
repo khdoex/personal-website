@@ -4,9 +4,6 @@ import "./globals.css";
 import Navigation from '@/components/Navigation'
 import Footer from '@/components/Footer'
 import JsonLd from '@/components/JsonLd'
-import World from '@/components/world/World'
-import IntroOverlay from '@/components/world/IntroOverlay'
-import { INTRO_GATE } from '@/components/world/gate'
 import { content } from '@/lib/content.generated'
 import { SITE_URL, SITE_NAME, PERSON } from '@/lib/site'
 import { OG_IMAGE, graph, personNode, websiteNode } from '@/lib/seo'
@@ -25,7 +22,7 @@ const newsreader = Newsreader({
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  themeColor: '#0a1428',
+  themeColor: '#fbfaf7',
 };
 
 const DEFAULT_TITLE =
@@ -39,7 +36,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
     default: DEFAULT_TITLE,
-    template: `%s | ${SITE_NAME}`,
+    template: `%s · ${SITE_NAME}`,
   },
   description: DEFAULT_DESCRIPTION,
   applicationName: SITE_NAME,
@@ -106,11 +103,8 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    // suppressHydrationWarning: the intro gate below may set data-intro on
-    // <html> before React hydrates, which React would otherwise report.
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en">
       <head>
-        <script dangerouslySetInnerHTML={{ __html: INTRO_GATE }} />
         {/* Pointers for LLM agents: the plain-text profile and full dump. */}
         <link rel="alternate" type="text/markdown" href="/llms.txt" title="llms.txt" />
         <link rel="alternate" type="text/markdown" href="/llms-full.txt" title="llms-full.txt" />
@@ -119,16 +113,8 @@ export default function RootLayout({
         className={`${jetbrainsMono.variable} ${newsreader.variable} antialiased`}
       >
         <JsonLd data={graph(websiteNode(), personNode())} />
-        <World labels={content.world} email={PERSON.email} />
-        {/* Outside <main>: the ride hides main, and its instruments must show. */}
-        <IntroOverlay
-          brand={content.navigation.home}
-          coords={content.hero.location}
-          lines={content.intro.lines}
-          skip={content.intro.skip}
-        />
         <Navigation labels={content.navigation} />
-        <main className="min-h-screen pt-16">
+        <main className="min-h-screen">
           {children}
         </main>
         <Footer line={content.footer.line} />

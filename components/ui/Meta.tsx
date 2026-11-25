@@ -2,10 +2,10 @@ import type { ReactNode } from 'react'
 
 const tones = {
   muted: 'text-muted',
-  date: 'text-sun',
+  date: 'text-muted',
 } as const
 
-// Two tones, no third. --muted-dark sits at 2.37 against the ground and
+// Two tones, no third. --muted-dark sits at 2.07 against the ground and
 // fails AA, so no text tone maps to it; Rule's 1px tick is the only
 // sanctioned use of that token. Hierarchy between a label and body text
 // comes from typeface and size, not from a third grey.

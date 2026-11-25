@@ -69,7 +69,6 @@ export default function RefusalToy() {
             r={4}
             fill="rgb(var(--sun))"
             opacity={0.9}
-            style={{ transition: 'cx 0.2s ease-out, cy 0.2s ease-out' }}
           />
         ))}
       </svg>

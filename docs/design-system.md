@@ -9,8 +9,7 @@ holds the type scale. Two scripts check them: `npm run contrast` rates the token
 values, `npm run lint:design` checks how components spend them.
 
 Words live in a third: `content/site.md` holds every line a visitor reads (see
-[Copy](#copy)). The 3D world behind the pages has a section of its own, [The
-world](#the-world).
+[Copy](#copy)).
 
 ## Two registers
 
@@ -32,9 +31,7 @@ little else to work with: two published posts, one portrait, no photography.
 
 `components/ui/Meta.tsx` is the instrument register in component form. Every
 date, label, tag and axis mark goes through it, which is what keeps the tracking
-and the tabular numerals consistent. The labels the world pins beside things in
-3D (the city under the light, the captions in the resume's scenes, the words a
-transformer reads) are instrument too: mono, 13px, never serif.
+and the tabular numerals consistent.
 
 One trap worth naming. SVG `<text>` inherits `font-family` like any other
 element, so every axis tick inside a figure picks up the serif set on `body`
@@ -43,36 +40,36 @@ exactly this. Without that rule a figure's axis reads as prose.
 
 ## Colour
 
-Ten tokens, no eleventh. The palette is the Earth at night seen from orbit: a
-dark blue ground, leaf green for anything alive, sun gold for time and for the
-lights of cities, sky blue for the cool pole of a figure. Ratios are measured
-against the ground `#0a1428`, the page background. A contrast ratio compares the
-relative luminance of two colours; WCAG AA asks for 4.5 on body text.
+Ten tokens, no eleventh. A warm off-white ground with near-black text, green
+for what a reader can click, and gold and blue kept for the two poles of a
+figure. Ratios are measured against the ground `#fbfaf7` and against `surface`,
+the ground of code blocks and figures. A contrast ratio compares the relative
+luminance of two colours; WCAG AA asks for 4.5 on body text.
 
-| token        | hex       | ratio | carries                                         |
-|--------------|-----------|-------|-------------------------------------------------|
-| `heading`    | `#f4efe3` | 16.00 | headings                                        |
-| `sun`        | `#f4cd5e` | 12.02 | dates, the adverse figure pole                  |
-| `foreground` | `#c5cfdb` | 11.65 | prose                                           |
-| `accent`     | `#86d6a4` | 10.64 | links, active state, what breathes              |
-| `sky`        | `#7fb8f5` |  8.81 | the cool figure pole                            |
-| `muted`      | `#8797ad` |  6.17 | captions, labels, secondary prose               |
-| `muted-dark` | `#3b4d68` |  2.14 | ticks and hairline marks, never text            |
-| `border`     | `#1b2a44` |  1.28 | hairlines                                       |
-| `surface`    | `#0f1b31` |  1.07 | code blocks, figure grounds                     |
-| `background` | `#0a1428` |  1.00 | the ground                                      |
+| token        | hex       | ground | surface | carries                              |
+|--------------|-----------|--------|---------|--------------------------------------|
+| `heading`    | `#16181b` | 17.04  | 15.61   | headings                             |
+| `foreground` | `#33373d` | 11.47  | 10.50   | prose                                |
+| `sky`        | `#2462a8` |  5.94  |  5.44   | the cool figure pole, only in figures|
+| `muted`      | `#666b72` |  5.14  |  4.71   | dates, captions, labels              |
+| `accent`     | `#1f7a4d` |  5.09  |  4.67   | links and active state               |
+| `sun`        | `#8f6500` |  4.99  |  4.57   | the adverse figure pole, only in figures |
+| `muted-dark` | `#b4b0a6` |  2.07  |  1.90   | ticks and hairline marks, never text |
+| `border`     | `#e4e1d9` |  1.25  |  1.15   | hairlines                            |
+| `surface`    | `#f2f0ea` |  1.09  |  1.00   | code blocks, figure grounds          |
+| `background` | `#fbfaf7` |  1.00  |         | the ground                           |
 
-The heading white is warm (`#f4efe3`, moonlight on paper) rather than the cold
-white it replaced, so it sits with the gold instead of against it. The ground is
-a clear blue, not a blue-black: the night over the city and the page are meant
-to read as the same dark.
+The ground is light because the readers this site is for, people hiring at AI
+labs, already read research on light pages. Of 8 research sites they know, 7
+are light by default. Dates moved from gold to `muted`: gold dark enough to
+read on a light ground turns brown, and it left a second colour in the page
+chrome. Green is now the only colour outside the figures.
 
-Decided 2026-09-29 with the move to the 3D world, replacing a near-black ground
-with one cyan signal and an amber for dates. `amber` became `sun` and `accent`
-went from cyan to green; `sky` is new, for the figures (see
-[Figure poles](#figure-poles)).
+Decided 2026-11-24, when the 3D world and the dark palette were removed. The
+token names stayed, so no class had to change. Before that the ground was a
+dark blue `#0a1428`, set 2026-09-29.
 
-**`muted-dark` never carries text, at any size.** At 2.14 it misses AA by a wide
+**`muted-dark` never carries text, at any size.** At 2.07 it misses AA by a wide
 margin, and it is dark enough that the failure stays invisible on a good monitor
 in a dark room, which is how it spread. Before the rebuild it carried text in 27
 places. None remain.
@@ -95,25 +92,12 @@ can change from one place. `components/mdx/` held 89 of them across 26 distinct
 values, most of them near-duplicates of tokens that already existed. Two greys a
 reader cannot tell apart still cost a maintainer a decision every time. All 89
 are gone. One literal stands, the `themeColor` in `app/layout.tsx`, which Next
-serves as a browser meta tag where a CSS variable cannot be read. The rule holds
-inside the WebGL engine too: `components/world/engine/palette.ts` reads the
-tokens from the stylesheet at runtime, so the world has no colour of its own.
+serves as a browser meta tag where a CSS variable cannot be read.
 
 The tokens hold bare sRGB channels rather than colours, so `var(--accent)` is
 not a colour anywhere a colour is expected. In an SVG attribute or a JavaScript
 colour constant, write `rgb(var(--accent))`, and `rgb(var(--accent) / 0.6)` for
 a graded step. In a class, write `text-accent` or `bg-sun/5`.
-
-### World paint
-
-A second block on `:root`, the `--world-*` tokens, paints the world: Istanbul
-at night (the deep ocean for the water and the dark walls, forest for the
-hills, city light for windows, lamps and floodlit stone, dusk for the sunset
-and the sunrise), and the planet the ride passes on its way down. They are read
-once by the engine and handed to the shaders as they are (colour management is
-off, so a channel of 40 reaches the screen as 40). They are never a class and
-never text, so `npm run contrast` does not rate them. Change them to repaint
-the world; nothing else reads them.
 
 ### Figure poles
 
@@ -130,8 +114,8 @@ a figure that set them against each other would repeat the red and green
 mistake one step over. Green is for what a reader can act on; figures compare in
 blue and gold.
 
-Decided 2026-09-21 with cyan and amber, carried over 2026-09-29 to sky and sun.
-The red and green constants are gone.
+Decided 2026-09-21 with cyan and amber, carried over 2026-09-29 to sky and sun,
+and to their light values on 2026-11-24. The red and green constants are gone.
 
 Two figures compare four things rather than two, and they grade within the hues
 instead of adding a third. `PromptDefenseBehaviorFigure` splits five answer
@@ -145,13 +129,16 @@ the poles, and nothing in either figure asks a reader to tell red from green.
 an ordering rather than a pair: the model defense the post argues is not
 sufficient, the detector between them, and the action boundary outside the model
 that decides. Painting the first and the third the same blue said the opposite
-of the argument, so layer 01 takes `sky` at 70%, layer 02 `sun`, layer 03 `sky`
-at full, and the figure now runs in the direction the prose does.
+of the argument, so layer 01 takes `muted`, layer 02 `sun`, layer 03 `sky`, and
+the figure runs in the direction the prose does. On the dark ground layer 01
+was `sky` at 70%.
 
-A graded step that carries text has a floor the fill grades do not. `sky` at 55%
-rates 3.48 against the ground and misses AA; at 70% it rates 4.91 and clears it.
-Grade a fill, a bar or a rule as far as it still reads. Grade text only as far
-as 4.5.
+A graded step that carries text has a floor the fill grades do not. On the
+light ground `sky` at 70% rates 3.19 and misses AA, and it only clears 4.5 near
+90%, where it no longer looks lighter. So text never takes a graded step: it
+takes a full token. Grade a fill, a bar or a rule as far as it still reads.
+The `graded-text` rule in `npm run lint:design` fails on any text colour with
+an opacity step.
 
 ## Type scale
 
@@ -167,17 +154,16 @@ Ten steps in `tailwind.config.ts`, 18px base, 1.25 ratio.
 | `h3`      | 28px                      | section heads                      |
 | `h2`      | 36px                      | page and post titles               |
 | `h1`      | 48px                      | unused on pages today              |
-| `display` | clamp(40px, 6vw, 64px)    | the home greeting, the 404's masthead |
-| `hero`    | clamp(44px, 7.5vw, 92px)  | the ride's counter                 |
+| `display` | clamp(40px, 6vw, 64px)    | unused since 2026-11-24            |
+| `hero`    | clamp(44px, 7.5vw, 92px)  | unused since 2026-11-24            |
 
 Headings inside prose are set in `app/globals.css` rather than through these
 utilities, and they sit one step lower: a post's own `h2` is 28px, because the
 post title above it already holds 36px. The sizes come off the same scale.
 
-`hero` sits above `display` for one job: the percent counter of the ride in,
-alone in the middle of the screen. It is the only step that grows past 64px,
-and it is not for page titles. The home greeting used it too, until it grew
-into a sentence; at `display` it holds two lines beside the skyline.
+`hero` was the percent counter of the intro ride, which is gone. The step
+stays in the config until something needs a size past 64px, which is not a
+page title.
 
 `tick` sits below `meta` because the figures needed it. Their legends, axis
 captions and in-figure notes ran at 9, 10 and 11 pixels, and 13px wrapped a
@@ -205,7 +191,7 @@ header.
 `components/layout/Canvas.tsx` owns the page grid and is the only place its
 numbers appear. Three tracks inside `max-w-[1168px]` with `px-6 md:px-8`:
 
-- left gutter, 160px: dates, section labels, status marks, reading progress. It
+- left gutter, 160px: dates, section labels and status marks. It
   behaves as a plotting axis, which is where the instrument vocabulary came
   from in the first place.
 - reading column, 660px: all prose.
@@ -225,10 +211,7 @@ and on a figure beside them lands on three different right edges. Five sites
 used `65ch` before the rebuild and could not be lined up. Pixels put all of them
 on one edge.
 
-The home page is the one page off the canvas. The city takes one side of each
-section and the text the other, alternating down the page, so its sections sit
-on a wide twelve-column grid (`max-w-[1280px]`) instead of the three tracks. Its
-text still uses the two registers and the type scale.
+Every page sits on the canvas, the home page included.
 
 Four numbers are reserved: 1168, 660, 220 and 160. They may appear outside
 `Canvas.tsx` only where a reason is recorded in the allowlist at the top of
@@ -240,166 +223,29 @@ right-track width itself.
 
 ## Motion
 
-The site used to spend its whole motion budget on `Reveal`, on the argument that
-its visuals carry data and decorative motion contradicts that. The 3D world
-changes where the motion lives, not the argument. Motion now has two homes, and
-the rule is what each one may do.
+There is none. Nothing moves unless the reader clicks or scrolls: no fades on
+arrival, no parallax, no breathing marks, no smooth scrolling, no hover
+transitions. A link changes colour on hover at once.
 
-**The world** (`components/world/`, see [The world](#the-world)) is the only
-thing that moves on its own. It plays the ride in from deep space once per
-session, flies the camera between pages and between the sections of a page, and
-breathes. Nothing in the page's text layer moves except on the reader's own
-scroll.
+The site is for people deciding whether to read the research, and motion spent
+their attention on the page instead of the work. Every research site they
+already read is still. Text that waits for an animation is also text that can
+fail to appear: the old fade-in shipped `opacity:0` in the server markup.
 
-**The breath** is one period, seven seconds in and out, set as `--breath` in
-`app/globals.css` and as `BREATH` in the engine. Only small marks breathe: the
-green status dots, the scroll line, the stars, and the floodlights and lamps of
-the city. Text never breathes.
+Figures render in their final state. `ScrollFigure` hands its children a
+progress value fixed at 1, so the figure components keep their `framer-motion`
+types and hooks but never animate. `framer-motion` stays a dependency for that
+reason only.
 
-**`Reveal`** (`components/motion/Reveal.tsx`) is unchanged: a rise on viewport
-entry, 0.55s, reversible. The hero uses `.arrive` in CSS instead, because it has
-to wait for the ride to land and a viewport observer cannot.
+The one exception is the archived `/lens-test` page, which keeps its `.reveal`
+fade and `@keyframes rise`. It is unlinked and out of scope.
 
-**Reading pages are still.** A blog post has no world at all: the canvas stops
-drawing and the ground is flat. No parallax, no cursor effects, no
-scroll-jacking. The reader's scroll only ever moves the camera, never the text.
-
-`Reveal` honours `prefers-reduced-motion` through `useReducedMotion`, and the
-way it does so is load-bearing. It always renders a `motion.div`: swapping the
-element type on the reduced-motion branch causes a hydration mismatch that
-strands content at opacity 0. The from-state ships in the server markup, and a
-client that prefers reduced motion never runs the animation that would clear it,
-so `.reveal-root` in `app/globals.css` clears it in CSS, which the browser
-resolves without waiting for hydration. Any new reduced-motion branch needs the
-same guard.
-
-Reduced motion reaches the world too: no ride, no breathing, and the camera
-cuts between shots instead of flying. The city is drawn once per change and
-then left alone.
-
-`framer-motion` stays a dependency because 13 components under `components/mdx/`
-use it for scroll-driven figures.
-
-## The world
-
-One WebGL scene, drawn with three.js behind every page but the blog posts: the
-site lives in Istanbul, at night. The page never depends on it: every word is
-server-rendered in the HTML, and the site reads the same with no JavaScript,
-without WebGL, with Save-Data on and with reduced motion. In those cases the
-gradients on `.world` stand in for the sky.
-
-- `components/world/World.tsx` is mounted once in the root layout, so it
-  survives client-side navigation and a route change is a camera move rather
-  than a reload. It loads the engine as a separate chunk after hydration, so
-  the page's own JavaScript does not grow.
-- `components/world/gate.ts` runs inline in `<head>` before the first paint and
-  decides whether the home page opens with the ride. It has to run that early:
-  a page that painted first and hid itself second would flash. The ride plays on
-  a direct visit to `/`, once per browser session, and never for crawlers,
-  automation, reduced motion, Save-Data or a missing WebGL. `?intro=1` forces
-  it, `?intro=0` skips it. If the engine has not booted after nine seconds the
-  page shows itself anyway.
-- The ride: deep space, the tube, the planet, and a fall through the cloud into
-  the city. The tube is the loading bar. It holds a hundred rings, one per
-  percent; a ring lights up once that much of the world has loaded, and the
-  camera may not pass an unlit ring, so a slow connection slows the ride rather
-  than freezing it. The planet shows only here, for the fall: the camera drops
-  toward the light over Istanbul, the cloud closes over it, and the city is
-  underneath when it clears. Esc, the skip button, or tabbing into the page ends
-  the ride, and however slowly a machine draws, the page is never held back
-  more than about sixteen seconds.
-- The city (`engine/city/`) is built from primitives, not pictures: the ground
-  (`terrain.ts`), and a street plan that the buildings fill block by block and
-  the lamps light in pools (`common.ts`, `buildings.ts`). Each building is
-  drawn by its kind: blocks of flats with balconies and a clutter of water
-  tanks and solar heaters on their flat roofs, older houses and hans under
-  tiled roofs, offices in bands of glass, glass towers lit a floor at a time
-  under a crown of light, Padova's palazzi over their lit arcades; shops light
-  the street floor. The yalıs stand in the water on both shores, and the
-  palaces on it are floodlit (`shore.ts`: Dolmabahçe, Çırağan, Beylerbeyi,
-  Kuleli). Then the floodlit monuments (`landmarks.ts`), both Bosphorus bridges
-  (`bridge.ts`: the first in the palette's colours, the second in plain lamps),
-  Boğaziçi's campus with Rumelihisarı below it (`bogazici.ts`), the woods and
-  gardens in plane trees, stone pines and cypresses (`trees.ts`), Kanyon on
-  Büyükdere Caddesi (`kanyon.ts`), the avenues, the coast roads, Kennedy
-  Caddesi and the Galata Bridge with their traffic (`roads.ts`), everything
-  afloat with its navigation lights (`life.ts`: ferries, tankers, a tour boat
-  strung with bulbs, motorboats, fishing boats and sailboats at anchor, and
-  gulls), and airliners far off (`air.ts`). Everything tall carries a red lamp
-  for the aircraft (`beacons.ts`). The sky has an hour: `dusk` and `dawn` in
-  each shot move the glow from the west to the east and put the lights out; a
-  crescent moon with Venus beside it silvers the clouds near it. Fog takes the
-  sky's colour at the horizon in every direction, so the edges of the ground
-  melt into it. Padova (`padova.ts`: Prato della Valle, Santa Giustina, the
-  Santo) is a second place on the same ground, far to the west.
-- The sea (`water.ts`) mirrors the city and moves: the strait runs south,
-  fastest in the middle, and carries its waves with it; the moon lays a path
-  of glints toward itself; and a line of foam laps at every shore, read from a
-  map of the waterline baked once at startup from the same outline the ground
-  is made from. Everything afloat rolls with it. A wave finer than a few
-  pixels fades out before it can alias into moiré, and the roughness it would
-  have added blurs the mirror up and down instead, the way far lights on water
-  stretch into streaks; the moon's path widens into a soft band the same way.
-- The camera follows the page through stations: any element marked
-  `data-station`. The home page's sections name their shots in
-  `components/world/engine/shots.ts` (`HOME`), one night from dusk over the old
-  city to dawn over Asia; the resume's entries name a scene (`SCENES`) through
-  the `scene:` key in `content/site.md`; every other page has one shot
-  (`ROUTES`). Between stations the camera blends, holding each shot around its
-  section and travelling in between. Between places (Istanbul, Padova, and the
-  resume's two scenes in space above the city) it never blends across the
-  ground: it draws back, climbs through the cloud, crosses, and comes down,
-  and once it has set off it needs a clear step back before it turns round,
-  so a reader resting near the halfway line does not send it back and forth.
-- The resume tells a story before its list: a chapter per place, oldest
-  first (`resume-story` in `content/site.md`), each chapter a station. The
-  places on the ground and the scenes in space take turns, so every change of
-  chapter is one flight through the cloud, and after the last chapter the
-  world stays where it is while the list is read.
-- A shot can ask for `shade`: the side of the frame the text is on darkens
-  toward the page's ground. The home page has no scrim of its own, so a busy
-  view (Levent at night, Galata's rooftops) uses this instead, and the shade
-  moves with the camera from one side to the other as the sections alternate.
-- The resume's scenes are framed into the width its text column leaves free,
-  measured from the page, so a scene never sits under the words it illustrates.
-  Pages with text over the world render `components/layout/Scrim.tsx` first,
-  which shades the text side only.
-- Every two minutes someone spends on the site, a small plane tows the email
-  from `lib/site.ts` across the sky (`engine/banner.ts`): five seconds from one
-  edge to the other, high where the sky is free, from the side the words are on
-  toward the side the city is on. `engine/visit.ts` keeps the time, counting
-  only while the tab is visible and carrying it across pages and reloads in the
-  same tab. The plane flies only over a city, once the camera has settled, and
-  never for reduced motion; `__world.plane()` sends it over at once.
-- Labels pinned in 3D are ordinary DOM text, positioned by the engine every
-  frame, placed in priority order and hidden rather than allowed to overlap one
-  another or leave the screen.
-- Three quality tiers, chosen from what the browser reports, set resolution
-  (at most 1.5 device pixels to a CSS pixel on the high tier, 1.25 on the
-  middle one), star count, building and tree counts, rooftop clutter,
-  reflection size and noise octaves. The low tier drops the two most
-  expensive things per pixel, the water's mirror and the street plan, keeps
-  its buildings plainer (no tiled roofs, shops or balconies) and its woods and
-  water emptier. On every tier the world draws about 60 frames a second at
-  most (a 120Hz display gets every other frame), a device that runs under 50
-  for a second and a half steps its resolution down, the mirror is redrawn
-  every other frame while the camera holds still, and a roof's clutter is left
-  out once it is under three pixels across. Roofs and what stands on them are
-  left out of the water's mirror (`ABOVE_ONLY` in `common.ts`): from below,
-  the walls hide them anyway. `?quality=` forces a tier and `?debug` exposes `window.__world`
-  (`?debug=paused` stops the clock, so a screenshot script can step it
-  exactly, and `__world.look({ x, y, z, dist, lat, lon, ... })` points the
-  camera at any spot in the city while a view is being tuned).
-- The planet in the ride is real geography repainted. `public/world/` holds data
-  textures, not pictures: where land is, where the city lights are, how dry and
-  how high the ground is. `scripts/world-textures.py` bakes them from NASA
-  imagery (not copyrighted) and documents where each comes from.
+Decided 2026-11-24, with the removal of the 3D world.
 
 ## Copy
 
-Every word a visitor reads lives in `content/site.md`: the ride's lines, the
-home page, the about story, the projects, the whole resume, the captions in
-the 3D scenes, the navigation and the footer.
+Every word a visitor reads lives in `content/site.md`: the home page, the about
+story, the projects, the whole resume, the navigation and the footer.
 `scripts/build-content.mjs` checks it against the shape the pages need and
 emits `lib/content.generated.ts`, typed by `lib/content-types.ts`; a mistake
 stops the build with the line number. `npm run dev` and `npm run build` run it,
@@ -413,10 +259,12 @@ because both are tuned for crawlers rather than read on the page.
 
 ## The gate
 
-`npm run contrast` rates the ten token values against the ground.
-`npm run lint:design` checks the five rules above that a script can see:
-`text-muted-dark` outside `Rule.tsx`, hex literals, canvas numbers, arbitrary
-font sizes, and off-scale size names.
+`npm run contrast` rates the text tokens against the ground and against
+`surface`, and fails below 4.5 on either. `npm run lint:design` checks the
+eight rules above that a script can see: `text-muted-dark` outside `Rule.tsx`,
+any import of the old 3D world or its scrim, any animation, transition or
+smooth scroll, text coloured at partial opacity, hex literals, canvas numbers, arbitrary font sizes, and
+off-scale size names.
 
 The design lint carries a baseline per rule, which is the count that stood when
 the gate was written. It fails only when a count rises above its baseline, and

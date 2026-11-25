@@ -40,10 +40,33 @@ const RULES = [
   {
     id: 'muted-dark-text',
     what: 'text-muted-dark outside Rule.tsx',
-    why: 'muted-dark sits at 2.37 against the ground and fails AA at every size',
+    why: 'muted-dark sits at 2.07 against the ground and fails AA at every size',
     baseline: 0,
     pattern: /text-muted-dark/g,
     skip: (file) => file === 'components/ui/Rule.tsx',
+  },
+  {
+    id: 'world',
+    what: 'import of the 3D world, the intro or the scrim',
+    why: 'the site has no world (spec 2026-11-24)',
+    baseline: 0,
+    pattern: /components\/world|layout\/Scrim|from 'three'|data-station/g,
+  },
+  {
+    id: 'motion',
+    what: 'animation, transition or smooth scroll',
+    why: 'the site has no motion (spec 2026-11-24)',
+    baseline: 0,
+    // Matches CSS properties, class names inside className and imports, never
+    // copy. `rise` stays: the archived lens-test page uses it through .reveal.
+    pattern: /@keyframes(?! rise\b)|\banimation\s*:\s*(?!none\b|rise\b)['"]?\w|\btransition(?:-[a-z-]+)?\s*:|className=["'`{][^"'`]*?\b(?:transition(?:-[\w[\],-]+)?|duration-\d+|animate-[\w-]+|breathe|arrive|glass)\b|\.(?:breathe|arrive|glass)\b|scroll-behavior:\s*smooth|\bwhileInView\b|\banimate=|motion\/Reveal|ReadingProgress|IstanbulClock/g,
+  },
+  {
+    id: 'graded-text',
+    what: 'text coloured with a token at partial opacity',
+    why: 'on the light ground a graded step misses AA long before it looks lighter; text takes a full token',
+    baseline: 0,
+    pattern: /\btext-(?:sun|sky|muted|accent|foreground|heading)\/\d+|\bcolor:\s*['"`]rgb\(var\(--[\w-]+\)\s*\//g,
   },
   {
     id: 'hex-literal',
@@ -59,9 +82,7 @@ const RULES = [
     why: 'the tracks and the page width are defined once, in Canvas.tsx',
     baseline: 0,
     pattern: /(?<![\d.A-Za-z])(1168|660|220|160)(?:px|rem)?(?![\d.A-Za-z])/g,
-    // The 3D world measures in its own units (about ten metres each), not in
-    // pixels: a hill 160 units out has nothing to do with the page's tracks.
-    skip: (file) => file === 'components/layout/Canvas.tsx' || file.startsWith('components/world/engine/'),
+    skip: (file) => file === 'components/layout/Canvas.tsx',
     allow: (file, text) =>
       CANVAS_ALLOW.some((e) => e.file === file && text.startsWith(e.value)),
   },

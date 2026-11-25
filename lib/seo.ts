@@ -40,7 +40,7 @@ export function pageMetadata({
   languages?: Record<string, string>
   publishedTime?: string
 }): Metadata {
-  const fullTitle = absoluteTitle ?? `${title} | ${SITE_NAME}`
+  const fullTitle = absoluteTitle ?? `${title} · ${SITE_NAME}`
   return {
     title: absoluteTitle ? { absolute: absoluteTitle } : title,
     description,

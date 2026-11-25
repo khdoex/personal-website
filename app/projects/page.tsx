@@ -5,9 +5,7 @@ import Gutter from '@/components/layout/Gutter'
 import Rule from '@/components/ui/Rule'
 import Meta from '@/components/ui/Meta'
 import Entry from '@/components/ui/Entry'
-import Reveal from '@/components/motion/Reveal'
 import JsonLd from '@/components/JsonLd'
-import Scrim from '@/components/layout/Scrim'
 import { breadcrumbNode, graph, pageMetadata } from '@/lib/seo'
 import { content } from '@/lib/content.generated'
 import Inline from '@/components/ui/Inline'
@@ -65,9 +63,9 @@ function ProjectBody({ project }: { project: Project }) {
   )
 }
 
-function ProjectEntry({ project, delay }: { project: Project; delay: number }) {
+function ProjectEntry({ project }: { project: Project }) {
   return (
-    <Entry className="border-t border-border" delay={delay} gutter={<Meta>active</Meta>}>
+    <Entry className="border-t border-border" gutter={<Meta>active</Meta>}>
       <ProjectBody project={project} />
     </Entry>
   )
@@ -79,23 +77,18 @@ export default function Projects() {
 
   return (
     <Canvas className="pb-28 pt-16 md:pt-24">
-      <Scrim />
       <JsonLd data={graph(breadcrumbNode([{ name: 'Projects', path: '/projects' }]))} />
       <header className="mb-16 lg:col-start-2">
-        <Reveal>
-          <h1 className="font-serif text-h2 font-normal text-heading">projects</h1>
-        </Reveal>
+        <h1 className="font-serif text-h2 font-normal text-heading">Projects</h1>
         {content.projects.intro.map((paragraph, i) => (
-          <Reveal key={i} delay={0.08}>
-            <p className="mt-4 font-serif text-lead text-muted">
-              <Inline text={paragraph} />
-            </p>
-          </Reveal>
+          <p key={i} className="mt-4 font-serif text-lead text-muted">
+            <Inline text={paragraph} />
+          </p>
         ))}
       </header>
 
-      {current.map((project, i) => (
-        <ProjectEntry key={project.title} project={project} delay={i * 0.08} />
+      {current.map((project) => (
+        <ProjectEntry key={project.title} project={project} />
       ))}
 
       <Rule className="col-span-full mt-16" />
@@ -106,14 +99,10 @@ export default function Projects() {
         </Gutter>
 
         <div className="lg:col-start-2">
-          {earlier.map((project, i) => (
-            <Reveal
-              key={project.title}
-              delay={i * 0.08}
-              className="border-t border-border py-7"
-            >
+          {earlier.map((project) => (
+            <div key={project.title} className="border-t border-border py-7">
               <ProjectBody project={project} />
-            </Reveal>
+            </div>
           ))}
         </div>
       </div>

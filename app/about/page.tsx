@@ -5,9 +5,7 @@ import Gutter from '@/components/layout/Gutter'
 import Rule from '@/components/ui/Rule'
 import Meta from '@/components/ui/Meta'
 import Entry from '@/components/ui/Entry'
-import Reveal from '@/components/motion/Reveal'
 import JsonLd from '@/components/JsonLd'
-import Scrim from '@/components/layout/Scrim'
 import { PERSON } from '@/lib/site'
 import { content } from '@/lib/content.generated'
 import Inline from '@/components/ui/Inline'
@@ -25,7 +23,6 @@ export const metadata = pageMetadata({
 export default function About() {
   return (
     <div className="pb-28">
-      <Scrim />
       <JsonLd
         data={graph(
           profilePageNode({ path: '/about', name: `About ${PERSON.name}` }),
@@ -35,11 +32,9 @@ export default function About() {
       <AboutHero>
         <div className="mt-8 space-y-6">
           {content.about.story.map((paragraph, i) => (
-            <Reveal key={i} delay={i === 0 ? 0.08 : 0}>
-              <p className="font-serif text-base text-foreground">
-                <Inline text={paragraph} />
-              </p>
-            </Reveal>
+            <p key={i} className="font-serif text-base text-foreground">
+              <Inline text={paragraph} />
+            </p>
           ))}
         </div>
       </AboutHero>
@@ -51,10 +46,9 @@ export default function About() {
           <Meta>currently</Meta>
         </Gutter>
 
-        {currently.map((item, i) => (
+        {currently.map((item) => (
           <Entry
             key={item.title}
-            delay={i * 0.08}
             gutter={<Meta tone="date">{item.since}</Meta>}
           >
             <h2 className="font-serif text-lead font-normal text-heading">

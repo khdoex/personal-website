@@ -9,11 +9,6 @@
  */
 export type InlineText = string
 
-export interface Fact {
-  label: string
-  value: string
-}
-
 export interface CurrentItem {
   since: string
   title: string
@@ -30,14 +25,9 @@ export interface Project {
   demoUrl?: string
 }
 
-/** What the 3D world shows while a resume entry is being read. */
-/** A place the 3D world can take the resume's story to (the scene: key). */
-export type SceneName = 'bogazici' | 'physics' | 'padova' | 'interpretability' | 'levent'
-
 export interface StoryChapter {
   title: string
   period?: string
-  scene: SceneName
   body: InlineText[]
 }
 
@@ -51,45 +41,23 @@ export interface ResumeEntry {
   detail?: string[]
 }
 
-export interface WorldLabels {
-  captions: {
-    saturn: string
-    blackHole: string
-    transformer: string
-    refusal: string
-    harmful: string
-    harmless: string
-  }
-  /** The prompt the transformer reads, one word per token. */
-  prompt: string[]
-  answer: string
-}
-
 export interface SkillGroup {
   label: string
   items: string
 }
 
 export interface SiteContent {
-  intro: { lines: string[]; skip: string; replay: string }
-  hero: {
-    location: string
-    time: string
-    scroll: string
-    body: InlineText[]
-  }
+  hero: { role: string; pdf: string; body: InlineText[] }
   currently: { label: string; items: CurrentItem[] }
-  aboutTeaser: { label: string; link: string; body: InlineText[]; facts: Fact[] }
-  resumeTeaser: { label: string; link: string; pdf: string; body: InlineText[] }
   writingTeaser: { label: string; link: string; body: InlineText[] }
-  contact: { label: string; email: string; body: InlineText[] }
+  contact: { label: string; body: InlineText[] }
   about: { story: InlineText[]; handles: InlineText }
   projects: { intro: InlineText[]; items: Project[] }
   writing: { intro: InlineText[] }
   resume: {
     pdf: string
     summary: string
-    /** The story at the top of the page, oldest first, a place per chapter. */
+    /** The story at the top of the page, oldest first. */
     story: { label: string; chapters: StoryChapter[] }
     experience: ResumeEntry[]
     education: ResumeEntry[]
@@ -99,7 +67,6 @@ export interface SiteContent {
     languages: string
   }
   notFound: { title: string; body: InlineText[] }
-  world: WorldLabels
   navigation: { home: string; blog: string; projects: string; about: string; resume: string }
   footer: { line: string }
 }

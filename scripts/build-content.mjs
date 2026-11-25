@@ -22,18 +22,15 @@ const OUT = join(process.cwd(), 'lib', 'content.generated.ts')
 // keys: fields on the section. itemKeys: fields on each ### entry (and
 // items: true). body/bullets: whether paragraphs and list lines are shown.
 const SCHEMA = {
-  intro: { keys: ['skip', 'replay'], body: false, bullets: true },
-  hero: { keys: ['location', 'time', 'scroll'], body: true },
+  hero: { keys: ['role', 'pdf'], body: true },
   currently: { keys: ['label'], itemKeys: ['since', 'link'], body: false },
-  'about-teaser': { keys: ['label', 'link'], body: true, bullets: true },
-  'resume-teaser': { keys: ['label', 'link', 'pdf'], body: true },
   'writing-teaser': { keys: ['label', 'link'], body: true },
-  contact: { keys: ['label', 'email'], body: true },
+  contact: { keys: ['label'], body: true },
   about: { keys: ['handles'], body: true },
   projects: { keys: [], itemKeys: ['status', 'source', 'demo', 'tags'], body: true },
   writing: { keys: [], body: true },
   resume: { keys: ['pdf'], body: true },
-  'resume-story': { keys: ['label'], itemKeys: ['period', 'scene'], body: false },
+  'resume-story': { keys: ['label'], itemKeys: ['period'], body: false },
   'resume-experience': { keys: [], itemKeys: ['period', 'org', 'org-link', 'link'], body: false },
   'resume-education': { keys: [], itemKeys: ['period', 'org', 'org-link', 'link'], body: false },
   'resume-projects': { keys: [], itemKeys: ['period', 'org', 'org-link', 'link'], body: false },
@@ -41,18 +38,9 @@ const SCHEMA = {
   'resume-certifications': { keys: [], body: false, bullets: true },
   'resume-languages': { keys: [], body: true },
   'not-found': { keys: ['title'], body: true },
-  world: {
-    keys: ['saturn', 'black-hole', 'transformer', 'refusal', 'harmful', 'harmless', 'prompt', 'answer'],
-    body: false,
-  },
   navigation: { keys: ['home', 'blog', 'projects', 'about', 'resume'], body: false },
   footer: { keys: ['line'], body: false },
 }
-
-// What the 3D world can show beside a chapter of the resume's story. The same
-// names as SceneName in lib/content-types.ts and SCENES in
-// components/world/engine/shots.ts.
-const SCENES = ['bogazici', 'physics', 'padova', 'interpretability', 'levent']
 
 class ContentError extends Error {}
 const fail = (line, message) => {
@@ -223,18 +211,6 @@ function build(sections) {
     if (v && !/^(https?:\/\/|\/|mailto:)/.test(v)) fail(b.fields[key].line, `"${key}: ${v}" is not a link. Links start with https://, / or mailto:.`)
     return v
   }
-  const words = (b, key) => {
-    const list = need(b, key).split(/\s+/).filter(Boolean)
-    if (list.length < 3 || list.length > 8) {
-      fail(b.fields[key].line, `"${key}" has ${list.length} words; the transformer has room for three to eight.`)
-    }
-    return list
-  }
-  const scene = (b) => {
-    const v = need(b, 'scene')
-    if (!SCENES.includes(v)) fail(b.fields.scene.line, `scene is "${v}"; it has to be one of ${SCENES.join(', ')}.`)
-    return v
-  }
   const resumeEntry = (b) => ({
     period: opt(b, 'period') ?? '',
     title: b.title,
@@ -245,11 +221,8 @@ function build(sections) {
     ...(b.bullets.length && { detail: b.bullets.map((d) => d.text) }),
   })
 
-  const intro = get('intro')
   const hero = get('hero')
   const currently = get('currently')
-  const aboutTeaser = get('about-teaser')
-  const resumeTeaser = get('resume-teaser')
   const writingTeaser = get('writing-teaser')
   const contact = get('contact')
   const about = get('about')
@@ -259,15 +232,9 @@ function build(sections) {
   const nav = get('navigation')
 
   return {
-    intro: {
-      lines: bullets(intro).map((b) => b.text),
-      skip: need(intro, 'skip'),
-      replay: need(intro, 'replay'),
-    },
     hero: {
-      location: need(hero, 'location'),
-      time: need(hero, 'time'),
-      scroll: need(hero, 'scroll'),
+      role: need(hero, 'role'),
+      pdf: need(hero, 'pdf'),
       body: paras(hero),
     },
     currently: {
@@ -279,18 +246,6 @@ function build(sections) {
         ...(url(b, 'link') && { href: url(b, 'link') }),
       })),
     },
-    aboutTeaser: {
-      label: need(aboutTeaser, 'label'),
-      link: need(aboutTeaser, 'link'),
-      body: paras(aboutTeaser),
-      facts: pairs(aboutTeaser),
-    },
-    resumeTeaser: {
-      label: need(resumeTeaser, 'label'),
-      link: need(resumeTeaser, 'link'),
-      pdf: need(resumeTeaser, 'pdf'),
-      body: paras(resumeTeaser),
-    },
     writingTeaser: {
       label: need(writingTeaser, 'label'),
       link: need(writingTeaser, 'link'),
@@ -298,7 +253,6 @@ function build(sections) {
     },
     contact: {
       label: need(contact, 'label'),
-      email: need(contact, 'email'),
       body: paras(contact),
     },
     about: {
@@ -331,7 +285,6 @@ function build(sections) {
         chapters: items(get('resume-story')).map((b) => ({
           title: b.title,
           ...(opt(b, 'period') && { period: opt(b, 'period') }),
-          scene: scene(b),
           body: paras(b),
         })),
       },
@@ -348,18 +301,6 @@ function build(sections) {
       languages: one(get('resume-languages')),
     },
     notFound: { title: need(notFound, 'title'), body: paras(notFound) },
-    world: {
-      captions: {
-        saturn: need(get('world'), 'saturn'),
-        blackHole: need(get('world'), 'black-hole'),
-        transformer: need(get('world'), 'transformer'),
-        refusal: need(get('world'), 'refusal'),
-        harmful: need(get('world'), 'harmful'),
-        harmless: need(get('world'), 'harmless'),
-      },
-      prompt: words(get('world'), 'prompt'),
-      answer: need(get('world'), 'answer'),
-    },
     navigation: {
       home: need(nav, 'home'),
       blog: need(nav, 'blog'),
