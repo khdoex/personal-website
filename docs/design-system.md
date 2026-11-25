@@ -69,6 +69,32 @@ Decided 2026-11-24, when the 3D world and the dark palette were removed. The
 token names stayed, so no class had to change. Before that the ground was a
 dark blue `#0a1428`, set 2026-09-29.
 
+### Dark theme
+
+Light stays the default. A dark theme with the same ten roles follows the
+system setting, and a `dark`/`light` switch overrides it: in the nav from the
+`sm` width up, in the footer on a phone, where a fifth nav item crowds the
+name. The choice is kept in `localStorage` and applied by an inline script
+before the first paint, so the page never flashes the other theme.
+
+| token        | hex       | ground | surface |
+|--------------|-----------|--------|---------|
+| `heading`    | `#f1efe9` | 15.75  | 14.36   |
+| `foreground` | `#d4d1ca` | 11.88  | 10.83   |
+| `sun`        | `#d9a845` |  8.31  |  7.58   |
+| `sky`        | `#78a9e3` |  7.40  |  6.75   |
+| `accent`     | `#5cb386` |  7.11  |  6.48   |
+| `muted`      | `#9a978f` |  6.21  |  5.66   |
+| `muted-dark` | `#57554f` |  2.43  |         |
+| `border`     | `#2f2e2b` |  1.33  |         |
+| `surface`    | `#1f1f1d` |  1.10  |         |
+| `background` | `#161615` |  1.00  |         |
+
+The dark values are written twice in `globals.css`, once under
+`[data-theme='dark']` for the switch and once under the system media query.
+`npm run contrast` rates both themes and fails if the two copies differ.
+Added 2026-11-26.
+
 **`muted-dark` never carries text, at any size.** At 2.07 it misses AA by a wide
 margin, and it is dark enough that the failure stays invisible on a good monitor
 in a dark room, which is how it spread. Before the rebuild it carried text in 27
