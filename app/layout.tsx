@@ -22,7 +22,10 @@ const newsreader = Newsreader({
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  themeColor: '#fbfaf7',
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#fbfaf7' },
+    { media: '(prefers-color-scheme: dark)', color: '#161615' },
+  ],
 };
 
 const DEFAULT_TITLE =
@@ -103,8 +106,17 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
+    // The theme script sets data-theme on <html> before React hydrates.
+    <html lang="en" suppressHydrationWarning>
       <head>
+        {/* Applies a saved theme choice before the first paint, so the page
+            never flashes the other theme. Without a choice, CSS follows the
+            system setting. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{var t=localStorage.getItem('theme');if(t==='dark'||t==='light')document.documentElement.dataset.theme=t}catch(e){}`,
+          }}
+        />
         {/* Pointers for LLM agents: the plain-text profile and full dump. */}
         <link rel="alternate" type="text/markdown" href="/llms.txt" title="llms.txt" />
         <link rel="alternate" type="text/markdown" href="/llms-full.txt" title="llms-full.txt" />

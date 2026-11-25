@@ -16,6 +16,60 @@
   --accent: 31 122 77; /* #1f7a4d */
   --sun: 143 101 0; /* #8f6500 */
   --sky: 36 98 168; /* #2462a8 */
+  color-scheme: light;
+}
+
+/* Dark: the same roles on a warm near-black ground. It applies when the reader
+   picks dark with the nav switch, or when the system is dark and the reader has
+   not picked light. The two blocks hold the same values; contrast.mjs checks
+   that they match. */
+:root[data-theme='dark'] {
+  --background: 22 22 21; /* #161615 */
+  --surface: 31 31 29; /* #1f1f1d */
+  --border: 47 46 43; /* #2f2e2b */
+  --foreground: 212 209 202; /* #d4d1ca */
+  --heading: 241 239 233; /* #f1efe9 */
+  --muted: 154 151 143; /* #9a978f */
+  --muted-dark: 87 85 79; /* #57554f */
+  --accent: 92 179 134; /* #5cb386 */
+  --sun: 217 168 69; /* #d9a845 */
+  --sky: 120 169 227; /* #78a9e3 */
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --background: 22 22 21; /* #161615 */
+    --surface: 31 31 29; /* #1f1f1d */
+    --border: 47 46 43; /* #2f2e2b */
+    --foreground: 212 209 202; /* #d4d1ca */
+    --heading: 241 239 233; /* #f1efe9 */
+    --muted: 154 151 143; /* #9a978f */
+    --muted-dark: 87 85 79; /* #57554f */
+    --accent: 92 179 134; /* #5cb386 */
+    --sun: 217 168 69; /* #d9a845 */
+    --sky: 120 169 227; /* #78a9e3 */
+    color-scheme: dark;
+  }
+}
+
+/* The theme switch shows the theme it switches to. */
+.theme-to-light {
+  display: none;
+}
+:root[data-theme='dark'] .theme-to-dark {
+  display: none;
+}
+:root[data-theme='dark'] .theme-to-light {
+  display: inline;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .theme-to-dark {
+    display: none;
+  }
+  :root:not([data-theme='light']) .theme-to-light {
+    display: inline;
+  }
 }
 
 html {

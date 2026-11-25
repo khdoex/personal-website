@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import type { SiteContent } from '@/lib/content-types'
+import ThemeToggle from '@/components/ThemeToggle'
 
 export default function Navigation({ labels }: { labels: SiteContent['navigation'] }) {
   const pathname = usePathname()
@@ -45,6 +46,8 @@ export default function Navigation({ labels }: { labels: SiteContent['navigation
                 </Link>
               )
             })}
+            {/* Five items crowd the bar on a phone, so there the switch sits in the footer. */}
+            <ThemeToggle className="hidden sm:inline font-mono text-meta text-muted hover:text-heading" />
           </div>
         </div>
       </div>
