@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "build:cloudflare": "npm run posts && npm run content && npx opennextjs-cloudflare build",
+    "build:cloudflare": "npm run posts && npm run content && npx opennextjs-cloudflare build --dangerouslyUseUnsupportedNextVersion",
     "preview:cloudflare": "npx wrangler dev",
     "deploy:cloudflare": "npx wrangler deploy",
     "contrast": "node scripts/contrast.mjs",
