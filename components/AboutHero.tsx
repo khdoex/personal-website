@@ -11,7 +11,7 @@ export default function AboutHero({ children }: { children: React.ReactNode }) {
       <div className="lg:col-start-3 lg:row-start-1">
         <Image
           src="/images/kaan-hacihaliloglu.png"
-          alt="Kaan Hacihaliloglu"
+          alt="Kaan Hacıhaliloğlu"
           width={1086}
           height={1448}
           priority
@@ -20,7 +20,7 @@ export default function AboutHero({ children }: { children: React.ReactNode }) {
       </div>
       <div className="lg:col-start-2 lg:row-start-1">
         <h1 className="font-serif text-h2 font-normal text-heading">
-          about
+          About
         </h1>
         {children}
       </div>

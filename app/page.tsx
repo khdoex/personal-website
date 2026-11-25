@@ -33,7 +33,7 @@ export default async function Home() {
       />
 
       <header className="lg:col-start-2">
-        <h1 className="font-serif text-h2 font-normal text-heading">{PERSON.name}</h1>
+        <h1 className="font-serif text-h2 font-normal text-heading">{PERSON.nameTr}</h1>
         <p className="mt-2">
           {/* A no-break space after each dot, so a line never ends on one. */}
           <Meta>{hero.role.replaceAll(' · ', ' · ')}</Meta>

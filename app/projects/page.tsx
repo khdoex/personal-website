@@ -79,7 +79,7 @@ export default function Projects() {
     <Canvas className="pb-28 pt-16 md:pt-24">
       <JsonLd data={graph(breadcrumbNode([{ name: 'Projects', path: '/projects' }]))} />
       <header className="mb-16 lg:col-start-2">
-        <h1 className="font-serif text-h2 font-normal text-heading">projects</h1>
+        <h1 className="font-serif text-h2 font-normal text-heading">Projects</h1>
         {content.projects.intro.map((paragraph, i) => (
           <p key={i} className="mt-4 font-serif text-lead text-muted">
             <Inline text={paragraph} />

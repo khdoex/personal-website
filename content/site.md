@@ -35,10 +35,10 @@
   download link). The paragraph is the line under them.
 -->
 
-role: ai engineer · interpretability · istanbul
+role: AI engineer · interpretability · Istanbul
 pdf: download pdf
 
-currently i am tech lead at SCL, writing my thesis, and doing research on the interpretability and safety of large language models.
+I am CTO of Synthetic Consumer Lab (SCL) and an MSc student in data science at Sabancı University, where my thesis studies how refusal is represented inside large language models.
 
 
 ## currently
@@ -52,22 +52,16 @@ currently i am tech lead at SCL, writing my thesis, and doing research on the in
 
 label: currently working on
 
-### refusal geometry in llms
+### SCL (Synthetic Consumer Lab)
 since: 2025
-
-msc thesis at sabancı university, on how refusal behavior and safety representations are encoded inside large language models.
-
-### SCL, synthetic consumer lab
-since: 2024
 link: https://synthetic-consumers.com/
 
-building synthetic consumer systems for behavior simulation and market research workflows, with a great team.
+Building synthetic consumer systems for behavior simulation and market research.
 
-### soundboost
-since: 2024
-link: https://soundboost.ai/about
+### Refusal geometry in LLMs
+since: 2025
 
-ai engineer on an audio mastering platform, a virtual mastering engineer for musicians. worked on the free tools and the stem splitter, with cool people.
+MSc thesis at Sabancı University on how refusal behavior and safety-related representations are encoded inside large language models.
 
 
 ## writing-teaser
@@ -81,7 +75,7 @@ ai engineer on an audio mastering platform, a virtual mastering engineer for mus
 label: writing
 link: all writing
 
-notes on interpretability, machine learning, and the occasional detour through life. some in english, some in turkish. hopefully i will write more soon.
+Notes on interpretability and machine learning, with occasional personal essays. Posts are in English or Turkish.
 
 
 ## contact
@@ -92,9 +86,9 @@ notes on interpretability, machine learning, and the occasional detour through l
   keys: label
 -->
 
-label: say hi
+label: contact
 
-if you work on interpretability, or synthetic consumers, or just vibes, write me. i am online most of the time.
+I am glad to hear from people working on interpretability, LLM safety, or synthetic consumer research.
 
 
 ## about
@@ -105,19 +99,19 @@ if you work on interpretability, or synthetic consumers, or just vibes, write me
   keys: handles (the note at the very bottom)
 -->
 
-studied physics in undergrad, loved the research and the inspiration from my profs at boğaziçi. one of the best decisions i made in my life was studying physics at boun. thanks to Haluk Beker, Alpar Sevgen, Arkadaş Özakın and many more.
+I studied physics at Boğaziçi University. Its research culture shaped how I work, and I am grateful to Haluk Beker, Alpar Sevgen, Arkadaş Özakın and many others there.
 
-while i was studying, Arkadaş hoca taught us machine learning and deep learning in the EarthML research group, where i worked on earthquake detection models and extensive data analysis. i decided to continue down the data science path and did internships at Allianz, and at Live The World, a startup, as an ai engineer.
+As an undergraduate I joined the EarthML research group, where Arkadaş Özakın taught us machine learning and deep learning and I worked on earthquake detection models and seismic data analysis. I then moved toward data science, with internships at Allianz and, as an AI engineer, at the startup Live The World.
 
-i started a master's in cs at Padova but didn't quite like the program, or let's say i didn't fit in. after my first year of coursework i didn't want to do any research there, maybe i couldn't meet the right people at that time. i came back to istanbul, to Sabancı for a data science master's, and started working with Dilara Keküllüoğlu. thanks to her i had my research spark again, with refusal dynamics and poisoning attacks on LLMs.
+I began a master's in computer science at the University of Padua and left after the first year of coursework, as the program was not a good fit for the research I wanted to do. I returned to Istanbul for a master's in data science at Sabancı University, where I work with Dilara Keküllüoğlu on refusal dynamics and poisoning attacks on LLMs.
 
-now i am working in a research group on refusal dynamics, and my thesis is on the same topic with more interpretability candies on top. what this means: i look at what's happening while a model refuses a harmful request and try to make sense of the math inside the model. it kind of feels like physics inside an llm architecture, but this is not a definition at all, just me reassuring myself.
+My thesis continues this work with interpretability methods: I study what happens inside a model while it refuses a harmful request, and how that behavior is represented in its activations.
 
-i met Berkan Cesur when i came back to istanbul and he taught me a lot about product development. can't lie, amazing person and insane inspiration. in one year with him i got experience in web development, app development, product cycles and a lot more.
+After returning to Istanbul I also worked with Berkan Cesur, who taught me much of what I know about product development. Over one year I gained experience in web development, app development and full product cycles.
 
-then i started at SCL as an ai engineer. with time i took on more responsibility, so i could say i am a bit more than that now. Ömer Ülgen, our ceo, is one of the sharpest people i have worked with, and from Sinan Ülgen i am learning a lot about customer relationships and working B2B.
+I then joined SCL as an AI engineer and later became its CTO. I work with Ömer Ülgen, our CEO, and with Sinan Ülgen on customer relationships and B2B work.
 
-handles: online i am khdoex on github, and kaanhho most other places (x, hugging face, linkedin).
+handles: Online I am khdoex on GitHub and kaanhho on most other platforms (X, Hugging Face, LinkedIn).
 
 
 ## projects
@@ -129,13 +123,19 @@ handles: online i am khdoex on github, and kaanhho most other places (x, hugging
   code), demo (a link to try it), tags (comma separated)
 -->
 
-mostly the thesis these days:
+My current work is SCL and my thesis.
 
-### refusal geometry in llms
+### SCL (Synthetic Consumer Lab)
+status: current
+tags: LLMs, Synthetic Consumers, Behavior Simulation, Market Research
+
+Synthetic consumer systems for behavior simulation and market research. I joined as an AI engineer and later became CTO.
+
+### Refusal geometry in LLMs
 status: current
 tags: Mechanistic Interpretability, Refusal Directions, LLM Safety
 
-msc thesis at sabancı: how refusal and harmfulness live in the internal geometry of llms. ask a model something harmful and it refuses. that refusal can be shown as a direction in activation space, and jailbreaks work by pushing the model off it. i am mapping what those attacks actually do to the representations. no public repo yet, we will see where it goes.
+MSc thesis at Sabancı University on how refusal and harmfulness are represented in the internal geometry of LLMs. When a model refuses a harmful request, that refusal can be described as a direction in activation space, and jailbreaks work by moving the model away from it. I study what these attacks change in the model's representations. The code is not yet public.
 
 ### Neural Text Summarization: Comparative Analysis of Transformer Architectures
 status: earlier
@@ -163,7 +163,7 @@ A collection of practical machine learning implementations: boosting, ensemble t
 
 <!-- The /blog page. The paragraph is the intro at the top. -->
 
-notes on interpretability, machine learning, and the occasional detour through life.
+Notes on interpretability and machine learning, with occasional personal essays.
 
 
 ## resume
@@ -176,7 +176,7 @@ notes on interpretability, machine learning, and the occasional detour through l
 
 pdf: download pdf
 
-ai engineer and grad student. i work on refusal and safety in llms through interpretability, and at SCL on a new way of doing market research.
+AI engineer and graduate student. My research is on refusal and safety in LLMs through interpretability, and at SCL I build AI systems for market research.
 
 
 ## resume-story
@@ -188,33 +188,33 @@ ai engineer and grad student. i work on refusal and safety in llms through inter
   keys per chapter: period (optional). The paragraphs are the chapter.
 -->
 
-label: the story so far
+label: background
 
-### boğaziçi
+### Boğaziçi University
 period: 2018 – 2023
 
-studied physics. loved the research and the inspiration from my profs, one of the best decisions i made in my life. in the EarthML research group Arkadaş hoca taught us machine learning and deep learning, and i worked on earthquake detection models and extensive data analysis. i also taught numerical methods, and once we even turned seismic data into an art exhibition. then i continued down the data science path, with internships at Allianz and Live The World.
+I studied physics. In the EarthML research group Arkadaş Özakın taught us machine learning and deep learning, and I worked on earthquake detection models and seismic data analysis. I also taught Numerical Methods, and turned seismic data into artwork for an exhibition. I then moved toward data science through internships at Allianz and Live The World.
 
-### the habit
+### Approach
 
-physics left me one habit: when something works, i want to know what is actually happening inside it. first it was physics, then earthquakes, now language models. same question.
+Physics left me with one habit: when a system works, I want to understand what is happening inside it. The question has stayed the same from physics to earthquakes to language models.
 
-### padova
+### University of Padua
 period: 2023 – 2024
 
-a computer science master's in padova. i didn't quite like the program, or let's say i didn't fit in. after the first year of coursework i didn't want to do any research there, maybe i couldn't meet the right people at that time. the long version is on the blog, in turkish.
+A master's in computer science. The program was not a good fit, and I left after completing the first year of coursework. A longer account is on the blog, in Turkish.
 
-### sabancı
+### Sabancı University
 period: 2025 –
 
-back in istanbul, a data science msc at sabancı. working with Dilara Keküllüoğlu, i had my research spark again, with refusal dynamics and poisoning attacks on llms. my thesis is on the same topic with more interpretability candies on top: i look at what's happening while a model refuses a harmful request and try to make sense of the math inside it. i am also a ta for quantum programming on the side.
+An MSc in data science in Istanbul. With Dilara Keküllüoğlu I started research on refusal dynamics and poisoning attacks on LLMs. My thesis extends this with interpretability methods: I study what happens inside a model while it refuses a harmful request. I am also a teaching assistant for Quantum Programming.
 
-back in istanbul i also met Berkan Cesur, who taught me a lot about product development. can't lie, amazing person and insane inspiration. in one year with him i got experience in web development, app development, product cycles and a lot more.
+In Istanbul I also worked with Berkan Cesur, who taught me much of what I know about product development. Over one year I gained experience in web development, app development and full product cycles.
 
-### now
+### Synthetic Consumer Lab
 period: 2025 –
 
-days are SCL. i started as an ai engineer, and with time i took on more responsibility, so i could say i am a bit more than that now. Ömer Ülgen, our ceo, is one of the sharpest people i have worked with, and from Sinan Ülgen i am learning a lot about customer relationships and working B2B. nights are still the thesis.
+I joined SCL as an AI engineer and later became its CTO. I work with Ömer Ülgen, our CEO, and with Sinan Ülgen on customer relationships and B2B work. My thesis research continues alongside.
 
 
 ## resume-experience
@@ -225,12 +225,12 @@ days are SCL. i started as an ai engineer, and with time i took on more responsi
   keys per job: period, org, org-link, link (a link on the role itself)
 -->
 
-### AI Engineer
+### CTO
 period: 2025 –
 org: Synthetic Consumer Lab
 org-link: https://synthetic-consumers.com/
 
-Engineering lead responsible for the full product stack: backend, frontend, AI systems, and statistical methodology.
+Responsible for the full product stack: backend, frontend, AI systems, and statistical methodology.
 
 - Architected the platform on Laravel, Python/FastAPI, and Redis
 - Built agentic systems for market research, and synthetic consumer personas grounded in real demographic and behavioral data
@@ -378,16 +378,16 @@ Turkish (native) · English (fluent)
 
 <!-- The page for a link that goes nowhere. keys: title -->
 
-title: nothing here
+title: Page not found
 
-this page does not exist, or it did once and does not anymore.
+This page does not exist or has moved.
 
 
 ## navigation
 
 <!-- The bar at the top. keys: home (the name on the left), blog, projects, about, resume -->
 
-home: kaan hacihaliloglu
+home: Kaan Hacıhaliloğlu
 blog: blog
 projects: projects
 about: about
@@ -398,4 +398,4 @@ resume: resume
 
 <!-- The line at the bottom of every page, after the year. keys: line -->
 
-line: kaan hacıhaliloğlu · istanbul
+line: Kaan Hacıhaliloğlu · Istanbul

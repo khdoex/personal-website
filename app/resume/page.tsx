@@ -20,7 +20,7 @@ import { content } from '@/lib/content.generated'
 export const metadata = pageMetadata({
   absoluteTitle: 'Resume · Kaan Hacihaliloglu, AI Engineer (CV)',
   description:
-    'Resume of Kaan Hacihaliloglu: AI Engineer at Synthetic Consumer Lab, with SoundBoost, Live The World and Allianz TR along the way. MSc Data Science at Sabancı, BSc Physics at Boğaziçi. PDF download.',
+    'Resume of Kaan Hacihaliloglu: CTO at Synthetic Consumer Lab, with SoundBoost, Live The World and Allianz TR along the way. MSc Data Science at Sabancı, BSc Physics at Boğaziçi. PDF download.',
   path: '/resume',
 })
 
@@ -127,7 +127,7 @@ export default function Resume() {
       <JsonLd data={graph(breadcrumbNode([{ name: 'Resume', path: '/resume' }]))} />
       <header className="mb-10 lg:col-start-2">
         <div className="flex items-baseline justify-between gap-6">
-          <h1 className="font-serif text-h2 font-normal text-heading">resume</h1>
+          <h1 className="font-serif text-h2 font-normal text-heading">Resume</h1>
           <a
             href="/documents/resume.pdf"
             download="KaanHacihaliloglu_Resume.pdf"

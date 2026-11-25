@@ -44,7 +44,7 @@ export default async function Blog() {
         data={graph(blogNode, breadcrumbNode([{ name: 'Writing', path: '/blog' }]))}
       />
       <header className="mb-16 lg:col-start-2">
-        <h1 className="font-serif text-h2 font-normal text-heading">writing</h1>
+        <h1 className="font-serif text-h2 font-normal text-heading">Writing</h1>
         {content.writing.intro.map((paragraph, i) => (
           <p key={i} className="mt-4 font-serif text-lead text-muted">
             <Inline text={paragraph} />
