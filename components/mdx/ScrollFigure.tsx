@@ -32,7 +32,7 @@ export default function ScrollFigure({
 }) {
   const dialogRef = useRef<HTMLDialogElement>(null)
   const [zoom, setZoom] = useState(1)
-  const staticProgress = useRef(motionValue(1)).current
+  const [staticProgress] = useState(() => motionValue(1))
 
   const copy = lang === 'tr'
     ? { figure: 'şekil', open: 'büyüt', close: 'kapat', zoomOut: 'uzaklaştır', zoomIn: 'yakınlaştır', view: 'şeklin büyütülmüş görünümü' }

@@ -190,25 +190,27 @@ export default async function BlogPost({ params }: Props) {
     )
   }
 
+  // Only the lookup can throw; the JSX stays outside the try.
+  let post
   try {
-    const post = await getPostBySlug(slug)
-    return (
-      <PostShell
-        slug={slug}
-        title={post.data.title}
-        date={post.data.date}
-        readingTime={post.data.readingTime}
-        language={post.data.language}
-      >
-        {/* No Reveal here: a body taller than ~4 viewports never reaches the
-            viewport-amount threshold and would stay invisible. */}
-        <div
-          className="prose lg:col-start-2"
-          dangerouslySetInnerHTML={{ __html: post.data.content }}
-        />
-      </PostShell>
-    )
+    post = await getPostBySlug(slug)
   } catch {
     return notFound()
   }
+  return (
+    <PostShell
+      slug={slug}
+      title={post.data.title}
+      date={post.data.date}
+      readingTime={post.data.readingTime}
+      language={post.data.language}
+    >
+      {/* No Reveal here: a body taller than ~4 viewports never reaches the
+          viewport-amount threshold and would stay invisible. */}
+      <div
+        className="prose lg:col-start-2"
+        dangerouslySetInnerHTML={{ __html: post.data.content }}
+      />
+    </PostShell>
+  )
 }
