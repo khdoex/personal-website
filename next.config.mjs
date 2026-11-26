@@ -2,17 +2,12 @@ import { execFile } from 'node:child_process'
 import { watch } from 'node:fs'
 import createMDX from '@next/mdx'
 import { PHASE_DEVELOPMENT_SERVER } from 'next/constants.js'
-import remarkMath from 'remark-math'
-import rehypeKatex from 'rehype-katex'
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   pageExtensions: ['ts', 'tsx', 'js', 'jsx', 'mdx'],
   images: {
     unoptimized: true, // Cloudflare Workers deploy has no image optimizer
-  },
-  eslint: {
-    ignoreDuringBuilds: true,
   },
   async redirects() {
     return [
@@ -32,8 +27,10 @@ const nextConfig = {
 // build time. Plain .md posts run a separate remark pipeline and are unaffected.
 const withMDX = createMDX({
   options: {
-    remarkPlugins: [remarkMath],
-    rehypePlugins: [rehypeKatex],
+    // Named by string: Turbopack passes loader options across processes, so
+    // they must be plain values, not imported functions.
+    remarkPlugins: ['remark-math'],
+    rehypePlugins: ['rehype-katex'],
   },
 })
 
